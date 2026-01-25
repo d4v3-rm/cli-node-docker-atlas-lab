@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lab - Indice Servizi</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        margin: 0;
+        padding: 32px;
+        background: #f6f7fb;
+        color: #1c1f2a;
+      }
+      .card {
+        max-width: 900px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(19, 22, 33, 0.08);
+        padding: 28px;
+      }
+      h1 {
+        margin: 0 0 8px 0;
+        font-size: 28px;
+      }
+      p {
+        margin: 0 0 20px 0;
+        color: #4a5064;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }
+      .tile {
+        border: 1px solid #e3e6ef;
+        border-radius: 10px;
+        padding: 16px;
+        background: #fafbff;
+      }
+      .tile h2 {
+        margin: 0 0 8px 0;
+        font-size: 18px;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      li + li {
+        margin-top: 8px;
+      }
+      a {
+        color: #1b5fd6;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .badge {
+        display: inline-block;
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: #eef2ff;
+        color: #3b4cca;
+        margin-left: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Lab - Indice Servizi</h1>
+      <p>Accesso rapido ai servizi del lab sotto il prefisso <strong>/lab</strong>.</p>
+      <div class="grid">
+        <div class="tile">
+          <h2>Dev</h2>
+          <ul>
+            <li><a href="/lab/dev/gitea/">Gitea</a></li>
+          </ul>
+        </div>
+        <div class="tile">
+          <h2>Env</h2>
+          <ul>
+            <li><a href="/lab/env/">Ambienti di sviluppo</a></li>
+          </ul>
+        </div>
+        <div class="tile">
+          <h2>Design</h2>
+          <ul>
+            <li><a href="/lab/design/penpot/">Penpot</a></li>
+            <li><a href="/lab/design/drawio/">Draw.io</a></li>
+          </ul>
+        </div>
+        <div class="tile">
+          <h2>Docs</h2>
+          <ul>
+            <li><a href="/lab/docs/marktext/">MarkText</a><span class="badge">GUI</span></li>
+            <li><a href="/lab/docs/bookstack/">BookStack</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
