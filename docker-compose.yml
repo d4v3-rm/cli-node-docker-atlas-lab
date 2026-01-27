@@ -23,7 +23,8 @@ services:
       - ai-dev
       - cpp-dev
     networks:
-      - lab
+      - services-net
+      - workbench-net
 
   # Core platform
   gitea:
@@ -54,7 +55,7 @@ services:
     volumes:
       - gitea-data:/data
     networks:
-      - lab
+      - services-net
 
   gitea-init:
     image: gitea/gitea:${GITEA_VERSION}
@@ -82,7 +83,7 @@ services:
     volumes:
       - gitea-data:/data
     networks:
-      - lab
+      - services-net
 
   gitea-db:
     image: mariadb:11.4
@@ -100,7 +101,7 @@ services:
     volumes:
       - gitea-db:/var/lib/mysql
     networks:
-      - lab
+      - services-net
 
   n8n:
     image: docker.n8n.io/n8nio/n8n:${N8N_VERSION}
@@ -120,7 +121,7 @@ services:
     volumes:
       - n8n-data:/home/node/.n8n
     networks:
-      - lab
+      - services-net
 
   ollama:
     image: ollama/ollama:${OLLAMA_VERSION}
@@ -132,7 +133,7 @@ services:
     volumes:
       - ollama-data:/root/.ollama
     networks:
-      - lab
+      - services-net
 
   open-webui:
     image: ghcr.io/open-webui/open-webui:${OPENWEBUI_VERSION}
@@ -152,7 +153,7 @@ services:
     depends_on:
       - ollama
     networks:
-      - lab
+      - services-net
 
   # Development environments
   node-dev:
@@ -178,7 +179,7 @@ services:
       - node-dev-home:/home/coder
       - node-dev-workspace:/workspace
     networks:
-      - lab
+      - workbench-net
 
   python-dev:
     build:
@@ -205,7 +206,7 @@ services:
       - python-dev-home:/home/coder
       - python-dev-workspace:/workspace
     networks:
-      - lab
+      - workbench-net
 
   ai-dev:
     build:
@@ -232,7 +233,7 @@ services:
       - ai-dev-home:/home/coder
       - ai-dev-workspace:/workspace
     networks:
-      - lab
+      - workbench-net
 
   cpp-dev:
     build:
@@ -254,10 +255,13 @@ services:
       - cpp-dev-home:/home/coder
       - cpp-dev-workspace:/workspace
     networks:
-      - lab
+      - workbench-net
 
 networks:
-  lab:
+  services-net:
+    name: cli-node-lab_services
+  workbench-net:
+    name: cli-node-lab_workbench
 
 volumes:
   gateway-certs:

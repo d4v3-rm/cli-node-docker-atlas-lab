@@ -607,6 +607,7 @@
               <span class="pill"><i class="fa-solid fa-lock"></i> accesso centralizzato</span>
               <span class="pill"><i class="fa-solid fa-database"></i> storage solo su volumi</span>
               <span class="pill"><i class="fa-solid fa-satellite-dish"></i> gateway unico</span>
+              <span class="pill"><i class="fa-solid fa-diagram-next"></i> dual network topology</span>
             </div>
             <div class="stat-grid">
               <div class="stat">
@@ -849,6 +850,10 @@
         <div class="footer-card">
           <strong>core usage</strong>
           <span>Gitea per codice, n8n per automazione, Open WebUI per chat AI, Ollama per inference locale.</span>
+        </div>
+        <div class="footer-card">
+          <strong>segmentazione</strong>
+          <span><code>services-net</code> ospita i servizi core, <code>workbench-net</code> ospita gli ambienti di sviluppo e il gateway e l'unico ponte tra le due reti.</span>
         </div>
       </section>
     </main>
