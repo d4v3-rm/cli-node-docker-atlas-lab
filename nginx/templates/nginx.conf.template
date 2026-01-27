@@ -17,12 +17,6 @@ http {
   client_max_body_size 512m;
 
   server {
-    listen 8080;
-    server_name _;
-    return 301 ${LAB_EXTERNAL_URL}$request_uri;
-  }
-
-  server {
     listen 8443 ssl;
     server_name _;
 
