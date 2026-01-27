@@ -1,0 +1,28 @@
+# Node Forge
+
+## Cosa fa
+
+Ambiente `code-server` dedicato allo sviluppo JavaScript e TypeScript. Serve per frontend, CLI, tool interni, package management e sperimentazione rapida su stack Node.
+
+## Come si accede
+
+- URL operativo: `${LAB_EXTERNAL_URL}/lab/env/node/`
+- Modalita di accesso: `password`
+- Password root: `${NODE_DEV_PASSWORD}`
+
+## Cosa trovi dentro
+
+- Node.js, npm, pnpm e yarn
+- Git e toolchain base per pacchetti nativi
+- Workspace persistente su volume Docker
+
+## Quando usarlo
+
+- sviluppo frontend
+- tooling TypeScript
+- CLI aziendali
+- prototipi backend Node
+
+## Nota operativa
+
+L'ambiente non viene pubblicato come link diretto sulla dashboard. Da qui ottieni il briefing, poi accedi all'endpoint sopra.

@@ -1,0 +1,28 @@
+# Python Grid
+
+## Cosa fa
+
+Ambiente `code-server` per backend Python, automazioni, script operativi e tooling di progetto. E pensato come workspace generale per sviluppo applicativo e integrazioni.
+
+## Come si accede
+
+- URL operativo: `${LAB_EXTERNAL_URL}/lab/env/python/`
+- Modalita di accesso: `password`
+- Password root: `${PYTHON_DEV_PASSWORD}`
+
+## Cosa trovi dentro
+
+- Python installato tramite `pyenv`
+- workspace persistente su volume Docker
+- spazio adatto a script, servizi backend e tooling
+
+## Quando usarlo
+
+- backend Python
+- utility interne
+- script di deployment
+- prototipi rapidi
+
+## Nota operativa
+
+L'accesso operativo resta disponibile via URL dedicato, mentre il deck espone solo questo briefing locale.

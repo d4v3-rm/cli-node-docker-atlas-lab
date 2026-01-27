@@ -1,0 +1,28 @@
+# AI Reactor
+
+## Cosa fa
+
+Ambiente `code-server` focalizzato su AI e data science. Integra un set di pacchetti Python utile per notebook, training leggero, prompt engineering e prototipi ML.
+
+## Come si accede
+
+- URL operativo: `${LAB_EXTERNAL_URL}/lab/env/ai/`
+- Modalita di accesso: `password`
+- Password root: `${AI_DEV_PASSWORD}`
+
+## Cosa trovi dentro
+
+- stack Python con librerie AI e data science
+- workspace persistente su volume Docker
+- contesto ideale per integrazione con `Open WebUI` e `Ollama`
+
+## Quando usarlo
+
+- notebook e proof of concept
+- pipeline AI locali
+- valutazione prompt e modelli
+- data exploration
+
+## Nota operativa
+
+Questo workbench e il punto corretto per sviluppo AI lato codice. `Open WebUI` resta invece la console di interazione browser.

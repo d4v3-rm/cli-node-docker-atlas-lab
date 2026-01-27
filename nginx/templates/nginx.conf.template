@@ -40,8 +40,9 @@ http {
     location = /lab/ { try_files /lab-index.html =404; }
     location = /lab/index.html { try_files /lab-index.html =404; }
 
-    location /content/ {
-      try_files $uri =404;
+    location = /lab/content { return 301 /lab/content/; }
+    location /lab/content/ {
+      alias /usr/share/nginx/html/content/;
     }
 
     location = /lab/dev/gitea { return 301 /lab/dev/gitea/; }

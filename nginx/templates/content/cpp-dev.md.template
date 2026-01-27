@@ -1,0 +1,28 @@
+# C++ Foundry
+
+## Cosa fa
+
+Ambiente `code-server` per sviluppo C e C++. E pensato per compilazione nativa, debugging, toolchain moderne e lavoro su componenti performance-critical.
+
+## Come si accede
+
+- URL operativo: `${LAB_EXTERNAL_URL}/lab/env/cpp/`
+- Modalita di accesso: `password`
+- Password root: `${CPP_DEV_PASSWORD}`
+
+## Cosa trovi dentro
+
+- toolchain C/C++ con build-essential, cmake, ninja, clang e debugger
+- workspace persistente su volume Docker
+- contesto adatto a librerie, motori e componenti native
+
+## Quando usarlo
+
+- librerie native
+- moduli ad alte prestazioni
+- debugging low-level
+- build e test di componenti C++
+
+## Nota operativa
+
+L'accesso e documentato qui in forma locale markdown, senza scorciatoia diretta in home.

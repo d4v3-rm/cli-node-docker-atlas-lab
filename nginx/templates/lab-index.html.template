@@ -3,117 +3,954 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Lab Control Deck</title>
+    <meta name="theme-color" content="#070b16" />
+    <title>Neon Ops Deck</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
     <style>
+      :root {
+        --bg: #070b16;
+        --bg-soft: rgba(10, 16, 31, 0.86);
+        --text: #eff5ff;
+        --muted: #99accf;
+        --cyan: #53f0ff;
+        --pink: #ff4fd8;
+        --amber: #ffcf53;
+        --lime: #70ff9b;
+        --shadow: 0 28px 90px rgba(0, 0, 0, 0.55);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
       body {
-        font-family: "Segoe UI", Arial, sans-serif;
         margin: 0;
-        padding: 32px;
-        background: #0c1020;
-        color: #f4f7ff;
+        min-height: 100%;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(255, 79, 216, 0.18), transparent 28%),
+          radial-gradient(circle at top right, rgba(83, 240, 255, 0.18), transparent 26%),
+          radial-gradient(circle at center, rgba(112, 255, 155, 0.08), transparent 32%),
+          linear-gradient(135deg, #05070d 0%, #070b16 34%, #091223 100%);
+        font-family: "Rajdhani", sans-serif;
+        overflow-x: hidden;
       }
 
-      .shell {
-        max-width: 1120px;
-        margin: 0 auto;
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
       }
 
-      .panel {
-        background: rgba(18, 24, 44, 0.92);
-        border: 1px solid rgba(118, 203, 255, 0.24);
-        border-radius: 20px;
-        padding: 24px;
-        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+      body::before {
+        background:
+          linear-gradient(rgba(83, 240, 255, 0.08) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(83, 240, 255, 0.08) 1px, transparent 1px);
+        background-size: 72px 72px;
+        mask-image: radial-gradient(circle at center, black 36%, transparent 100%);
+        opacity: 0.38;
+        animation: grid-drift 18s linear infinite;
       }
 
-      .grid {
+      body::after {
+        background: linear-gradient(transparent 0%, rgba(255, 255, 255, 0.04) 48%, transparent 100%);
+        background-size: 100% 4px;
+        opacity: 0.18;
+      }
+
+      @keyframes grid-drift {
+        from {
+          transform: translate3d(0, 0, 0);
+        }
+        to {
+          transform: translate3d(72px, 72px, 0);
+        }
+      }
+
+      .backdrop-orb {
+        position: fixed;
+        width: 38rem;
+        height: 38rem;
+        border-radius: 999px;
+        filter: blur(24px);
+        opacity: 0.18;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .backdrop-orb.left {
+        top: -10rem;
+        left: -8rem;
+        background: radial-gradient(circle, rgba(255, 79, 216, 0.6), transparent 62%);
+      }
+
+      .backdrop-orb.right {
+        right: -10rem;
+        bottom: -12rem;
+        background: radial-gradient(circle, rgba(83, 240, 255, 0.7), transparent 64%);
+      }
+
+      .deck {
+        position: relative;
+        z-index: 1;
+        width: min(1320px, calc(100% - 32px));
+        margin: 24px auto 64px;
+      }
+
+      .hero,
+      .service-card,
+      .workbench-card,
+      .footer-card,
+      .modal {
+        box-shadow: var(--shadow);
+      }
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(83, 240, 255, 0.22);
+        border-radius: 32px;
+        padding: 30px;
+        background:
+          linear-gradient(155deg, rgba(255, 79, 216, 0.08), transparent 32%),
+          linear-gradient(330deg, rgba(83, 240, 255, 0.12), transparent 40%),
+          var(--bg-soft);
+        backdrop-filter: blur(16px);
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(90deg, transparent 0%, rgba(83, 240, 255, 0.1) 48%, transparent 100%);
+        transform: skewX(-24deg) translateX(-120%);
+        animation: scan 8s linear infinite;
+      }
+
+      @keyframes scan {
+        to {
+          transform: skewX(-24deg) translateX(220%);
+        }
+      }
+
+      .eyebrow,
+      .section-tag,
+      .pill,
+      .service-status,
+      .button,
+      .ghost-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .eyebrow,
+      .section-tag {
+        border: 1px solid rgba(83, 240, 255, 0.24);
+        border-radius: 999px;
+        padding: 8px 14px;
+        color: var(--cyan);
+        letter-spacing: 0.18em;
+        font-size: 0.78rem;
+        background: rgba(83, 240, 255, 0.08);
+      }
+
+      .hero-grid,
+      .stat-grid,
+      .service-grid,
+      .workbench-grid,
+      .footer-bar {
         display: grid;
-        gap: 16px;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 18px;
       }
 
-      .card {
-        border: 1px solid rgba(118, 203, 255, 0.18);
-        border-radius: 16px;
+      .hero-grid {
+        grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.85fr);
+        align-items: end;
+        margin-top: 18px;
+      }
+
+      .headline,
+      .section-header h2,
+      .service-card h3,
+      .workbench-card h3,
+      .aside-title,
+      .modal-header h3,
+      .modal-body h1,
+      .modal-body h2,
+      .modal-body h3 {
+        font-family: "Orbitron", sans-serif;
+        text-transform: uppercase;
+      }
+
+      .headline {
+        margin: 16px 0 12px;
+        font-size: clamp(2.6rem, 8vw, 5.4rem);
+        line-height: 0.9;
+        letter-spacing: 0.06em;
+        text-shadow:
+          0 0 14px rgba(83, 240, 255, 0.42),
+          0 0 32px rgba(255, 79, 216, 0.26);
+      }
+
+      .headline span,
+      .stat-value,
+      .icon-box {
+        color: var(--cyan);
+      }
+
+      .headline span {
+        display: block;
+      }
+
+      .hero-copy,
+      .section-header p,
+      .service-card p,
+      .workbench-card p,
+      .aside-meta,
+      .footer-card span,
+      .modal-body p,
+      .modal-body li {
+        color: var(--muted);
+      }
+
+      .hero-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 22px;
+      }
+
+      .hero-copy {
+        max-width: 48rem;
+        font-size: 1.2rem;
+        line-height: 1.4;
+      }
+
+      .hero-aside {
+        display: grid;
+        gap: 14px;
+      }
+
+      .pill {
+        border-radius: 999px;
+        padding: 8px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .aside-card,
+      .service-card,
+      .workbench-card,
+      .footer-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(8, 13, 24, 0.74);
+        padding: 20px;
+      }
+
+      .aside-title {
+        margin: 0 0 10px;
+        font-size: 1rem;
+        letter-spacing: 0.14em;
+        color: var(--amber);
+      }
+
+      .aside-meta {
+        display: grid;
+        gap: 10px;
+      }
+
+      .stat-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: 22px;
+      }
+
+      .stat {
+        border-radius: 20px;
         padding: 18px;
-        background: rgba(9, 13, 24, 0.82);
+        border: 1px solid rgba(83, 240, 255, 0.16);
+        background: rgba(5, 9, 18, 0.68);
       }
 
-      .mono {
+      .stat-value {
+        font-size: clamp(1.6rem, 4vw, 2.5rem);
+      }
+
+      .stat-label {
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      .section {
+        margin-top: 28px;
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .section-header h2 {
+        margin: 10px 0 0;
+        font-size: clamp(1.6rem, 4vw, 2.6rem);
+        letter-spacing: 0.1em;
+      }
+
+      .service-grid,
+      .workbench-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+
+      .service-card,
+      .workbench-card {
+        border-color: rgba(83, 240, 255, 0.14);
+        background:
+          linear-gradient(160deg, rgba(255, 255, 255, 0.04), transparent 45%),
+          rgba(10, 17, 31, 0.82);
+        padding: 22px;
+        backdrop-filter: blur(14px);
+      }
+
+      .service-card::before,
+      .workbench-card::before,
+      .aside-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      .service-card::before,
+      .workbench-card::before {
+        background: linear-gradient(135deg, rgba(83, 240, 255, 0.12), transparent 35%, rgba(255, 79, 216, 0.09) 88%);
+        opacity: 0.86;
+      }
+
+      .aside-card::after {
+        background: linear-gradient(135deg, rgba(255, 79, 216, 0.18), transparent 52%);
+      }
+
+      .service-top,
+      .workbench-top,
+      .card-actions,
+      .credential-grid {
+        position: relative;
+      }
+
+      .service-top,
+      .workbench-top {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .icon-box {
+        width: 58px;
+        height: 58px;
+        display: grid;
+        place-items: center;
+        border-radius: 18px;
+        border: 1px solid rgba(83, 240, 255, 0.24);
+        background: rgba(83, 240, 255, 0.08);
+        font-size: 1.35rem;
+      }
+
+      .service-status {
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        letter-spacing: 0.15em;
+        background: rgba(112, 255, 155, 0.12);
+        color: var(--lime);
+        border: 1px solid rgba(112, 255, 155, 0.18);
+      }
+
+      .service-card h3,
+      .workbench-card h3 {
+        position: relative;
+        margin: 18px 0 10px;
+        font-size: 1.3rem;
+        letter-spacing: 0.08em;
+      }
+
+      .credential-grid {
+        display: grid;
+        gap: 10px;
+        margin: 18px 0 20px;
+      }
+
+      .credential {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 10px 12px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(3, 7, 15, 0.46);
+        font-size: 0.95rem;
+      }
+
+      .credential span:first-child {
+        color: var(--muted);
+      }
+
+      .credential span:last-child,
+      .modal-body code {
+        color: var(--text);
         font-family: "Consolas", "SFMono-Regular", monospace;
-        font-size: 13px;
+        text-align: right;
       }
 
-      a {
-        color: #7ce7ff;
+      .button,
+      .ghost-button {
+        justify-content: center;
+        border-radius: 999px;
+        padding: 12px 16px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 0.82rem;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      }
+
+      .card-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .button {
+        color: #031019;
+        background: linear-gradient(135deg, var(--cyan), #7effd4);
+        border: 1px solid rgba(126, 255, 212, 0.6);
+        text-decoration: none;
+      }
+
+      .ghost-button {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .button:hover,
+      .ghost-button:hover {
+        transform: translateY(-2px);
+      }
+
+      .service-note {
+        position: relative;
+        margin-top: 16px;
+        padding-left: 14px;
+        color: #d8e4ff;
+        border-left: 2px solid rgba(255, 207, 83, 0.5);
+      }
+
+      .modal-shell {
+        position: fixed;
+        inset: 0;
+        display: none;
+        place-items: center;
+        background: rgba(2, 6, 14, 0.82);
+        backdrop-filter: blur(18px);
+        z-index: 40;
+        padding: 18px;
+      }
+
+      .modal-shell.active {
+        display: grid;
+      }
+
+      .modal {
+        width: min(920px, 100%);
+        max-height: min(84vh, 920px);
+        overflow: hidden;
+        border-radius: 28px;
+        border: 1px solid rgba(83, 240, 255, 0.18);
+        background:
+          linear-gradient(155deg, rgba(255, 79, 216, 0.08), transparent 38%),
+          rgba(6, 11, 23, 0.95);
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        padding: 22px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .modal-header h3 {
+        margin: 0;
+        letter-spacing: 0.08em;
+      }
+
+      .modal-body {
+        overflow: auto;
+        max-height: calc(84vh - 82px);
+        padding: 26px 28px 30px;
+        color: var(--text);
+      }
+
+      .modal-body code {
+        padding: 0.18rem 0.4rem;
+        border-radius: 8px;
+        background: rgba(83, 240, 255, 0.08);
+      }
+
+      .modal-body pre {
+        overflow: auto;
+        border-radius: 18px;
+        padding: 16px;
+        border: 1px solid rgba(83, 240, 255, 0.16);
+        background: rgba(4, 8, 16, 0.88);
+      }
+
+      .modal-close {
+        width: 42px;
+        height: 42px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        cursor: pointer;
+      }
+
+      .footer-bar {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        margin-top: 28px;
+      }
+
+      .footer-card strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--amber);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      @media (max-width: 960px) {
+        .hero-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .stat-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .deck {
+          width: min(100% - 20px, 1320px);
+          margin-top: 12px;
+        }
+
+        .hero,
+        .service-card,
+        .workbench-card {
+          border-radius: 22px;
+        }
+
+        .headline {
+          font-size: 2.5rem;
+        }
+
+        .credential {
+          flex-direction: column;
+        }
       }
     </style>
   </head>
   <body>
-    <div class="shell">
-      <div class="panel">
-        <h1>Lab Control Deck</h1>
-        <p>Endpoint di ingresso: <strong>${LAB_EXTERNAL_URL}/lab/</strong></p>
-        <div class="grid">
-          <div class="card">
-            <h2>Gitea</h2>
-            <p>Forge Git interno e collaborazione tecnica.</p>
-            <p><a href="/lab/dev/gitea/">Apri servizio</a></p>
-            <p class="mono">root: ${GITEA_ROOT_USERNAME}</p>
-            <p class="mono">password: ${GITEA_ROOT_PASSWORD}</p>
-            <p class="mono">email: ${GITEA_ROOT_EMAIL}</p>
+    <div class="backdrop-orb left"></div>
+    <div class="backdrop-orb right"></div>
+
+    <main class="deck">
+      <section class="hero">
+        <span class="eyebrow"><i class="fa-solid fa-bolt"></i> neon operations deck</span>
+        <div class="hero-grid">
+          <div>
+            <h1 class="headline">
+              LAB
+              <span>OVERRUN</span>
+            </h1>
+            <p class="hero-copy">
+              Portale operativo unificato per repository, automazione, modelli locali e ambienti
+              di sviluppo. Tutto passa dal gateway HTTPS del lab, con credenziali root esposte in
+              chiaro per uso interno controllato.
+            </p>
+            <div class="hero-strip">
+              <span class="pill"><i class="fa-solid fa-link"></i> endpoint: ${LAB_EXTERNAL_URL}/lab/</span>
+              <span class="pill"><i class="fa-solid fa-lock"></i> accesso centralizzato</span>
+              <span class="pill"><i class="fa-solid fa-database"></i> storage solo su volumi</span>
+              <span class="pill"><i class="fa-solid fa-satellite-dish"></i> gateway unico</span>
+            </div>
+            <div class="stat-grid">
+              <div class="stat">
+                <div class="stat-value">4</div>
+                <div class="stat-label">servizi core</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value">4</div>
+                <div class="stat-label">workbench code</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value">1</div>
+                <div class="stat-label">gateway https</div>
+              </div>
+            </div>
           </div>
-          <div class="card">
-            <h2>n8n</h2>
-            <p>Automazione workflow e integrazione servizi.</p>
-            <p><a href="/lab/automation/n8n/">Apri servizio</a></p>
-            <p class="mono">gateway user: ${N8N_GATEWAY_USER}</p>
-            <p class="mono">gateway password: ${N8N_GATEWAY_PASSWORD}</p>
-            <p class="mono">owner bootstrap: ${N8N_ROOT_FIRST_NAME} ${N8N_ROOT_LAST_NAME}</p>
-            <p class="mono">owner email: ${N8N_ROOT_EMAIL}</p>
-            <p class="mono">owner password: ${N8N_ROOT_PASSWORD}</p>
-          </div>
-          <div class="card">
-            <h2>Open WebUI</h2>
-            <p>Interfaccia chat e orchestrazione locale su Ollama.</p>
-            <p><a href="/lab/ai/open-webui/">Apri servizio</a></p>
-            <p class="mono">root: ${OPENWEBUI_ROOT_NAME}</p>
-            <p class="mono">email: ${OPENWEBUI_ROOT_EMAIL}</p>
-            <p class="mono">password: ${OPENWEBUI_ROOT_PASSWORD}</p>
-          </div>
-          <div class="card">
-            <h2>Ollama</h2>
-            <p>API locale per modelli LLM usati dal lab.</p>
-            <p><a href="/lab/ai/ollama/">Apri endpoint</a></p>
-            <p class="mono">gateway user: ${OLLAMA_GATEWAY_USER}</p>
-            <p class="mono">gateway password: ${OLLAMA_GATEWAY_PASSWORD}</p>
-          </div>
-          <div class="card">
-            <h2>Node Dev</h2>
-            <p>Workspace code-server per stack JavaScript e TypeScript.</p>
-            <p><a href="/lab/env/node/">Apri ambiente</a></p>
-            <p class="mono">password: ${NODE_DEV_PASSWORD}</p>
-          </div>
-          <div class="card">
-            <h2>Python Dev</h2>
-            <p>Workspace code-server per backend, script e tooling Python.</p>
-            <p><a href="/lab/env/python/">Apri ambiente</a></p>
-            <p class="mono">password: ${PYTHON_DEV_PASSWORD}</p>
-          </div>
-          <div class="card">
-            <h2>AI Dev</h2>
-            <p>Workspace code-server con pacchetti AI e data science.</p>
-            <p><a href="/lab/env/ai/">Apri ambiente</a></p>
-            <p class="mono">password: ${AI_DEV_PASSWORD}</p>
-          </div>
-          <div class="card">
-            <h2>C++ Dev</h2>
-            <p>Workspace code-server per toolchain C e C++.</p>
-            <p><a href="/lab/env/cpp/">Apri ambiente</a></p>
-            <p class="mono">password: ${CPP_DEV_PASSWORD}</p>
+          <div class="hero-aside">
+            <div class="aside-card">
+              <p class="aside-title">mission profile</p>
+              <div class="aside-meta">
+                <span>Gitea per versionamento e governance del codice.</span>
+                <span>n8n per pipeline e automazioni operative.</span>
+                <span>Open WebUI + Ollama per modelli locali e interfacce AI.</span>
+                <span>Workbench code-server accessibili tramite briefing dedicato.</span>
+              </div>
+            </div>
+            <div class="aside-card">
+              <p class="aside-title">credential policy</p>
+              <div class="aside-meta">
+                <span>Le credenziali root sono riportate qui e nel file <code>.env</code>.</span>
+                <span>n8n usa doppio livello: gateway auth + owner bootstrap al primo ingresso.</span>
+                <span>Ollama e esposto come API protetta dal gateway.</span>
+              </div>
+            </div>
           </div>
         </div>
+      </section>
+
+      <section class="section">
+        <div class="section-header">
+          <div>
+            <span class="section-tag"><i class="fa-solid fa-grid-2"></i> core services</span>
+            <h2>Servizi Attivi</h2>
+          </div>
+          <p>
+            Ogni card spiega il servizio, mostra le credenziali root e apre direttamente il target
+            operativo. Le icone distinguono repository, automazione, interfacce AI e API modelli.
+          </p>
+        </div>
+
+        <div class="service-grid">
+          <article class="service-card" data-tilt>
+            <div class="service-top">
+              <div class="icon-box"><i class="fa-solid fa-code-branch"></i></div>
+              <span class="service-status">online</span>
+            </div>
+            <h3>Gitea Forge</h3>
+            <p>
+              Repository Git, issue tracking e collaborazione tecnica interna. Punto di ingresso
+              per codice, review e governance del progetto.
+            </p>
+            <div class="credential-grid">
+              <div class="credential"><span>Endpoint</span><span>${LAB_EXTERNAL_URL}/lab/dev/gitea/</span></div>
+              <div class="credential"><span>Root user</span><span>${GITEA_ROOT_USERNAME}</span></div>
+              <div class="credential"><span>Password</span><span>${GITEA_ROOT_PASSWORD}</span></div>
+              <div class="credential"><span>Email</span><span>${GITEA_ROOT_EMAIL}</span></div>
+            </div>
+            <div class="card-actions">
+              <a class="button" href="/lab/dev/gitea/"><i class="fa-solid fa-arrow-up-right-from-square"></i> entra</a>
+            </div>
+          </article>
+
+          <article class="service-card" data-tilt>
+            <div class="service-top">
+              <div class="icon-box"><i class="fa-solid fa-diagram-project"></i></div>
+              <span class="service-status">guarded</span>
+            </div>
+            <h3>n8n Automation</h3>
+            <p>
+              Motore di workflow e integrazione. Ideale per orchestrare webhook, job, pipeline
+              applicative e connessioni tra servizi del lab.
+            </p>
+            <div class="credential-grid">
+              <div class="credential"><span>Endpoint</span><span>${LAB_EXTERNAL_URL}/lab/automation/n8n/</span></div>
+              <div class="credential"><span>Gateway user</span><span>${N8N_GATEWAY_USER}</span></div>
+              <div class="credential"><span>Gateway password</span><span>${N8N_GATEWAY_PASSWORD}</span></div>
+              <div class="credential"><span>Owner bootstrap</span><span>${N8N_ROOT_FIRST_NAME} ${N8N_ROOT_LAST_NAME}</span></div>
+              <div class="credential"><span>Owner email</span><span>${N8N_ROOT_EMAIL}</span></div>
+              <div class="credential"><span>Owner password</span><span>${N8N_ROOT_PASSWORD}</span></div>
+            </div>
+            <div class="card-actions">
+              <a class="button" href="/lab/automation/n8n/"><i class="fa-solid fa-bolt"></i> entra</a>
+            </div>
+            <p class="service-note">
+              Primo accesso: supera il gateway con le credenziali mostrate sopra e usa le credenziali
+              owner per il bootstrap iniziale dell'istanza.
+            </p>
+          </article>
+
+          <article class="service-card" data-tilt>
+            <div class="service-top">
+              <div class="icon-box"><i class="fa-solid fa-robot"></i></div>
+              <span class="service-status">online</span>
+            </div>
+            <h3>Open WebUI</h3>
+            <p>
+              Console conversazionale per modelli locali. Espone una UI operativa per usare Ollama,
+              testare prompt e gestire flussi AI dal browser.
+            </p>
+            <div class="credential-grid">
+              <div class="credential"><span>Endpoint</span><span>${LAB_EXTERNAL_URL}/lab/ai/open-webui/</span></div>
+              <div class="credential"><span>Root name</span><span>${OPENWEBUI_ROOT_NAME}</span></div>
+              <div class="credential"><span>Root email</span><span>${OPENWEBUI_ROOT_EMAIL}</span></div>
+              <div class="credential"><span>Password</span><span>${OPENWEBUI_ROOT_PASSWORD}</span></div>
+            </div>
+            <div class="card-actions">
+              <a class="button" href="/lab/ai/open-webui/"><i class="fa-solid fa-comments"></i> entra</a>
+            </div>
+          </article>
+
+          <article class="service-card" data-tilt>
+            <div class="service-top">
+              <div class="icon-box"><i class="fa-solid fa-brain"></i></div>
+              <span class="service-status">api</span>
+            </div>
+            <h3>Ollama Core</h3>
+            <p>
+              Endpoint locale per inference LLM. Serve i modelli consumati dal lab e puo essere
+              interrogato direttamente come API protetta dal gateway.
+            </p>
+            <div class="credential-grid">
+              <div class="credential"><span>Endpoint</span><span>${LAB_EXTERNAL_URL}/lab/ai/ollama/</span></div>
+              <div class="credential"><span>Gateway user</span><span>${OLLAMA_GATEWAY_USER}</span></div>
+              <div class="credential"><span>Gateway password</span><span>${OLLAMA_GATEWAY_PASSWORD}</span></div>
+              <div class="credential"><span>Uso</span><span>API locale per modelli</span></div>
+            </div>
+            <div class="card-actions">
+              <a class="button" href="/lab/ai/ollama/"><i class="fa-solid fa-wave-square"></i> apri api</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-header">
+          <div>
+            <span class="section-tag"><i class="fa-solid fa-terminal"></i> development workbenches</span>
+            <h2>Ambienti Di Sviluppo</h2>
+          </div>
+          <p>
+            Gli ambienti restano operativi ma non vengono linkati come scorciatoie dirette. Dal deck
+            apri un briefing markdown locale che spiega cosa fanno, come si accede e quali credenziali usare.
+          </p>
+        </div>
+
+        <div class="workbench-grid">
+          <article class="workbench-card" data-tilt>
+            <div class="workbench-top">
+              <div class="icon-box"><i class="fa-brands fa-node-js"></i></div>
+              <span class="service-status">code</span>
+            </div>
+            <h3>Node Forge</h3>
+            <p>Workbench code-server dedicato a JavaScript, TypeScript, frontend e tooling npm, pnpm e yarn.</p>
+            <div class="credential-grid">
+              <div class="credential"><span>Auth mode</span><span>password</span></div>
+              <div class="credential"><span>Root password</span><span>${NODE_DEV_PASSWORD}</span></div>
+            </div>
+            <div class="card-actions">
+              <button class="ghost-button" type="button" data-markdown="/lab/content/node-dev.md" data-title="Node Forge">
+                <i class="fa-solid fa-file-lines"></i> apri briefing
+              </button>
+            </div>
+          </article>
+
+          <article class="workbench-card" data-tilt>
+            <div class="workbench-top">
+              <div class="icon-box"><i class="fa-brands fa-python"></i></div>
+              <span class="service-status">code</span>
+            </div>
+            <h3>Python Grid</h3>
+            <p>Workbench code-server per backend Python, automazioni, script operativi e tooling di progetto.</p>
+            <div class="credential-grid">
+              <div class="credential"><span>Auth mode</span><span>password</span></div>
+              <div class="credential"><span>Root password</span><span>${PYTHON_DEV_PASSWORD}</span></div>
+            </div>
+            <div class="card-actions">
+              <button class="ghost-button" type="button" data-markdown="/lab/content/python-dev.md" data-title="Python Grid">
+                <i class="fa-solid fa-file-lines"></i> apri briefing
+              </button>
+            </div>
+          </article>
+
+          <article class="workbench-card" data-tilt>
+            <div class="workbench-top">
+              <div class="icon-box"><i class="fa-solid fa-microchip"></i></div>
+              <span class="service-status">code</span>
+            </div>
+            <h3>AI Reactor</h3>
+            <p>Workbench code-server con stack AI e data science per notebook, prototipi ML e pipeline locali.</p>
+            <div class="credential-grid">
+              <div class="credential"><span>Auth mode</span><span>password</span></div>
+              <div class="credential"><span>Root password</span><span>${AI_DEV_PASSWORD}</span></div>
+            </div>
+            <div class="card-actions">
+              <button class="ghost-button" type="button" data-markdown="/lab/content/ai-dev.md" data-title="AI Reactor">
+                <i class="fa-solid fa-file-lines"></i> apri briefing
+              </button>
+            </div>
+          </article>
+
+          <article class="workbench-card" data-tilt>
+            <div class="workbench-top">
+              <div class="icon-box"><i class="fa-solid fa-cubes"></i></div>
+              <span class="service-status">code</span>
+            </div>
+            <h3>C++ Foundry</h3>
+            <p>Workbench code-server per sviluppo C/C++, compilazione nativa, debugging e profiling toolchain.</p>
+            <div class="credential-grid">
+              <div class="credential"><span>Auth mode</span><span>password</span></div>
+              <div class="credential"><span>Root password</span><span>${CPP_DEV_PASSWORD}</span></div>
+            </div>
+            <div class="card-actions">
+              <button class="ghost-button" type="button" data-markdown="/lab/content/cpp-dev.md" data-title="C++ Foundry">
+                <i class="fa-solid fa-file-lines"></i> apri briefing
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="footer-bar">
+        <div class="footer-card">
+          <strong>routing</strong>
+          <span>Tutti i servizi passano da un solo gateway Nginx HTTPS sotto il prefisso <code>/lab</code>.</span>
+        </div>
+        <div class="footer-card">
+          <strong>persistenza</strong>
+          <span>Database, workspace, modelli, UI e certificati usano solo volumi Docker nominati.</span>
+        </div>
+        <div class="footer-card">
+          <strong>core usage</strong>
+          <span>Gitea per codice, n8n per automazione, Open WebUI per chat AI, Ollama per inference locale.</span>
+        </div>
+      </section>
+    </main>
+
+    <div class="modal-shell" id="modal-shell" aria-hidden="true">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="modal-title">Briefing</h3>
+          <button class="modal-close" type="button" id="modal-close" aria-label="Chiudi">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body" id="modal-body"></div>
       </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/dist/vanilla-tilt.min.js"></script>
+    <script>
+      (function () {
+        var cards = document.querySelectorAll("[data-tilt]");
+        VanillaTilt.init(cards, {
+          max: 5,
+          speed: 350,
+          glare: true,
+          "max-glare": 0.16,
+        });
+
+        gsap.from(".hero", {
+          duration: 1.1,
+          y: 28,
+          opacity: 0,
+          ease: "power3.out",
+        });
+
+        gsap.from(".service-card, .workbench-card, .footer-card", {
+          duration: 0.9,
+          y: 22,
+          opacity: 0,
+          stagger: 0.08,
+          delay: 0.18,
+          ease: "power2.out",
+        });
+
+        var modalShell = document.getElementById("modal-shell");
+        var modalTitle = document.getElementById("modal-title");
+        var modalBody = document.getElementById("modal-body");
+        var modalClose = document.getElementById("modal-close");
+        var markdownButtons = document.querySelectorAll("[data-markdown]");
+
+        function closeModal() {
+          modalShell.classList.remove("active");
+          modalShell.setAttribute("aria-hidden", "true");
+          modalBody.innerHTML = "";
+        }
+
+        async function openMarkdown(event) {
+          var button = event.currentTarget;
+          var markdownPath = button.getAttribute("data-markdown");
+          var title = button.getAttribute("data-title") || "Briefing";
+
+          modalTitle.textContent = title;
+          modalBody.innerHTML = "<p>Caricamento briefing locale...</p>";
+          modalShell.classList.add("active");
+          modalShell.setAttribute("aria-hidden", "false");
+
+          try {
+            var response = await fetch(markdownPath, { cache: "no-store" });
+            if (!response.ok) {
+              throw new Error("HTTP " + response.status);
+            }
+
+            var markdown = await response.text();
+            var html = marked.parse(markdown);
+            modalBody.innerHTML = DOMPurify.sanitize(html);
+          } catch (error) {
+            modalBody.innerHTML =
+              "<p>Impossibile caricare il briefing locale.</p><pre><code>" +
+              DOMPurify.sanitize(String(error)) +
+              "</code></pre>";
+          }
+        }
+
+        markdownButtons.forEach(function (button) {
+          button.addEventListener("click", openMarkdown);
+        });
+
+        modalClose.addEventListener("click", closeModal);
+        modalShell.addEventListener("click", function (event) {
+          if (event.target === modalShell) {
+            closeModal();
+          }
+        });
+
+        document.addEventListener("keydown", function (event) {
+          if (event.key === "Escape") {
+            closeModal();
+          }
+        });
+      })();
+    </script>
   </body>
 </html>
