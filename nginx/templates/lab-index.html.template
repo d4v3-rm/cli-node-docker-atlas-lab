@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lab Control Deck</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        margin: 0;
+        padding: 32px;
+        background: #0c1020;
+        color: #f4f7ff;
+      }
+
+      .shell {
+        max-width: 1120px;
+        margin: 0 auto;
+      }
+
+      .panel {
+        background: rgba(18, 24, 44, 0.92);
+        border: 1px solid rgba(118, 203, 255, 0.24);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+
+      .card {
+        border: 1px solid rgba(118, 203, 255, 0.18);
+        border-radius: 16px;
+        padding: 18px;
+        background: rgba(9, 13, 24, 0.82);
+      }
+
+      .mono {
+        font-family: "Consolas", "SFMono-Regular", monospace;
+        font-size: 13px;
+      }
+
+      a {
+        color: #7ce7ff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="panel">
+        <h1>Lab Control Deck</h1>
+        <p>Endpoint di ingresso: <strong>${LAB_EXTERNAL_URL}/lab/</strong></p>
+        <div class="grid">
+          <div class="card">
+            <h2>Gitea</h2>
+            <p>Forge Git interno e collaborazione tecnica.</p>
+            <p><a href="/lab/dev/gitea/">Apri servizio</a></p>
+            <p class="mono">root: ${GITEA_ROOT_USERNAME}</p>
+            <p class="mono">password: ${GITEA_ROOT_PASSWORD}</p>
+            <p class="mono">email: ${GITEA_ROOT_EMAIL}</p>
+          </div>
+          <div class="card">
+            <h2>n8n</h2>
+            <p>Automazione workflow e integrazione servizi.</p>
+            <p><a href="/lab/automation/n8n/">Apri servizio</a></p>
+            <p class="mono">gateway user: ${N8N_GATEWAY_USER}</p>
+            <p class="mono">gateway password: ${N8N_GATEWAY_PASSWORD}</p>
+            <p class="mono">owner bootstrap: ${N8N_ROOT_FIRST_NAME} ${N8N_ROOT_LAST_NAME}</p>
+            <p class="mono">owner email: ${N8N_ROOT_EMAIL}</p>
+            <p class="mono">owner password: ${N8N_ROOT_PASSWORD}</p>
+          </div>
+          <div class="card">
+            <h2>Open WebUI</h2>
+            <p>Interfaccia chat e orchestrazione locale su Ollama.</p>
+            <p><a href="/lab/ai/open-webui/">Apri servizio</a></p>
+            <p class="mono">root: ${OPENWEBUI_ROOT_NAME}</p>
+            <p class="mono">email: ${OPENWEBUI_ROOT_EMAIL}</p>
+            <p class="mono">password: ${OPENWEBUI_ROOT_PASSWORD}</p>
+          </div>
+          <div class="card">
+            <h2>Ollama</h2>
+            <p>API locale per modelli LLM usati dal lab.</p>
+            <p><a href="/lab/ai/ollama/">Apri endpoint</a></p>
+            <p class="mono">gateway user: ${OLLAMA_GATEWAY_USER}</p>
+            <p class="mono">gateway password: ${OLLAMA_GATEWAY_PASSWORD}</p>
+          </div>
+          <div class="card">
+            <h2>Node Dev</h2>
+            <p>Workspace code-server per stack JavaScript e TypeScript.</p>
+            <p><a href="/lab/env/node/">Apri ambiente</a></p>
+            <p class="mono">password: ${NODE_DEV_PASSWORD}</p>
+          </div>
+          <div class="card">
+            <h2>Python Dev</h2>
+            <p>Workspace code-server per backend, script e tooling Python.</p>
+            <p><a href="/lab/env/python/">Apri ambiente</a></p>
+            <p class="mono">password: ${PYTHON_DEV_PASSWORD}</p>
+          </div>
+          <div class="card">
+            <h2>AI Dev</h2>
+            <p>Workspace code-server con pacchetti AI e data science.</p>
+            <p><a href="/lab/env/ai/">Apri ambiente</a></p>
+            <p class="mono">password: ${AI_DEV_PASSWORD}</p>
+          </div>
+          <div class="card">
+            <h2>C++ Dev</h2>
+            <p>Workspace code-server per toolchain C e C++.</p>
+            <p><a href="/lab/env/cpp/">Apri ambiente</a></p>
+            <p class="mono">password: ${CPP_DEV_PASSWORD}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

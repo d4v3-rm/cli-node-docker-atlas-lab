@@ -14,12 +14,12 @@ http {
     '' close;
   }
 
-  client_max_body_size 350m;
+  client_max_body_size 512m;
 
   server {
     listen 8080;
     server_name _;
-    return 301 https://$host:8443$request_uri;
+    return 301 ${LAB_EXTERNAL_URL}$request_uri;
   }
 
   server {
@@ -40,9 +40,9 @@ http {
     location = /lab/ { try_files /lab-index.html =404; }
     location = /lab/index.html { try_files /lab-index.html =404; }
 
-    location = /lab/env { return 301 /lab/env/; }
-    location = /lab/env/ { try_files /lab-env-index.html =404; }
-    location = /lab/env/index.html { try_files /lab-env-index.html =404; }
+    location /content/ {
+      try_files $uri =404;
+    }
 
     location = /lab/dev/gitea { return 301 /lab/dev/gitea/; }
     location /lab/dev/gitea/ {
@@ -54,64 +54,48 @@ http {
       proxy_pass http://gitea:3000/;
     }
 
-    location = /lab/design/penpot { return 301 /lab/design/penpot/; }
-    location /lab/design/penpot/ws/notifications {
+    location = /lab/automation/n8n { return 301 /lab/automation/n8n/; }
+    location /lab/automation/n8n/ {
+      auth_basic "n8n access";
+      auth_basic_user_file /etc/nginx/auth/n8n.htpasswd;
       proxy_http_version 1.1;
       proxy_set_header Upgrade $http_upgrade;
       proxy_set_header Connection $connection_upgrade;
       proxy_set_header Host $host;
-      proxy_set_header X-Forwarded-Proto $scheme;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_set_header X-Forwarded-Prefix /lab/design/penpot;
-      proxy_pass http://penpot-frontend:8080/ws/notifications;
-    }
-    location /lab/design/penpot/ {
-      proxy_set_header Host $host;
       proxy_set_header X-Real-IP $remote_addr;
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header X-Forwarded-Proto $scheme;
-      proxy_set_header X-Forwarded-Prefix /lab/design/penpot;
-      proxy_pass http://penpot-frontend:8080/;
-    }
-
-    location = /lab/design/drawio { return 301 /lab/design/drawio/; }
-    location /lab/design/drawio/ {
-      proxy_set_header Host $host;
-      proxy_set_header X-Real-IP $remote_addr;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_set_header X-Forwarded-Proto $scheme;
-      proxy_set_header X-Forwarded-Prefix /lab/design/drawio;
-      proxy_pass http://drawio:8080/;
-    }
-
-    location = /lab/docs/marktext { return 301 /lab/docs/marktext/; }
-    location /lab/docs/marktext/ {
-      proxy_set_header Host $host;
-      proxy_set_header X-Real-IP $remote_addr;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_set_header X-Forwarded-Proto $scheme;
-      proxy_set_header X-Forwarded-Prefix /lab/docs/marktext;
-      proxy_pass http://marktext:5800/;
-    }
-    location ~ ^/lab/docs/marktext/(websockify.*)$ {
-      proxy_http_version 1.1;
-      proxy_set_header Upgrade $http_upgrade;
-      proxy_set_header Connection $connection_upgrade;
-      proxy_set_header Host $host;
-      proxy_set_header X-Forwarded-Proto $scheme;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Host $host;
+      proxy_buffering off;
       proxy_read_timeout 86400;
-      proxy_pass http://marktext:5800/$1;
+      proxy_pass http://n8n:5678;
     }
 
-    location = /lab/docs/bookstack { return 301 /lab/docs/bookstack/; }
-    location /lab/docs/bookstack/ {
+    location = /lab/ai/open-webui { return 301 /lab/ai/open-webui/; }
+    location /lab/ai/open-webui/ {
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection $connection_upgrade;
       proxy_set_header Host $host;
       proxy_set_header X-Real-IP $remote_addr;
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header X-Forwarded-Proto $scheme;
-      proxy_set_header X-Forwarded-Prefix /lab/docs/bookstack;
-      proxy_pass http://bookstack:80/;
+      proxy_set_header X-Forwarded-Prefix /lab/ai/open-webui;
+      proxy_read_timeout 86400;
+      proxy_pass http://open-webui:8080/;
+    }
+
+    location = /lab/ai/ollama { return 301 /lab/ai/ollama/; }
+    location /lab/ai/ollama/ {
+      auth_basic "ollama api";
+      auth_basic_user_file /etc/nginx/auth/ollama.htpasswd;
+      proxy_http_version 1.1;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_read_timeout 86400;
+      proxy_pass http://ollama:11434/;
     }
 
     location = /lab/env/node { return 301 /lab/env/node/; }
