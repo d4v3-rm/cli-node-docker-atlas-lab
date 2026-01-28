@@ -59,6 +59,7 @@ services:
   gitea-init:
     image: gitea/gitea:${GITEA_VERSION}
     restart: "no"
+    user: "${GITEA_UID}:${GITEA_GID}"
     depends_on:
       - gitea
     entrypoint: /bin/sh
