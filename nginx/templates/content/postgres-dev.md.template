@@ -1,0 +1,36 @@
+# Postgres Vault
+
+## Cosa fa
+
+Server PostgreSQL dedicato ai workbench del lab. Serve per sviluppo relazionale, migrazioni, seed data, test applicativi e persistenza locale condivisa tra gli ambienti `Node`, `Python`, `AI` e `C++`.
+
+## Come si accede
+
+- Nessuna UI web pubblica
+- Host interno: `postgres-dev`
+- Porta: `5432`
+- Database: `${POSTGRES_DEV_DATABASE}`
+- Superuser root: `${POSTGRES_DEV_SUPERUSER}`
+- Password root: `${POSTGRES_DEV_PASSWORD}`
+
+## Cosa trovi gia pronto nei workbench
+
+Dentro ogni ambiente `code-server` sono gia esportate queste variabili:
+
+- `PGHOST=postgres-dev`
+- `PGPORT=5432`
+- `PGDATABASE=${POSTGRES_DEV_DATABASE}`
+- `PGUSER=${POSTGRES_DEV_SUPERUSER}`
+- `PGPASSWORD=${POSTGRES_DEV_PASSWORD}`
+- `DATABASE_URL=postgresql://${POSTGRES_DEV_SUPERUSER}:${POSTGRES_DEV_PASSWORD}@postgres-dev:5432/${POSTGRES_DEV_DATABASE}`
+
+## Quando usarlo
+
+- sviluppo backend con storage relazionale
+- migrazioni SQL
+- test locali con ORM o query raw
+- dataset di sviluppo condivisi tra i workbench
+
+## Nota operativa
+
+Il server resta isolato su `workbench-net` e non viene pubblicato sul gateway HTTPS. Si usa solo dai workbench o da altri container collegati alla stessa rete.
