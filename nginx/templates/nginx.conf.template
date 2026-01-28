@@ -30,6 +30,8 @@ http {
 
     add_header Strict-Transport-Security "max-age=31536000" always;
 
+    location = / { return 301 /lab/; }
+    location = /index.html { return 301 /lab/; }
     location = /lab { return 301 /lab/; }
     location = /lab/ { try_files /lab-index.html =404; }
     location = /lab/index.html { try_files /lab-index.html =404; }
