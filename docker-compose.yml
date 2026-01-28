@@ -17,6 +17,7 @@ services:
       - n8n
       - open-webui
       - ollama
+      - postgres-dev
       - node-dev
       - python-dev
       - ai-dev
@@ -155,6 +156,25 @@ services:
     networks:
       - services-net
 
+  postgres-dev:
+    image: postgres:${POSTGRES_DEV_VERSION}
+    restart: unless-stopped
+    shm_size: 256mb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    environment:
+      TZ: ${TZ}
+      POSTGRES_USER: ${POSTGRES_DEV_SUPERUSER}
+      POSTGRES_PASSWORD: ${POSTGRES_DEV_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DEV_DATABASE}
+    volumes:
+      - postgres-dev-data:/var/lib/postgresql/data
+    networks:
+      - workbench-net
+
   # Development environments
   node-dev:
     build:
@@ -175,6 +195,13 @@ services:
       CODE_SERVER_WORKDIR: /workspace
       CODE_SERVER_EXTENSIONS: ${NODE_DEV_EXTENSIONS}
       NODE_GLOBAL_PACKAGES: ${NODE_DEV_GLOBAL_PACKAGES}
+      PGHOST: postgres-dev
+      PGPORT: "5432"
+      PGDATABASE: ${POSTGRES_DEV_DATABASE}
+      PGUSER: ${POSTGRES_DEV_SUPERUSER}
+      PGPASSWORD: ${POSTGRES_DEV_PASSWORD}
+      PGSSLMODE: disable
+      DATABASE_URL: "postgresql://${POSTGRES_DEV_SUPERUSER}:${POSTGRES_DEV_PASSWORD}@postgres-dev:5432/${POSTGRES_DEV_DATABASE}"
     volumes:
       - node-dev-home:/home/coder
       - node-dev-workspace:/workspace
@@ -202,6 +229,13 @@ services:
       CODE_SERVER_EXTENSIONS: ${PYTHON_DEV_EXTENSIONS}
       PYTHON_DEV_PIP_PACKAGES: ${PYTHON_DEV_RUNTIME_PIP_PACKAGES}
       PYTHON_DEV_PIP_EXTRA_INDEX_URL: ${PYTHON_DEV_PIP_EXTRA_INDEX_URL}
+      PGHOST: postgres-dev
+      PGPORT: "5432"
+      PGDATABASE: ${POSTGRES_DEV_DATABASE}
+      PGUSER: ${POSTGRES_DEV_SUPERUSER}
+      PGPASSWORD: ${POSTGRES_DEV_PASSWORD}
+      PGSSLMODE: disable
+      DATABASE_URL: "postgresql://${POSTGRES_DEV_SUPERUSER}:${POSTGRES_DEV_PASSWORD}@postgres-dev:5432/${POSTGRES_DEV_DATABASE}"
     volumes:
       - python-dev-home:/home/coder
       - python-dev-workspace:/workspace
@@ -229,6 +263,13 @@ services:
       CODE_SERVER_EXTENSIONS: ${AI_DEV_EXTENSIONS}
       PYTHON_DEV_PIP_PACKAGES: ${AI_DEV_RUNTIME_PIP_PACKAGES}
       PYTHON_DEV_PIP_EXTRA_INDEX_URL: ${AI_DEV_PIP_EXTRA_INDEX_URL}
+      PGHOST: postgres-dev
+      PGPORT: "5432"
+      PGDATABASE: ${POSTGRES_DEV_DATABASE}
+      PGUSER: ${POSTGRES_DEV_SUPERUSER}
+      PGPASSWORD: ${POSTGRES_DEV_PASSWORD}
+      PGSSLMODE: disable
+      DATABASE_URL: "postgresql://${POSTGRES_DEV_SUPERUSER}:${POSTGRES_DEV_PASSWORD}@postgres-dev:5432/${POSTGRES_DEV_DATABASE}"
     volumes:
       - ai-dev-home:/home/coder
       - ai-dev-workspace:/workspace
@@ -251,6 +292,13 @@ services:
       CODE_SERVER_ABS_PROXY_BASE_PATH: /lab/env/cpp
       CODE_SERVER_WORKDIR: /workspace
       CODE_SERVER_EXTENSIONS: ${CPP_DEV_EXTENSIONS}
+      PGHOST: postgres-dev
+      PGPORT: "5432"
+      PGDATABASE: ${POSTGRES_DEV_DATABASE}
+      PGUSER: ${POSTGRES_DEV_SUPERUSER}
+      PGPASSWORD: ${POSTGRES_DEV_PASSWORD}
+      PGSSLMODE: disable
+      DATABASE_URL: "postgresql://${POSTGRES_DEV_SUPERUSER}:${POSTGRES_DEV_PASSWORD}@postgres-dev:5432/${POSTGRES_DEV_DATABASE}"
     volumes:
       - cpp-dev-home:/home/coder
       - cpp-dev-workspace:/workspace
@@ -270,6 +318,7 @@ volumes:
   n8n-data:
   ollama-data:
   open-webui-data:
+  postgres-dev-data:
   node-dev-home:
   node-dev-workspace:
   python-dev-home:
