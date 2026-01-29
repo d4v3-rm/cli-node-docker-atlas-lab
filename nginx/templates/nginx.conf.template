@@ -29,6 +29,7 @@ http {
     ssl_session_timeout 10m;
 
     add_header Strict-Transport-Security "max-age=31536000" always;
+    error_page 497 =301 https://$host:8443$request_uri;
 
     location = / { return 301 /lab/; }
     location = /index.html { return 301 /lab/; }
