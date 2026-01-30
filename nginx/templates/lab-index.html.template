@@ -771,7 +771,7 @@
               <div class="credential"><span>Email</span><span>${GITEA_ROOT_EMAIL}</span></div>
             </div>
             <div class="card-actions">
-              <a class="button" href="/lab/dev/gitea/"><i class="fa-solid fa-arrow-up-right-from-square"></i> entra</a>
+              <a class="button" href="/lab/dev/gitea/" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i> entra</a>
             </div>
           </article>
 
@@ -794,7 +794,7 @@
               <div class="credential"><span>Owner password</span><span>${N8N_ROOT_PASSWORD}</span></div>
             </div>
             <div class="card-actions">
-              <a class="button" href="/lab/automation/n8n/"><i class="fa-solid fa-bolt"></i> entra</a>
+              <a class="button" href="/lab/automation/n8n/" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-bolt"></i> entra</a>
             </div>
             <p class="service-note">
               Primo accesso: supera il gateway con le credenziali mostrate sopra e usa le credenziali
@@ -819,7 +819,7 @@
               <div class="credential"><span>Password</span><span>${OPENWEBUI_ROOT_PASSWORD}</span></div>
             </div>
             <div class="card-actions">
-              <a class="button" href="/lab/ai/open-webui/"><i class="fa-solid fa-comments"></i> entra</a>
+              <a class="button" href="/lab/ai/open-webui/" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-comments"></i> entra</a>
             </div>
           </article>
 
@@ -840,7 +840,7 @@
               <div class="credential"><span>Uso</span><span>API locale per modelli</span></div>
             </div>
             <div class="card-actions">
-              <a class="button" href="/lab/ai/ollama/"><i class="fa-solid fa-wave-square"></i> apri api</a>
+              <a class="button" href="/lab/ai/ollama/" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-wave-square"></i> apri api</a>
             </div>
           </article>
         </div>
