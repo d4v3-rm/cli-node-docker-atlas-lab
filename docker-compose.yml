@@ -143,6 +143,8 @@ services:
       <<: *lab-env
       WEBUI_URL: ${LAB_EXTERNAL_URL}/lab/ai/open-webui
       CORS_ALLOW_ORIGIN: ${LAB_EXTERNAL_URL}
+      ENABLE_OPENAI_API: "false"
+      ENABLE_OLLAMA_API: "true"
       OLLAMA_BASE_URL: http://ollama:11434
       WEBUI_ADMIN_NAME: ${OPENWEBUI_ROOT_NAME}
       WEBUI_ADMIN_EMAIL: ${OPENWEBUI_ROOT_EMAIL}
