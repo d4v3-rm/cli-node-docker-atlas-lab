@@ -42,14 +42,6 @@ http {
       alias /usr/share/nginx/html/content/;
     }
 
-    location ~ ^/(auth|login|workspace|chat|models)(/|$) {
-      return 302 /lab/ai/open-webui$request_uri;
-    }
-
-    location ~ ^/(c|s)(/|$) {
-      return 302 /lab/ai/open-webui$request_uri;
-    }
-
     location = /lab/dev/gitea { return 301 /lab/dev/gitea/; }
     location /lab/dev/gitea/ {
       proxy_set_header Host $host;
@@ -241,6 +233,18 @@ http {
       proxy_set_header X-Forwarded-Proto $scheme;
       proxy_read_timeout 86400;
       proxy_pass http://open-webui:8080/ws/;
+    }
+
+    location / {
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection $connection_upgrade;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_read_timeout 86400;
+      proxy_pass http://open-webui:8080;
     }
 
     location = /lab/ai/ollama { return 301 /lab/ai/ollama/; }
