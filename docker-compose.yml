@@ -28,13 +28,13 @@ services:
       - gateway-data:/data
     depends_on:
       gitea:
-        condition: service_started
+        condition: service_healthy
       n8n:
-        condition: service_started
+        condition: service_healthy
       open-webui:
-        condition: service_started
+        condition: service_healthy
       ollama:
-        condition: service_started
+        condition: service_healthy
     networks:
       - edge-net
       - apps-net
@@ -76,8 +76,10 @@ services:
     volumes:
       - gitea-data:/data
     networks:
-      - apps-net
-      - data-net
+      apps-net:
+      data-net:
+      services-egress-net:
+        gw_priority: 1
 
   gitea-init:
     image: gitea/gitea:${GITEA_VERSION}
@@ -131,6 +133,12 @@ services:
   n8n:
     image: docker.n8n.io/n8nio/n8n:${N8N_VERSION}
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:5678/healthz/readiness || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
     environment:
       <<: *lab-env
       GENERIC_TIMEZONE: ${TZ}
@@ -142,14 +150,49 @@ services:
       N8N_PROXY_HOPS: "1"
       N8N_SECURE_COOKIE: "true"
       N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      N8N_RUNNERS_ENABLED: "true"
+      N8N_RUNNERS_MODE: external
+      N8N_RUNNERS_AUTH_TOKEN: ${N8N_RUNNERS_AUTH_TOKEN}
+      N8N_RUNNERS_BROKER_LISTEN_ADDRESS: 0.0.0.0
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+      N8N_TEMPLATES_ENABLED: "false"
+      EXTERNAL_FRONTEND_HOOKS_URLS: ""
+      N8N_DIAGNOSTICS_CONFIG_FRONTEND: ""
+      N8N_DIAGNOSTICS_CONFIG_BACKEND: ""
     volumes:
       - n8n-data:/home/node/.n8n
     networks:
-      - apps-net
+      apps-net:
+      services-egress-net:
+        gw_priority: 1
+
+  n8n-runners:
+    image: n8nio/runners:${N8N_VERSION}
+    restart: unless-stopped
+    depends_on:
+      n8n:
+        condition: service_healthy
+    environment:
+      <<: *lab-env
+      GENERIC_TIMEZONE: ${TZ}
+      N8N_RUNNERS_AUTH_TOKEN: ${N8N_RUNNERS_AUTH_TOKEN}
+      N8N_RUNNERS_TASK_BROKER_URI: http://n8n:5679
+      N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT: ${N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT}
+    networks:
+      apps-net:
+      services-egress-net:
+        gw_priority: 1
 
   ollama:
     image: ollama/ollama:${OLLAMA_VERSION}
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1 || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
     environment:
       <<: *lab-env
       OLLAMA_HOST: 0.0.0.0:11434
@@ -157,16 +200,22 @@ services:
     volumes:
       - ollama-data:/root/.ollama
     networks:
-      - ai-net
+      ai-net:
+      services-egress-net:
+        gw_priority: 1
 
   open-webui:
     image: ghcr.io/open-webui/open-webui:${OPENWEBUI_VERSION}
     restart: unless-stopped
     depends_on:
-      - ollama
+      ollama:
+        condition: service_healthy
     environment:
       <<: *lab-env
       WEBUI_URL: ${OPENWEBUI_URL}
+      WEBUI_SECRET_KEY: ${OPENWEBUI_SECRET_KEY}
+      CORS_ALLOW_ORIGIN: ${OPENWEBUI_CORS_ALLOW_ORIGIN}
+      USER_AGENT: LabAtlas-OpenWebUI/1.0
       ENABLE_OPENAI_API: "false"
       ENABLE_OLLAMA_API: "true"
       OLLAMA_BASE_URL: http://ollama:11434
@@ -178,8 +227,10 @@ services:
     volumes:
       - open-webui-data:/app/backend/data
     networks:
-      - apps-net
-      - ai-net
+      apps-net:
+      ai-net:
+      services-egress-net:
+        gw_priority: 1
 
   postgres-dev:
     image: postgres:${POSTGRES_DEV_VERSION}
@@ -227,7 +278,9 @@ services:
       - node-dev-home:/home/coder
       - node-dev-workspace:/workspace
     networks:
-      - workbench-net
+      workbench-net:
+      workbench-egress-net:
+        gw_priority: 1
 
   python-dev:
     build:
@@ -257,7 +310,9 @@ services:
       - python-dev-home:/home/coder
       - python-dev-workspace:/workspace
     networks:
-      - workbench-net
+      workbench-net:
+      workbench-egress-net:
+        gw_priority: 1
 
   ai-dev:
     build:
@@ -287,7 +342,9 @@ services:
       - ai-dev-home:/home/coder
       - ai-dev-workspace:/workspace
     networks:
-      - workbench-net
+      workbench-net:
+      workbench-egress-net:
+        gw_priority: 1
 
   cpp-dev:
     build:
@@ -312,11 +369,15 @@ services:
       - cpp-dev-home:/home/coder
       - cpp-dev-workspace:/workspace
     networks:
-      - workbench-net
+      workbench-net:
+      workbench-egress-net:
+        gw_priority: 1
 
 networks:
   edge-net:
     name: cli-node-lab_edge
+  services-egress-net:
+    name: cli-node-lab_services_egress
   apps-net:
     name: cli-node-lab_apps
     internal: true
@@ -329,6 +390,8 @@ networks:
   workbench-net:
     name: cli-node-lab_workbench
     internal: true
+  workbench-egress-net:
+    name: cli-node-lab_workbench_egress
 
 volumes:
   gateway-certs:

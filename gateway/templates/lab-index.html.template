@@ -702,7 +702,7 @@
               <span class="pill"><i class="fa-solid fa-earth-europe"></i> host canonico ${LAB_URL}</span>
               <span class="pill"><i class="fa-solid fa-database"></i> persistenza su volumi</span>
               <span class="pill"><i class="fa-solid fa-bars-progress"></i> accessi e root in chiaro</span>
-              <span class="pill"><i class="fa-solid fa-diagram-next"></i> host separati e reti interne</span>
+              <span class="pill"><i class="fa-solid fa-diagram-next"></i> host separati, reti interne ed egress selettivo</span>
             </div>
             <div class="stat-grid">
               <div class="stat">
@@ -737,6 +737,7 @@
                 <span>n8n resta protetto da gateway auth piu owner bootstrap applicativo.</span>
                 <span>Ollama e servito come API locale dietro host separato e auth gateway.</span>
                 <span>Postgres non ha UI pubblica e viene consumato soltanto dai workbench.</span>
+                <span>I servizi core e i workbench hanno egress selettivo su reti dedicate, senza porte pubbliche aggiuntive.</span>
               </div>
               <div class="card-actions" style="margin-top: 16px">
                 <button class="ghost-button" type="button" data-markdown="/content/network-map.md" data-title="Network Map">
@@ -986,7 +987,7 @@
         </div>
         <div class="footer-card">
           <strong>segmentazione</strong>
-          <span><code>apps-net</code>, <code>ai-net</code>, <code>data-net</code> e <code>workbench-net</code> sono reti interne; il gateway e l'unico punto esposto e l'unico ponte verso i browser.</span>
+          <span><code>apps-net</code>, <code>ai-net</code>, <code>data-net</code> e <code>workbench-net</code> restano interne; <code>services-egress-net</code> e <code>workbench-egress-net</code> forniscono solo uscita selettiva, mentre il gateway resta l'unico punto esposto verso i browser.</span>
         </div>
       </section>
     </main>

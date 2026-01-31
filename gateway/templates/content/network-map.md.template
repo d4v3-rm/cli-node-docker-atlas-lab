@@ -35,5 +35,7 @@ Il gateway genera un certificato self-signed SAN che copre tutti gli host del la
 - `ai-net`: Ollama e Open WebUI
 - `data-net`: database infrastrutturali
 - `workbench-net`: Postgres e ambienti code-server opzionali
+- `services-egress-net`: uscita internet selettiva per servizi core senza esposizione diretta
+- `workbench-egress-net`: uscita internet selettiva per gli ambienti di sviluppo
 
 Il solo container esposto e il gateway.

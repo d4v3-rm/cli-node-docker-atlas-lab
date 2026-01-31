@@ -152,6 +152,8 @@ envsubst "${render_vars}" \
   < "${template_root}/Caddyfile.template" \
   > /etc/caddy/Caddyfile
 
+caddy fmt --overwrite /etc/caddy/Caddyfile >/dev/null 2>&1 || true
+
 envsubst "${render_vars}" \
   < "${template_root}/lab-index.html.template" \
   > "${site_root}/lab-index.html"
