@@ -77,6 +77,7 @@ services:
       - gitea-data:/data
     networks:
       - apps-net
+      - data-net
 
   gitea-init:
     image: gitea/gitea:${GITEA_VERSION}
