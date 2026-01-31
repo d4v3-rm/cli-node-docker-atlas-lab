@@ -1,0 +1,39 @@
+# Network Map
+
+## Come funziona il rework
+
+Il deck resta raggiungibile in locale su `${LAB_LOCAL_URL}`. Ogni servizio applicativo vive invece su un host dedicato dietro lo stesso gateway HTTPS.
+
+## Host pubblici del lab
+
+- Deck locale: `${LAB_LOCAL_URL}`
+- Deck canonico: `${LAB_URL}`
+- Gitea: `${GITEA_URL}`
+- n8n: `${N8N_URL}`
+- Open WebUI: `${OPENWEBUI_URL}`
+- Ollama: `${OLLAMA_URL}`
+- Node workbench: `${NODE_DEV_URL}`
+- Python workbench: `${PYTHON_DEV_URL}`
+- AI workbench: `${AI_DEV_URL}`
+- C++ workbench: `${CPP_DEV_URL}`
+
+## Se non hai DNS interno
+
+Applica una mappa hosts locale verso `${LAB_GATEWAY_IP}`:
+
+```text
+${LAB_GATEWAY_IP} ${LAB_CANONICAL_HOST} ${GITEA_HOST} ${N8N_HOST} ${OPENWEBUI_HOST} ${OLLAMA_HOST} ${NODE_DEV_HOST} ${PYTHON_DEV_HOST} ${AI_DEV_HOST} ${CPP_DEV_HOST}
+```
+
+## Certificato
+
+Il gateway genera un certificato self-signed SAN che copre tutti gli host del lab. Dal deck puoi scaricarlo da `/assets/lab.crt`.
+
+## Segmentazione interna
+
+- `apps-net`: Gitea, n8n, Open WebUI
+- `ai-net`: Ollama e Open WebUI
+- `data-net`: database infrastrutturali
+- `workbench-net`: Postgres e ambienti code-server opzionali
+
+Il solo container esposto e il gateway.

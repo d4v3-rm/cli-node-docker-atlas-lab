@@ -6,9 +6,11 @@ Ambiente `code-server` per sviluppo C e C++. E pensato per compilazione nativa, 
 
 ## Come si accede
 
-- URL operativo: `${LAB_EXTERNAL_URL}/lab/env/cpp/`
+- Profilo Compose: `workbench`
+- URL operativo: `${CPP_DEV_URL}`
 - Modalita di accesso: `password`
 - Password root: `${CPP_DEV_PASSWORD}`
+- Attivazione: `docker compose --profile workbench up -d postgres-dev cpp-dev`
 
 ## Cosa trovi dentro
 
@@ -25,4 +27,4 @@ Ambiente `code-server` per sviluppo C e C++. E pensato per compilazione nativa, 
 
 ## Nota operativa
 
-L'accesso e documentato qui in forma locale markdown, senza scorciatoia diretta in home.
+L'accesso e documentato qui in forma locale markdown, senza scorciatoia diretta in home. Se non hai DNS interno, applica prima la mappa hosts del lab.

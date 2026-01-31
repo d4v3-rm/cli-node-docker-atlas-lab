@@ -19,21 +19,17 @@ require_nonempty() {
   fi
 }
 
-require_var CODE_SERVER_BASE_PATH
 require_var CODE_SERVER_BIND_ADDR
 require_var CODE_SERVER_AUTH
 require_var CODE_SERVER_WORKDIR
 require_var CODE_SERVER_PASSWORD
-require_var CODE_SERVER_ABS_PROXY_BASE_PATH
 require_var CODE_SERVER_EXTENSIONS
 require_var PYTHON_DEV_PIP_PACKAGES
 require_var PYTHON_DEV_PIP_EXTRA_INDEX_URL
 
-require_nonempty CODE_SERVER_BASE_PATH
 require_nonempty CODE_SERVER_BIND_ADDR
 require_nonempty CODE_SERVER_AUTH
 require_nonempty CODE_SERVER_WORKDIR
-require_nonempty CODE_SERVER_ABS_PROXY_BASE_PATH
 
 export PATH="${HOME}/.local/bin:${PATH}"
 
@@ -41,31 +37,50 @@ if [ -n "${CODE_SERVER_PASSWORD}" ]; then
   export PASSWORD="${CODE_SERVER_PASSWORD}"
 fi
 
-if [ -n "${PYTHON_DEV_PIP_PACKAGES}" ]; then
-  marker="${HOME}/.python-dev-pip-packages-installed"
+state_dir="${HOME}/.lab-state"
+mkdir -p "${state_dir}"
+
+save_state() {
+  key="$1"
+  value="$2"
+  printf '%s' "${value}" | sha256sum | awk '{print $1}' > "${state_dir}/${key}.sha256"
+}
+
+state_changed() {
+  key="$1"
+  value="$2"
+  marker="${state_dir}/${key}.sha256"
+  next="$(printf '%s' "${value}" | sha256sum | awk '{print $1}')"
+
   if [ ! -f "${marker}" ]; then
+    return 0
+  fi
+
+  current="$(cat "${marker}")"
+  [ "${current}" != "${next}" ]
+}
+
+if [ -n "${PYTHON_DEV_PIP_PACKAGES}" ]; then
+  package_state="${PYTHON_DEV_PIP_PACKAGES}|${PYTHON_DEV_PIP_EXTRA_INDEX_URL}"
+  if state_changed "python-dev-pip-packages" "${package_state}"; then
     if [ -n "${PYTHON_DEV_PIP_EXTRA_INDEX_URL}" ]; then
       pip install --user --extra-index-url "${PYTHON_DEV_PIP_EXTRA_INDEX_URL}" ${PYTHON_DEV_PIP_PACKAGES}
     else
       pip install --user ${PYTHON_DEV_PIP_PACKAGES}
     fi
-    touch "${marker}"
+    save_state "python-dev-pip-packages" "${package_state}"
   fi
 fi
 
 if [ -n "${CODE_SERVER_EXTENSIONS}" ]; then
-  marker="${HOME}/.code-server-extensions-installed"
-  if [ ! -f "${marker}" ]; then
+  if state_changed "code-server-extensions" "${CODE_SERVER_EXTENSIONS}"; then
     for ext in ${CODE_SERVER_EXTENSIONS}; do
       code-server --install-extension "${ext}"
     done
-    touch "${marker}"
+    save_state "code-server-extensions" "${CODE_SERVER_EXTENSIONS}"
   fi
 fi
 
 args="--bind-addr ${CODE_SERVER_BIND_ADDR} --auth ${CODE_SERVER_AUTH}"
-if [ -n "${CODE_SERVER_ABS_PROXY_BASE_PATH}" ]; then
-  args="${args} --abs-proxy-base-path ${CODE_SERVER_ABS_PROXY_BASE_PATH}"
-fi
 
 exec /usr/bin/entrypoint.sh ${args} "${CODE_SERVER_WORKDIR}"

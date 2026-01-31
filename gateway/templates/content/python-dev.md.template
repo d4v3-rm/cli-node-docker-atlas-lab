@@ -6,9 +6,11 @@ Ambiente `code-server` per backend Python, automazioni, script operativi e tooli
 
 ## Come si accede
 
-- URL operativo: `${LAB_EXTERNAL_URL}/lab/env/python/`
+- Profilo Compose: `workbench`
+- URL operativo: `${PYTHON_DEV_URL}`
 - Modalita di accesso: `password`
 - Password root: `${PYTHON_DEV_PASSWORD}`
+- Attivazione: `docker compose --profile workbench up -d postgres-dev python-dev`
 
 ## Cosa trovi dentro
 
@@ -25,4 +27,4 @@ Ambiente `code-server` per backend Python, automazioni, script operativi e tooli
 
 ## Nota operativa
 
-L'accesso operativo resta disponibile via URL dedicato, mentre il deck espone solo questo briefing locale.
+L'accesso operativo resta disponibile via host dedicato, mentre il deck espone solo questo briefing locale. Se non hai DNS interno, applica prima la mappa hosts del lab.

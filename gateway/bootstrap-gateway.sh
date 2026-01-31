@@ -1,0 +1,164 @@
+#!/bin/sh
+set -eu
+
+require_nonempty() {
+  var_name="$1"
+  eval "is_set=\${$var_name+x}"
+  if [ "${is_set}" != "x" ]; then
+    echo "Missing env var: ${var_name}" >&2
+    exit 1
+  fi
+  eval "value=\${$var_name}"
+  if [ -z "${value}" ]; then
+    echo "Empty env var: ${var_name}" >&2
+    exit 1
+  fi
+}
+
+required_vars="
+LAB_HTTPS_PORT
+LAB_GATEWAY_IP
+LAB_LOCAL_HOST
+LAB_CANONICAL_HOST
+LAB_LOCAL_URL
+LAB_URL
+SSL_CERT_AUTOGEN
+SSL_CERT_CN
+SSL_CERT_DAYS
+GITEA_HOST
+GITEA_URL
+N8N_HOST
+N8N_URL
+OPENWEBUI_HOST
+OPENWEBUI_URL
+OLLAMA_HOST
+OLLAMA_URL
+NODE_DEV_HOST
+NODE_DEV_URL
+PYTHON_DEV_HOST
+PYTHON_DEV_URL
+AI_DEV_HOST
+AI_DEV_URL
+CPP_DEV_HOST
+CPP_DEV_URL
+GITEA_ROOT_USERNAME
+GITEA_ROOT_PASSWORD
+GITEA_ROOT_EMAIL
+N8N_GATEWAY_USER
+N8N_GATEWAY_PASSWORD
+N8N_ROOT_FIRST_NAME
+N8N_ROOT_LAST_NAME
+N8N_ROOT_EMAIL
+N8N_ROOT_PASSWORD
+OPENWEBUI_ROOT_NAME
+OPENWEBUI_ROOT_EMAIL
+OPENWEBUI_ROOT_PASSWORD
+OLLAMA_GATEWAY_USER
+OLLAMA_GATEWAY_PASSWORD
+POSTGRES_DEV_SUPERUSER
+POSTGRES_DEV_PASSWORD
+POSTGRES_DEV_DATABASE
+NODE_DEV_PASSWORD
+PYTHON_DEV_PASSWORD
+AI_DEV_PASSWORD
+CPP_DEV_PASSWORD
+"
+
+for var_name in ${required_vars}; do
+  require_nonempty "${var_name}"
+done
+
+template_root="/opt/gateway/templates"
+site_root="/srv"
+content_dir="${site_root}/content"
+asset_dir="${site_root}/assets"
+dynamic_dir="/etc/caddy/dynamic"
+cert_dir="/etc/caddy/certs"
+cert_file="${cert_dir}/lab.crt"
+key_file="${cert_dir}/lab.key"
+
+mkdir -p "${site_root}" "${content_dir}" "${asset_dir}" "${dynamic_dir}" "${cert_dir}"
+
+host_list="
+${LAB_LOCAL_HOST}
+${LAB_CANONICAL_HOST}
+${GITEA_HOST}
+${N8N_HOST}
+${OPENWEBUI_HOST}
+${OLLAMA_HOST}
+${NODE_DEV_HOST}
+${PYTHON_DEV_HOST}
+${AI_DEV_HOST}
+${CPP_DEV_HOST}
+${LAB_GATEWAY_IP}
+"
+
+if [ "${SSL_CERT_AUTOGEN}" = "1" ] && { [ ! -f "${cert_file}" ] || [ ! -f "${key_file}" ]; }; then
+  tmp_config="$(mktemp)"
+  {
+    echo "[req]"
+    echo "distinguished_name = dn"
+    echo "x509_extensions = v3_req"
+    echo "prompt = no"
+    echo
+    echo "[dn]"
+    echo "CN = ${SSL_CERT_CN}"
+    echo
+    echo "[v3_req]"
+    echo "subjectAltName = @alt_names"
+    echo
+    echo "[alt_names]"
+  } > "${tmp_config}"
+
+  dns_idx=1
+  ip_idx=1
+
+  printf '%s\n' "${host_list}" | awk 'NF { print $0 }' | while read -r host; do
+    case "${host}" in
+      *[!0-9.]*)
+        echo "DNS.${dns_idx} = ${host}" >> "${tmp_config}"
+        dns_idx=$((dns_idx + 1))
+        ;;
+      *)
+        echo "IP.${ip_idx} = ${host}" >> "${tmp_config}"
+        ip_idx=$((ip_idx + 1))
+        ;;
+    esac
+  done
+
+  openssl req -x509 -newkey rsa:2048 -nodes \
+    -keyout "${key_file}" \
+    -out "${cert_file}" \
+    -days "${SSL_CERT_DAYS}" \
+    -config "${tmp_config}" \
+    -extensions v3_req
+
+  rm -f "${tmp_config}"
+fi
+
+chmod 600 "${key_file}"
+chmod 644 "${cert_file}"
+cp "${cert_file}" "${asset_dir}/lab.crt"
+
+N8N_GATEWAY_PASSWORD_HASH="$(caddy hash-password --plaintext "${N8N_GATEWAY_PASSWORD}")"
+OLLAMA_GATEWAY_PASSWORD_HASH="$(caddy hash-password --plaintext "${OLLAMA_GATEWAY_PASSWORD}")"
+
+export N8N_GATEWAY_PASSWORD_HASH
+export OLLAMA_GATEWAY_PASSWORD_HASH
+
+render_vars='${LAB_HTTPS_PORT} ${LAB_GATEWAY_IP} ${LAB_LOCAL_HOST} ${LAB_CANONICAL_HOST} ${LAB_LOCAL_URL} ${LAB_URL} ${GITEA_HOST} ${GITEA_URL} ${N8N_HOST} ${N8N_URL} ${OPENWEBUI_HOST} ${OPENWEBUI_URL} ${OLLAMA_HOST} ${OLLAMA_URL} ${NODE_DEV_HOST} ${NODE_DEV_URL} ${PYTHON_DEV_HOST} ${PYTHON_DEV_URL} ${AI_DEV_HOST} ${AI_DEV_URL} ${CPP_DEV_HOST} ${CPP_DEV_URL} ${GITEA_ROOT_USERNAME} ${GITEA_ROOT_PASSWORD} ${GITEA_ROOT_EMAIL} ${N8N_GATEWAY_USER} ${N8N_GATEWAY_PASSWORD} ${N8N_GATEWAY_PASSWORD_HASH} ${N8N_ROOT_FIRST_NAME} ${N8N_ROOT_LAST_NAME} ${N8N_ROOT_EMAIL} ${N8N_ROOT_PASSWORD} ${OPENWEBUI_ROOT_NAME} ${OPENWEBUI_ROOT_EMAIL} ${OPENWEBUI_ROOT_PASSWORD} ${OLLAMA_GATEWAY_USER} ${OLLAMA_GATEWAY_PASSWORD} ${OLLAMA_GATEWAY_PASSWORD_HASH} ${POSTGRES_DEV_SUPERUSER} ${POSTGRES_DEV_PASSWORD} ${POSTGRES_DEV_DATABASE} ${NODE_DEV_PASSWORD} ${PYTHON_DEV_PASSWORD} ${AI_DEV_PASSWORD} ${CPP_DEV_PASSWORD}'
+
+envsubst "${render_vars}" \
+  < "${template_root}/Caddyfile.template" \
+  > /etc/caddy/Caddyfile
+
+envsubst "${render_vars}" \
+  < "${template_root}/lab-index.html.template" \
+  > "${site_root}/lab-index.html"
+
+if [ -d "${template_root}/content" ]; then
+  find "${template_root}/content" -type f -name '*.template' | while read -r src; do
+    dst="${content_dir}/$(basename "${src}" .template)"
+    envsubst "${render_vars}" < "${src}" > "${dst}"
+  done
+fi

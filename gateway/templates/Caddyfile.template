@@ -1,0 +1,71 @@
+{
+  admin off
+  auto_https off
+  log {
+    output stdout
+    format console
+    level INFO
+  }
+}
+
+(lab_tls) {
+  tls /etc/caddy/certs/lab.crt /etc/caddy/certs/lab.key
+  encode zstd gzip
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    X-Content-Type-Options "nosniff"
+    Referrer-Policy "strict-origin-when-cross-origin"
+  }
+}
+
+(service_proxy) {
+  import lab_tls
+  reverse_proxy {args[0]}
+}
+
+(guarded_proxy) {
+  import lab_tls
+  basic_auth {
+    {args[0]} {args[1]}
+  }
+  reverse_proxy {args[2]}
+}
+
+${LAB_LOCAL_HOST}, ${LAB_CANONICAL_HOST}, ${LAB_GATEWAY_IP} {
+  import lab_tls
+  root * /srv
+  try_files {path} /lab-index.html
+  file_server
+}
+
+${GITEA_HOST} {
+  import service_proxy gitea:3000
+}
+
+${N8N_HOST} {
+  import guarded_proxy ${N8N_GATEWAY_USER} ${N8N_GATEWAY_PASSWORD_HASH} n8n:5678
+}
+
+${OPENWEBUI_HOST} {
+  import service_proxy open-webui:8080
+}
+
+${OLLAMA_HOST} {
+  import guarded_proxy ${OLLAMA_GATEWAY_USER} ${OLLAMA_GATEWAY_PASSWORD_HASH} ollama:11434
+}
+
+${NODE_DEV_HOST} {
+  import service_proxy node-dev:8080
+}
+
+${PYTHON_DEV_HOST} {
+  import service_proxy python-dev:8080
+}
+
+${AI_DEV_HOST} {
+  import service_proxy ai-dev:8080
+}
+
+${CPP_DEV_HOST} {
+  import service_proxy cpp-dev:8080
+}

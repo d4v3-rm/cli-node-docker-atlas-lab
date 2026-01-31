@@ -692,16 +692,17 @@
               <span>ATLAS</span>
             </h1>
             <p class="hero-copy">
-              Pannello operativo unificato per repository, automazione, AI locale e ambienti di
-              sviluppo. Il gateway HTTPS orchestra tutto il lab e rende leggibili in un solo punto
-              percorsi, credenziali root e funzioni dei servizi attivi.
+              Pannello operativo unificato per repository, automazione, AI locale e workbench
+              opzionali. Il gateway Caddy espone ogni servizio sul proprio host dedicato e rende
+              leggibili in un solo punto percorsi, credenziali root e funzione dei nodi attivi.
             </p>
             <div class="hero-strip">
-              <span class="pill"><i class="fa-solid fa-link"></i> endpoint ${LAB_EXTERNAL_URL}/lab/</span>
+              <span class="pill"><i class="fa-solid fa-link"></i> deck locale ${LAB_LOCAL_URL}</span>
               <span class="pill"><i class="fa-solid fa-lock"></i> ingress solo https</span>
+              <span class="pill"><i class="fa-solid fa-earth-europe"></i> host canonico ${LAB_URL}</span>
               <span class="pill"><i class="fa-solid fa-database"></i> persistenza su volumi</span>
               <span class="pill"><i class="fa-solid fa-bars-progress"></i> accessi e root in chiaro</span>
-              <span class="pill"><i class="fa-solid fa-diagram-next"></i> topology services/workbench</span>
+              <span class="pill"><i class="fa-solid fa-diagram-next"></i> host separati e reti interne</span>
             </div>
             <div class="stat-grid">
               <div class="stat">
@@ -725,16 +726,25 @@
                 <span>Gitea governa codice, review e flusso Git interno.</span>
                 <span>n8n orchestra webhook, automazioni e job operativi.</span>
                 <span>Open WebUI e Ollama coprono interfaccia e inference locale per l'AI.</span>
-                <span>I workbench code-server e Postgres restano raggiungibili tramite briefing dedicato.</span>
+                <span>I workbench code-server e Postgres restano su profilo dedicato e raggiungibili tramite briefing locale.</span>
               </div>
             </div>
             <div class="aside-card">
               <p class="aside-title">access notes</p>
               <div class="aside-meta">
                 <span>Le credenziali root sono esposte qui e nel file <code>.env</code>.</span>
+                <span>I servizi usano host dedicati: se non hai DNS interno, applica la mappa hosts locale.</span>
                 <span>n8n resta protetto da gateway auth piu owner bootstrap applicativo.</span>
-                <span>Ollama e servito come API locale dietro il gateway del lab.</span>
+                <span>Ollama e servito come API locale dietro host separato e auth gateway.</span>
                 <span>Postgres non ha UI pubblica e viene consumato soltanto dai workbench.</span>
+              </div>
+              <div class="card-actions" style="margin-top: 16px">
+                <button class="ghost-button" type="button" data-markdown="/content/network-map.md" data-title="Network Map">
+                  <i class="fa-solid fa-network-wired"></i> apri network map
+                </button>
+                <a class="button" href="/assets/lab.crt" target="_blank" rel="noopener noreferrer">
+                  <i class="fa-solid fa-certificate"></i> scarica certificato
+                </a>
               </div>
             </div>
           </div>
@@ -749,7 +759,8 @@
           </div>
           <p>
             Ogni card spiega il servizio, mostra le credenziali root e apre direttamente il target
-            operativo. Le icone distinguono repository, automazione, interfacce AI e API modelli.
+            operativo sul proprio host dedicato. Le icone distinguono repository, automazione,
+            interfacce AI e API modelli.
           </p>
         </div>
 
@@ -765,13 +776,13 @@
               per codice, review e governance del progetto.
             </p>
             <div class="credential-grid">
-              <div class="credential"><span>Endpoint</span><span>${LAB_EXTERNAL_URL}/lab/dev/gitea/</span></div>
+              <div class="credential"><span>Endpoint</span><span>${GITEA_URL}</span></div>
               <div class="credential"><span>Root user</span><span>${GITEA_ROOT_USERNAME}</span></div>
               <div class="credential"><span>Password</span><span>${GITEA_ROOT_PASSWORD}</span></div>
               <div class="credential"><span>Email</span><span>${GITEA_ROOT_EMAIL}</span></div>
             </div>
             <div class="card-actions">
-              <a class="button" href="/lab/dev/gitea/" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i> entra</a>
+              <a class="button" href="${GITEA_URL}" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i> entra</a>
             </div>
           </article>
 
@@ -786,7 +797,7 @@
               applicative e connessioni tra servizi del lab.
             </p>
             <div class="credential-grid">
-              <div class="credential"><span>Endpoint</span><span>${LAB_EXTERNAL_URL}/lab/automation/n8n/</span></div>
+              <div class="credential"><span>Endpoint</span><span>${N8N_URL}</span></div>
               <div class="credential"><span>Gateway user</span><span>${N8N_GATEWAY_USER}</span></div>
               <div class="credential"><span>Gateway password</span><span>${N8N_GATEWAY_PASSWORD}</span></div>
               <div class="credential"><span>Owner bootstrap</span><span>${N8N_ROOT_FIRST_NAME} ${N8N_ROOT_LAST_NAME}</span></div>
@@ -794,7 +805,7 @@
               <div class="credential"><span>Owner password</span><span>${N8N_ROOT_PASSWORD}</span></div>
             </div>
             <div class="card-actions">
-              <a class="button" href="/lab/automation/n8n/" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-bolt"></i> entra</a>
+              <a class="button" href="${N8N_URL}" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-bolt"></i> entra</a>
             </div>
             <p class="service-note">
               Primo accesso: supera il gateway con le credenziali mostrate sopra e usa le credenziali
@@ -813,13 +824,13 @@
               testare prompt e gestire flussi AI dal browser.
             </p>
             <div class="credential-grid">
-              <div class="credential"><span>Endpoint</span><span>${LAB_EXTERNAL_URL}/lab/ai/open-webui/</span></div>
+              <div class="credential"><span>Endpoint</span><span>${OPENWEBUI_URL}</span></div>
               <div class="credential"><span>Root name</span><span>${OPENWEBUI_ROOT_NAME}</span></div>
               <div class="credential"><span>Root email</span><span>${OPENWEBUI_ROOT_EMAIL}</span></div>
               <div class="credential"><span>Password</span><span>${OPENWEBUI_ROOT_PASSWORD}</span></div>
             </div>
             <div class="card-actions">
-              <a class="button" href="/lab/ai/open-webui/" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-comments"></i> entra</a>
+              <a class="button" href="${OPENWEBUI_URL}" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-comments"></i> entra</a>
             </div>
           </article>
 
@@ -834,13 +845,13 @@
               interrogato direttamente come API protetta dal gateway.
             </p>
             <div class="credential-grid">
-              <div class="credential"><span>Endpoint</span><span>${LAB_EXTERNAL_URL}/lab/ai/ollama/</span></div>
+              <div class="credential"><span>Endpoint</span><span>${OLLAMA_URL}</span></div>
               <div class="credential"><span>Gateway user</span><span>${OLLAMA_GATEWAY_USER}</span></div>
               <div class="credential"><span>Gateway password</span><span>${OLLAMA_GATEWAY_PASSWORD}</span></div>
               <div class="credential"><span>Uso</span><span>API locale per modelli</span></div>
             </div>
             <div class="card-actions">
-              <a class="button" href="/lab/ai/ollama/" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-wave-square"></i> apri api</a>
+              <a class="button" href="${OLLAMA_URL}" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-wave-square"></i> apri api</a>
             </div>
           </article>
         </div>
@@ -853,9 +864,10 @@
             <h2>Ambienti Di Sviluppo</h2>
           </div>
           <p>
-            Gli ambienti restano operativi ma non vengono linkati come scorciatoie dirette. Dal deck
-            apri un briefing markdown locale che spiega cosa fanno, come si accede e quali credenziali usare.
-            Postgres resta un nodo infrastrutturale senza UI web, con connessione interna preconfigurata.
+            Gli ambienti restano opzionali e vivono nel profilo Compose <code>workbench</code>. Dal
+            deck apri un briefing markdown locale che spiega cosa fanno, come si attivano, come si
+            accede e quali credenziali usare. Postgres resta un nodo infrastrutturale senza UI web,
+            con connessione interna preconfigurata.
           </p>
         </div>
 
@@ -872,7 +884,7 @@
               <div class="credential"><span>Root password</span><span>${NODE_DEV_PASSWORD}</span></div>
             </div>
             <div class="card-actions">
-              <button class="ghost-button" type="button" data-markdown="/lab/content/node-dev.md" data-title="Node Forge">
+              <button class="ghost-button" type="button" data-markdown="/content/node-dev.md" data-title="Node Forge">
                 <i class="fa-solid fa-file-lines"></i> apri briefing
               </button>
             </div>
@@ -890,7 +902,7 @@
               <div class="credential"><span>Root password</span><span>${PYTHON_DEV_PASSWORD}</span></div>
             </div>
             <div class="card-actions">
-              <button class="ghost-button" type="button" data-markdown="/lab/content/python-dev.md" data-title="Python Grid">
+              <button class="ghost-button" type="button" data-markdown="/content/python-dev.md" data-title="Python Grid">
                 <i class="fa-solid fa-file-lines"></i> apri briefing
               </button>
             </div>
@@ -908,7 +920,7 @@
               <div class="credential"><span>Root password</span><span>${AI_DEV_PASSWORD}</span></div>
             </div>
             <div class="card-actions">
-              <button class="ghost-button" type="button" data-markdown="/lab/content/ai-dev.md" data-title="AI Reactor">
+              <button class="ghost-button" type="button" data-markdown="/content/ai-dev.md" data-title="AI Reactor">
                 <i class="fa-solid fa-file-lines"></i> apri briefing
               </button>
             </div>
@@ -926,7 +938,7 @@
               <div class="credential"><span>Root password</span><span>${CPP_DEV_PASSWORD}</span></div>
             </div>
             <div class="card-actions">
-              <button class="ghost-button" type="button" data-markdown="/lab/content/cpp-dev.md" data-title="C++ Foundry">
+              <button class="ghost-button" type="button" data-markdown="/content/cpp-dev.md" data-title="C++ Foundry">
                 <i class="fa-solid fa-file-lines"></i> apri briefing
               </button>
             </div>
@@ -947,7 +959,7 @@
               <div class="credential"><span>Password</span><span>${POSTGRES_DEV_PASSWORD}</span></div>
             </div>
             <div class="card-actions">
-              <button class="ghost-button" type="button" data-markdown="/lab/content/postgres-dev.md" data-title="Postgres Vault">
+              <button class="ghost-button" type="button" data-markdown="/content/postgres-dev.md" data-title="Postgres Vault">
                 <i class="fa-solid fa-file-lines"></i> apri briefing
               </button>
             </div>
@@ -962,7 +974,7 @@
       <section class="footer-bar">
         <div class="footer-card">
           <strong>routing</strong>
-          <span>Tutti i servizi passano da un solo gateway Nginx HTTPS sotto il prefisso <code>/lab</code>.</span>
+          <span>Il deck resta raggiungibile da <code>${LAB_LOCAL_URL}</code>, mentre ogni servizio usa un host dedicato instradato dal gateway Caddy.</span>
         </div>
         <div class="footer-card">
           <strong>persistenza</strong>
@@ -974,7 +986,7 @@
         </div>
         <div class="footer-card">
           <strong>segmentazione</strong>
-          <span><code>services-net</code> ospita i servizi core, <code>workbench-net</code> ospita gli ambienti di sviluppo, Postgres e il gateway e l'unico ponte tra le due reti.</span>
+          <span><code>apps-net</code>, <code>ai-net</code>, <code>data-net</code> e <code>workbench-net</code> sono reti interne; il gateway e l'unico punto esposto e l'unico ponte verso i browser.</span>
         </div>
       </section>
     </main>

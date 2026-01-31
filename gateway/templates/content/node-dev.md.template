@@ -6,9 +6,11 @@ Ambiente `code-server` dedicato allo sviluppo JavaScript e TypeScript. Serve per
 
 ## Come si accede
 
-- URL operativo: `${LAB_EXTERNAL_URL}/lab/env/node/`
+- Profilo Compose: `workbench`
+- URL operativo: `${NODE_DEV_URL}`
 - Modalita di accesso: `password`
 - Password root: `${NODE_DEV_PASSWORD}`
+- Attivazione: `docker compose --profile workbench up -d postgres-dev node-dev`
 
 ## Cosa trovi dentro
 
@@ -25,4 +27,4 @@ Ambiente `code-server` dedicato allo sviluppo JavaScript e TypeScript. Serve per
 
 ## Nota operativa
 
-L'ambiente non viene pubblicato come link diretto sulla dashboard. Da qui ottieni il briefing, poi accedi all'endpoint sopra.
+L'ambiente non viene pubblicato come scorciatoia diretta sulla dashboard. Il deck espone il briefing e l'host dedicato. Se non hai DNS interno, applica prima la mappa hosts del lab.

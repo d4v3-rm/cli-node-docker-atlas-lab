@@ -6,9 +6,11 @@ Ambiente `code-server` focalizzato su AI e data science. Integra un set di pacch
 
 ## Come si accede
 
-- URL operativo: `${LAB_EXTERNAL_URL}/lab/env/ai/`
+- Profilo Compose: `workbench`
+- URL operativo: `${AI_DEV_URL}`
 - Modalita di accesso: `password`
 - Password root: `${AI_DEV_PASSWORD}`
+- Attivazione: `docker compose --profile workbench up -d postgres-dev ai-dev`
 
 ## Cosa trovi dentro
 
@@ -25,4 +27,4 @@ Ambiente `code-server` focalizzato su AI e data science. Integra un set di pacch
 
 ## Nota operativa
 
-Questo workbench e il punto corretto per sviluppo AI lato codice. `Open WebUI` resta invece la console di interazione browser.
+Questo workbench e il punto corretto per sviluppo AI lato codice. `Open WebUI` resta invece la console di interazione browser. Se non hai DNS interno, applica prima la mappa hosts del lab.

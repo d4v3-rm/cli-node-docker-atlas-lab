@@ -1,32 +1,46 @@
 x-lab-env: &lab-env
   TZ: ${TZ}
 
+x-workbench-db-env: &workbench-db-env
+  PGHOST: postgres-dev
+  PGPORT: "5432"
+  PGDATABASE: ${POSTGRES_DEV_DATABASE}
+  PGUSER: ${POSTGRES_DEV_SUPERUSER}
+  PGPASSWORD: ${POSTGRES_DEV_PASSWORD}
+  PGSSLMODE: disable
+  DATABASE_URL: postgresql://${POSTGRES_DEV_SUPERUSER}:${POSTGRES_DEV_PASSWORD}@postgres-dev:5432/${POSTGRES_DEV_DATABASE}
+
 services:
   gateway:
     build:
-      context: ./nginx
+      context: ./gateway
+      args:
+        CADDY_VERSION: ${CADDY_VERSION}
     restart: unless-stopped
     env_file:
       - ./.env
     ports:
-      - "${LAB_HTTPS_PORT}:8443"
+      - "${LAB_HTTPS_PORT}:443"
     volumes:
-      - gateway-certs:/etc/nginx/certs
+      - gateway-certs:/etc/caddy/certs
+      - gateway-config:/etc/caddy/dynamic
+      - gateway-site:/srv
+      - gateway-data:/data
     depends_on:
-      - gitea
-      - n8n
-      - open-webui
-      - ollama
-      - postgres-dev
-      - node-dev
-      - python-dev
-      - ai-dev
-      - cpp-dev
+      gitea:
+        condition: service_started
+      n8n:
+        condition: service_started
+      open-webui:
+        condition: service_started
+      ollama:
+        condition: service_started
     networks:
-      - services-net
+      - edge-net
+      - apps-net
+      - ai-net
       - workbench-net
 
-  # Core platform
   gitea:
     image: gitea/gitea:${GITEA_VERSION}
     restart: unless-stopped
@@ -37,14 +51,15 @@ services:
       <<: *lab-env
       USER_UID: ${GITEA_UID}
       USER_GID: ${GITEA_GID}
-      GITEA__server__DOMAIN: ${LAB_DOMAIN}
-      GITEA__server__ROOT_URL: ${LAB_EXTERNAL_URL}/lab/dev/gitea/
+      GITEA__server__DOMAIN: ${GITEA_HOST}
+      GITEA__server__ROOT_URL: ${GITEA_URL}
       GITEA__server__HTTP_PORT: "3000"
       GITEA__server__PROTOCOL: http
       GITEA__server__DISABLE_SSH: "true"
       GITEA__service__DISABLE_REGISTRATION: "true"
       GITEA__service__REQUIRE_SIGNIN_VIEW: "true"
       GITEA__security__INSTALL_LOCK: "true"
+      GITEA__security__COOKIE_SECURE: "true"
       GITEA__database__DB_TYPE: mysql
       GITEA__database__HOST: gitea-db:3306
       GITEA__database__NAME: gitea
@@ -52,20 +67,27 @@ services:
       GITEA__database__PASSWD: ${GITEA_DB_PASSWORD}
       GITEA__database__SSL_MODE: disable
       GITEA__database__CHARSET: utf8mb4
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:3000/api/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
     volumes:
       - gitea-data:/data
     networks:
-      - services-net
+      - apps-net
 
   gitea-init:
     image: gitea/gitea:${GITEA_VERSION}
     restart: "no"
     user: "${GITEA_UID}:${GITEA_GID}"
     depends_on:
-      - gitea
+      gitea:
+        condition: service_healthy
     entrypoint: /bin/sh
     command: >-
-      -c "
+      -ec "
       attempt=0;
       until [ -f /data/gitea/conf/app.ini ]; do
         attempt=$$((attempt+1));
@@ -84,10 +106,11 @@ services:
     volumes:
       - gitea-data:/data
     networks:
-      - services-net
+      - apps-net
+      - data-net
 
   gitea-db:
-    image: mariadb:11.4
+    image: mariadb:${GITEA_DB_VERSION}
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "mariadb-admin ping -u root -p$$MARIADB_ROOT_PASSWORD"]
@@ -102,7 +125,7 @@ services:
     volumes:
       - gitea-db:/var/lib/mysql
     networks:
-      - services-net
+      - data-net
 
   n8n:
     image: docker.n8n.io/n8nio/n8n:${N8N_VERSION}
@@ -110,19 +133,18 @@ services:
     environment:
       <<: *lab-env
       GENERIC_TIMEZONE: ${TZ}
-      N8N_HOST: ${LAB_DOMAIN}
+      N8N_HOST: ${N8N_HOST}
       N8N_PORT: "5678"
       N8N_PROTOCOL: https
-      N8N_PATH: /lab/automation/n8n/
-      N8N_EDITOR_BASE_URL: ${LAB_EXTERNAL_URL}/lab/automation/n8n
-      WEBHOOK_URL: ${LAB_EXTERNAL_URL}/lab/automation/n8n/
+      N8N_EDITOR_BASE_URL: ${N8N_URL}
+      WEBHOOK_URL: ${N8N_URL}
       N8N_PROXY_HOPS: "1"
       N8N_SECURE_COOKIE: "true"
       N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
     volumes:
       - n8n-data:/home/node/.n8n
     networks:
-      - services-net
+      - apps-net
 
   ollama:
     image: ollama/ollama:${OLLAMA_VERSION}
@@ -130,19 +152,20 @@ services:
     environment:
       <<: *lab-env
       OLLAMA_HOST: 0.0.0.0:11434
-      OLLAMA_ORIGINS: ${LAB_EXTERNAL_URL}
+      OLLAMA_ORIGINS: ${OPENWEBUI_URL}
     volumes:
       - ollama-data:/root/.ollama
     networks:
-      - services-net
+      - ai-net
 
   open-webui:
     image: ghcr.io/open-webui/open-webui:${OPENWEBUI_VERSION}
     restart: unless-stopped
+    depends_on:
+      - ollama
     environment:
       <<: *lab-env
-      WEBUI_URL: ${LAB_EXTERNAL_URL}/lab/ai/open-webui
-      CORS_ALLOW_ORIGIN: ${LAB_EXTERNAL_URL}
+      WEBUI_URL: ${OPENWEBUI_URL}
       ENABLE_OPENAI_API: "false"
       ENABLE_OLLAMA_API: "true"
       OLLAMA_BASE_URL: http://ollama:11434
@@ -153,13 +176,13 @@ services:
       WEBUI_AUTH: "true"
     volumes:
       - open-webui-data:/app/backend/data
-    depends_on:
-      - ollama
     networks:
-      - services-net
+      - apps-net
+      - ai-net
 
   postgres-dev:
     image: postgres:${POSTGRES_DEV_VERSION}
+    profiles: ["workbench"]
     restart: unless-stopped
     shm_size: 256mb
     healthcheck:
@@ -177,7 +200,6 @@ services:
     networks:
       - workbench-net
 
-  # Development environments
   node-dev:
     build:
       context: ./env/node
@@ -187,23 +209,19 @@ services:
         PNPM_VERSION: ${NODE_DEV_PNPM_VERSION}
         YARN_VERSION: ${NODE_DEV_YARN_VERSION}
         INSTALL_PACKAGES: ${NODE_DEV_INSTALL_PACKAGES}
+    profiles: ["workbench"]
     restart: unless-stopped
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
     environment:
       CODE_SERVER_PASSWORD: ${NODE_DEV_PASSWORD}
       CODE_SERVER_AUTH: ${NODE_DEV_AUTH}
-      CODE_SERVER_BASE_PATH: /lab/env/node
       CODE_SERVER_BIND_ADDR: 0.0.0.0:8080
-      CODE_SERVER_ABS_PROXY_BASE_PATH: /lab/env/node
       CODE_SERVER_WORKDIR: /workspace
       CODE_SERVER_EXTENSIONS: ${NODE_DEV_EXTENSIONS}
       NODE_GLOBAL_PACKAGES: ${NODE_DEV_GLOBAL_PACKAGES}
-      PGHOST: postgres-dev
-      PGPORT: "5432"
-      PGDATABASE: ${POSTGRES_DEV_DATABASE}
-      PGUSER: ${POSTGRES_DEV_SUPERUSER}
-      PGPASSWORD: ${POSTGRES_DEV_PASSWORD}
-      PGSSLMODE: disable
-      DATABASE_URL: "postgresql://${POSTGRES_DEV_SUPERUSER}:${POSTGRES_DEV_PASSWORD}@postgres-dev:5432/${POSTGRES_DEV_DATABASE}"
+      <<: *workbench-db-env
     volumes:
       - node-dev-home:/home/coder
       - node-dev-workspace:/workspace
@@ -220,24 +238,20 @@ services:
         PYTHON_PIP_PACKAGES: ${PYTHON_DEV_PIP_PACKAGES}
         PIP_INDEX_URL: ${PYTHON_DEV_PIP_INDEX_URL}
         PIP_EXTRA_INDEX_URL: ${PYTHON_DEV_PIP_EXTRA_INDEX_URL}
+    profiles: ["workbench"]
     restart: unless-stopped
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
     environment:
       CODE_SERVER_PASSWORD: ${PYTHON_DEV_PASSWORD}
       CODE_SERVER_AUTH: ${PYTHON_DEV_AUTH}
-      CODE_SERVER_BASE_PATH: /lab/env/python
       CODE_SERVER_BIND_ADDR: 0.0.0.0:8080
-      CODE_SERVER_ABS_PROXY_BASE_PATH: /lab/env/python
       CODE_SERVER_WORKDIR: /workspace
       CODE_SERVER_EXTENSIONS: ${PYTHON_DEV_EXTENSIONS}
       PYTHON_DEV_PIP_PACKAGES: ${PYTHON_DEV_RUNTIME_PIP_PACKAGES}
       PYTHON_DEV_PIP_EXTRA_INDEX_URL: ${PYTHON_DEV_PIP_EXTRA_INDEX_URL}
-      PGHOST: postgres-dev
-      PGPORT: "5432"
-      PGDATABASE: ${POSTGRES_DEV_DATABASE}
-      PGUSER: ${POSTGRES_DEV_SUPERUSER}
-      PGPASSWORD: ${POSTGRES_DEV_PASSWORD}
-      PGSSLMODE: disable
-      DATABASE_URL: "postgresql://${POSTGRES_DEV_SUPERUSER}:${POSTGRES_DEV_PASSWORD}@postgres-dev:5432/${POSTGRES_DEV_DATABASE}"
+      <<: *workbench-db-env
     volumes:
       - python-dev-home:/home/coder
       - python-dev-workspace:/workspace
@@ -254,24 +268,20 @@ services:
         PYTHON_PIP_PACKAGES: ${AI_DEV_PIP_PACKAGES}
         PIP_INDEX_URL: ${AI_DEV_PIP_INDEX_URL}
         PIP_EXTRA_INDEX_URL: ${AI_DEV_PIP_EXTRA_INDEX_URL}
+    profiles: ["workbench"]
     restart: unless-stopped
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
     environment:
       CODE_SERVER_PASSWORD: ${AI_DEV_PASSWORD}
       CODE_SERVER_AUTH: ${AI_DEV_AUTH}
-      CODE_SERVER_BASE_PATH: /lab/env/ai
       CODE_SERVER_BIND_ADDR: 0.0.0.0:8080
-      CODE_SERVER_ABS_PROXY_BASE_PATH: /lab/env/ai
       CODE_SERVER_WORKDIR: /workspace
       CODE_SERVER_EXTENSIONS: ${AI_DEV_EXTENSIONS}
       PYTHON_DEV_PIP_PACKAGES: ${AI_DEV_RUNTIME_PIP_PACKAGES}
       PYTHON_DEV_PIP_EXTRA_INDEX_URL: ${AI_DEV_PIP_EXTRA_INDEX_URL}
-      PGHOST: postgres-dev
-      PGPORT: "5432"
-      PGDATABASE: ${POSTGRES_DEV_DATABASE}
-      PGUSER: ${POSTGRES_DEV_SUPERUSER}
-      PGPASSWORD: ${POSTGRES_DEV_PASSWORD}
-      PGSSLMODE: disable
-      DATABASE_URL: "postgresql://${POSTGRES_DEV_SUPERUSER}:${POSTGRES_DEV_PASSWORD}@postgres-dev:5432/${POSTGRES_DEV_DATABASE}"
+      <<: *workbench-db-env
     volumes:
       - ai-dev-home:/home/coder
       - ai-dev-workspace:/workspace
@@ -285,22 +295,18 @@ services:
         BASE_IMAGE: ${CPP_DEV_BASE_IMAGE}
         CPP_PACKAGES: ${CPP_DEV_PACKAGES}
         INSTALL_PACKAGES: ${CPP_DEV_INSTALL_PACKAGES}
+    profiles: ["workbench"]
     restart: unless-stopped
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
     environment:
       CODE_SERVER_PASSWORD: ${CPP_DEV_PASSWORD}
       CODE_SERVER_AUTH: ${CPP_DEV_AUTH}
-      CODE_SERVER_BASE_PATH: /lab/env/cpp
       CODE_SERVER_BIND_ADDR: 0.0.0.0:8080
-      CODE_SERVER_ABS_PROXY_BASE_PATH: /lab/env/cpp
       CODE_SERVER_WORKDIR: /workspace
       CODE_SERVER_EXTENSIONS: ${CPP_DEV_EXTENSIONS}
-      PGHOST: postgres-dev
-      PGPORT: "5432"
-      PGDATABASE: ${POSTGRES_DEV_DATABASE}
-      PGUSER: ${POSTGRES_DEV_SUPERUSER}
-      PGPASSWORD: ${POSTGRES_DEV_PASSWORD}
-      PGSSLMODE: disable
-      DATABASE_URL: "postgresql://${POSTGRES_DEV_SUPERUSER}:${POSTGRES_DEV_PASSWORD}@postgres-dev:5432/${POSTGRES_DEV_DATABASE}"
+      <<: *workbench-db-env
     volumes:
       - cpp-dev-home:/home/coder
       - cpp-dev-workspace:/workspace
@@ -308,13 +314,26 @@ services:
       - workbench-net
 
 networks:
-  services-net:
-    name: cli-node-lab_services
+  edge-net:
+    name: cli-node-lab_edge
+  apps-net:
+    name: cli-node-lab_apps
+    internal: true
+  ai-net:
+    name: cli-node-lab_ai
+    internal: true
+  data-net:
+    name: cli-node-lab_data
+    internal: true
   workbench-net:
     name: cli-node-lab_workbench
+    internal: true
 
 volumes:
   gateway-certs:
+  gateway-config:
+  gateway-site:
+  gateway-data:
   gitea-data:
   gitea-db:
   n8n-data:
