@@ -68,10 +68,10 @@ services:
       GITEA__database__SSL_MODE: disable
       GITEA__database__CHARSET: utf8mb4
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:3000/api/healthz || exit 1"]
-      interval: 10s
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 3000 || exit 1"]
+      interval: 30s
       timeout: 5s
-      retries: 12
+      retries: 6
       start_period: 20s
     volumes:
       - gitea-data:/data
@@ -115,6 +115,7 @@ services:
   gitea-db:
     image: mariadb:${GITEA_DB_VERSION}
     restart: unless-stopped
+    command: ["--innodb_linux_aio=aio"]
     healthcheck:
       test: ["CMD-SHELL", "mariadb-admin ping -u root -p$$MARIADB_ROOT_PASSWORD"]
       interval: 5s
@@ -206,10 +207,13 @@ services:
         gw_priority: 1
 
   ollama:
-    image: ollama/ollama:${OLLAMA_VERSION}
+    build:
+      context: ./ollama
+      args:
+        OLLAMA_VERSION: ${OLLAMA_VERSION}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1 || exit 1"]
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 11434 || exit 1"]
       interval: 15s
       timeout: 10s
       retries: 10
@@ -225,12 +229,32 @@ services:
       services-egress-net:
         gw_priority: 1
 
+  ollama-init:
+    build:
+      context: ./ollama
+      args:
+        OLLAMA_VERSION: ${OLLAMA_VERSION}
+    restart: "no"
+    depends_on:
+      ollama:
+        condition: service_healthy
+    entrypoint: /bin/sh
+    command: >-
+      -ec "
+      export OLLAMA_HOST=http://ollama:11434;
+      ollama show '${OLLAMA_EMBEDDING_MODEL}' >/dev/null 2>&1 || ollama pull '${OLLAMA_EMBEDDING_MODEL}';
+      "
+    networks:
+      - ai-net
+
   open-webui:
     image: ghcr.io/open-webui/open-webui:${OPENWEBUI_VERSION}
     restart: unless-stopped
     depends_on:
       ollama:
         condition: service_healthy
+      ollama-init:
+        condition: service_completed_successfully
     environment:
       <<: *lab-env
       WEBUI_URL: ${OPENWEBUI_URL}
@@ -240,6 +264,12 @@ services:
       ENABLE_OPENAI_API: "false"
       ENABLE_OLLAMA_API: "true"
       OLLAMA_BASE_URL: http://ollama:11434
+      RAG_OLLAMA_BASE_URL: http://ollama:11434
+      RAG_EMBEDDING_ENGINE: ollama
+      RAG_EMBEDDING_MODEL: ${OLLAMA_EMBEDDING_MODEL}
+      USE_EMBEDDING_MODEL_DOCKER: ""
+      USE_AUXILIARY_EMBEDDING_MODEL_DOCKER: ""
+      AUXILIARY_EMBEDDING_MODEL: ""
       WEBUI_ADMIN_NAME: ${OPENWEBUI_ROOT_NAME}
       WEBUI_ADMIN_EMAIL: ${OPENWEBUI_ROOT_EMAIL}
       WEBUI_ADMIN_PASSWORD: ${OPENWEBUI_ROOT_PASSWORD}
