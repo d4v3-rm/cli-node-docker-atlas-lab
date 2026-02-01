@@ -1,4 +1,4 @@
-ARG N8N_VERSION
+ARG N8N_VERSION=2.2.6
 
 FROM debian:bookworm-slim AS ca_bundle
 

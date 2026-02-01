@@ -1,4 +1,4 @@
-ARG CADDY_VERSION
+ARG CADDY_VERSION=2.10.2-alpine
 FROM caddy:${CADDY_VERSION}
 
 RUN apk add --no-cache gettext openssl
