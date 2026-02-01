@@ -131,7 +131,10 @@ services:
       - data-net
 
   n8n:
-    image: docker.n8n.io/n8nio/n8n:${N8N_VERSION}
+    build:
+      context: ./n8n
+      args:
+        N8N_VERSION: ${N8N_VERSION}
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:5678/healthz/readiness || exit 1"]
@@ -150,6 +153,10 @@ services:
       N8N_PROXY_HOPS: "1"
       N8N_SECURE_COOKIE: "true"
       N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+      CURL_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+      NODE_OPTIONS: --use-openssl-ca
+      NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
       N8N_RUNNERS_ENABLED: "true"
       N8N_RUNNERS_MODE: external
       N8N_RUNNERS_AUTH_TOKEN: ${N8N_RUNNERS_AUTH_TOKEN}
@@ -168,14 +175,28 @@ services:
         gw_priority: 1
 
   n8n-runners:
-    image: n8nio/runners:${N8N_VERSION}
+    build:
+      context: ./n8n-runners
+      args:
+        N8N_VERSION: ${N8N_VERSION}
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:5680/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
     depends_on:
       n8n:
         condition: service_healthy
     environment:
       <<: *lab-env
       GENERIC_TIMEZONE: ${TZ}
+      SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+      REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+      CURL_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+      NODE_OPTIONS: --use-openssl-ca
+      NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
       N8N_RUNNERS_AUTH_TOKEN: ${N8N_RUNNERS_AUTH_TOKEN}
       N8N_RUNNERS_TASK_BROKER_URI: http://n8n:5679
       N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT: ${N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT}
