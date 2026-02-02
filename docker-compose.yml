@@ -89,37 +89,6 @@ services:
       services-egress-net:
         gw_priority: 1
 
-  gitea-init:
-    image: gitea/gitea:${GITEA_VERSION}
-    restart: "no"
-    user: "${GITEA_UID}:${GITEA_GID}"
-    depends_on:
-      gitea:
-        condition: service_healthy
-    entrypoint: /bin/sh
-    command: >-
-      -ec "
-      attempt=0;
-      until [ -f /data/gitea/conf/app.ini ]; do
-        attempt=$$((attempt+1));
-        if [ $$attempt -ge 60 ]; then
-          echo 'Gitea configuration not ready' >&2;
-          exit 1;
-        fi;
-        sleep 2;
-      done;
-      if gitea admin user list --config /data/gitea/conf/app.ini | grep -q '${GITEA_ROOT_USERNAME}'; then
-        gitea admin user change-password --config /data/gitea/conf/app.ini --username '${GITEA_ROOT_USERNAME}' --password '${GITEA_ROOT_PASSWORD}';
-      else
-        gitea admin user create --config /data/gitea/conf/app.ini --username '${GITEA_ROOT_USERNAME}' --password '${GITEA_ROOT_PASSWORD}' --email '${GITEA_ROOT_EMAIL}' --admin --must-change-password=false;
-      fi
-      "
-    volumes:
-      - gitea-data:/data
-    networks:
-      - apps-net
-      - data-net
-
   gitea-db:
     image: mariadb:${GITEA_DB_VERSION}
     restart: unless-stopped
@@ -237,32 +206,12 @@ services:
       services-egress-net:
         gw_priority: 1
 
-  ollama-init:
-    build:
-      context: ./ollama
-      args:
-        OLLAMA_VERSION: ${OLLAMA_VERSION}
-    restart: "no"
-    depends_on:
-      ollama:
-        condition: service_healthy
-    entrypoint: /bin/sh
-    command: >-
-      -ec "
-      export OLLAMA_HOST=http://ollama:11434;
-      ollama show '${OLLAMA_EMBEDDING_MODEL}' >/dev/null 2>&1 || ollama pull '${OLLAMA_EMBEDDING_MODEL}';
-      "
-    networks:
-      - ai-net
-
   open-webui:
     image: ghcr.io/open-webui/open-webui:${OPENWEBUI_VERSION}
     restart: unless-stopped
     depends_on:
       ollama:
         condition: service_healthy
-      ollama-init:
-        condition: service_completed_successfully
     environment:
       <<: *lab-env
       WEBUI_URL: ${OPENWEBUI_URL}
