@@ -27,4 +27,4 @@ Ambiente `code-server` dedicato allo sviluppo JavaScript e TypeScript. Serve per
 
 ## Nota operativa
 
-L'ambiente non viene pubblicato come scorciatoia diretta sulla dashboard. Il deck espone il briefing e l'host dedicato. Se non hai DNS interno, applica prima la mappa hosts del lab.
+L'ambiente non viene pubblicato come scorciatoia diretta sulla dashboard. Il deck espone il briefing, mentre l'accesso operativo reale passa da `localhost` sulla porta dedicata del workbench.

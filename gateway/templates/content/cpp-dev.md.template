@@ -27,4 +27,4 @@ Ambiente `code-server` per sviluppo C e C++. E pensato per compilazione nativa, 
 
 ## Nota operativa
 
-L'accesso e documentato qui in forma locale markdown, senza scorciatoia diretta in home. Se non hai DNS interno, applica prima la mappa hosts del lab.
+L'accesso e documentato qui in forma locale markdown, senza scorciatoia diretta in home. Il servizio resta raggiungibile su `localhost` tramite la porta dedicata del workbench.

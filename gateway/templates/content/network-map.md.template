@@ -2,12 +2,11 @@
 
 ## Come funziona il rework
 
-Il deck resta raggiungibile in locale su `${LAB_LOCAL_URL}`. Ogni servizio applicativo vive invece su un host dedicato dietro lo stesso gateway HTTPS.
+Il deck resta raggiungibile in locale su `${LAB_LOCAL_URL}`. Ogni servizio applicativo vive su una porta HTTPS dedicata di `localhost`, sempre dietro lo stesso gateway Caddy.
 
-## Host pubblici del lab
+## Endpoint pubblici del lab
 
 - Deck locale: `${LAB_LOCAL_URL}`
-- Deck canonico: `${LAB_URL}`
 - Gitea: `${GITEA_URL}`
 - n8n: `${N8N_URL}`
 - Open WebUI: `${OPENWEBUI_URL}`
@@ -17,17 +16,23 @@ Il deck resta raggiungibile in locale su `${LAB_LOCAL_URL}`. Ogni servizio appli
 - AI workbench: `${AI_DEV_URL}`
 - C++ workbench: `${CPP_DEV_URL}`
 
-## Se non hai DNS interno
+## Routing localhost multi-porta
 
-Applica una mappa hosts locale verso `${LAB_GATEWAY_IP}`:
+- `8443`: deck locale
+- `8444`: Gitea
+- `8445`: n8n
+- `8446`: Open WebUI
+- `8447`: Ollama
+- `8450`: Node workbench
+- `8451`: Python workbench
+- `8452`: AI workbench
+- `8453`: C++ workbench
 
-```text
-${LAB_GATEWAY_IP} ${LAB_CANONICAL_HOST} ${GITEA_HOST} ${N8N_HOST} ${OPENWEBUI_HOST} ${OLLAMA_HOST} ${NODE_DEV_HOST} ${PYTHON_DEV_HOST} ${AI_DEV_HOST} ${CPP_DEV_HOST}
-```
+Nessuna modifica a DNS o file `hosts`: basta usare `https://localhost:<porta>/`.
 
 ## Certificato
 
-Il gateway genera un certificato self-signed SAN che copre tutti gli host del lab. Dal deck puoi scaricarlo da `/assets/lab.crt`.
+Il gateway genera un certificato self-signed SAN che copre `localhost` e `127.0.0.1`. Dal deck puoi scaricarlo da `/assets/lab.crt`.
 
 ## Segmentazione interna
 

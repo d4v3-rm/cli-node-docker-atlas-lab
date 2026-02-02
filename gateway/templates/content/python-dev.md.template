@@ -27,4 +27,4 @@ Ambiente `code-server` per backend Python, automazioni, script operativi e tooli
 
 ## Nota operativa
 
-L'accesso operativo resta disponibile via host dedicato, mentre il deck espone solo questo briefing locale. Se non hai DNS interno, applica prima la mappa hosts del lab.
+L'accesso operativo resta disponibile via `localhost` sulla porta dedicata, mentre il deck espone solo questo briefing locale.

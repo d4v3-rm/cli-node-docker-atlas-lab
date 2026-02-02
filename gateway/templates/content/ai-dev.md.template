@@ -27,4 +27,4 @@ Ambiente `code-server` focalizzato su AI e data science. Integra un set di pacch
 
 ## Nota operativa
 
-Questo workbench e il punto corretto per sviluppo AI lato codice. `Open WebUI` resta invece la console di interazione browser. Se non hai DNS interno, applica prima la mappa hosts del lab.
+Questo workbench e il punto corretto per sviluppo AI lato codice. `Open WebUI` resta invece la console di interazione browser, raggiungibile sempre su `localhost` con la sua porta dedicata.

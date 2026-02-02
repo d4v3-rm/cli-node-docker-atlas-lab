@@ -20,7 +20,15 @@ services:
     env_file:
       - ./.env
     ports:
-      - "${LAB_HTTPS_PORT}:443"
+      - "${LAB_HTTPS_PORT}:${LAB_HTTPS_PORT}"
+      - "${GITEA_HTTPS_PORT}:${GITEA_HTTPS_PORT}"
+      - "${N8N_HTTPS_PORT}:${N8N_HTTPS_PORT}"
+      - "${OPENWEBUI_HTTPS_PORT}:${OPENWEBUI_HTTPS_PORT}"
+      - "${OLLAMA_HTTPS_PORT}:${OLLAMA_HTTPS_PORT}"
+      - "${NODE_DEV_HTTPS_PORT}:${NODE_DEV_HTTPS_PORT}"
+      - "${PYTHON_DEV_HTTPS_PORT}:${PYTHON_DEV_HTTPS_PORT}"
+      - "${AI_DEV_HTTPS_PORT}:${AI_DEV_HTTPS_PORT}"
+      - "${CPP_DEV_HTTPS_PORT}:${CPP_DEV_HTTPS_PORT}"
     volumes:
       - gateway-certs:/etc/caddy/certs
       - gateway-config:/etc/caddy/dynamic
@@ -51,7 +59,7 @@ services:
       <<: *lab-env
       USER_UID: ${GITEA_UID}
       USER_GID: ${GITEA_GID}
-      GITEA__server__DOMAIN: ${GITEA_HOST}
+      GITEA__server__DOMAIN: ${LAB_PUBLIC_HOST}
       GITEA__server__ROOT_URL: ${GITEA_URL}
       GITEA__server__HTTP_PORT: "3000"
       GITEA__server__PROTOCOL: http
@@ -146,7 +154,7 @@ services:
     environment:
       <<: *lab-env
       GENERIC_TIMEZONE: ${TZ}
-      N8N_HOST: ${N8N_HOST}
+      N8N_HOST: ${LAB_PUBLIC_HOST}
       N8N_PORT: "5678"
       N8N_PROTOCOL: https
       N8N_EDITOR_BASE_URL: ${N8N_URL}

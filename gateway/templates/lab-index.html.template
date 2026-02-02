@@ -693,16 +693,17 @@
             </h1>
             <p class="hero-copy">
               Pannello operativo unificato per repository, automazione, AI locale e workbench
-              opzionali. Il gateway Caddy espone ogni servizio sul proprio host dedicato e rende
+              opzionali. Il gateway Caddy espone ogni servizio su una porta HTTPS dedicata di
+              localhost e rende
               leggibili in un solo punto percorsi, credenziali root e funzione dei nodi attivi.
             </p>
             <div class="hero-strip">
               <span class="pill"><i class="fa-solid fa-link"></i> deck locale ${LAB_LOCAL_URL}</span>
               <span class="pill"><i class="fa-solid fa-lock"></i> ingress solo https</span>
-              <span class="pill"><i class="fa-solid fa-earth-europe"></i> host canonico ${LAB_URL}</span>
+              <span class="pill"><i class="fa-solid fa-earth-europe"></i> endpoint localhost ${LAB_URL}</span>
               <span class="pill"><i class="fa-solid fa-database"></i> persistenza su volumi</span>
               <span class="pill"><i class="fa-solid fa-bars-progress"></i> accessi e root in chiaro</span>
-              <span class="pill"><i class="fa-solid fa-diagram-next"></i> host separati, reti interne ed egress selettivo</span>
+              <span class="pill"><i class="fa-solid fa-diagram-next"></i> porte dedicate, reti interne ed egress selettivo</span>
             </div>
             <div class="stat-grid">
               <div class="stat">
@@ -733,7 +734,7 @@
               <p class="aside-title">access notes</p>
               <div class="aside-meta">
                 <span>Le credenziali root sono esposte qui e nel file <code>.env</code>.</span>
-                <span>I servizi usano host dedicati: se non hai DNS interno, applica la mappa hosts locale.</span>
+                <span>Nessun DNS o file hosts: tutti gli ingressi pubblici usano `localhost` con porte dedicate.</span>
                 <span>n8n resta protetto da gateway auth piu owner bootstrap applicativo.</span>
                 <span>Ollama e servito come API locale dietro host separato e auth gateway.</span>
                 <span>Postgres non ha UI pubblica e viene consumato soltanto dai workbench.</span>
@@ -760,7 +761,7 @@
           </div>
           <p>
             Ogni card spiega il servizio, mostra le credenziali root e apre direttamente il target
-            operativo sul proprio host dedicato. Le icone distinguono repository, automazione,
+            operativo sul proprio endpoint localhost. Le icone distinguono repository, automazione,
             interfacce AI e API modelli.
           </p>
         </div>
@@ -975,7 +976,7 @@
       <section class="footer-bar">
         <div class="footer-card">
           <strong>routing</strong>
-          <span>Il deck resta raggiungibile da <code>${LAB_LOCAL_URL}</code>, mentre ogni servizio usa un host dedicato instradato dal gateway Caddy.</span>
+          <span>Il deck resta raggiungibile da <code>${LAB_LOCAL_URL}</code>, mentre ogni servizio usa una porta HTTPS dedicata instradata dal gateway Caddy.</span>
         </div>
         <div class="footer-card">
           <strong>persistenza</strong>
