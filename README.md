@@ -1,334 +1,282 @@
-# 🧭 Lab Atlas
+# Lab Atlas
 
 ![Docker Compose](https://img.shields.io/badge/Docker%20Compose-v2-2496ED?logo=docker&logoColor=white)
-![HTTPS Only](https://img.shields.io/badge/Ingress-HTTPS%20Only-0F766E)
-![Caddy](https://img.shields.io/badge/Gateway-Caddy-1F2937?logo=caddy&logoColor=white)
-![Host Based Routing](https://img.shields.io/badge/Routing-Host--Based-7C3AED)
-![Self Hosted](https://img.shields.io/badge/Mode-Self--Hosted-CA8A04)
+![Gateway](https://img.shields.io/badge/Gateway-Caddy-1F2937?logo=caddy&logoColor=white)
+![Ingress](https://img.shields.io/badge/Ingress-HTTPS%20Only-0F766E)
+![Routing](https://img.shields.io/badge/Routing-localhost%20multiport-7C3AED)
+![Persistence](https://img.shields.io/badge/Persistence-Docker%20Volumes-CA8A04)
 ![Profiles](https://img.shields.io/badge/Compose-Workbench%20Profile-2563EB)
 
-> Una piattaforma self-hosted locale per codice, automazione, AI e ambienti di sviluppo browser-based, esposta tramite un unico gateway HTTPS ma organizzata con host dedicati, reti interne separate e persistenza solo su volumi Docker.
+> Piattaforma self-hosted locale per repository, automazione, AI e workbench browser-based, esposta interamente su `localhost` con porte HTTPS dedicate, senza dipendenza da DNS interno o modifiche al file `hosts`.
 
 ---
 
-## ✨ Cos'è questo progetto
+## Indice
 
-`cli-node-lab` non è una singola applicazione web: è un **laboratorio infrastrutturale self-hosted** costruito con Docker Compose.
-
-Il progetto accende un insieme coerente di servizi:
-
-- **Gitea** per repository Git, issue tracking e review.
-- **n8n** per workflow, integrazioni e automazione.
-- **Open WebUI** come interfaccia conversazionale per AI locale.
-- **Ollama** come motore di inference e embeddings.
-- **code-server** per workbench `Node`, `Python`, `AI` e `C++`.
-- **PostgreSQL** condiviso tra i workbench di sviluppo.
-- **Caddy** come gateway HTTPS unico, con deck HTML locale e reverse proxy host-based.
-
-L'obiettivo è avere un ambiente:
-
-- **portabile**
-- **self-hosted**
-- **segmentato internamente**
-- **semplice da avviare**
-- **navigabile da browser**
-- **senza bind mount sul filesystem del progetto**
-
-Tutta la persistenza è demandata a **volumi Docker nominati**.
+- [Panoramica](#panoramica)
+- [Perché questa architettura](#perché-questa-architettura)
+- [Catalogo servizi](#catalogo-servizi)
+- [Mappa porte e URL](#mappa-porte-e-url)
+- [Architettura di rete](#architettura-di-rete)
+- [Persistenza e dati](#persistenza-e-dati)
+- [Quick start](#quick-start)
+- [Accessi e credenziali](#accessi-e-credenziali)
+- [Workbench opzionali](#workbench-opzionali)
+- [File importanti del repository](#file-importanti-del-repository)
+- [Comandi utili](#comandi-utili)
+- [Verifiche consigliate](#verifiche-consigliate)
+- [Troubleshooting](#troubleshooting)
+- [Note di sicurezza](#note-di-sicurezza)
+- [Fonti ufficiali](#fonti-ufficiali)
 
 ---
 
-## 🧩 Concetti chiave
+## Panoramica
 
-### 1. Dashboard locale
+`cli-node-lab` non è una singola applicazione. È un **lab infrastrutturale locale** costruito con Docker Compose che mette insieme:
 
-Il punto di ingresso umano è:
+- `Gitea` per repository Git, issue tracking e review.
+- `n8n` per automazione, integrazioni e workflow.
+- `Open WebUI` per l’interfaccia conversazionale AI.
+- `Ollama` per inference locale e embeddings.
+- `code-server` per ambienti di sviluppo browser-based.
+- `PostgreSQL` condiviso tra i workbench.
+- `Caddy` come unico punto di ingresso HTTPS.
 
-- `https://localhost:8443/`
+L’obiettivo del progetto è avere un ambiente:
 
-Questa pagina è il **deck HTML del lab**:
+- self-hosted
+- locale
+- portabile
+- interamente HTTPS
+- persistente su volumi Docker
+- leggibile da browser
+- segmentato internamente
+- utilizzabile senza DNS interno e senza toccare `hosts`
 
-- mostra i servizi disponibili
-- espone ruolo e finalità di ogni servizio
-- mostra le credenziali operative definite nel lab
-- apre i servizi core in **una nuova tab**
-- apre briefing Markdown locali per i workbench, invece di esporre link diretti nel deck
+---
 
-### 2. Routing host-based
+## Perché questa architettura
 
-Ogni servizio non vive sotto subpath tipo `/lab/...`, ma sotto un **host dedicato**:
+In una fase precedente il lab usava host dedicati come:
 
 - `gitea.lab.home.arpa`
-- `n8n.lab.home.arpa`
 - `webui.lab.home.arpa`
-- `ollama.lab.home.arpa`
-- `node.lab.home.arpa`
-- `python.lab.home.arpa`
-- `ai.lab.home.arpa`
-- `cpp.lab.home.arpa`
+- `n8n.lab.home.arpa`
 
-Questa scelta evita i problemi classici dei frontend moderni serviti sotto subpath, in particolare con UI complesse come Open WebUI.
+Questa strategia funzionava bene a livello di reverse proxy, ma introduceva un vincolo operativo scomodo: per far funzionare davvero quegli URL sul browser locale era necessario:
 
-### 3. HTTPS only
+- avere un DNS interno
+- oppure modificare il file `hosts`
 
-Il gateway pubblica solo:
+Dato che il requisito attuale è **non toccare la macchina host**, il progetto è stato riorganizzato in modo diverso:
 
-- `443` interno nel container
-- `${LAB_HTTPS_PORT}` sul nodo host, attualmente `8443`
+- tutto resta su `localhost`
+- ogni servizio pubblico usa una **porta HTTPS dedicata**
+- il gateway `Caddy` continua a fare da reverse proxy
+- il deck HTML resta l’indice operativo del lab
+- Open WebUI non viene servito sotto subpath, quindi si evita di reintrodurre i problemi tipici dei frontend moderni dietro prefissi URL
 
-Non esiste una porta HTTP pubblica separata per il lab.
+### In pratica
 
-### 4. DNS locale o file hosts
+Invece di:
 
-Per aprire gli host dedicati dal browser, il tuo sistema operativo deve saper risolvere i nomi `*.lab.home.arpa`.
-
-Se non hai un DNS interno, devi usare:
-
-- il file `hosts`
-- oppure gli script PowerShell inclusi nel repo
-
-Se mancano queste entry, vedrai errori come:
-
-- `DNS_PROBE_FINISHED_NXDOMAIN`
-
-### 5. Profili Compose
-
-I servizi core partono con:
-
-```powershell
-docker compose up -d
+```text
+https://webui.lab.home.arpa:8443/
 ```
 
-I workbench partono solo col profilo dedicato:
+ora usi:
 
-```powershell
-docker compose --profile workbench up -d
+```text
+https://localhost:8446/
 ```
 
-Questa divisione tiene il core sempre disponibile, senza imporre l'avvio degli ambienti di sviluppo quando non servono.
+Questa è la scelta più pragmatica per:
+
+- ambiente locale
+- portabilità
+- semplicità operativa
+- assenza di dipendenze dal sistema host
 
 ---
 
-## 🏗️ Architettura ad alto livello
+## Catalogo servizi
 
-```text
-Browser
-  |
-  v
-Caddy Gateway (HTTPS only, host-based routing)
-  |----> Gitea
-  |----> n8n
-  |----> Open WebUI
-  |----> Ollama
-  |----> Node workbench
-  |----> Python workbench
-  |----> AI workbench
-  |----> C++ workbench
-  |
-  \----> deck HTML + briefing Markdown + certificato lab
-```
+### Servizi core
 
-### Segmentazione di rete
+| Servizio | Ruolo | Esposto | Note |
+| --- | --- | --- | --- |
+| Deck | dashboard del lab | sì | pagina iniziale con card, credenziali e link |
+| Gitea | forge Git interno | sì | repo, issue, review |
+| n8n | workflow automation | sì | protetto da auth gateway |
+| Open WebUI | UI conversazionale AI | sì | collegato a Ollama |
+| Ollama | API modelli / embeddings | sì | protetto da auth gateway |
 
-Il lab non usa una rete Docker unica. Le reti sono separate per funzione:
+### Workbench opzionali
+
+| Servizio | Ruolo | Esposto | Profilo |
+| --- | --- | --- | --- |
+| Node Forge | JS / TS / tooling Node | sì | `workbench` |
+| Python Grid | backend Python e scripting | sì | `workbench` |
+| AI Reactor | AI / data science / notebook | sì | `workbench` |
+| C++ Foundry | toolchain C/C++ | sì | `workbench` |
+| Postgres Vault | database condiviso | no UI web | `workbench` |
+
+---
+
+## Mappa porte e URL
+
+Tutti gli ingressi pubblici sono su `localhost` e usano HTTPS.
+
+| Servizio | URL |
+| --- | --- |
+| Deck | `https://localhost:8443/` |
+| Gitea | `https://localhost:8444/` |
+| n8n | `https://localhost:8445/` |
+| Open WebUI | `https://localhost:8446/` |
+| Ollama | `https://localhost:8447/` |
+| Node Forge | `https://localhost:8450/` |
+| Python Grid | `https://localhost:8451/` |
+| AI Reactor | `https://localhost:8452/` |
+| C++ Foundry | `https://localhost:8453/` |
+
+### Vantaggi di questo layout
+
+- nessuna modifica al file `hosts`
+- nessun DNS locale da configurare
+- nessun subpath fragile per UI complesse
+- bookmark semplici
+- debug immediato
+
+---
+
+## Architettura di rete
+
+Il lab non gira tutto sulla stessa rete Docker. La segmentazione è intenzionale.
+
+### Reti Docker
 
 | Rete | Tipo | Scopo |
 | --- | --- | --- |
-| `edge-net` | esposta | collega il gateway alla porta pubblica del nodo |
-| `apps-net` | `internal` | Gitea, n8n, Open WebUI |
-| `ai-net` | `internal` | Ollama, Open WebUI, init AI |
-| `data-net` | `internal` | MariaDB/Gitea e bootstrap correlato |
-| `workbench-net` | `internal` | Postgres e workbench code-server |
-| `services-egress-net` | egress | uscita internet selettiva per i servizi core |
-| `workbench-egress-net` | egress | uscita internet selettiva per i workbench |
+| `edge-net` | esposta | collega il gateway alle porte pubblicate |
+| `apps-net` | interna | Gitea, n8n, Open WebUI |
+| `ai-net` | interna | Ollama, Open WebUI, init AI |
+| `data-net` | interna | MariaDB e bootstrap Gitea |
+| `workbench-net` | interna | Postgres e workbench |
+| `services-egress-net` | egress | uscita internet selettiva per servizi core |
+| `workbench-egress-net` | egress | uscita internet selettiva per workbench |
 
-### Perché `home.arpa`
+### Principio di esposizione
 
-Gli host del lab usano il suffisso `home.arpa`, che è uno **special-use domain** standardizzato per scenari locali/home network. Questo riduce il rischio di collisioni con domini pubblici reali.
+L’unico container pubblicamente esposto è:
 
----
+- `gateway`
 
-## 📦 Catalogo servizi
+Tutti gli altri servizi:
 
-## 🛡️ Core sempre attivi
+- restano su reti Docker interne
+- vengono raggiunti dal browser solo tramite Caddy
 
-| Servizio | URL | Funzione | Accesso |
-| --- | --- | --- | --- |
-| Deck | `https://localhost:8443/` | dashboard locale del lab | libero |
-| Gitea | `https://gitea.lab.home.arpa:8443/` | Git forge, issue, review | login applicativo |
-| n8n | `https://n8n.lab.home.arpa:8443/` | workflow automation | basic auth gateway + owner app |
-| Open WebUI | `https://webui.lab.home.arpa:8443/` | UI AI locale | login applicativo |
-| Ollama | `https://ollama.lab.home.arpa:8443/` | API modelli / embeddings | basic auth gateway |
+### Perché è utile
 
-## 🧪 Workbench opzionali
-
-Questi servizi sono sotto profilo `workbench`:
-
-| Servizio | URL | Funzione |
-| --- | --- | --- |
-| Node Forge | `https://node.lab.home.arpa:8443/` | JavaScript, TypeScript, tooling Node |
-| Python Grid | `https://python.lab.home.arpa:8443/` | backend Python, script, tooling |
-| AI Reactor | `https://ai.lab.home.arpa:8443/` | AI, data science, notebooks |
-| C++ Foundry | `https://cpp.lab.home.arpa:8443/` | toolchain C/C++, build e debug |
-| Postgres Vault | non esposto sul gateway | database condiviso tra workbench |
+- meno superficie esposta
+- topologia più leggibile
+- separazione tra traffico applicativo, AI, dati e workbench
+- possibilità di controllare egress in modo selettivo
 
 ---
 
-## 🔐 Modello di autenticazione
+## Persistenza e dati
 
-Il lab usa più livelli di accesso, volutamente semplici per uso locale.
+Il progetto è stato ripulito per evitare bind mount dal filesystem del repository.
 
-### Gitea
+Tutta la persistenza usa **volumi Docker nominati**.
 
-- autenticazione applicativa
-- utente root bootstrap creato/aggiornato da `gitea-init`
+### Volumi principali
 
-### n8n
+| Volume | Contenuto |
+| --- | --- |
+| `gateway-certs` | certificati TLS del lab |
+| `gateway-config` | config runtime del gateway |
+| `gateway-site` | deck HTML, markdown renderizzati, asset |
+| `gateway-data` | dati runtime Caddy |
+| `gitea-data` | dati Gitea |
+| `gitea-db` | dati MariaDB |
+| `n8n-data` | dati n8n |
+| `ollama-data` | modelli e cache Ollama |
+| `open-webui-data` | dati applicativi Open WebUI |
+| `postgres-dev-data` | dati PostgreSQL |
+| `node-dev-home` / `node-dev-workspace` | home + workspace Node |
+| `python-dev-home` / `python-dev-workspace` | home + workspace Python |
+| `ai-dev-home` / `ai-dev-workspace` | home + workspace AI |
+| `cpp-dev-home` / `cpp-dev-workspace` | home + workspace C++ |
 
-- **primo livello:** basic auth sul gateway
-- **secondo livello:** owner bootstrap dentro n8n
+### Implicazioni pratiche
 
-### Open WebUI
+Se ricrei i container:
 
-- autenticazione applicativa interna
-- signup disabilitato
-- admin iniziale definito via env
+- il lab mantiene i dati
+- Gitea non perde repository e utenti
+- n8n conserva i workflow
+- Ollama conserva i modelli scaricati
+- Open WebUI conserva i dati applicativi
+- i workbench non perdono il workspace
 
-### Ollama
-
-- non ha UI pubblica del lab
-- è esposto come API dietro basic auth del gateway
-
-### Workbench code-server
-
-- autenticazione `password`
-- accesso operativo tramite host dedicato
-- nel deck non c'è un redirect diretto: c'è un briefing Markdown locale
-
-> Le credenziali operative correnti sono definite in [`.env`](./.env) e vengono anche visualizzate nel deck HTML.
-
----
-
-## 🗂️ Struttura del repository
-
-```text
-.
-├─ docker-compose.yml
-├─ .env
-├─ README.md
-├─ gateway/
-│  ├─ Dockerfile
-│  ├─ start-gateway.sh
-│  ├─ bootstrap-gateway.sh
-│  └─ templates/
-│     ├─ Caddyfile.template
-│     ├─ lab-index.html.template
-│     └─ content/
-│        ├─ network-map.md.template
-│        ├─ node-dev.md.template
-│        ├─ python-dev.md.template
-│        ├─ ai-dev.md.template
-│        ├─ cpp-dev.md.template
-│        └─ postgres-dev.md.template
-├─ n8n/
-│  └─ Dockerfile
-├─ n8n-runners/
-│  └─ Dockerfile
-├─ ollama/
-│  └─ Dockerfile
-├─ env/
-│  ├─ node/
-│  ├─ python/
-│  └─ cpp/
-└─ scripts/
-   ├─ install-lab-hosts.ps1
-   └─ remove-lab-hosts.ps1
-```
+Se rimuovi i volumi, azzeri lo stato persistente.
 
 ---
 
-## 🚀 Quick Start
+## Quick start
 
 ### 1. Prerequisiti
 
-Ti servono almeno:
+Ti servono:
 
 - Docker Desktop con Compose v2
-- PowerShell
-- privilegi amministrativi **solo** se vuoi scrivere il file `hosts` con lo script incluso
+- accesso a PowerShell
+- spazio disco sufficiente per immagini, volumi e modelli Ollama
 
-### 2. Controlla `.env`
+Non ti serve:
 
-Il file [`.env`](./.env) è già organizzato per sezioni:
+- DNS locale
+- modifica del file `hosts`
+- reverse proxy esterno
 
-- gateway e naming
+### 2. Controlla la configurazione
+
+Il file di configurazione centrale è [`.env`](./.env).
+
+Le sezioni principali sono:
+
+- ingress e URL pubblici
 - versioni immagini
-- host pubblici
 - credenziali root
+- impostazioni Open WebUI / Ollama
 - workbench
 - PostgreSQL
 
-Per un uso locale puoi avviare direttamente il lab. Se vuoi cambiare host, porte, password o versioni, questo è il punto corretto.
-
-### 3. Installa la mappa host locale
-
-### Windows
-
-Apri PowerShell **come amministratore**:
-
-```powershell
-cd <path-del-repo>
-.\scripts\install-lab-hosts.ps1
-```
-
-Lo script scrive nel file `hosts` le entry:
-
-```text
-127.0.0.1 lab.home.arpa
-127.0.0.1 gitea.lab.home.arpa
-127.0.0.1 n8n.lab.home.arpa
-127.0.0.1 webui.lab.home.arpa
-127.0.0.1 ollama.lab.home.arpa
-127.0.0.1 node.lab.home.arpa
-127.0.0.1 python.lab.home.arpa
-127.0.0.1 ai.lab.home.arpa
-127.0.0.1 cpp.lab.home.arpa
-```
-
-Per rimuoverle:
-
-```powershell
-.\scripts\remove-lab-hosts.ps1
-```
-
-### Linux / macOS
-
-Aggiungi manualmente nel tuo `hosts`:
-
-```text
-127.0.0.1 lab.home.arpa gitea.lab.home.arpa n8n.lab.home.arpa webui.lab.home.arpa ollama.lab.home.arpa node.lab.home.arpa python.lab.home.arpa ai.lab.home.arpa cpp.lab.home.arpa
-```
-
-### 4. Avvia il core
+### 3. Avvia il core
 
 ```powershell
 docker compose up -d
 ```
 
-### 5. Apri la dashboard
+### 4. Apri il deck
 
 ```text
 https://localhost:8443/
 ```
 
-Da qui puoi:
+Da lì puoi:
 
-- vedere tutti i servizi attivi
+- vedere i servizi attivi
+- leggere cosa fa ogni servizio
+- consultare le credenziali operative
 - aprire i servizi core in una nuova tab
-- leggere i briefing dei workbench
-- scaricare il certificato self-signed del lab
+- leggere i briefing Markdown dei workbench
+- scaricare il certificato del lab
 
-### 6. Avvia i workbench se servono
+### 5. Avvia i workbench se servono
 
 ```powershell
 docker compose --profile workbench up -d
@@ -342,194 +290,85 @@ docker compose --profile workbench up -d postgres-dev node-dev python-dev
 
 ---
 
-## 🪪 Hostname, DNS e problema `NXDOMAIN`
+## Accessi e credenziali
 
-Se apri:
+Le credenziali operative vivono in [`.env`](./.env) e sono riportate anche nel deck HTML.
 
-```text
-https://webui.lab.home.arpa:8443/
-```
+### Gitea
 
-e il browser risponde con:
+- URL: `https://localhost:8444/`
+- accesso: login applicativo
+- bootstrap admin: `root`
 
-- `DNS_PROBE_FINISHED_NXDOMAIN`
+### n8n
 
-il problema non è il container `open-webui`: è il tuo sistema operativo che **non risolve l'hostname**.
+- URL: `https://localhost:8445/`
+- primo livello: basic auth gateway
+- secondo livello: owner bootstrap dentro n8n
 
-### Come diagnosticarlo
+### Open WebUI
 
-Su Windows:
+- URL: `https://localhost:8446/`
+- accesso: login applicativo
+- signup: disabilitato
+- admin iniziale definito via env
 
-```powershell
-Resolve-DnsName webui.lab.home.arpa
-```
+### Ollama
 
-Se fallisce, devi:
+- URL: `https://localhost:8447/`
+- accesso: basic auth gateway
+- uso principale: API locale per inference e embeddings
 
-- configurare un DNS locale
-- oppure usare il file `hosts`
-
-### Perché il deck locale funziona comunque
-
-`https://localhost:8443/` funziona perché `localhost` viene già risolto dal sistema.
-
-Gli altri host del lab sono invece nomi custom, quindi senza DNS/hosts non possono funzionare.
-
----
-
-## 🔒 HTTPS e certificati
-
-Il gateway genera e usa un certificato **self-signed SAN** che copre gli host del lab.
-
-### Dove viene tenuto
-
-Non nel filesystem del progetto, ma nel volume Docker:
-
-- `gateway-certs`
-
-### Cosa significa in pratica
-
-- il browser può segnalare certificato non trusted finché non importi il certificato
-- il deck permette di scaricare il certificato da `/assets/lab.crt`
-- il lab resta comunque interamente sotto HTTPS
-
-### Filosofia adottata
-
-Per un lab locale:
-
-- HTTPS obbligatorio
-- certificato self-signed controllato localmente
-- niente dipendenza da ACME/Let's Encrypt
-
----
-
-## 🧠 Servizi nel dettaglio
-
-<details>
-<summary><strong>🧭 Gateway / Caddy</strong></summary>
-
-Il gateway:
-
-- è l'unico container con porta pubblicata
-- serve il deck HTML locale
-- serve i briefing Markdown
-- serve il certificato scaricabile
-- reverse-proxia tutti i servizi applicativi sui rispettivi host
-
-File chiave:
-
-- [gateway/Dockerfile](./gateway/Dockerfile)
-- [gateway/start-gateway.sh](./gateway/start-gateway.sh)
-- [gateway/bootstrap-gateway.sh](./gateway/bootstrap-gateway.sh)
-- [gateway/templates/Caddyfile.template](./gateway/templates/Caddyfile.template)
-- [gateway/templates/lab-index.html.template](./gateway/templates/lab-index.html.template)
-
-Scelte rilevanti:
-
-- `auto_https disable_redirects` per restare `https-only` senza listener HTTP accessorio
-- `protocols h1 h2` per evitare rumore HTTP/3 inutile in questo contesto
-- certificati caricati manualmente
-
-</details>
-
-<details>
-<summary><strong>🌿 Gitea + MariaDB + gitea-init</strong></summary>
-
-Gitea è il forge Git del lab.
-
-Ruoli:
-
-- `gitea`: applicazione web
-- `gitea-db`: MariaDB
-- `gitea-init`: job one-shot che crea o riallinea l'admin root
-
-Dettagli operativi:
-
-- SSH Git integrato disabilitato
-- registrazione pubblica disabilitata
-- visualizzazione richiede signin
-- cookie secure attivo
-- persistenza in volumi Docker
-
-`gitea-init` in `Exited (0)` è **normale**: non è un servizio long-running, è un bootstrap job.
-
-</details>
-
-<details>
-<summary><strong>⚙️ n8n + external runners</strong></summary>
-
-n8n viene esposto dietro reverse proxy HTTPS, con:
-
-- base URL coerente
-- cookie sicuri
-- basic auth gateway
-- runner esterni separati
-- telemetria, template e notification disabilitati
-
-Il sidecar `n8n-runners` serve a far girare i task runner in modo separato dal processo principale.
-
-Questo allineamento è utile perché:
-
-- riduce il coupling del processo n8n
-- separa il runtime dei Code node / task
-- rende la topologia più chiara
-
-Le immagini custom di `n8n` e `n8n-runners` esistono per sistemare il trust store TLS e mantenere funzionanti le richieste HTTPS outbound.
-
-</details>
-
-<details>
-<summary><strong>🤖 Open WebUI + Ollama</strong></summary>
-
-Open WebUI è configurato per parlare solo con Ollama:
-
-- `ENABLE_OPENAI_API=false`
-- `ENABLE_OLLAMA_API=true`
-
-In più:
-
-- embeddings locali via Ollama
-- modello embeddings bootstrapato con `ollama-init`
-- niente download runtime da Hugging Face per il percorso embeddings configurato
-
-Ollama è protetto da basic auth gateway e resta il backend AI del lab.
-
-Modello embeddings attuale:
-
-- `${OLLAMA_EMBEDDING_MODEL}` nella configurazione
-- attualmente `nomic-embed-text`
-
-</details>
-
-<details>
-<summary><strong>💻 Workbench code-server</strong></summary>
-
-I workbench sono pensati come ambienti browser-based persistenti:
-
-- `Node Forge`
-- `Python Grid`
-- `AI Reactor`
-- `C++ Foundry`
+### Workbench
 
 Ogni workbench usa:
 
 - `code-server`
-- password dedicata
-- workspace persistente su volume
-- home persistente su volume
+- autenticazione `password`
+- home persistente
+- workspace persistente
 
-I workbench non sono lanciati di default. Questo è intenzionale.
+Il deck non apre direttamente i workbench: mostra prima il briefing locale.
 
-</details>
+---
 
-<details>
-<summary><strong>🗄️ Postgres Vault</strong></summary>
+## Workbench opzionali
 
-`postgres-dev` non è esposto sul gateway e non ha UI web.
+I workbench non fanno parte del core obbligatorio. Vengono attivati tramite profilo Compose:
 
-Serve esclusivamente come database condiviso tra i workbench.
+```powershell
+docker compose --profile workbench up -d
+```
 
-Ogni workbench riceve già:
+### Node Forge
+
+- URL: `https://localhost:8450/`
+- orientato a: JavaScript, TypeScript, frontend, tooling Node
+- stack: Node, npm, pnpm, yarn
+
+### Python Grid
+
+- URL: `https://localhost:8451/`
+- orientato a: backend Python, script, utility, integrazioni
+
+### AI Reactor
+
+- URL: `https://localhost:8452/`
+- orientato a: AI, ML, data science, notebook e prototipi
+
+### C++ Foundry
+
+- URL: `https://localhost:8453/`
+- orientato a: C/C++, toolchain native, build e debug
+
+### Postgres Vault
+
+- nessuna UI web pubblica
+- host interno: `postgres-dev`
+- porta interna: `5432`
+- database condiviso dai workbench
+
+Le variabili già presenti nei workbench sono:
 
 - `PGHOST`
 - `PGPORT`
@@ -538,52 +377,32 @@ Ogni workbench riceve già:
 - `PGPASSWORD`
 - `DATABASE_URL`
 
-Quindi il database è immediatamente utilizzabile da CLI, ORM, script e toolchain interne.
-
-</details>
-
 ---
 
-## 💾 Persistenza
+## File importanti del repository
 
-Il progetto è stato ripulito per evitare bind mount dal filesystem del repository.
-
-Tutto persiste su **volumi Docker nominati**.
-
-### Volumi principali
-
-| Volume | Contenuto |
+| File | Ruolo |
 | --- | --- |
-| `gateway-certs` | certificati TLS del lab |
-| `gateway-config` | configurazione runtime del gateway |
-| `gateway-site` | deck HTML, contenuti statici e markdown renderizzati |
-| `gateway-data` | dati runtime di Caddy |
-| `gitea-data` | dati applicativi Gitea |
-| `gitea-db` | dati MariaDB |
-| `n8n-data` | dati n8n |
-| `ollama-data` | modelli e cache Ollama |
-| `open-webui-data` | dati applicativi Open WebUI |
-| `postgres-dev-data` | dati PostgreSQL |
-| `node-dev-home` / `node-dev-workspace` | home e workspace Node |
-| `python-dev-home` / `python-dev-workspace` | home e workspace Python |
-| `ai-dev-home` / `ai-dev-workspace` | home e workspace AI |
-| `cpp-dev-home` / `cpp-dev-workspace` | home e workspace C++ |
-
-### Implicazione pratica
-
-Se ricrei i container:
-
-- i dati restano
-- le configurazioni bootstrap restano
-- i workbench non perdono workspace
-
-Se elimini i volumi, azzeri il lab.
+| [docker-compose.yml](./docker-compose.yml) | orchestrazione principale |
+| [`.env`](./.env) | naming, URL, versioni e credenziali |
+| [gateway/templates/Caddyfile.template](./gateway/templates/Caddyfile.template) | routing localhost multi-porta |
+| [gateway/templates/lab-index.html.template](./gateway/templates/lab-index.html.template) | dashboard HTML del lab |
+| [gateway/bootstrap-gateway.sh](./gateway/bootstrap-gateway.sh) | rendering template, cert e bootstrap gateway |
+| [gateway/templates/content/network-map.md.template](./gateway/templates/content/network-map.md.template) | topologia pubblica del lab |
+| [gateway/templates/content/node-dev.md.template](./gateway/templates/content/node-dev.md.template) | briefing Node Forge |
+| [gateway/templates/content/python-dev.md.template](./gateway/templates/content/python-dev.md.template) | briefing Python Grid |
+| [gateway/templates/content/ai-dev.md.template](./gateway/templates/content/ai-dev.md.template) | briefing AI Reactor |
+| [gateway/templates/content/cpp-dev.md.template](./gateway/templates/content/cpp-dev.md.template) | briefing C++ Foundry |
+| [gateway/templates/content/postgres-dev.md.template](./gateway/templates/content/postgres-dev.md.template) | briefing Postgres Vault |
+| [n8n/Dockerfile](./n8n/Dockerfile) | immagine custom n8n con trust store corretto |
+| [n8n-runners/Dockerfile](./n8n-runners/Dockerfile) | immagine custom runners n8n |
+| [ollama/Dockerfile](./ollama/Dockerfile) | immagine custom minima Ollama per probe puliti |
 
 ---
 
-## 🛠️ Comandi operativi utili
+## Comandi utili
 
-### Avvio
+### Avvio core
 
 ```powershell
 docker compose up -d
@@ -601,26 +420,28 @@ docker compose --profile workbench up -d
 docker compose ps -a
 ```
 
-### Log aggregati
+### Validazione configurazione
+
+```powershell
+docker compose config
+```
+
+### Log
 
 ```powershell
 docker compose logs -f
-```
-
-### Log di un servizio
-
-```powershell
 docker compose logs -f gateway
 docker compose logs -f open-webui
 docker compose logs -f n8n
+docker compose logs -f gitea
 ```
 
 ### Rebuild mirato
 
 ```powershell
 docker compose up -d --build gateway
-docker compose up -d --build ollama open-webui
 docker compose up -d --build n8n n8n-runners
+docker compose up -d --build ollama open-webui
 ```
 
 ### Stop
@@ -635,15 +456,9 @@ docker compose down
 docker compose --profile workbench down
 ```
 
-### Validazione Compose
-
-```powershell
-docker compose config
-```
-
 ---
 
-## ✅ Verifiche consigliate dopo l'avvio
+## Verifiche consigliate
 
 ### Deck
 
@@ -651,74 +466,61 @@ docker compose config
 curl.exe -sk https://localhost:8443/ -o NUL -w "%{http_code}"
 ```
 
-Atteso:
-
-```text
-200
-```
-
 ### Gitea
 
 ```powershell
-curl.exe -sk --resolve gitea.lab.home.arpa:8443:127.0.0.1 https://gitea.lab.home.arpa:8443/ -o NUL -w "%{http_code}"
+curl.exe -sk https://localhost:8444/ -o NUL -w "%{http_code}"
 ```
 
 ### n8n
 
 ```powershell
-curl.exe -sk --resolve n8n.lab.home.arpa:8443:127.0.0.1 https://n8n.lab.home.arpa:8443/ -o NUL -w "%{http_code}"
+curl.exe -sk https://localhost:8445/ -o NUL -w "%{http_code}"
 ```
-
-Con gateway auth, il browser ti chiederà le credenziali.
 
 ### Open WebUI
 
 ```powershell
-curl.exe -sk --resolve webui.lab.home.arpa:8443:127.0.0.1 https://webui.lab.home.arpa:8443/ -o NUL -w "%{http_code}"
+curl.exe -sk https://localhost:8446/ -o NUL -w "%{http_code}"
 ```
 
 ### Ollama
 
 ```powershell
-curl.exe -sk --resolve ollama.lab.home.arpa:8443:127.0.0.1 https://ollama.lab.home.arpa:8443/api/tags
+curl.exe -sk https://localhost:8447/api/tags
 ```
 
-### Compose health
+### Stato health
 
 ```powershell
 docker compose ps -a
 ```
 
-Controlla che:
+Atteso:
 
-- `gitea`, `gitea-db`, `n8n`, `n8n-runners`, `ollama`, `open-webui` siano `healthy`
-- `gitea-init` e `ollama-init` risultino `Exited (0)`
+- `gitea`, `gitea-db`, `n8n`, `n8n-runners`, `ollama`, `open-webui` `healthy`
+- `gitea-init` e `ollama-init` `Exited (0)`
 
 ---
 
-## 🧯 Troubleshooting
+## Troubleshooting
 
-### Browser: `DNS_PROBE_FINISHED_NXDOMAIN`
+### Il deck apre ma un servizio non risponde
 
-Causa:
+Controlla:
 
-- hostname `*.lab.home.arpa` non risolto localmente
+1. `docker compose ps -a`
+2. `docker compose logs -f <servizio>`
+3. che la porta del servizio sia corretta
 
-Soluzione:
+### Il browser mostra warning certificato
 
-- esegui [scripts/install-lab-hosts.ps1](./scripts/install-lab-hosts.ps1) da PowerShell elevata
-- oppure configura un DNS interno
+Normale: il lab usa un certificato self-signed.
 
-### Browser: warning certificato
+Puoi:
 
-Causa:
-
-- il lab usa certificati self-signed
-
-Soluzione:
-
-- scarica `/assets/lab.crt` dal deck
-- importalo nel trust store locale se vuoi evitare il warning
+- accettarlo temporaneamente nel browser
+- oppure scaricare `/assets/lab.crt` dal deck e importarlo nel trust store locale
 
 ### `gitea-init` è `Exited (0)`
 
@@ -726,106 +528,79 @@ Non è un errore.
 
 È un job one-shot che:
 
-- aspetta `app.ini`
-- crea o riallinea l'admin root
-- termina correttamente
+- aspetta la configurazione di Gitea
+- crea o riallinea l’utente admin
+- termina
 
-### `docker compose up` non mostra i workbench
+### `ollama-init` è `Exited (0)`
 
-Normale.
+Anche questo è normale.
 
-I workbench sono dietro il profilo:
+Serve per:
+
+- aspettare `ollama`
+- verificare la presenza del modello embeddings
+- scaricarlo se manca
+- terminare
+
+### I workbench non compaiono in `docker compose up`
+
+Normale: sono dietro profilo.
+
+Usa:
 
 ```powershell
 docker compose --profile workbench up -d
 ```
 
-### n8n chiede due credenziali diverse
+### Open WebUI parte ma non vede i modelli
+
+Controlla:
+
+- `docker compose ps -a`
+- `docker compose logs open-webui`
+- `docker compose logs ollama`
+- la risposta di `https://localhost:8447/api/tags`
+
+### n8n chiede due livelli di credenziali
 
 Normale.
 
 Hai:
 
-- basic auth del gateway
-- owner bootstrap dentro n8n
-
-### Open WebUI parte ma non risponde dal browser
-
-Controlla in ordine:
-
-1. hostname risolto
-2. certificato accettato
-3. `docker compose ps -a`
-4. log di `open-webui`
-5. log di `ollama`
-
-### Il deck locale funziona ma gli host dedicati no
-
-Quasi sempre significa:
-
-- `localhost` funziona
-- `*.lab.home.arpa` non sono in DNS/hosts
+- auth del gateway
+- auth applicativa dell’owner bootstrap
 
 ---
 
-## 🧱 File chiave del progetto
+## Note di sicurezza
 
-| File | Ruolo |
-| --- | --- |
-| [docker-compose.yml](./docker-compose.yml) | orchestrazione principale |
-| [`.env`](./.env) | naming, versioni, credenziali e parametri del lab |
-| [gateway/templates/Caddyfile.template](./gateway/templates/Caddyfile.template) | routing host-based HTTPS |
-| [gateway/templates/lab-index.html.template](./gateway/templates/lab-index.html.template) | deck HTML del lab |
-| [gateway/templates/content/network-map.md.template](./gateway/templates/content/network-map.md.template) | topologia e mappa host |
-| [scripts/install-lab-hosts.ps1](./scripts/install-lab-hosts.ps1) | installazione hosts su Windows |
-| [scripts/remove-lab-hosts.ps1](./scripts/remove-lab-hosts.ps1) | rimozione hosts su Windows |
+Questo repository è pensato per:
 
----
+- uso locale
+- laboratorio tecnico
+- rete interna controllata
 
-## 🧭 Filosofia del lab
+Non è un deployment internet-facing già hardenizzato.
 
-Le decisioni architetturali principali sono queste:
-
-- **Compose, non Kubernetes**
-- **Caddy come edge gateway**
-- **routing per host, non per subpath**
-- **reti interne separate**
-- **egress selettivo**
-- **volumi Docker nominati per tutta la persistenza**
-- **workbench opzionali via profilo**
-- **dashboard locale come indice operativo**
-
-Questa combinazione tiene il progetto:
-
-- semplice da capire
-- portabile su una singola macchina
-- più robusto di una stack "tutto sulla stessa rete"
-- meno fragile dei proxy sotto subpath
-
----
-
-## ⚠️ Note di sicurezza
-
-Questo repository è pensato come **lab locale / rete interna**, non come deployment internet-facing hardenizzato.
-
-Punti da tenere presenti:
+Punti importanti:
 
 - le credenziali sono in [`.env`](./.env)
 - il certificato è self-signed
-- `n8n` e `Ollama` usano basic auth gateway
-- i servizi non dovrebbero essere esposti direttamente a internet senza ulteriori misure
+- n8n e Ollama sono protetti da auth gateway
+- i servizi non dovrebbero essere pubblicati direttamente su internet senza ulteriori misure
 
-Se vuoi alzare il livello:
+Se vuoi irrigidire ulteriormente il setup:
 
-- sposta i segreti su Docker secrets o `_FILE`
-- usa un DNS interno serio
+- sposta i segreti su Docker secrets o file dedicati
 - usa una CA interna o certificati trusted
-- limita ulteriormente egress e accessi
-- aggiungi backup formale dei volumi
+- aggiungi backup formalizzati dei volumi
+- riduci ulteriormente la superficie di egress
+- introduci monitoraggio e health reporting esterni
 
 ---
 
-## 📚 Fonti ufficiali utili
+## Fonti ufficiali
 
 ### Docker
 
@@ -840,8 +615,8 @@ Se vuoi alzare il livello:
 
 - Caddyfile options: https://caddyserver.com/docs/caddyfile/options
 - Automatic HTTPS: https://caddyserver.com/docs/automatic-https
-- The Caddyfile: https://caddyserver.com/docs/caddyfile
 - reverse_proxy: https://caddyserver.com/docs/caddyfile/directives/reverse_proxy
+- TLS in Caddy: https://caddyserver.com/docs/caddyfile/directives/tls
 
 ### Gitea
 
@@ -851,19 +626,18 @@ Se vuoi alzare il livello:
 ### n8n
 
 - Environment variables overview: https://docs.n8n.io/hosting/configuration/environment-variables/
-- Deployment environment variables: https://docs.n8n.io/hosting/configuration/environment-variables/deployment/
+- Deployment variables: https://docs.n8n.io/hosting/configuration/environment-variables/deployment/
 - Configuration methods: https://docs.n8n.io/hosting/configuration/configuration-methods/
-- Isolate n8n: https://docs.n8n.io/hosting/configuration/configuration-examples/isolation/
-- Set up SSL behind reverse proxy: https://docs.n8n.io/hosting/securing/set-up-ssl/
 - Hardening task runners: https://docs.n8n.io/hosting/securing/hardening-task-runners/
+- Set up SSL behind reverse proxy: https://docs.n8n.io/hosting/securing/set-up-ssl/
 
 ### Open WebUI
 
-- Environment variable configuration: https://docs.openwebui.com/getting-started/env-configuration
+- Environment variables: https://docs.openwebui.com/getting-started/env-configuration
 
 ### Ollama
 
-- API overview: https://docs.ollama.com/api
+- API reference: https://docs.ollama.com/api
 - Embeddings: https://docs.ollama.com/capabilities/embeddings
 - Embed API: https://docs.ollama.com/api/embed
 - FAQ: https://docs.ollama.com/faq
@@ -872,21 +646,18 @@ Se vuoi alzare il livello:
 
 - Overview: https://coder.com/docs/code-server/
 - Install: https://coder.com/docs/code-server/install
-- Guide: https://coder.com/docs/code-server/guide
 - FAQ: https://coder.com/docs/code-server/FAQ
-
-### Naming locale
-
-- RFC 8375, `home.arpa`: https://www.rfc-editor.org/rfc/rfc8375
 
 ---
 
-## 🏁 In sintesi
+## In sintesi
 
-Se vuoi usare questo progetto bene, ricordati tre regole:
+Questo progetto ora segue una regola semplice:
 
-1. Apri il deck da `https://localhost:8443/`.
-2. Mappa gli host `*.lab.home.arpa` sul tuo sistema, altrimenti gli URL dedicati non funzionano.
-3. Considera i workbench come un profilo opzionale, non parte obbligatoria del core.
+- tutto quello che ti serve dal browser sta su `https://localhost`
+- ogni servizio ha una porta HTTPS dedicata
+- il gateway resta il solo punto esposto
+- non devi toccare il file `hosts`
+- i workbench restano opzionali
 
-Se queste tre condizioni sono rispettate, il lab risulta coerente, leggibile e operativamente comodo per sviluppo locale, automazione, repository management e AI self-hosted.
+Se vuoi una piattaforma locale self-hosted pulita, leggibile e meno fragile di un setup a subpath o host custom, questa è la direzione corretta.
