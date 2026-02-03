@@ -22,6 +22,7 @@
 - [Quick start](#quick-start)
 - [Accessi e credenziali](#accessi-e-credenziali)
 - [Workbench opzionali](#workbench-opzionali)
+- [Bootstrap Python](#bootstrap-python)
 - [File importanti del repository](#file-importanti-del-repository)
 - [Comandi utili](#comandi-utili)
 - [Verifiche consigliate](#verifiche-consigliate)
@@ -160,7 +161,7 @@ Il lab non gira tutto sulla stessa rete Docker. La segmentazione è intenzionale
 | --- | --- | --- |
 | `edge-net` | esposta | collega il gateway alle porte pubblicate |
 | `apps-net` | interna | Gitea, n8n, Open WebUI |
-| `ai-net` | interna | Ollama, Open WebUI, init AI |
+| `ai-net` | interna | Ollama e Open WebUI |
 | `data-net` | interna | MariaDB e bootstrap Gitea |
 | `workbench-net` | interna | Postgres e workbench |
 | `services-egress-net` | egress | uscita internet selettiva per servizi core |
@@ -233,7 +234,8 @@ Se rimuovi i volumi, azzeri lo stato persistente.
 Ti servono:
 
 - Docker Desktop con Compose v2
-- accesso a PowerShell
+- Python 3 sul nodo host
+- accesso a PowerShell o terminale equivalente
 - spazio disco sufficiente per immagini, volumi e modelli Ollama
 
 Non ti serve:
@@ -255,13 +257,34 @@ Le sezioni principali sono:
 - workbench
 - PostgreSQL
 
-### 3. Avvia il core
+### 3. Avvio consigliato
+
+```powershell
+python scripts/lab_up.py
+```
+
+Questo comando fa due cose:
+
+1. esegue `docker compose up -d`
+2. lancia il bootstrap Python idempotente
+3. rimuove eventuali residui legacy di init rimasti da versioni precedenti
+
+Il bootstrap Python:
+
+- crea o riallinea l'admin root di Gitea
+- verifica la presenza del modello embeddings di Ollama
+- scarica il modello se manca
+
+### 4. Avvio manuale alternativo
+
+Se preferisci tenere separati start e bootstrap:
 
 ```powershell
 docker compose up -d
+python scripts/bootstrap_lab.py
 ```
 
-### 4. Apri il deck
+### 5. Apri il deck
 
 ```text
 https://localhost:8443/
@@ -276,7 +299,7 @@ Da lì puoi:
 - leggere i briefing Markdown dei workbench
 - scaricare il certificato del lab
 
-### 5. Avvia i workbench se servono
+### 6. Avvia i workbench se servono
 
 ```powershell
 docker compose --profile workbench up -d
@@ -286,6 +309,12 @@ Oppure solo alcuni:
 
 ```powershell
 docker compose --profile workbench up -d postgres-dev node-dev python-dev
+```
+
+Se vuoi includere anche i workbench nel flusso con bootstrap:
+
+```powershell
+python scripts/lab_up.py --with-workbench
 ```
 
 ---
@@ -379,6 +408,39 @@ Le variabili già presenti nei workbench sono:
 
 ---
 
+## Bootstrap Python
+
+Il progetto non usa più servizi Compose di init come `gitea-init` o `ollama-init`.
+
+La scelta è intenzionale:
+
+- niente container `Exited (0)` nel runtime stabile
+- niente servizi one-shot lasciati in `docker compose ps`
+- niente immagine dedicata di init per Ollama
+- bootstrap esplicito, idempotente e leggibile
+- cleanup automatico dell'eventuale vecchia immagine `cli-node-lab-ollama-init:latest`
+
+### Script disponibili
+
+| Script | Ruolo |
+| --- | --- |
+| `python scripts/lab_up.py` | esegue `up -d`, bootstrap e cleanup legacy |
+| `python scripts/lab_up.py --build` | fa rebuild + up + bootstrap + cleanup legacy |
+| `python scripts/lab_up.py --with-workbench` | avvia anche il profilo workbench e fa bootstrap + cleanup |
+| `python scripts/bootstrap_lab.py` | riesegue solo il bootstrap |
+
+### Cosa fa `bootstrap_lab.py`
+
+1. aspetta che `gitea` sia `healthy`
+2. crea o aggiorna l'utente admin di Gitea
+3. aspetta che `ollama` sia `healthy`
+4. controlla il modello embeddings configurato
+5. esegue il pull del modello se non è ancora presente
+
+Il bootstrap è idempotente: puoi rilanciarlo in sicurezza.
+
+---
+
 ## File importanti del repository
 
 | File | Ruolo |
@@ -397,6 +459,8 @@ Le variabili già presenti nei workbench sono:
 | [n8n/Dockerfile](./n8n/Dockerfile) | immagine custom n8n con trust store corretto |
 | [n8n-runners/Dockerfile](./n8n-runners/Dockerfile) | immagine custom runners n8n |
 | [ollama/Dockerfile](./ollama/Dockerfile) | immagine custom minima Ollama per probe puliti |
+| [scripts/bootstrap_lab.py](./scripts/bootstrap_lab.py) | bootstrap host-side di Gitea e Ollama |
+| [scripts/lab_up.py](./scripts/lab_up.py) | `up + bootstrap` in un solo comando |
 
 ---
 
@@ -405,13 +469,20 @@ Le variabili già presenti nei workbench sono:
 ### Avvio core
 
 ```powershell
-docker compose up -d
+python scripts/lab_up.py
 ```
 
 ### Avvio completo con workbench
 
 ```powershell
-docker compose --profile workbench up -d
+python scripts/lab_up.py --with-workbench
+```
+
+### Avvio manuale con bootstrap separato
+
+```powershell
+docker compose up -d
+python scripts/bootstrap_lab.py
 ```
 
 ### Stato
@@ -499,7 +570,7 @@ docker compose ps -a
 Atteso:
 
 - `gitea`, `gitea-db`, `n8n`, `n8n-runners`, `ollama`, `open-webui` `healthy`
-- `gitea-init` e `ollama-init` `Exited (0)`
+- nessun servizio di init presente nella stack stabile
 
 ---
 
@@ -522,26 +593,18 @@ Puoi:
 - accettarlo temporaneamente nel browser
 - oppure scaricare `/assets/lab.crt` dal deck e importarlo nel trust store locale
 
-### `gitea-init` è `Exited (0)`
+### Non vedo l'utente root di Gitea o il modello Ollama
 
-Non è un errore.
+Rilancia il bootstrap:
 
-È un job one-shot che:
+```powershell
+python scripts/bootstrap_lab.py
+```
 
-- aspetta la configurazione di Gitea
-- crea o riallinea l’utente admin
-- termina
+Lo script è idempotente e riallinea:
 
-### `ollama-init` è `Exited (0)`
-
-Anche questo è normale.
-
-Serve per:
-
-- aspettare `ollama`
-- verificare la presenza del modello embeddings
-- scaricarlo se manca
-- terminare
+- admin Gitea
+- modello embeddings di Ollama
 
 ### I workbench non compaiono in `docker compose up`
 
