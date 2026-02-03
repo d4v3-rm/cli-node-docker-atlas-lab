@@ -19,6 +19,7 @@
 - [Mappa porte e URL](#mappa-porte-e-url)
 - [Architettura di rete](#architettura-di-rete)
 - [Persistenza e dati](#persistenza-e-dati)
+- [Requisiti Host E Dipendenze](#requisiti-host-e-dipendenze)
 - [Quick start](#quick-start)
 - [Accessi e credenziali](#accessi-e-credenziali)
 - [Workbench opzionali](#workbench-opzionali)
@@ -227,6 +228,66 @@ Se rimuovi i volumi, azzeri lo stato persistente.
 
 ---
 
+## Requisiti Host E Dipendenze
+
+Questa stack gira bene su una macchina locale moderna, ma non è "gratis" in termini di risorse: `Ollama`, `Open WebUI`, `n8n`, `Gitea`, `MariaDB`, `Caddy` e gli eventuali workbench convivono nello stesso host Docker.
+
+### Requisiti software obbligatori
+
+- `Docker Desktop` con `Docker Compose v2` attivo
+- `Python 3` installato sul nodo host
+- un terminale da cui eseguire `docker` e `python`
+
+### Dipendenze Python reali
+
+Gli script [scripts/lab_up.py](./scripts/lab_up.py) e [scripts/bootstrap_lab.py](./scripts/bootstrap_lab.py):
+
+- usano solo la standard library di Python
+- non richiedono `pip install`
+- non richiedono virtualenv
+- non richiedono pacchetti terzi come `requests`, `click` o simili
+
+### Requisiti host consigliati
+
+- CPU: almeno `4 vCPU` consigliate
+- RAM: almeno `8 GB`, meglio `12-16 GB` se usi anche Ollama e i workbench
+- Disco: almeno `20 GB` liberi per immagini, volumi e modelli Ollama
+
+### Porte che devono essere libere sulla macchina host
+
+Il gateway pubblica queste porte HTTPS su `localhost`:
+
+- `8443` deck
+- `8444` Gitea
+- `8445` n8n
+- `8446` Open WebUI
+- `8447` Ollama
+- `8450-8453` workbench opzionali
+
+Se una di queste porte è già occupata da un altro processo, il `docker compose up` fallirà.
+
+### Componenti host che non servono
+
+Non servono:
+
+- DNS locale
+- modifica del file `hosts`
+- reverse proxy installato sulla macchina host
+- database installati sul sistema host
+- Node.js, pnpm, yarn, PostgreSQL o MariaDB installati fuori da Docker
+
+### Note TLS locali
+
+Il lab usa un certificato self-signed generato per `localhost`.
+
+Questo comporta che:
+
+- il browser potrebbe mostrare un warning al primo accesso
+- puoi proseguire temporaneamente
+- oppure puoi importare il certificato del lab nel trust store locale
+
+---
+
 ## Quick start
 
 ### 1. Prerequisiti
@@ -236,6 +297,7 @@ Ti servono:
 - Docker Desktop con Compose v2
 - Python 3 sul nodo host
 - accesso a PowerShell o terminale equivalente
+- almeno 8 GB di RAM consigliati lato Docker
 - spazio disco sufficiente per immagini, volumi e modelli Ollama
 
 Non ti serve:
@@ -243,6 +305,18 @@ Non ti serve:
 - DNS locale
 - modifica del file `hosts`
 - reverse proxy esterno
+
+### 1.1 Verifica rapida delle dipendenze
+
+Puoi controllare il minimo indispensabile così:
+
+```powershell
+docker version
+docker compose version
+python --version
+```
+
+Se uno di questi tre comandi fallisce, il lab non è pronto per il bootstrap.
 
 ### 2. Controlla la configurazione
 
@@ -263,7 +337,9 @@ Le sezioni principali sono:
 python scripts/lab_up.py
 ```
 
-Questo comando fa due cose:
+Questo è il comando consigliato per avviare il lab da zero o riallinearne lo stato.
+
+Questo comando fa tre cose:
 
 1. esegue `docker compose up -d`
 2. lancia il bootstrap Python idempotente
@@ -283,6 +359,12 @@ Se preferisci tenere separati start e bootstrap:
 docker compose up -d
 python scripts/bootstrap_lab.py
 ```
+
+Usa questa modalità solo se vuoi separare chiaramente:
+
+- accensione dei container
+- bootstrap applicativo iniziale
+- troubleshooting step-by-step
 
 ### 5. Apri il deck
 
