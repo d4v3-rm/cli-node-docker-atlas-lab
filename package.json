@@ -1,0 +1,15 @@
+{
+  "name": "lab-atlas",
+  "version": "1.0.0",
+  "description": "Node.js CLI for the Lab Atlas local stack",
+  "type": "module",
+  "bin": {
+    "lab-atlas": "./src/cli.mjs"
+  },
+  "scripts": {
+    "dev": "node ./src/cli.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
