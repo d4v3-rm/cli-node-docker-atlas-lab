@@ -7,8 +7,16 @@
     "lab-atlas": "./src/cli.mjs"
   },
   "scripts": {
-    "dev": "node ./src/cli.mjs"
+    "dev": "node ./src/cli.mjs",
+    "build": "node ./tools/build.mjs",
+    "prepack": "npm run build",
+    "pack:local": "npm pack"
   },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
   "engines": {
     "node": ">=20"
   }
