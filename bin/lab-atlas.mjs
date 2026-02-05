@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import process from 'node:process';
-import { runCli } from './main.mjs';
+import { runCli } from '../src/main.mjs';
 
 runCli().catch((error) => {
   console.error(error.message);

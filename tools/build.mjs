@@ -7,12 +7,12 @@ import { fileURLToPath } from 'node:url';
 
 const toolDirectory = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(toolDirectory, '..');
-const sourceRoot = join(projectRoot, 'src');
 const outputRoot = join(projectRoot, 'dist');
-const outputEntry = join(outputRoot, 'cli.mjs');
+const outputEntry = join(outputRoot, 'bin', 'lab-atlas.mjs');
 
 rmSync(outputRoot, { recursive: true, force: true });
-copyTree(sourceRoot, outputRoot);
+copyTree(join(projectRoot, 'bin'), join(outputRoot, 'bin'));
+copyTree(join(projectRoot, 'src'), join(outputRoot, 'src'));
 
 if (process.platform !== 'win32') {
   chmodSync(outputEntry, 0o755);

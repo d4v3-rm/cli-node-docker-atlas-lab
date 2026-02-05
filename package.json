@@ -4,16 +4,15 @@
   "description": "Node.js CLI for the Lab Atlas local stack",
   "type": "module",
   "bin": {
-    "lab-atlas": "./src/cli.mjs"
+    "lab-atlas": "./bin/lab-atlas.mjs"
   },
   "scripts": {
-    "dev": "node ./src/cli.mjs",
+    "dev": "node ./bin/lab-atlas.mjs",
     "build": "node ./tools/build.mjs",
-    "prepack": "npm run build",
     "pack:local": "npm pack"
   },
   "files": [
-    "dist",
+    "bin",
     "src",
     "README.md"
   ],
