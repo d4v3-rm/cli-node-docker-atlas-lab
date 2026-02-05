@@ -206,7 +206,7 @@ Se rimuovi i volumi, azzeri lo stato persistente.
 
 La CLI del progetto:
 
-- vive in [package.json](./package.json) e [src/cli.mjs](./src/cli.mjs)
+- vive in [package.json](./package.json), [bin/lab-atlas.mjs](./bin/lab-atlas.mjs) e [src/main.mjs](./src/main.mjs)
 - usa solo moduli built-in di Node.js
 - non richiede dipendenze runtime di terze parti
 - non richiede `npm install` per essere eseguita in dev mode
@@ -288,10 +288,18 @@ La CLI sostituisce il vecchio bootstrap Python e i vecchi servizi Compose di ini
 | Modalita | Comando | Scopo |
 | --- | --- | --- |
 | dev mode | `npm run dev -- up` | usa la CLI sorgente senza build |
-| build | `npm run build` | genera `dist/cli.mjs` |
+| build | `npm run build` | genera un mirror distributable in `dist/` |
 | pack locale | `npm run pack:local` | crea un tarball npm locale |
 | install globale | `npm install -g .` | installa `lab-atlas` globalmente dalla repo |
 | link globale | `npm link` | collega la repo come CLI globale durante lo sviluppo |
+
+### Layout rapido della CLI
+
+- [bin/lab-atlas.mjs](./bin/lab-atlas.mjs): entrypoint eseguibile della CLI
+- [src/main.mjs](./src/main.mjs): orchestrazione dei comandi
+- [src/commands/](./src/commands): comandi operativi del lab
+- [src/lib/](./src/lib): parsing CLI, project discovery, process runner e helper HTTP
+- [tools/build.mjs](./tools/build.mjs): copia `bin/` e `src/` dentro `dist/`
 
 ### Comandi della CLI
 
@@ -390,7 +398,8 @@ npm run build
 
 La build genera:
 
-- `dist/cli.mjs`
+- `dist/bin/lab-atlas.mjs`
+- `dist/src/*`
 
 ### 6. Installazione globale locale
 
@@ -541,8 +550,11 @@ Variabili preconfigurate nei workbench:
 | [docker-compose.yml](./docker-compose.yml) | orchestrazione principale |
 | [package.json](./package.json) | metadata npm, scripts e comando binario |
 | [`.env`](./.env) | naming, URL, versioni e credenziali |
-| [src/cli.mjs](./src/cli.mjs) | CLI Node.js sorgente |
-| [tools/build.mjs](./tools/build.mjs) | build minimale verso `dist/cli.mjs` |
+| [bin/lab-atlas.mjs](./bin/lab-atlas.mjs) | entrypoint eseguibile della CLI |
+| [src/main.mjs](./src/main.mjs) | dispatcher principale dei comandi |
+| [src/commands/](./src/commands) | implementazioni dei comandi operativi |
+| [src/lib/](./src/lib) | utility condivise della CLI |
+| [tools/build.mjs](./tools/build.mjs) | build minimale che replica `bin/` e `src/` in `dist/` |
 | [gateway/templates/Caddyfile.template](./gateway/templates/Caddyfile.template) | routing localhost multi-porta |
 | [gateway/templates/lab-index.html.template](./gateway/templates/lab-index.html.template) | dashboard HTML del lab |
 | [gateway/bootstrap-gateway.sh](./gateway/bootstrap-gateway.sh) | rendering template, cert e bootstrap gateway |
