@@ -1,19 +1,24 @@
 import boxen from 'boxen';
+import Table from 'cli-table3';
+import { consola } from 'consola';
+import logSymbols from 'log-symbols';
 import pc from 'picocolors';
 import type { HostCheckResult } from '../types/doctor.types.js';
+
+const logger = consola.withTag('lab-atlas');
 
 /**
  * Prints a success line with consistent styling.
  */
 export function printSuccess(message: string): void {
-  console.log(`${pc.green('done')} ${message}`);
+  logger.success(message);
 }
 
 /**
  * Prints an informational line with consistent styling.
  */
 export function printInfo(message: string): void {
-  console.log(`${pc.cyan('info')} ${message}`);
+  logger.info(message);
 }
 
 /**
@@ -35,10 +40,22 @@ export function printError(message: string): void {
 export function printDoctorSummary(results: HostCheckResult[]): void {
   const passedChecks = results.filter((result) => result.ok).length;
   const failedChecks = results.length - passedChecks;
-  const rows = results.map((result) => {
-    const status = result.ok ? pc.green('PASS') : pc.red('FAIL');
-    return `${status} ${result.name}: ${pc.dim(result.detail)}`;
+  const table = new Table({
+    head: ['Status', 'Check', 'Detail'],
+    wordWrap: true,
+    style: {
+      head: ['cyan']
+    },
+    colWidths: [10, 32, 66]
   });
+
+  for (const result of results) {
+    table.push([
+      result.ok ? logSymbols.success : logSymbols.error,
+      result.name,
+      result.detail
+    ]);
+  }
 
   console.log(
     boxen(
@@ -47,7 +64,7 @@ export function printDoctorSummary(results: HostCheckResult[]): void {
         `${pc.green(String(passedChecks))} passed`,
         `${failedChecks > 0 ? pc.red(String(failedChecks)) : pc.dim('0')} failed`,
         '',
-        ...rows
+        table.toString()
       ].join('\n'),
       {
         padding: 1,

@@ -25,7 +25,6 @@ export async function runCommand(
     });
 
     return {
-      command: formatCommand(command, args),
       exitCode: result.exitCode ?? 0,
       stdout: result.stdout ?? '',
       stderr: result.stderr ?? ''
@@ -33,7 +32,6 @@ export async function runCommand(
   } catch (error) {
     if (allowFailure && isCommandFailure(error)) {
       return {
-        command: formatCommand(command, args),
         exitCode: error.exitCode ?? 1,
         stdout: error.stdout ?? '',
         stderr: error.stderr ?? error.shortMessage ?? error.message
@@ -46,15 +44,6 @@ export async function runCommand(
 
     throw new Error(`Command failed: ${formatCommand(command, args)}`);
   }
-}
-
-/**
- * Async sleep used by polling loops such as Docker health checks.
- */
-export async function sleep(milliseconds: number): Promise<void> {
-  await new Promise((resolvePromise) => {
-    setTimeout(resolvePromise, milliseconds);
-  });
 }
 
 interface CommandFailureShape {

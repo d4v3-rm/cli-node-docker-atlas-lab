@@ -10,8 +10,5 @@ export default defineConfig({
   dts: true,
   clean: true,
   target: 'node20',
-  outDir: 'dist',
-  banner: {
-    js: '#!/usr/bin/env node'
-  }
+  outDir: 'dist'
 });

@@ -4,7 +4,7 @@
   "description": "Node.js CLI for the Lab Atlas local stack",
   "type": "module",
   "bin": {
-    "lab-atlas": "./dist/bin/lab-atlas.js"
+    "lab-atlas": "./bin/lab-atlas"
   },
   "scripts": {
     "dev": "tsx ./src/bin/lab-atlas.ts",
@@ -14,6 +14,7 @@
     "pack:local": "npm pack"
   },
   "files": [
+    "bin",
     "dist",
     "README.md"
   ],

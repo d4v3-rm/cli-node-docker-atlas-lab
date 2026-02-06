@@ -1,9 +1,12 @@
 import { existsSync, readFileSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { join, resolve } from 'node:path';
 import process from 'node:process';
 import dotenv from 'dotenv';
+import { findUpSync } from 'find-up';
+import { ZodError } from 'zod';
+import { bootstrapEnvSchema, formatZodError, labEnvSchema, smokeEnvSchema } from '../config/lab-env.schema.js';
 import type { GlobalCliOptions } from '../types/cli.types.js';
-import type { LabEnv, ProjectContext } from '../types/project.types.js';
+import type { BootstrapEnv, LabEnv, ProjectContext, SmokeEnv } from '../types/project.types.js';
 
 const PROJECT_MARKERS = ['docker-compose.yml', '.env'] as const;
 
@@ -20,17 +23,17 @@ export function createProjectContext(options: GlobalCliOptions): ProjectContext 
 }
 
 /**
- * Ensures that the required `.env` keys exist before a workflow starts.
+ * Validates and narrows the env for bootstrap workflows.
  */
-export function ensureEnvKeys<TKey extends keyof LabEnv>(
-  env: LabEnv,
-  keys: readonly TKey[]
-): asserts env is LabEnv & Required<Pick<LabEnv, TKey>> {
-  const missingKeys = keys.filter((key) => !env[key]);
+export function parseBootstrapEnv(env: LabEnv): BootstrapEnv {
+  return parseWithSchema(() => bootstrapEnvSchema.parse(env));
+}
 
-  if (missingKeys.length > 0) {
-    throw new Error(`Missing required .env values: ${missingKeys.join(', ')}`);
-  }
+/**
+ * Validates and narrows the env for smoke-check workflows.
+ */
+export function parseSmokeEnv(env: LabEnv): SmokeEnv {
+  return parseWithSchema(() => smokeEnvSchema.parse(env));
 }
 
 /**
@@ -43,7 +46,13 @@ export function resolveProjectRoot(explicitProjectDir?: string): string {
     return projectRoot;
   }
 
-  const projectRoot = findProjectRoot(process.cwd());
+  const projectRoot = findUpSync(
+    (directory) => (isProjectRoot(directory) ? directory : undefined),
+    {
+      cwd: process.cwd(),
+      type: 'directory'
+    }
+  );
   if (!projectRoot) {
     throw new Error(
       'Could not locate the lab project root from the current directory. Use --project-dir <path>.'
@@ -57,26 +66,23 @@ export function resolveProjectRoot(explicitProjectDir?: string): string {
  * Loads the local `.env` file using the same parsing rules as runtime tooling.
  */
 function loadLabEnv(projectRoot: string): LabEnv {
-  return dotenv.parse(readFileSync(join(projectRoot, '.env'))) as LabEnv;
+  return parseWithSchema(() =>
+    labEnvSchema.parse(dotenv.parse(readFileSync(join(projectRoot, '.env'))))
+  );
 }
 
 /**
- * Walks up the directory tree until the repository markers are found.
+ * Centralizes Zod parsing so services get readable validation errors.
  */
-function findProjectRoot(startDirectory: string): string | null {
-  let currentDirectory = resolve(startDirectory);
-
-  while (true) {
-    if (isProjectRoot(currentDirectory)) {
-      return currentDirectory;
+function parseWithSchema<TValue>(parse: () => TValue): TValue {
+  try {
+    return parse();
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new Error(`Invalid .env configuration: ${formatZodError(error)}`);
     }
 
-    const parentDirectory = dirname(currentDirectory);
-    if (parentDirectory === currentDirectory) {
-      return null;
-    }
-
-    currentDirectory = parentDirectory;
+    throw error;
   }
 }
 

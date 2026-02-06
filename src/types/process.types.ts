@@ -12,7 +12,6 @@ export interface CommandExecutionOptions {
  * Normalized subprocess result consumed by services.
  */
 export interface CommandExecutionResult {
-  command: string;
   exitCode: number;
   stdout: string;
   stderr: string;

@@ -1,20 +1,13 @@
 import { Listr } from 'listr2';
+import pWaitFor from 'p-wait-for';
 import type { BootstrapCommandOptions } from '../types/cli.types.js';
 import type { BootstrapEnv, ProjectContext } from '../types/project.types.js';
 import { printCommandHeader } from '../ui/banner.js';
 import { printSuccess } from '../ui/logger.js';
-import { ensureEnvKeys } from './project.service.js';
-import { runCommand, sleep } from '../utils/process.js';
+import { runCommand } from '../utils/process.js';
+import { parseBootstrapEnv } from './project.service.js';
 
 const GITEA_CONFIG = '/data/gitea/conf/app.ini';
-const BOOTSTRAP_ENV_KEYS = [
-  'GITEA_UID',
-  'GITEA_GID',
-  'GITEA_ROOT_USERNAME',
-  'GITEA_ROOT_PASSWORD',
-  'GITEA_ROOT_EMAIL',
-  'OLLAMA_EMBEDDING_MODEL'
-] as const;
 
 /**
  * Runs the standalone bootstrap workflow.
@@ -43,8 +36,7 @@ export function createBootstrapTasks(
   context: ProjectContext,
   options: BootstrapCommandOptions
 ){
-  const env = context.env;
-  ensureEnvKeys(env, BOOTSTRAP_ENV_KEYS);
+  const env = parseBootstrapEnv(context.env);
 
   const tasks = [];
 
@@ -172,15 +164,17 @@ async function waitForService(
   serviceName: string,
   timeoutSeconds = 180
 ): Promise<void> {
-  const deadline = Date.now() + timeoutSeconds * 1000;
-
-  while (Date.now() < deadline) {
+  await pWaitFor(
+    async () => {
     const containerId = await runCommand('docker', ['compose', 'ps', '-q', serviceName], {
       cwd: projectRoot,
       captureOutput: true
     });
 
-    if (containerId.stdout.trim()) {
+      if (!containerId.stdout.trim()) {
+        return false;
+      }
+
       const state = await runCommand(
         'docker',
         [
@@ -195,13 +189,14 @@ async function waitForService(
         }
       );
 
-      if (['healthy', 'running'].includes(state.stdout.trim())) {
-        return;
+      return ['healthy', 'running'].includes(state.stdout.trim());
+    },
+    {
+      interval: 2_000,
+      timeout: {
+        milliseconds: timeoutSeconds * 1000,
+        message: new Error(`Timed out waiting for service '${serviceName}' to become healthy`)
       }
     }
-
-    await sleep(2_000);
-  }
-
-  throw new Error(`Timed out waiting for service '${serviceName}' to become healthy`);
+  );
 }

@@ -8,20 +8,9 @@ import { printCommandHeader } from '../ui/banner.js';
 import { printDoctorSummary } from '../ui/logger.js';
 import { httpsGet } from '../utils/http.js';
 import { runCommand } from '../utils/process.js';
-import { ensureEnvKeys } from './project.service.js';
+import { parseSmokeEnv } from './project.service.js';
 
 const REQUIRED_FILES = ['docker-compose.yml', '.env', 'gateway/templates/Caddyfile.template'] as const;
-const SMOKE_ENV_KEYS = [
-  'LAB_URL',
-  'GITEA_URL',
-  'N8N_URL',
-  'OPENWEBUI_URL',
-  'OLLAMA_URL',
-  'N8N_GATEWAY_USER',
-  'N8N_GATEWAY_PASSWORD',
-  'OLLAMA_GATEWAY_USER',
-  'OLLAMA_GATEWAY_PASSWORD'
-] as const;
 
 /**
  * Runs host checks and optional smoke checks with a styled summary.
@@ -58,9 +47,7 @@ export async function runDoctorCommand(
   ];
 
   if (options.smoke) {
-    const env = context.env;
-    ensureEnvKeys(env, SMOKE_ENV_KEYS);
-
+    const env = parseSmokeEnv(context.env);
     for (const smokeCheck of buildSmokeChecks(env)) {
       tasks.push(
         createCheckTask(results, smokeCheck.name, () => runSmokeCheck(smokeCheck))
