@@ -4,16 +4,17 @@
   "description": "Node.js CLI for the Lab Atlas local stack",
   "type": "module",
   "bin": {
-    "lab-atlas": "./bin/lab-atlas.mjs"
+    "lab-atlas": "./dist/bin/lab-atlas.js"
   },
   "scripts": {
-    "dev": "node ./bin/lab-atlas.mjs",
-    "build": "node ./tools/build.mjs",
+    "dev": "tsx ./src/bin/lab-atlas.ts",
+    "build": "rimraf dist && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepack": "npm run build",
     "pack:local": "npm pack"
   },
   "files": [
-    "bin",
-    "src",
+    "dist",
     "README.md"
   ],
   "engines": {

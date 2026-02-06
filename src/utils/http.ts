@@ -1,13 +1,17 @@
 import https from 'node:https';
+import type { BasicAuthCredentials } from '../types/project.types.js';
 
-export function httpsGet(url, auth) {
+/**
+ * Performs a TLS-tolerant HTTPS GET request against local lab endpoints.
+ */
+export function httpsGet(url: string, auth?: BasicAuthCredentials): Promise<number> {
   return new Promise((resolvePromise, rejectPromise) => {
     const requestUrl = new URL(url);
-    const headers = {};
+    const headers: Record<string, string> = {};
 
-    if (auth?.username && auth?.password) {
+    if (auth) {
       const credentials = Buffer.from(`${auth.username}:${auth.password}`, 'utf8').toString('base64');
-      headers.Authorization = `Basic ${credentials}`;
+      headers.authorization = `Basic ${credentials}`;
     }
 
     const request = https.request(
@@ -16,14 +20,12 @@ export function httpsGet(url, auth) {
         method: 'GET',
         headers,
         rejectUnauthorized: false,
-        timeout: 10000
+        timeout: 10_000
       },
       (response) => {
         response.resume();
         response.on('end', () => {
-          resolvePromise({
-            statusCode: response.statusCode ?? 0
-          });
+          resolvePromise(response.statusCode ?? 0);
         });
       }
     );
