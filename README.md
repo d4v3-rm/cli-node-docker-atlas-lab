@@ -44,7 +44,7 @@
 - `code-server` per ambienti di sviluppo browser-based
 - `PostgreSQL` condiviso per i workbench
 - `Caddy` come unico ingresso HTTPS
-- `Node.js CLI` come strato operativo locale per start, bootstrap, verifiche e packaging
+- `TypeScript CLI` su Node.js come strato operativo locale per start, bootstrap, verifiche e packaging
 
 L'obiettivo e avere una piattaforma:
 
@@ -206,10 +206,10 @@ Se rimuovi i volumi, azzeri lo stato persistente.
 
 La CLI del progetto:
 
-- vive in [package.json](./package.json), [bin/lab-atlas.mjs](./bin/lab-atlas.mjs) e [src/main.mjs](./src/main.mjs)
-- usa solo moduli built-in di Node.js
-- non richiede dipendenze runtime di terze parti
-- non richiede `npm install` per essere eseguita in dev mode
+- vive in [package.json](./package.json), [src/bin/lab-atlas.ts](./src/bin/lab-atlas.ts) e [src/app/create-cli-app.ts](./src/app/create-cli-app.ts)
+- usa TypeScript con `tsx` in sviluppo e `tsc` per la build
+- usa librerie dedicate per parsing, task rendering e output CLI
+- richiede `npm install` prima del primo `npm run dev`
 
 ### Requisiti host consigliati
 
@@ -272,9 +272,9 @@ Quindi:
 
 ---
 
-## CLI Node.js
+## CLI TypeScript
 
-La CLI sostituisce il vecchio bootstrap Python e i vecchi servizi Compose di init.
+La CLI TypeScript sostituisce il vecchio bootstrap Python e i vecchi servizi Compose di init.
 
 ### Obiettivi
 
@@ -287,19 +287,21 @@ La CLI sostituisce il vecchio bootstrap Python e i vecchi servizi Compose di ini
 
 | Modalita | Comando | Scopo |
 | --- | --- | --- |
-| dev mode | `npm run dev -- up` | usa la CLI sorgente senza build |
-| build | `npm run build` | genera un mirror distributable in `dist/` |
+| dev mode | `npm run dev -- up` | usa `tsx` sulla CLI TypeScript sorgente |
+| build | `npm run build` | compila la CLI in `dist/` con `tsc` |
 | pack locale | `npm run pack:local` | crea un tarball npm locale |
 | install globale | `npm install -g .` | installa `lab-atlas` globalmente dalla repo |
 | link globale | `npm link` | collega la repo come CLI globale durante lo sviluppo |
 
 ### Layout rapido della CLI
 
-- [bin/lab-atlas.mjs](./bin/lab-atlas.mjs): entrypoint eseguibile della CLI
-- [src/main.mjs](./src/main.mjs): orchestrazione dei comandi
-- [src/commands/](./src/commands): comandi operativi del lab
-- [src/lib/](./src/lib): parsing CLI, project discovery, process runner e helper HTTP
-- [tools/build.mjs](./tools/build.mjs): copia `bin/` e `src/` dentro `dist/`
+- [src/bin/lab-atlas.ts](./src/bin/lab-atlas.ts): entrypoint TypeScript della CLI
+- [src/app/](./src/app): bootstrap dell'app Commander
+- [src/commands/](./src/commands): registrazione dei comandi
+- [src/services/](./src/services): logica operativa del lab
+- [src/types/](./src/types): tipizzazioni dedicate con suffisso `*.types.ts`
+- [src/ui/](./src/ui): banner, pannelli e summary grafici
+- [src/utils/](./src/utils): helper HTTP e process execution
 
 ### Comandi della CLI
 
@@ -370,7 +372,19 @@ Le sezioni principali sono:
 - workbench
 - PostgreSQL
 
-### 3. Avvio consigliato in dev mode
+### 3. Installa le dipendenze della CLI
+
+```powershell
+npm install
+```
+
+Su PowerShell restrittivo:
+
+```powershell
+npm.cmd install
+```
+
+### 4. Avvio consigliato in dev mode
 
 ```powershell
 npm run dev -- up
@@ -384,13 +398,13 @@ npm.cmd run dev -- up
 
 Questo e il flusso consigliato durante lo sviluppo della CLI e della stack.
 
-### 4. Avvio con workbench inclusi
+### 5. Avvio con workbench inclusi
 
 ```powershell
 npm run dev -- up --with-workbench
 ```
 
-### 5. Build del pacchetto
+### 6. Build del pacchetto
 
 ```powershell
 npm run build
@@ -398,10 +412,11 @@ npm run build
 
 La build genera:
 
-- `dist/bin/lab-atlas.mjs`
-- `dist/src/*`
+- `dist/bin/lab-atlas.js`
+- `dist/**/*.d.ts`
+- `dist/**/*.js.map`
 
-### 6. Installazione globale locale
+### 7. Installazione globale locale
 
 ```powershell
 npm install -g .
@@ -422,7 +437,7 @@ npm.cmd install -g .
 lab-atlas.cmd up
 ```
 
-### 7. Modalita separata start/bootstrap
+### 8. Modalita separata start/bootstrap
 
 ```powershell
 docker compose up -d
@@ -550,11 +565,13 @@ Variabili preconfigurate nei workbench:
 | [docker-compose.yml](./docker-compose.yml) | orchestrazione principale |
 | [package.json](./package.json) | metadata npm, scripts e comando binario |
 | [`.env`](./.env) | naming, URL, versioni e credenziali |
-| [bin/lab-atlas.mjs](./bin/lab-atlas.mjs) | entrypoint eseguibile della CLI |
-| [src/main.mjs](./src/main.mjs) | dispatcher principale dei comandi |
-| [src/commands/](./src/commands) | implementazioni dei comandi operativi |
-| [src/lib/](./src/lib) | utility condivise della CLI |
-| [tools/build.mjs](./tools/build.mjs) | build minimale che replica `bin/` e `src/` in `dist/` |
+| [src/bin/lab-atlas.ts](./src/bin/lab-atlas.ts) | entrypoint TypeScript della CLI |
+| [src/app/create-cli-app.ts](./src/app/create-cli-app.ts) | bootstrap dell'app Commander |
+| [src/commands/](./src/commands) | registrazione dei comandi CLI |
+| [src/services/](./src/services) | logica operativa del lab |
+| [src/types/](./src/types) | tipizzazioni condivise `*.types.ts` |
+| [src/ui/](./src/ui) | output CLI, banner e summary |
+| [src/utils/](./src/utils) | helper HTTP e process execution |
 | [gateway/templates/Caddyfile.template](./gateway/templates/Caddyfile.template) | routing localhost multi-porta |
 | [gateway/templates/lab-index.html.template](./gateway/templates/lab-index.html.template) | dashboard HTML del lab |
 | [gateway/bootstrap-gateway.sh](./gateway/bootstrap-gateway.sh) | rendering template, cert e bootstrap gateway |
