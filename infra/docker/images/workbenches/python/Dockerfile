@@ -49,7 +49,7 @@ RUN if [ -n "${PYTHON_PIP_PACKAGES}" ]; then \
     fi; \
   fi
 
-COPY start-python-dev.sh /usr/local/bin/start-python-dev.sh
+COPY infra/docker/images/workbenches/python/start-python-dev.sh /usr/local/bin/start-python-dev.sh
 RUN chmod +x /usr/local/bin/start-python-dev.sh
 
 USER 1000

@@ -3,9 +3,9 @@ FROM caddy:${CADDY_VERSION}
 
 RUN apk add --no-cache gettext openssl
 
-COPY templates/ /opt/gateway/templates/
-COPY bootstrap-gateway.sh /usr/local/bin/bootstrap-gateway.sh
-COPY start-gateway.sh /usr/local/bin/start-gateway.sh
+COPY config/gateway/templates/ /opt/gateway/templates/
+COPY infra/docker/images/gateway/bootstrap-gateway.sh /usr/local/bin/bootstrap-gateway.sh
+COPY infra/docker/images/gateway/start-gateway.sh /usr/local/bin/start-gateway.sh
 
 RUN chmod +x /usr/local/bin/bootstrap-gateway.sh /usr/local/bin/start-gateway.sh
 
