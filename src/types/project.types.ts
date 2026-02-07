@@ -1,5 +1,7 @@
+import type { RepositoryLayout } from './repository-layout.types.js';
+
 /**
- * Typed view of the `.env` values consumed by the CLI.
+ * Typed view of the `config/env/lab.env` values consumed by the CLI.
  */
 export interface LabEnv {
   [key: string]: string | undefined;
@@ -25,6 +27,7 @@ export interface LabEnv {
  */
 export interface ProjectContext {
   projectRoot: string;
+  layout: RepositoryLayout;
   env: LabEnv;
 }
 

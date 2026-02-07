@@ -1,5 +1,6 @@
 import { Listr } from 'listr2';
 import pWaitFor from 'p-wait-for';
+import { createComposeCommandArgs } from '../lib/compose.js';
 import type { BootstrapCommandOptions } from '../types/cli.types.js';
 import type { BootstrapEnv, ProjectContext } from '../types/project.types.js';
 import { printCommandHeader } from '../ui/banner.js';
@@ -35,7 +36,7 @@ export async function runBootstrapCommand(
 export function createBootstrapTasks(
   context: ProjectContext,
   options: BootstrapCommandOptions
-){
+) {
   const env = parseBootstrapEnv(context.env);
 
   const tasks = [];
@@ -44,7 +45,7 @@ export function createBootstrapTasks(
     tasks.push({
       title: 'Align Gitea root account',
       task: async () => {
-        await ensureGiteaAdmin(context.projectRoot, env);
+        await ensureGiteaAdmin(context, env);
       }
     });
   }
@@ -53,7 +54,7 @@ export function createBootstrapTasks(
     tasks.push({
       title: 'Align Ollama embedding model',
       task: async () => {
-        await ensureOllamaModel(context.projectRoot, env);
+        await ensureOllamaModel(context, env);
       }
     });
   }
@@ -64,11 +65,13 @@ export function createBootstrapTasks(
 /**
  * Waits for Gitea and ensures the configured root user exists with the right password.
  */
-async function ensureGiteaAdmin(projectRoot: string, env: BootstrapEnv): Promise<'created' | 'updated'> {
-  await waitForService(projectRoot, 'gitea');
+async function ensureGiteaAdmin(
+  context: ProjectContext,
+  env: BootstrapEnv
+): Promise<'created' | 'updated'> {
+  await waitForService(context, 'gitea');
 
-  const baseArgs = [
-    'compose',
+  const baseArgs = createComposeCommandArgs(context, [
     'exec',
     '-T',
     '--user',
@@ -77,10 +80,10 @@ async function ensureGiteaAdmin(projectRoot: string, env: BootstrapEnv): Promise
     'gitea',
     'admin',
     'user'
-  ];
+  ]);
 
   const listing = await runCommand('docker', [...baseArgs, 'list', '--config', GITEA_CONFIG], {
-    cwd: projectRoot,
+    cwd: context.projectRoot,
     captureOutput: true
   });
 
@@ -97,7 +100,7 @@ async function ensureGiteaAdmin(projectRoot: string, env: BootstrapEnv): Promise
         '--password',
         env.GITEA_ROOT_PASSWORD
       ],
-      { cwd: projectRoot }
+      { cwd: context.projectRoot }
     );
 
     return 'updated';
@@ -119,7 +122,7 @@ async function ensureGiteaAdmin(projectRoot: string, env: BootstrapEnv): Promise
       '--admin',
       '--must-change-password=false'
     ],
-    { cwd: projectRoot }
+    { cwd: context.projectRoot }
   );
 
   return 'created';
@@ -128,14 +131,24 @@ async function ensureGiteaAdmin(projectRoot: string, env: BootstrapEnv): Promise
 /**
  * Waits for Ollama and ensures the embedding model is present locally.
  */
-async function ensureOllamaModel(projectRoot: string, env: BootstrapEnv): Promise<'present' | 'pulled'> {
-  await waitForService(projectRoot, 'ollama');
+async function ensureOllamaModel(
+  context: ProjectContext,
+  env: BootstrapEnv
+): Promise<'present' | 'pulled'> {
+  await waitForService(context, 'ollama');
 
   const modelCheck = await runCommand(
     'docker',
-    ['compose', 'exec', '-T', 'ollama', 'ollama', 'show', env.OLLAMA_EMBEDDING_MODEL],
+    createComposeCommandArgs(context, [
+      'exec',
+      '-T',
+      'ollama',
+      'ollama',
+      'show',
+      env.OLLAMA_EMBEDDING_MODEL
+    ]),
     {
-      cwd: projectRoot,
+      cwd: context.projectRoot,
       captureOutput: true,
       allowFailure: true
     }
@@ -147,9 +160,16 @@ async function ensureOllamaModel(projectRoot: string, env: BootstrapEnv): Promis
 
   await runCommand(
     'docker',
-    ['compose', 'exec', '-T', 'ollama', 'ollama', 'pull', env.OLLAMA_EMBEDDING_MODEL],
+    createComposeCommandArgs(context, [
+      'exec',
+      '-T',
+      'ollama',
+      'ollama',
+      'pull',
+      env.OLLAMA_EMBEDDING_MODEL
+    ]),
     {
-      cwd: projectRoot
+      cwd: context.projectRoot
     }
   );
 
@@ -160,16 +180,20 @@ async function ensureOllamaModel(projectRoot: string, env: BootstrapEnv): Promis
  * Polls Docker until the service reaches either `healthy` or `running`.
  */
 async function waitForService(
-  projectRoot: string,
+  context: ProjectContext,
   serviceName: string,
   timeoutSeconds = 180
 ): Promise<void> {
   await pWaitFor(
     async () => {
-    const containerId = await runCommand('docker', ['compose', 'ps', '-q', serviceName], {
-      cwd: projectRoot,
-      captureOutput: true
-    });
+      const containerId = await runCommand(
+        'docker',
+        createComposeCommandArgs(context, ['ps', '-q', serviceName]),
+        {
+          cwd: context.projectRoot,
+          captureOutput: true
+        }
+      );
 
       if (!containerId.stdout.trim()) {
         return false;
@@ -184,7 +208,7 @@ async function waitForService(
           containerId.stdout.trim()
         ],
         {
-          cwd: projectRoot,
+          cwd: context.projectRoot,
           captureOutput: true
         }
       );

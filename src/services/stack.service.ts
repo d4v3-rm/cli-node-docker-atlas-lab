@@ -1,4 +1,5 @@
 import { Listr } from 'listr2';
+import { createComposeCommandArgs } from '../lib/compose.js';
 import type { GlobalCliOptions, UpCommandOptions } from '../types/cli.types.js';
 import type { ProjectContext } from '../types/project.types.js';
 import { printCommandHeader } from '../ui/banner.js';
@@ -26,7 +27,7 @@ export async function runUpCommand(
       {
         title: 'Start Docker Compose stack',
         task: async () => {
-          await runCommand('docker', createComposeUpArgs(options), {
+          await runCommand('docker', createComposeUpArgs(context, options), {
             cwd: context.projectRoot
           });
         }
@@ -75,7 +76,7 @@ export async function runStatusCommand(
     projectRoot: context.projectRoot
   });
 
-  await runCommand('docker', ['compose', 'ps', '--all'], {
+  await runCommand('docker', createComposeCommandArgs(context, ['ps', '--all']), {
     cwd: context.projectRoot
   });
 }
@@ -94,7 +95,7 @@ export async function runDownCommand(
   });
 
   printInfo('Stopping the lab stack...');
-  await runCommand('docker', ['compose', 'down', '--remove-orphans'], {
+  await runCommand('docker', createComposeCommandArgs(context, ['down', '--remove-orphans']), {
     cwd: context.projectRoot
   });
   printSuccess('Lab stack stopped.');
@@ -103,8 +104,8 @@ export async function runDownCommand(
 /**
  * Builds the Docker Compose invocation for the `up` command.
  */
-function createComposeUpArgs(options: UpCommandOptions): string[] {
-  const composeArgs = ['compose'];
+function createComposeUpArgs(context: ProjectContext, options: UpCommandOptions): string[] {
+  const composeArgs = [];
 
   if (options.withWorkbench) {
     composeArgs.push('--profile', 'workbench');
@@ -116,7 +117,7 @@ function createComposeUpArgs(options: UpCommandOptions): string[] {
     composeArgs.push('--build');
   }
 
-  return composeArgs;
+  return createComposeCommandArgs(context, composeArgs);
 }
 
 /**

@@ -5,20 +5,21 @@ import dotenv from 'dotenv';
 import { findUpSync } from 'find-up';
 import { ZodError } from 'zod';
 import { bootstrapEnvSchema, formatZodError, labEnvSchema, smokeEnvSchema } from '../config/lab-env.schema.js';
+import { PROJECT_MARKERS, REPOSITORY_PATHS, resolveRepositoryLayout } from '../config/repository-layout.js';
 import type { GlobalCliOptions } from '../types/cli.types.js';
 import type { BootstrapEnv, LabEnv, ProjectContext, SmokeEnv } from '../types/project.types.js';
-
-const PROJECT_MARKERS = ['docker-compose.yml', '.env'] as const;
 
 /**
  * Creates the runtime context used by commands that operate on a checkout.
  */
 export function createProjectContext(options: GlobalCliOptions): ProjectContext {
   const projectRoot = resolveProjectRoot(options.projectDir);
+  const layout = resolveRepositoryLayout(projectRoot);
 
   return {
     projectRoot,
-    env: loadLabEnv(projectRoot)
+    layout,
+    env: loadLabEnv(layout.envFile)
   };
 }
 
@@ -63,12 +64,10 @@ export function resolveProjectRoot(explicitProjectDir?: string): string {
 }
 
 /**
- * Loads the local `.env` file using the same parsing rules as runtime tooling.
+ * Loads the lab env file using the same parsing rules as runtime tooling.
  */
-function loadLabEnv(projectRoot: string): LabEnv {
-  return parseWithSchema(() =>
-    labEnvSchema.parse(dotenv.parse(readFileSync(join(projectRoot, '.env'))))
-  );
+function loadLabEnv(envFile: string): LabEnv {
+  return parseWithSchema(() => labEnvSchema.parse(dotenv.parse(readFileSync(envFile))));
 }
 
 /**
@@ -79,7 +78,7 @@ function parseWithSchema<TValue>(parse: () => TValue): TValue {
     return parse();
   } catch (error) {
     if (error instanceof ZodError) {
-      throw new Error(`Invalid .env configuration: ${formatZodError(error)}`);
+      throw new Error(`Invalid ${REPOSITORY_PATHS.envFile}: ${formatZodError(error)}`);
     }
 
     throw error;
@@ -92,7 +91,7 @@ function parseWithSchema<TValue>(parse: () => TValue): TValue {
 function validateProjectRoot(projectRoot: string): void {
   if (!isProjectRoot(projectRoot)) {
     throw new Error(
-      `Invalid project directory: ${projectRoot}. Expected docker-compose.yml and .env in that path.`
+      `Invalid project directory: ${projectRoot}. Expected ${REPOSITORY_PATHS.composeFile} and ${REPOSITORY_PATHS.envFile} in that path.`
     );
   }
 }

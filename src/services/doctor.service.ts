@@ -1,6 +1,8 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { Listr } from 'listr2';
+import { REQUIRED_REPOSITORY_FILES } from '../config/repository-layout.js';
+import { createComposeCommandArgs } from '../lib/compose.js';
 import type { DoctorCommandOptions } from '../types/cli.types.js';
 import type { HostCheckResult, SmokeCheckDefinition } from '../types/doctor.types.js';
 import type { ProjectContext, SmokeEnv } from '../types/project.types.js';
@@ -9,8 +11,6 @@ import { printDoctorSummary } from '../ui/logger.js';
 import { httpsGet } from '../utils/http.js';
 import { runCommand } from '../utils/process.js';
 import { parseSmokeEnv } from './project.service.js';
-
-const REQUIRED_FILES = ['docker-compose.yml', '.env', 'gateway/templates/Caddyfile.template'] as const;
 
 /**
  * Runs host checks and optional smoke checks with a styled summary.
@@ -38,8 +38,8 @@ export async function runDoctorCommand(
     ),
     createCheckTask(results, 'Node.js', () => Promise.resolve(checkNodeVersion())),
     createCheckTask(results, 'npm', () => checkCommand(...npmCheckCommand())),
-    createCheckTask(results, 'Compose configuration', () => checkComposeConfiguration(context.projectRoot)),
-    ...REQUIRED_FILES.map((relativePath) =>
+    createCheckTask(results, 'Compose configuration', () => checkComposeConfiguration(context)),
+    ...REQUIRED_REPOSITORY_FILES.map((relativePath) =>
       createCheckTask(results, `Required file ${relativePath}`, () =>
         Promise.resolve(checkRequiredFile(context.projectRoot, relativePath))
       )
@@ -175,11 +175,11 @@ function npmCheckCommand(): [string, string[], string] {
 }
 
 /**
- * Checks that `docker compose config` parses successfully for the checkout.
+ * Checks that the resolved Compose entrypoint parses successfully for the checkout.
  */
-async function checkComposeConfiguration(projectRoot: string): Promise<HostCheckResult> {
-  const result = await runCommand('docker', ['compose', 'config', '-q'], {
-    cwd: projectRoot,
+async function checkComposeConfiguration(context: ProjectContext): Promise<HostCheckResult> {
+  const result = await runCommand('docker', createComposeCommandArgs(context, ['config', '-q']), {
+    cwd: context.projectRoot,
     captureOutput: true,
     allowFailure: true
   });
@@ -189,7 +189,7 @@ async function checkComposeConfiguration(projectRoot: string): Promise<HostCheck
     ok: result.exitCode === 0,
     detail:
       result.exitCode === 0
-        ? 'docker-compose.yml parsed successfully'
+        ? 'infra/docker/compose.yml parsed successfully'
         : sanitizeDetail(result.stderr || result.stdout)
   };
 }
@@ -208,7 +208,7 @@ function checkRequiredFile(projectRoot: string, relativePath: string): HostCheck
 }
 
 /**
- * Builds the smoke-check definitions from the validated `.env` values.
+ * Builds the smoke-check definitions from the validated lab env values.
  */
 function buildSmokeChecks(env: SmokeEnv): SmokeCheckDefinition[] {
   return [
