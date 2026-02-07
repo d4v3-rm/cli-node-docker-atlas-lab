@@ -21,6 +21,7 @@
 - [Persistenza E Dati](#persistenza-e-dati)
 - [Requisiti Host E Dipendenze](#requisiti-host-e-dipendenze)
 - [CLI Node.js](#cli-nodejs)
+- [Scaffolding Del Repository](#scaffolding-del-repository)
 - [Quick Start](#quick-start)
 - [Accessi E Credenziali](#accessi-e-credenziali)
 - [Workbench Opzionali](#workbench-opzionali)
@@ -232,7 +233,7 @@ Devono essere libere:
 - `8452`
 - `8453`
 
-Se una di queste porte e occupata, `docker compose up` fallira.
+Se una di queste porte e occupata, l'avvio Compose fallira.
 
 ### Cosa non serve sul sistema host
 
@@ -300,11 +301,33 @@ La CLI TypeScript sostituisce il vecchio bootstrap Python e i vecchi servizi Com
 - [src/bin/lab-atlas.ts](./src/bin/lab-atlas.ts): entrypoint TypeScript della CLI
 - [src/app/](./src/app): bootstrap dell'app Commander
 - [src/commands/](./src/commands): registrazione dei comandi
-- [src/config/lab-env.schema.ts](./src/config/lab-env.schema.ts): schema Zod della configurazione `.env`
+- [src/config/lab-env.schema.ts](./src/config/lab-env.schema.ts): schema Zod della configurazione `config/env/lab.env`
+- [src/config/repository-layout.ts](./src/config/repository-layout.ts): contratto dei path infrastrutturali della repo
 - [src/services/](./src/services): logica operativa del lab
 - [src/types/](./src/types): tipizzazioni dedicate con suffisso `*.types.ts`
 - [src/ui/](./src/ui): banner, pannelli e summary grafici
 - [src/utils/](./src/utils): helper HTTP e process execution
+
+---
+
+## Scaffolding Del Repository
+
+La root del repository resta volutamente leggera. Le responsabilita sono separate per dominio:
+
+| Dominio | Scopo | Percorsi principali |
+| --- | --- | --- |
+| codice applicativo | CLI TypeScript, command layer, servizi e tipizzazioni | `src/`, `bin/` |
+| infrastruttura Docker | orchestrazione Compose, Dockerfile e script di immagine | `infra/docker/compose.yml`, `infra/docker/images/` |
+| configurazione operativa | env del lab, template gateway e briefing locali | `config/env/lab.env`, `config/gateway/templates/` |
+| tooling repo | packaging, build e script di supporto | `tools/`, `scripts/`, `package.json` |
+
+Regola pratica:
+
+- se cambi comportamento CLI o logica applicativa, lavori in `src/`
+- se cambi build container o orchestrazione, lavori in `infra/docker/`
+- se cambi credenziali, porte, template o contenuti gateway, lavori in `config/`
+
+La CLI usa questo layout come contratto esplicito: risolve sempre `infra/docker/compose.yml` e `config/env/lab.env`, quindi non dipende piu da file infrastrutturali sparsi in root.
 
 ### Comandi della CLI
 
@@ -364,7 +387,7 @@ npm.cmd --version
 
 ### 2. Controlla la configurazione
 
-La configurazione centrale e in [`.env`](./.env).
+La configurazione centrale e in [`config/env/lab.env`](./config/env/lab.env).
 
 Le sezioni principali sono:
 
@@ -443,7 +466,7 @@ lab-atlas.cmd up
 ### 8. Modalita separata start/bootstrap
 
 ```powershell
-docker compose up -d
+docker compose --file infra/docker/compose.yml --env-file config/env/lab.env up -d
 npm run dev -- bootstrap
 ```
 
@@ -466,7 +489,7 @@ Dal deck puoi:
 
 ## Accessi E Credenziali
 
-Le credenziali operative sono in [`.env`](./.env) e sono riportate anche nel deck HTML.
+Le credenziali operative sono in [`config/env/lab.env`](./config/env/lab.env) e sono riportate anche nel deck HTML.
 
 ### Gitea
 
@@ -513,7 +536,7 @@ I workbench non fanno parte del core obbligatorio. Stanno dietro profilo Compose
 ### Avvio
 
 ```powershell
-docker compose --profile workbench up -d
+docker compose --file infra/docker/compose.yml --env-file config/env/lab.env --profile workbench up -d
 ```
 
 Oppure tramite CLI:
@@ -565,30 +588,32 @@ Variabili preconfigurate nei workbench:
 
 | File | Ruolo |
 | --- | --- |
-| [docker-compose.yml](./docker-compose.yml) | orchestrazione principale |
+| [infra/docker/compose.yml](./infra/docker/compose.yml) | orchestrazione principale del lab |
+| [infra/docker/images/](./infra/docker/images) | Dockerfile e script di build dei servizi |
 | [package.json](./package.json) | metadata npm, scripts e comando binario |
-| [`.env`](./.env) | naming, URL, versioni e credenziali |
+| [config/env/lab.env](./config/env/lab.env) | naming, URL, versioni e credenziali operative |
 | [bin/lab-atlas](./bin/lab-atlas) | launcher npm minimale che delega alla build |
 | [src/bin/lab-atlas.ts](./src/bin/lab-atlas.ts) | entrypoint TypeScript della CLI |
 | [src/app/create-cli-app.ts](./src/app/create-cli-app.ts) | bootstrap dell'app Commander |
 | [src/commands/](./src/commands) | registrazione dei comandi CLI |
-| [src/config/lab-env.schema.ts](./src/config/lab-env.schema.ts) | validazione Zod della `.env` |
+| [src/config/lab-env.schema.ts](./src/config/lab-env.schema.ts) | validazione Zod della `lab.env` |
+| [src/config/repository-layout.ts](./src/config/repository-layout.ts) | contratto dei path top-level della repo |
 | [src/services/](./src/services) | logica operativa del lab |
 | [src/types/](./src/types) | tipizzazioni condivise `*.types.ts` |
 | [src/ui/](./src/ui) | output CLI, banner e summary |
 | [src/utils/](./src/utils) | helper HTTP e process execution |
-| [gateway/templates/Caddyfile.template](./gateway/templates/Caddyfile.template) | routing localhost multi-porta |
-| [gateway/templates/lab-index.html.template](./gateway/templates/lab-index.html.template) | dashboard HTML del lab |
-| [gateway/bootstrap-gateway.sh](./gateway/bootstrap-gateway.sh) | rendering template, cert e bootstrap gateway |
-| [gateway/templates/content/network-map.md.template](./gateway/templates/content/network-map.md.template) | topologia pubblica del lab |
-| [gateway/templates/content/node-dev.md.template](./gateway/templates/content/node-dev.md.template) | briefing Node Forge |
-| [gateway/templates/content/python-dev.md.template](./gateway/templates/content/python-dev.md.template) | briefing Python Grid |
-| [gateway/templates/content/ai-dev.md.template](./gateway/templates/content/ai-dev.md.template) | briefing AI Reactor |
-| [gateway/templates/content/cpp-dev.md.template](./gateway/templates/content/cpp-dev.md.template) | briefing C++ Foundry |
-| [gateway/templates/content/postgres-dev.md.template](./gateway/templates/content/postgres-dev.md.template) | briefing Postgres Vault |
-| [n8n/Dockerfile](./n8n/Dockerfile) | immagine custom n8n con trust store corretto |
-| [n8n-runners/Dockerfile](./n8n-runners/Dockerfile) | immagine custom runners n8n |
-| [ollama/Dockerfile](./ollama/Dockerfile) | immagine custom minima Ollama per probe puliti |
+| [config/gateway/templates/Caddyfile.template](./config/gateway/templates/Caddyfile.template) | routing localhost multi-porta |
+| [config/gateway/templates/lab-index.html.template](./config/gateway/templates/lab-index.html.template) | dashboard HTML del lab |
+| [infra/docker/images/gateway/bootstrap-gateway.sh](./infra/docker/images/gateway/bootstrap-gateway.sh) | rendering template, cert e bootstrap gateway |
+| [config/gateway/templates/content/network-map.md.template](./config/gateway/templates/content/network-map.md.template) | topologia pubblica del lab |
+| [config/gateway/templates/content/node-dev.md.template](./config/gateway/templates/content/node-dev.md.template) | briefing Node Forge |
+| [config/gateway/templates/content/python-dev.md.template](./config/gateway/templates/content/python-dev.md.template) | briefing Python Grid |
+| [config/gateway/templates/content/ai-dev.md.template](./config/gateway/templates/content/ai-dev.md.template) | briefing AI Reactor |
+| [config/gateway/templates/content/cpp-dev.md.template](./config/gateway/templates/content/cpp-dev.md.template) | briefing C++ Foundry |
+| [config/gateway/templates/content/postgres-dev.md.template](./config/gateway/templates/content/postgres-dev.md.template) | briefing Postgres Vault |
+| [infra/docker/images/n8n/Dockerfile](./infra/docker/images/n8n/Dockerfile) | immagine custom n8n con trust store corretto |
+| [infra/docker/images/n8n-runners/Dockerfile](./infra/docker/images/n8n-runners/Dockerfile) | immagine custom runners n8n |
+| [infra/docker/images/ollama/Dockerfile](./infra/docker/images/ollama/Dockerfile) | immagine custom minima Ollama per probe puliti |
 
 ---
 
@@ -629,13 +654,13 @@ lab-atlas status
 ### Docker Compose diretto
 
 ```powershell
-docker compose ps -a
-docker compose config
-docker compose logs -f
-docker compose logs -f gateway
-docker compose logs -f open-webui
-docker compose logs -f n8n
-docker compose logs -f gitea
+docker compose --file infra/docker/compose.yml --env-file config/env/lab.env ps -a
+docker compose --file infra/docker/compose.yml --env-file config/env/lab.env config
+docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs -f
+docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs -f gateway
+docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs -f open-webui
+docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs -f n8n
+docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs -f gitea
 ```
 
 ### Stop
@@ -647,7 +672,7 @@ lab-atlas down
 ### Stop con workbench
 
 ```powershell
-docker compose --profile workbench down
+docker compose --file infra/docker/compose.yml --env-file config/env/lab.env --profile workbench down
 ```
 
 ---
@@ -711,7 +736,7 @@ Atteso:
 Controlla:
 
 1. `lab-atlas status`
-2. `docker compose logs -f <servizio>`
+2. `docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs -f <servizio>`
 3. che la porta del servizio sia libera e corretta
 
 ### Il browser mostra warning certificato
@@ -753,7 +778,7 @@ Normale: stanno dietro profilo Compose.
 Usa:
 
 ```powershell
-docker compose --profile workbench up -d
+docker compose --file infra/docker/compose.yml --env-file config/env/lab.env --profile workbench up -d
 ```
 
 Oppure:
@@ -767,8 +792,8 @@ npm run dev -- up --with-workbench
 Controlla:
 
 - `lab-atlas status`
-- `docker compose logs open-webui`
-- `docker compose logs ollama`
+- `docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs open-webui`
+- `docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs ollama`
 - la risposta di `https://localhost:8447/api/tags`
 - `npm run dev -- doctor --smoke`
 
@@ -795,7 +820,7 @@ Non e un deployment internet-facing gia hardenizzato.
 
 Punti importanti:
 
-- credenziali locali presenti in `.env`
+- credenziali locali presenti in `config/env/lab.env`
 - certificato TLS self-signed
 - servizi AI e automazione pensati per ambiente fidato
 - gateway come singolo punto di esposizione
