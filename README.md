@@ -207,8 +207,9 @@ Se rimuovi i volumi, azzeri lo stato persistente.
 La CLI del progetto:
 
 - vive in [package.json](./package.json), [src/bin/lab-atlas.ts](./src/bin/lab-atlas.ts) e [src/app/create-cli-app.ts](./src/app/create-cli-app.ts)
-- usa TypeScript con `tsx` in sviluppo e `tsc` per la build
-- usa librerie dedicate per parsing, task rendering e output CLI
+- usa TypeScript con `tsx` in sviluppo e `tsup` per la build distributable
+- usa librerie dedicate per parsing, validazione, task rendering e output CLI
+- si appoggia in particolare a `commander`, `listr2`, `zod`, `find-up`, `got`, `consola`, `cli-table3` e `p-wait-for`
 - richiede `npm install` prima del primo `npm run dev`
 
 ### Requisiti host consigliati
@@ -288,16 +289,18 @@ La CLI TypeScript sostituisce il vecchio bootstrap Python e i vecchi servizi Com
 | Modalita | Comando | Scopo |
 | --- | --- | --- |
 | dev mode | `npm run dev -- up` | usa `tsx` sulla CLI TypeScript sorgente |
-| build | `npm run build` | compila la CLI in `dist/` con `tsc` |
+| build | `npm run build` | bundle ESM della CLI in `dist/` con `tsup` |
 | pack locale | `npm run pack:local` | crea un tarball npm locale |
 | install globale | `npm install -g .` | installa `lab-atlas` globalmente dalla repo |
 | link globale | `npm link` | collega la repo come CLI globale durante lo sviluppo |
 
 ### Layout rapido della CLI
 
+- [bin/lab-atlas](./bin/lab-atlas): launcher minimale del pacchetto npm globale
 - [src/bin/lab-atlas.ts](./src/bin/lab-atlas.ts): entrypoint TypeScript della CLI
 - [src/app/](./src/app): bootstrap dell'app Commander
 - [src/commands/](./src/commands): registrazione dei comandi
+- [src/config/lab-env.schema.ts](./src/config/lab-env.schema.ts): schema Zod della configurazione `.env`
 - [src/services/](./src/services): logica operativa del lab
 - [src/types/](./src/types): tipizzazioni dedicate con suffisso `*.types.ts`
 - [src/ui/](./src/ui): banner, pannelli e summary grafici
@@ -565,9 +568,11 @@ Variabili preconfigurate nei workbench:
 | [docker-compose.yml](./docker-compose.yml) | orchestrazione principale |
 | [package.json](./package.json) | metadata npm, scripts e comando binario |
 | [`.env`](./.env) | naming, URL, versioni e credenziali |
+| [bin/lab-atlas](./bin/lab-atlas) | launcher npm minimale che delega alla build |
 | [src/bin/lab-atlas.ts](./src/bin/lab-atlas.ts) | entrypoint TypeScript della CLI |
 | [src/app/create-cli-app.ts](./src/app/create-cli-app.ts) | bootstrap dell'app Commander |
 | [src/commands/](./src/commands) | registrazione dei comandi CLI |
+| [src/config/lab-env.schema.ts](./src/config/lab-env.schema.ts) | validazione Zod della `.env` |
 | [src/services/](./src/services) | logica operativa del lab |
 | [src/types/](./src/types) | tipizzazioni condivise `*.types.ts` |
 | [src/ui/](./src/ui) | output CLI, banner e summary |
