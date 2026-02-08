@@ -1,4 +1,4 @@
-# Lab Atlas
+# Atlas Lab
 
 ![Docker Compose](https://img.shields.io/badge/Docker%20Compose-v2-2496ED?logo=docker&logoColor=white)
 ![Gateway](https://img.shields.io/badge/Gateway-Caddy-1F2937?logo=caddy&logoColor=white)
@@ -36,7 +36,7 @@
 
 ## Panoramica
 
-`cli-node-lab` non e una singola applicazione. E un lab infrastrutturale locale che combina:
+`cli-node-docker-atlas-lab` non e una singola applicazione. E un lab infrastrutturale locale che combina:
 
 - `Gitea` per repository Git, issue tracking e code review
 - `n8n` per automazione e workflow
@@ -207,7 +207,7 @@ Se rimuovi i volumi, azzeri lo stato persistente.
 
 La CLI del progetto:
 
-- vive in [package.json](./package.json), [src/bin/lab-atlas.ts](./src/bin/lab-atlas.ts) e [src/app/create-cli-app.ts](./src/app/create-cli-app.ts)
+- vive in [package.json](./package.json), [src/bin/atlas-lab.ts](./src/bin/atlas-lab.ts) e [src/app/create-cli-app.ts](./src/app/create-cli-app.ts)
 - usa TypeScript con `tsx` in sviluppo e `tsup` per la build distributable
 - usa librerie dedicate per parsing, validazione, task rendering e output CLI
 - si appoggia in particolare a `commander`, `listr2`, `zod`, `find-up`, `got`, `consola`, `cli-table3` e `p-wait-for`
@@ -259,7 +259,7 @@ npm.cmd --version
 Lo stesso vale per il binario globale della CLI:
 
 ```powershell
-lab-atlas.cmd status
+atlas-lab.cmd status
 ```
 
 ### Nota TLS locale
@@ -292,13 +292,13 @@ La CLI TypeScript sostituisce il vecchio bootstrap Python e i vecchi servizi Com
 | dev mode | `npm run dev -- up` | usa `tsx` sulla CLI TypeScript sorgente |
 | build | `npm run build` | bundle ESM della CLI in `dist/` con `tsup` |
 | pack locale | `npm run pack:local` | crea un tarball npm locale |
-| install globale | `npm install -g .` | installa `lab-atlas` globalmente dalla repo |
+| install globale | `npm install -g .` | installa `atlas-lab` globalmente dalla repo |
 | link globale | `npm link` | collega la repo come CLI globale durante lo sviluppo |
 
 ### Layout rapido della CLI
 
-- [bin/lab-atlas](./bin/lab-atlas): launcher minimale del pacchetto npm globale
-- [src/bin/lab-atlas.ts](./src/bin/lab-atlas.ts): entrypoint TypeScript della CLI
+- [bin/atlas-lab](./bin/atlas-lab): launcher minimale del pacchetto npm globale
+- [src/bin/atlas-lab.ts](./src/bin/atlas-lab.ts): entrypoint TypeScript della CLI
 - [src/app/](./src/app): bootstrap dell'app Commander
 - [src/commands/](./src/commands): registrazione dei comandi
 - [src/config/lab-env.schema.ts](./src/config/lab-env.schema.ts): schema Zod della configurazione `config/env/lab.env`
@@ -333,14 +333,14 @@ La CLI usa questo layout come contratto esplicito: risolve sempre `infra/docker/
 
 | Comando | Ruolo |
 | --- | --- |
-| `lab-atlas up` | avvia Compose, bootstrap Gitea/Ollama e pulisce residui legacy |
-| `lab-atlas up --build` | rebuild + start + bootstrap |
-| `lab-atlas up --with-workbench` | include anche il profilo `workbench` |
-| `lab-atlas bootstrap` | riesegue solo il bootstrap |
-| `lab-atlas doctor` | controlla requisiti host e configurazione Compose |
-| `lab-atlas doctor --smoke` | aggiunge smoke test su endpoint e integrazioni |
-| `lab-atlas status` | mostra lo stato Compose |
-| `lab-atlas down` | ferma la stack |
+| `atlas-lab up` | avvia Compose, bootstrap Gitea/Ollama e pulisce residui legacy |
+| `atlas-lab up --build` | rebuild + start + bootstrap |
+| `atlas-lab up --with-workbench` | include anche il profilo `workbench` |
+| `atlas-lab bootstrap` | riesegue solo il bootstrap |
+| `atlas-lab doctor` | controlla requisiti host e configurazione Compose |
+| `atlas-lab doctor --smoke` | aggiunge smoke test su endpoint e integrazioni |
+| `atlas-lab status` | mostra lo stato Compose |
+| `atlas-lab down` | ferma la stack |
 
 ### Cosa fa il bootstrap
 
@@ -349,7 +349,7 @@ La CLI usa questo layout come contratto esplicito: risolve sempre `infra/docker/
 3. aspetta che `ollama` sia `healthy`
 4. controlla il modello embeddings configurato
 5. esegue il pull del modello se manca
-6. rimuove l'eventuale immagine legacy `cli-node-lab-ollama-init:latest`
+6. rimuove l'eventuale immagine legacy `cli-node-docker-atlas-lab-ollama-init:latest`
 
 Il bootstrap e idempotente.
 
@@ -363,7 +363,7 @@ La CLI installata globalmente non opera sulla directory del pacchetto npm instal
 Esempio:
 
 ```powershell
-lab-atlas status --project-dir C:\Users\User\Development\repos-review\cli-node-lab
+atlas-lab status --project-dir C:\Users\User\Development\repos-review\cli-node-docker-atlas-lab
 ```
 
 ---
@@ -438,7 +438,7 @@ npm run build
 
 La build genera:
 
-- `dist/bin/lab-atlas.js`
+- `dist/bin/atlas-lab.js`
 - `dist/**/*.d.ts`
 - `dist/**/*.js.map`
 
@@ -451,16 +451,16 @@ npm install -g .
 Poi puoi usare:
 
 ```powershell
-lab-atlas up
-lab-atlas doctor --smoke
-lab-atlas status
+atlas-lab up
+atlas-lab doctor --smoke
+atlas-lab status
 ```
 
 Su PowerShell restrittivo:
 
 ```powershell
 npm.cmd install -g .
-lab-atlas.cmd up
+atlas-lab.cmd up
 ```
 
 ### 8. Modalita separata start/bootstrap
@@ -592,8 +592,8 @@ Variabili preconfigurate nei workbench:
 | [infra/docker/images/](./infra/docker/images) | Dockerfile e script di build dei servizi |
 | [package.json](./package.json) | metadata npm, scripts e comando binario |
 | [config/env/lab.env](./config/env/lab.env) | naming, URL, versioni e credenziali operative |
-| [bin/lab-atlas](./bin/lab-atlas) | launcher npm minimale che delega alla build |
-| [src/bin/lab-atlas.ts](./src/bin/lab-atlas.ts) | entrypoint TypeScript della CLI |
+| [bin/atlas-lab](./bin/atlas-lab) | launcher npm minimale che delega alla build |
+| [src/bin/atlas-lab.ts](./src/bin/atlas-lab.ts) | entrypoint TypeScript della CLI |
 | [src/app/create-cli-app.ts](./src/app/create-cli-app.ts) | bootstrap dell'app Commander |
 | [src/commands/](./src/commands) | registrazione dei comandi CLI |
 | [src/config/lab-env.schema.ts](./src/config/lab-env.schema.ts) | validazione Zod della `lab.env` |
@@ -639,16 +639,16 @@ npm run pack:local
 
 ```powershell
 npm install -g .
-lab-atlas up
-lab-atlas status
-lab-atlas doctor --smoke
+atlas-lab up
+atlas-lab status
+atlas-lab doctor --smoke
 ```
 
 ### Link globale per sviluppo
 
 ```powershell
 npm link
-lab-atlas status
+atlas-lab status
 ```
 
 ### Docker Compose diretto
@@ -666,7 +666,7 @@ docker compose --file infra/docker/compose.yml --env-file config/env/lab.env log
 ### Stop
 
 ```powershell
-lab-atlas down
+atlas-lab down
 ```
 
 ### Stop con workbench
@@ -719,7 +719,7 @@ curl.exe -sk -u root:RootOllama!2026 https://localhost:8447/api/tags
 ### Stato health
 
 ```powershell
-lab-atlas status
+atlas-lab status
 ```
 
 Atteso:
@@ -735,7 +735,7 @@ Atteso:
 
 Controlla:
 
-1. `lab-atlas status`
+1. `atlas-lab status`
 2. `docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs -f <servizio>`
 3. che la porta del servizio sia libera e corretta
 
@@ -759,7 +759,7 @@ npm run dev -- bootstrap
 Oppure con CLI globale:
 
 ```powershell
-lab-atlas bootstrap
+atlas-lab bootstrap
 ```
 
 ### `npm` non funziona in PowerShell
@@ -768,7 +768,7 @@ Usa gli shim `.cmd`:
 
 ```powershell
 npm.cmd run dev -- doctor
-lab-atlas.cmd status
+atlas-lab.cmd status
 ```
 
 ### I workbench non compaiono in `docker compose up`
@@ -791,7 +791,7 @@ npm run dev -- up --with-workbench
 
 Controlla:
 
-- `lab-atlas status`
+- `atlas-lab status`
 - `docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs open-webui`
 - `docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs ollama`
 - la risposta di `https://localhost:8447/api/tags`

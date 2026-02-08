@@ -1,5 +1,6 @@
 import boxen from 'boxen';
 import pc from 'picocolors';
+import { APP_METADATA } from '../config/app-metadata.js';
 import type { CommandHeaderOptions } from '../types/ui.types.js';
 
 /**
@@ -7,8 +8,8 @@ import type { CommandHeaderOptions } from '../types/ui.types.js';
  */
 export function renderHelpBanner(): string {
   const body = [
-    pc.bold(pc.cyan('Lab Atlas CLI')),
-    pc.dim('Typed Node.js operator for the local self-hosted lab')
+    pc.bold(pc.cyan(`${APP_METADATA.displayName} CLI`)),
+    pc.dim(APP_METADATA.description)
   ].join('\n');
 
   return boxen(body, {
@@ -25,11 +26,11 @@ export function renderHelpFooter(): string {
   return [
     '',
     pc.bold('Examples:'),
-    '  lab-atlas up',
-    '  lab-atlas up --build --with-workbench',
-    '  lab-atlas bootstrap',
-    '  lab-atlas doctor --smoke',
-    '  lab-atlas status --project-dir C:\\path\\to\\cli-node-lab'
+    `  ${APP_METADATA.cliName} up`,
+    `  ${APP_METADATA.cliName} up --build --with-workbench`,
+    `  ${APP_METADATA.cliName} bootstrap`,
+    `  ${APP_METADATA.cliName} doctor --smoke`,
+    `  ${APP_METADATA.cliName} status --project-dir C:\\path\\to\\${APP_METADATA.codeName}`
   ].join('\n');
 }
 

@@ -1,4 +1,6 @@
-# Infrastructure entrypoint for the local Lab Atlas stack.
+name: cli-node-docker-atlas-lab
+
+# Infrastructure entrypoint for the local Atlas Lab stack.
 x-lab-env: &lab-env
   TZ: ${TZ}
 
@@ -222,7 +224,7 @@ services:
       WEBUI_URL: ${OPENWEBUI_URL}
       WEBUI_SECRET_KEY: ${OPENWEBUI_SECRET_KEY}
       CORS_ALLOW_ORIGIN: ${OPENWEBUI_CORS_ALLOW_ORIGIN}
-      USER_AGENT: LabAtlas-OpenWebUI/1.0
+      USER_AGENT: AtlasLab-OpenWebUI/1.0
       ENABLE_OPENAI_API: "false"
       ENABLE_OLLAMA_API: "true"
       OLLAMA_BASE_URL: http://ollama:11434
@@ -392,23 +394,23 @@ services:
 
 networks:
   edge-net:
-    name: cli-node-lab_edge
+    name: cli-node-docker-atlas-lab_edge
   services-egress-net:
-    name: cli-node-lab_services_egress
+    name: cli-node-docker-atlas-lab_services_egress
   apps-net:
-    name: cli-node-lab_apps
+    name: cli-node-docker-atlas-lab_apps
     internal: true
   ai-net:
-    name: cli-node-lab_ai
+    name: cli-node-docker-atlas-lab_ai
     internal: true
   data-net:
-    name: cli-node-lab_data
+    name: cli-node-docker-atlas-lab_data
     internal: true
   workbench-net:
-    name: cli-node-lab_workbench
+    name: cli-node-docker-atlas-lab_workbench
     internal: true
   workbench-egress-net:
-    name: cli-node-lab_workbench_egress
+    name: cli-node-docker-atlas-lab_workbench_egress
 
 volumes:
   gateway-certs:

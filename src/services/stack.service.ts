@@ -7,7 +7,10 @@ import { printInfo, printSuccess } from '../ui/logger.js';
 import { runCommand } from '../utils/process.js';
 import { createBootstrapTasks } from './bootstrap.service.js';
 
-const LEGACY_IMAGES = ['cli-node-lab-ollama-init:latest'] as const;
+const LEGACY_IMAGES = [
+  'cli-node-lab-ollama-init:latest',
+  'cli-node-docker-atlas-lab-ollama-init:latest'
+] as const;
 
 /**
  * Runs `docker compose up`, the bootstrap workflow, and the legacy image cleanup.

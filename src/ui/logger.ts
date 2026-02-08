@@ -3,9 +3,10 @@ import Table from 'cli-table3';
 import { consola } from 'consola';
 import logSymbols from 'log-symbols';
 import pc from 'picocolors';
+import { APP_METADATA } from '../config/app-metadata.js';
 import type { HostCheckResult } from '../types/doctor.types.js';
 
-const logger = consola.withTag('lab-atlas');
+const logger = consola.withTag(APP_METADATA.cliName);
 
 /**
  * Prints a success line with consistent styling.

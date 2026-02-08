@@ -2,7 +2,7 @@ import { defineConfig } from 'tsup';
 
 export default defineConfig({
   entry: {
-    'bin/lab-atlas': 'src/bin/lab-atlas.ts'
+    'bin/atlas-lab': 'src/bin/atlas-lab.ts'
   },
   format: ['esm'],
   splitting: false,

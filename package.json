@@ -1,13 +1,13 @@
 {
-  "name": "lab-atlas",
+  "name": "cli-node-docker-atlas-lab",
   "version": "1.0.0",
-  "description": "Node.js CLI for the Lab Atlas local stack",
+  "description": "Node.js CLI for the Atlas Lab local stack",
   "type": "module",
   "bin": {
-    "lab-atlas": "./bin/lab-atlas"
+    "atlas-lab": "./bin/atlas-lab"
   },
   "scripts": {
-    "dev": "tsx ./src/bin/lab-atlas.ts",
+    "dev": "tsx ./src/bin/atlas-lab.ts",
     "build": "tsup",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "prepack": "npm run build",
