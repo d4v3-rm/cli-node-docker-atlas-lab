@@ -1,0 +1,45 @@
+{
+  "name": "lab-atlas",
+  "version": "1.0.0",
+  "description": "Node.js CLI for the Lab Atlas local stack",
+  "type": "module",
+  "bin": {
+    "lab-atlas": "./bin/lab-atlas"
+  },
+  "scripts": {
+    "dev": "tsx ./src/bin/lab-atlas.ts",
+    "build": "tsup",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepack": "npm run build",
+    "pack:local": "npm pack"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "boxen": "^8.0.1",
+    "cli-table3": "^0.6.5",
+    "commander": "^14.0.1",
+    "consola": "^3.4.2",
+    "dotenv": "^17.2.3",
+    "execa": "^9.6.0",
+    "find-up": "^8.0.0",
+    "got": "^14.6.1",
+    "listr2": "^9.0.4",
+    "log-symbols": "^7.0.1",
+    "p-wait-for": "^6.0.0",
+    "picocolors": "^1.1.1",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  }
+}

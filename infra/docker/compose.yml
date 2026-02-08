@@ -1,3 +1,4 @@
+# Infrastructure entrypoint for the local Lab Atlas stack.
 x-lab-env: &lab-env
   TZ: ${TZ}
 
@@ -13,12 +14,13 @@ x-workbench-db-env: &workbench-db-env
 services:
   gateway:
     build:
-      context: ./gateway
+      context: ../..
+      dockerfile: infra/docker/images/gateway/Dockerfile
       args:
         CADDY_VERSION: ${CADDY_VERSION}
     restart: unless-stopped
     env_file:
-      - ./.env
+      - ../../config/env/lab.env
     ports:
       - "${LAB_HTTPS_PORT}:${LAB_HTTPS_PORT}"
       - "${GITEA_HTTPS_PORT}:${GITEA_HTTPS_PORT}"
@@ -89,37 +91,6 @@ services:
       services-egress-net:
         gw_priority: 1
 
-  gitea-init:
-    image: gitea/gitea:${GITEA_VERSION}
-    restart: "no"
-    user: "${GITEA_UID}:${GITEA_GID}"
-    depends_on:
-      gitea:
-        condition: service_healthy
-    entrypoint: /bin/sh
-    command: >-
-      -ec "
-      attempt=0;
-      until [ -f /data/gitea/conf/app.ini ]; do
-        attempt=$$((attempt+1));
-        if [ $$attempt -ge 60 ]; then
-          echo 'Gitea configuration not ready' >&2;
-          exit 1;
-        fi;
-        sleep 2;
-      done;
-      if gitea admin user list --config /data/gitea/conf/app.ini | grep -q '${GITEA_ROOT_USERNAME}'; then
-        gitea admin user change-password --config /data/gitea/conf/app.ini --username '${GITEA_ROOT_USERNAME}' --password '${GITEA_ROOT_PASSWORD}';
-      else
-        gitea admin user create --config /data/gitea/conf/app.ini --username '${GITEA_ROOT_USERNAME}' --password '${GITEA_ROOT_PASSWORD}' --email '${GITEA_ROOT_EMAIL}' --admin --must-change-password=false;
-      fi
-      "
-    volumes:
-      - gitea-data:/data
-    networks:
-      - apps-net
-      - data-net
-
   gitea-db:
     image: mariadb:${GITEA_DB_VERSION}
     restart: unless-stopped
@@ -141,7 +112,8 @@ services:
 
   n8n:
     build:
-      context: ./n8n
+      context: ../..
+      dockerfile: infra/docker/images/n8n/Dockerfile
       args:
         N8N_VERSION: ${N8N_VERSION}
     restart: unless-stopped
@@ -185,7 +157,8 @@ services:
 
   n8n-runners:
     build:
-      context: ./n8n-runners
+      context: ../..
+      dockerfile: infra/docker/images/n8n-runners/Dockerfile
       args:
         N8N_VERSION: ${N8N_VERSION}
     restart: unless-stopped
@@ -216,7 +189,8 @@ services:
 
   ollama:
     build:
-      context: ./ollama
+      context: ../..
+      dockerfile: infra/docker/images/ollama/Dockerfile
       args:
         OLLAMA_VERSION: ${OLLAMA_VERSION}
     restart: unless-stopped
@@ -237,32 +211,12 @@ services:
       services-egress-net:
         gw_priority: 1
 
-  ollama-init:
-    build:
-      context: ./ollama
-      args:
-        OLLAMA_VERSION: ${OLLAMA_VERSION}
-    restart: "no"
-    depends_on:
-      ollama:
-        condition: service_healthy
-    entrypoint: /bin/sh
-    command: >-
-      -ec "
-      export OLLAMA_HOST=http://ollama:11434;
-      ollama show '${OLLAMA_EMBEDDING_MODEL}' >/dev/null 2>&1 || ollama pull '${OLLAMA_EMBEDDING_MODEL}';
-      "
-    networks:
-      - ai-net
-
   open-webui:
     image: ghcr.io/open-webui/open-webui:${OPENWEBUI_VERSION}
     restart: unless-stopped
     depends_on:
       ollama:
         condition: service_healthy
-      ollama-init:
-        condition: service_completed_successfully
     environment:
       <<: *lab-env
       WEBUI_URL: ${OPENWEBUI_URL}
@@ -313,7 +267,8 @@ services:
 
   node-dev:
     build:
-      context: ./env/node
+      context: ../..
+      dockerfile: infra/docker/images/workbenches/node/Dockerfile
       args:
         BASE_IMAGE: ${NODE_DEV_BASE_IMAGE}
         NODE_VERSION: ${NODE_DEV_NODE_VERSION}
@@ -343,7 +298,8 @@ services:
 
   python-dev:
     build:
-      context: ./env/python
+      context: ../..
+      dockerfile: infra/docker/images/workbenches/python/Dockerfile
       args:
         BASE_IMAGE: ${PYTHON_DEV_BASE_IMAGE}
         PYTHON_VERSION: ${PYTHON_DEV_PYTHON_VERSION}
@@ -375,7 +331,8 @@ services:
 
   ai-dev:
     build:
-      context: ./env/python
+      context: ../..
+      dockerfile: infra/docker/images/workbenches/python/Dockerfile
       args:
         BASE_IMAGE: ${AI_DEV_BASE_IMAGE}
         PYTHON_VERSION: ${AI_DEV_PYTHON_VERSION}
@@ -407,7 +364,8 @@ services:
 
   cpp-dev:
     build:
-      context: ./env/cpp
+      context: ../..
+      dockerfile: infra/docker/images/workbenches/cpp/Dockerfile
       args:
         BASE_IMAGE: ${CPP_DEV_BASE_IMAGE}
         CPP_PACKAGES: ${CPP_DEV_PACKAGES}

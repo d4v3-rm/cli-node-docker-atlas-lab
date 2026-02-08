@@ -15,7 +15,7 @@ RUN apt-get update && \
     ${INSTALL_PACKAGES} && \
   rm -rf /var/lib/apt/lists/*
 
-COPY start-cpp-dev.sh /usr/local/bin/start-cpp-dev.sh
+COPY infra/docker/images/workbenches/cpp/start-cpp-dev.sh /usr/local/bin/start-cpp-dev.sh
 RUN chmod +x /usr/local/bin/start-cpp-dev.sh
 
 USER 1000

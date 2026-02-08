@@ -733,7 +733,7 @@
             <div class="aside-card">
               <p class="aside-title">access notes</p>
               <div class="aside-meta">
-                <span>Le credenziali root sono esposte qui e nel file <code>.env</code>.</span>
+                <span>Le credenziali root sono esposte qui e nel file <code>config/env/lab.env</code>.</span>
                 <span>Nessun DNS o file hosts: tutti gli ingressi pubblici usano `localhost` con porte dedicate.</span>
                 <span>n8n resta protetto da gateway auth piu owner bootstrap applicativo.</span>
                 <span>Ollama e servito come API locale dietro host separato e auth gateway.</span>

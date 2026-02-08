@@ -36,7 +36,7 @@ RUN set -eux; \
   corepack prepare "pnpm@${PNPM_VERSION}" --activate; \
   corepack prepare "yarn@${YARN_VERSION}" --activate
 
-COPY start-node-dev.sh /usr/local/bin/start-node-dev.sh
+COPY infra/docker/images/workbenches/node/start-node-dev.sh /usr/local/bin/start-node-dev.sh
 RUN chmod +x /usr/local/bin/start-node-dev.sh
 
 USER 1000

@@ -1,0 +1,20 @@
+import type { Command } from 'commander';
+import type { BootstrapCommandOptions } from '../types/cli.types.js';
+import { runBootstrapCommand } from '../services/bootstrap.service.js';
+import { createProjectContext } from '../services/project.service.js';
+
+/**
+ * Registers the `bootstrap` command.
+ */
+export function registerBootstrapCommand(program: Command): void {
+  program
+    .command('bootstrap')
+    .description('Run the idempotent bootstrap only')
+    .option('--project-dir <path>', 'Explicit project root if you are not in the repo')
+    .option('--skip-gitea', 'Skip the Gitea admin reconciliation step')
+    .option('--skip-ollama', 'Skip the Ollama embedding model reconciliation step')
+    .action(async (options: BootstrapCommandOptions) => {
+      const context = createProjectContext(options);
+      await runBootstrapCommand(context, options);
+    });
+}

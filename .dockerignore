@@ -1,0 +1,14 @@
+.git
+.gitignore
+bin
+dist
+node_modules
+scripts
+src
+tools
+*.tgz
+README.md
+package.json
+package-lock.json
+tsconfig.json
+tsup.config.ts
