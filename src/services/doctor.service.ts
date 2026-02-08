@@ -7,7 +7,7 @@ import type { DoctorCommandOptions } from '../types/cli.types.js';
 import type { HostCheckResult, SmokeCheckDefinition } from '../types/doctor.types.js';
 import type { ProjectContext, SmokeEnv } from '../types/project.types.js';
 import { printCommandHeader } from '../ui/banner.js';
-import { printDoctorSummary } from '../ui/logger.js';
+import { formatTaskTitle, printDoctorSummary } from '../ui/logger.js';
 import { httpsGet } from '../utils/http.js';
 import { runCommand } from '../utils/process.js';
 import { parseSmokeEnv } from './project.service.js';
@@ -20,27 +20,27 @@ export async function runDoctorCommand(
   options: DoctorCommandOptions
 ): Promise<void> {
   printCommandHeader({
-    title: 'Doctor',
+    title: 'Atlas Lab Doctor',
     summary: options.smoke
       ? 'Validate host requirements and run smoke checks'
-      : 'Validate host requirements for the lab',
+      : 'Validate host requirements for Atlas Lab',
     projectRoot: context.projectRoot
   });
 
   const results: HostCheckResult[] = [];
   const tasks = [
-    createCheckTask(results, 'Docker CLI', () => checkCommand('docker', ['--version'], 'Docker CLI')),
-    createCheckTask(results, 'Docker Compose v2', () =>
+    createCheckTask(results, 'host', 'Docker CLI', () => checkCommand('docker', ['--version'], 'Docker CLI')),
+    createCheckTask(results, 'host', 'Docker Compose v2', () =>
       checkCommand('docker', ['compose', 'version', '--short'], 'Docker Compose v2')
     ),
-    createCheckTask(results, 'Docker daemon', () =>
+    createCheckTask(results, 'host', 'Docker daemon', () =>
       checkCommand('docker', ['info', '--format', '{{.ServerVersion}}'], 'Docker daemon')
     ),
-    createCheckTask(results, 'Node.js', () => Promise.resolve(checkNodeVersion())),
-    createCheckTask(results, 'npm', () => checkCommand(...npmCheckCommand())),
-    createCheckTask(results, 'Compose configuration', () => checkComposeConfiguration(context)),
+    createCheckTask(results, 'host', 'Node.js', () => Promise.resolve(checkNodeVersion())),
+    createCheckTask(results, 'host', 'npm', () => checkCommand(...npmCheckCommand())),
+    createCheckTask(results, 'doctor', 'Compose configuration', () => checkComposeConfiguration(context)),
     ...REQUIRED_REPOSITORY_FILES.map((relativePath) =>
-      createCheckTask(results, `Required file ${relativePath}`, () =>
+      createCheckTask(results, 'doctor', `Required file ${relativePath}`, () =>
         Promise.resolve(checkRequiredFile(context.projectRoot, relativePath))
       )
     )
@@ -50,7 +50,7 @@ export async function runDoctorCommand(
     const env = parseSmokeEnv(context.env);
     for (const smokeCheck of buildSmokeChecks(env)) {
       tasks.push(
-        createCheckTask(results, smokeCheck.name, () => runSmokeCheck(smokeCheck))
+        createCheckTask(results, 'smoke', smokeCheck.name, () => runSmokeCheck(smokeCheck))
       );
     }
   }
@@ -75,11 +75,12 @@ export async function runDoctorCommand(
  */
 function createCheckTask(
   results: HostCheckResult[],
+  scope: 'doctor' | 'host' | 'smoke',
   taskName: string,
   runCheck: () => Promise<HostCheckResult>
 ) {
   return {
-    title: taskName,
+    title: formatTaskTitle(scope, taskName),
     task: async () => {
       const result = await runCheck();
       results.push(result);

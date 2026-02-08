@@ -7,6 +7,6 @@ import { printError } from '../ui/logger.js';
  */
 runCli(process.argv).catch((error) => {
   const message = error instanceof Error ? error.message : 'Unknown CLI failure';
-  printError(message);
+  printError(message, 'runtime');
   process.exitCode = 1;
 });

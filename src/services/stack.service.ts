@@ -3,7 +3,7 @@ import { createComposeCommandArgs } from '../lib/compose.js';
 import type { GlobalCliOptions, UpCommandOptions } from '../types/cli.types.js';
 import type { ProjectContext } from '../types/project.types.js';
 import { printCommandHeader } from '../ui/banner.js';
-import { printInfo, printSuccess } from '../ui/logger.js';
+import { formatTaskTitle, printInfo, printSuccess } from '../ui/logger.js';
 import { runCommand } from '../utils/process.js';
 import { createBootstrapTasks } from './bootstrap.service.js';
 
@@ -20,7 +20,7 @@ export async function runUpCommand(
   options: UpCommandOptions
 ): Promise<void> {
   printCommandHeader({
-    title: 'Start Lab Stack',
+    title: 'Start Atlas Lab Stack',
     summary: 'Bring Docker Compose up and reconcile runtime state',
     projectRoot: context.projectRoot
   });
@@ -28,7 +28,7 @@ export async function runUpCommand(
   const tasks = new Listr(
     [
       {
-        title: 'Start Docker Compose stack',
+        title: formatTaskTitle('stack', 'Start Docker Compose stack'),
         task: async () => {
           await runCommand('docker', createComposeUpArgs(context, options), {
             cwd: context.projectRoot
@@ -36,7 +36,7 @@ export async function runUpCommand(
         }
       },
       {
-        title: 'Run bootstrap workflow',
+        title: formatTaskTitle('stack', 'Run bootstrap workflow'),
         task: () =>
           new Listr(
             createBootstrapTasks(context, {
@@ -50,7 +50,7 @@ export async function runUpCommand(
           )
       },
       {
-        title: 'Remove legacy init images',
+        title: formatTaskTitle('stack', 'Remove legacy init images'),
         task: async () => {
           await cleanupLegacyImages(context.projectRoot);
         }
@@ -63,7 +63,7 @@ export async function runUpCommand(
   );
 
   await tasks.run();
-  printSuccess('Lab stack is ready.');
+  printSuccess('Atlas Lab stack is ready.', 'stack');
 }
 
 /**
@@ -74,7 +74,7 @@ export async function runStatusCommand(
   _options: GlobalCliOptions
 ): Promise<void> {
   printCommandHeader({
-    title: 'Lab Status',
+    title: 'Atlas Lab Status',
     summary: 'Display Docker Compose services for this checkout',
     projectRoot: context.projectRoot
   });
@@ -92,16 +92,16 @@ export async function runDownCommand(
   _options: GlobalCliOptions
 ): Promise<void> {
   printCommandHeader({
-    title: 'Stop Lab Stack',
+    title: 'Stop Atlas Lab Stack',
     summary: 'Stop Docker Compose services and remove orphans',
     projectRoot: context.projectRoot
   });
 
-  printInfo('Stopping the lab stack...');
+  printInfo('Stopping the Atlas Lab stack...', 'stack');
   await runCommand('docker', createComposeCommandArgs(context, ['down', '--remove-orphans']), {
     cwd: context.projectRoot
   });
-  printSuccess('Lab stack stopped.');
+  printSuccess('Atlas Lab stack stopped.', 'stack');
 }
 
 /**

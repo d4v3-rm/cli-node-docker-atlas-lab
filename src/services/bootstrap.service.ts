@@ -4,7 +4,7 @@ import { createComposeCommandArgs } from '../lib/compose.js';
 import type { BootstrapCommandOptions } from '../types/cli.types.js';
 import type { BootstrapEnv, ProjectContext } from '../types/project.types.js';
 import { printCommandHeader } from '../ui/banner.js';
-import { printSuccess } from '../ui/logger.js';
+import { formatTaskTitle, printSuccess } from '../ui/logger.js';
 import { runCommand } from '../utils/process.js';
 import { parseBootstrapEnv } from './project.service.js';
 
@@ -18,7 +18,7 @@ export async function runBootstrapCommand(
   options: BootstrapCommandOptions
 ): Promise<void> {
   printCommandHeader({
-    title: 'Bootstrap Lab',
+    title: 'Bootstrap Atlas Lab',
     summary: 'Reconcile Gitea and Ollama runtime state',
     projectRoot: context.projectRoot
   });
@@ -27,7 +27,7 @@ export async function runBootstrapCommand(
     concurrent: false,
     exitOnError: true
   }).run();
-  printSuccess('Bootstrap completed.');
+  printSuccess('Bootstrap completed.', 'bootstrap');
 }
 
 /**
@@ -43,7 +43,7 @@ export function createBootstrapTasks(
 
   if (!options.skipGitea) {
     tasks.push({
-      title: 'Align Gitea root account',
+      title: formatTaskTitle('bootstrap', 'Align Gitea root account'),
       task: async () => {
         await ensureGiteaAdmin(context, env);
       }
@@ -52,7 +52,7 @@ export function createBootstrapTasks(
 
   if (!options.skipOllama) {
     tasks.push({
-      title: 'Align Ollama embedding model',
+      title: formatTaskTitle('bootstrap', 'Align Ollama embedding model'),
       task: async () => {
         await ensureOllamaModel(context, env);
       }
