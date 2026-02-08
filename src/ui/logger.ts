@@ -3,6 +3,7 @@ import Table from 'cli-table3';
 import logSymbols from 'log-symbols';
 import pc from 'picocolors';
 import { APP_METADATA } from '../config/app-metadata.js';
+import { writeRuntimeLog } from '../services/runtime-log.service.js';
 import type { HostCheckResult } from '../types/doctor.types.js';
 import type { LogLevel, LogScope } from '../types/logging.types.js';
 
@@ -24,6 +25,8 @@ export function printInfo(message: string, scope: LogScope = 'app'): void {
  * Prints an error panel that stays visible even after task renderers exit.
  */
 export function printError(message: string, scope: LogScope = 'app'): void {
+  writeRuntimeLog('error', scope, message);
+
   console.error(
     boxen([formatScopeLabel(scope), pc.red(message)].join('\n'), {
       padding: 1,
@@ -55,6 +58,12 @@ export function printDoctorSummary(results: HostCheckResult[]): void {
       result.detail
     ]);
   }
+
+  writeRuntimeLog(
+    failedChecks > 0 ? 'warn' : 'success',
+    'doctor',
+    `Doctor summary: ${passedChecks} passed, ${failedChecks} failed`
+  );
 
   console.log(
     boxen(
@@ -92,6 +101,8 @@ export function formatTaskTitle(scope: LogScope, title: string): string {
  * Renders a single structured log line with level symbols and scope prefixes.
  */
 function printLogLine(level: LogLevel, message: string, scope: LogScope): void {
+  writeRuntimeLog(level, scope, message);
+
   const line = `${getLevelSymbol(level)} ${formatScopeLabel(scope)} ${getLevelColor(level)(message)}`;
 
   if (level === 'error') {
@@ -108,7 +119,7 @@ function printLogLine(level: LogLevel, message: string, scope: LogScope): void {
 function getScopeColor(scope: LogScope): (text: string) => string {
   switch (scope) {
     case 'runtime':
-      return pc.red;
+      return pc.magenta;
     case 'stack':
       return pc.cyan;
     case 'bootstrap':

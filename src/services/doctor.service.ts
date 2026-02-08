@@ -125,7 +125,8 @@ async function checkCommand(
   try {
     const result = await runCommand(command, args, {
       captureOutput: true,
-      allowFailure: true
+      allowFailure: true,
+      scope: 'host'
     });
 
     return {
@@ -182,7 +183,8 @@ async function checkComposeConfiguration(context: ProjectContext): Promise<HostC
   const result = await runCommand('docker', createComposeCommandArgs(context, ['config', '-q']), {
     cwd: context.projectRoot,
     captureOutput: true,
-    allowFailure: true
+    allowFailure: true,
+    scope: 'doctor'
   });
 
   return {

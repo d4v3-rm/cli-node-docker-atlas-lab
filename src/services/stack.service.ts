@@ -31,7 +31,8 @@ export async function runUpCommand(
         title: formatTaskTitle('stack', 'Start Docker Compose stack'),
         task: async () => {
           await runCommand('docker', createComposeUpArgs(context, options), {
-            cwd: context.projectRoot
+            cwd: context.projectRoot,
+            scope: 'compose'
           });
         }
       },
@@ -80,7 +81,8 @@ export async function runStatusCommand(
   });
 
   await runCommand('docker', createComposeCommandArgs(context, ['ps', '--all']), {
-    cwd: context.projectRoot
+    cwd: context.projectRoot,
+    scope: 'compose'
   });
 }
 
@@ -99,7 +101,8 @@ export async function runDownCommand(
 
   printInfo('Stopping the Atlas Lab stack...', 'stack');
   await runCommand('docker', createComposeCommandArgs(context, ['down', '--remove-orphans']), {
-    cwd: context.projectRoot
+    cwd: context.projectRoot,
+    scope: 'compose'
   });
   printSuccess('Atlas Lab stack stopped.', 'stack');
 }
@@ -133,7 +136,8 @@ async function cleanupLegacyImages(projectRoot: string): Promise<number> {
     const result = await runCommand('docker', ['image', 'rm', '-f', image], {
       cwd: projectRoot,
       captureOutput: true,
-      allowFailure: true
+      allowFailure: true,
+      scope: 'stack'
     });
 
     if (result.exitCode === 0) {

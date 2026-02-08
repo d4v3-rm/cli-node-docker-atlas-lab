@@ -84,7 +84,8 @@ async function ensureGiteaAdmin(
 
   const listing = await runCommand('docker', [...baseArgs, 'list', '--config', GITEA_CONFIG], {
     cwd: context.projectRoot,
-    captureOutput: true
+    captureOutput: true,
+    scope: 'bootstrap'
   });
 
   if (listing.stdout.includes(env.GITEA_ROOT_USERNAME)) {
@@ -100,7 +101,10 @@ async function ensureGiteaAdmin(
         '--password',
         env.GITEA_ROOT_PASSWORD
       ],
-      { cwd: context.projectRoot }
+      {
+        cwd: context.projectRoot,
+        scope: 'bootstrap'
+      }
     );
 
     return 'updated';
@@ -122,7 +126,10 @@ async function ensureGiteaAdmin(
       '--admin',
       '--must-change-password=false'
     ],
-    { cwd: context.projectRoot }
+    {
+      cwd: context.projectRoot,
+      scope: 'bootstrap'
+    }
   );
 
   return 'created';
@@ -150,7 +157,8 @@ async function ensureOllamaModel(
     {
       cwd: context.projectRoot,
       captureOutput: true,
-      allowFailure: true
+      allowFailure: true,
+      scope: 'bootstrap'
     }
   );
 
@@ -169,7 +177,8 @@ async function ensureOllamaModel(
       env.OLLAMA_EMBEDDING_MODEL
     ]),
     {
-      cwd: context.projectRoot
+      cwd: context.projectRoot,
+      scope: 'bootstrap'
     }
   );
 
@@ -191,7 +200,8 @@ async function waitForService(
         createComposeCommandArgs(context, ['ps', '-q', serviceName]),
         {
           cwd: context.projectRoot,
-          captureOutput: true
+          captureOutput: true,
+          scope: 'bootstrap'
         }
       );
 
@@ -209,7 +219,8 @@ async function waitForService(
         ],
         {
           cwd: context.projectRoot,
-          captureOutput: true
+          captureOutput: true,
+          scope: 'bootstrap'
         }
       );
 
