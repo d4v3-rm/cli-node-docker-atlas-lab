@@ -233,7 +233,7 @@ Devono essere libere:
 - `8452`
 - `8453`
 
-Se una di queste porte e occupata, l'avvio Compose fallira.
+Se una di queste porte e occupata, `atlas-lab up` fallira subito durante il preflight host, prima di far partire Docker Compose.
 
 ### Cosa non serve sul sistema host
 
@@ -776,6 +776,25 @@ Usa gli shim `.cmd`:
 npm.cmd run dev -- doctor
 atlas-lab.cmd status
 ```
+
+### `atlas-lab up` fallisce sul preflight porte
+
+La CLI controlla prima le porte pubbliche del gateway e dei workbench.
+
+Se vedi un errore tipo `Host port preflight failed`, significa che una o piu porte tra `8443-8453` sono gia occupate da un'altra stack o da un altro processo locale.
+
+Controlla:
+
+```powershell
+atlas-lab status
+docker ps --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}"
+```
+
+Poi libera le porte in uno di questi modi:
+
+- ferma la stack Atlas Lab gia presente con `atlas-lab down`
+- ferma l'altra stack Docker che pubblica le stesse porte
+- cambia le porte in `config/env/lab.env`
 
 ### I workbench non compaiono in `docker compose up`
 
