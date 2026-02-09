@@ -295,6 +295,12 @@ La CLI TypeScript sostituisce il vecchio bootstrap Python e i vecchi servizi Com
 | install globale | `npm install -g .` | installa `atlas-lab` globalmente dalla repo |
 | link globale | `npm link` | collega la repo come CLI globale durante lo sviluppo |
 
+### Log di sviluppo
+
+Quando esegui la CLI da sorgente con `npm run dev`, viene creato automaticamente un log file per sessione in `logs/dev/atlas-lab-<timestamp>.log`.
+
+La build distributable e la CLI installata globalmente non scrivono log su filesystem.
+
 ### Layout rapido della CLI
 
 - [bin/atlas-lab](./bin/atlas-lab): launcher minimale del pacchetto npm globale
