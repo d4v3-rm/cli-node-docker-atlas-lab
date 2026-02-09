@@ -2,6 +2,7 @@ import { Listr } from 'listr2';
 import { createComposeCommandArgs } from '../lib/compose.js';
 import type { GlobalCliOptions, UpCommandOptions } from '../types/cli.types.js';
 import type { ProjectContext } from '../types/project.types.js';
+import { assertPublishedPortsAvailable } from './host-preflight.service.js';
 import { printCommandHeader } from '../ui/banner.js';
 import { formatTaskTitle, printInfo, printSuccess } from '../ui/logger.js';
 import { runCommand } from '../utils/process.js';
@@ -27,6 +28,14 @@ export async function runUpCommand(
 
   const tasks = new Listr(
     [
+      {
+        title: formatTaskTitle('host', 'Validate published host ports'),
+        task: async () => {
+          await assertPublishedPortsAvailable(context.env, {
+            includeWorkbench: Boolean(options.withWorkbench)
+          });
+        }
+      },
       {
         title: formatTaskTitle('stack', 'Start Docker Compose stack'),
         task: async () => {
