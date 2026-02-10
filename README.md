@@ -96,7 +96,7 @@ In parallelo, il bootstrap non usa piu container Compose di init. Al loro posto 
 | --- | --- | --- | --- |
 | Deck | dashboard operativa del lab | si | mostra servizi, credenziali e link |
 | Gitea | forge Git interno | si | repository, issue, review |
-| n8n | automazione e workflow | si | protetto da auth gateway |
+| n8n | automazione e workflow | si | login applicativo diretto |
 | Open WebUI | interfaccia AI | si | collegata a Ollama |
 | Ollama | API per modelli locali | si | protetto da auth gateway |
 
@@ -354,8 +354,9 @@ La CLI usa questo layout come contratto esplicito: risolve sempre `infra/docker/
 2. crea o riallinea l'utente root di Gitea
 3. aspetta che `ollama` sia `healthy`
 4. controlla il modello embeddings configurato
-5. esegue il pull del modello se manca
-6. rimuove l'eventuale immagine legacy `cli-node-docker-atlas-lab-ollama-init:latest`
+5. controlla il modello chat configurato
+6. esegue il pull dei modelli mancanti
+7. rimuove l'eventuale immagine legacy `cli-node-docker-atlas-lab-ollama-init:latest`
 
 Il bootstrap e idempotente.
 
@@ -506,8 +507,8 @@ Le credenziali operative sono in [`config/env/lab.env`](./config/env/lab.env) e 
 ### n8n
 
 - URL: `https://localhost:8445/`
-- primo livello: basic auth gateway
-- secondo livello: owner applicativo bootstrap
+- accesso: login applicativo diretto
+- owner bootstrap: `root@n8n.local`
 
 ### Open WebUI
 
@@ -515,12 +516,14 @@ Le credenziali operative sono in [`config/env/lab.env`](./config/env/lab.env) e 
 - accesso: login applicativo
 - signup: disabilitato
 - admin iniziale definito via env
+- usa automaticamente il modello chat configurato in `OLLAMA_CHAT_MODEL`
 
 ### Ollama
 
 - URL: `https://localhost:8447/`
 - accesso: basic auth gateway
 - uso principale: API per inference e embeddings
+- bootstrap iniziale: `OLLAMA_EMBEDDING_MODEL` + `OLLAMA_CHAT_MODEL`
 
 ### Workbench
 
@@ -707,7 +710,7 @@ curl.exe -sk https://localhost:8444/ -o NUL -w "%{http_code}"
 ### Endpoint n8n
 
 ```powershell
-curl.exe -sk -u root:RootN8N!2026 https://localhost:8445/ -o NUL -w "%{http_code}"
+curl.exe -sk https://localhost:8445/ -o NUL -w "%{http_code}"
 ```
 
 ### Endpoint Open WebUI
@@ -820,16 +823,22 @@ Controlla:
 - `docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs open-webui`
 - `docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs ollama`
 - la risposta di `https://localhost:8447/api/tags`
+- che `OLLAMA_CHAT_MODEL` e `OLLAMA_EMBEDDING_MODEL` siano valorizzati in `config/env/lab.env`
 - `npm run dev -- doctor --smoke`
 
-### n8n chiede due livelli di credenziali
+Se hai cambiato i modelli configurati, riesegui:
 
-Normale.
+```powershell
+npm run dev -- bootstrap --skip-gitea
+```
 
-Hai:
+### n8n continua a chiedere accesso o sembra respingere il login
 
-- auth gateway
-- auth applicativa dell'owner bootstrap
+Controlla:
+
+- `curl.exe -sk https://localhost:8445/ -o NUL -w "%{http_code}"` deve restituire `200`
+- usa l'owner bootstrap `root@n8n.local / RootN8NApp!2026`
+- se hai dati persistenti da tentativi precedenti, verifica lo stato utente in `n8n-data`
 
 ---
 
