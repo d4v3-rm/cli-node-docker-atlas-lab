@@ -29,10 +29,6 @@ services:
       - "${N8N_HTTPS_PORT}:${N8N_HTTPS_PORT}"
       - "${OPENWEBUI_HTTPS_PORT}:${OPENWEBUI_HTTPS_PORT}"
       - "${OLLAMA_HTTPS_PORT}:${OLLAMA_HTTPS_PORT}"
-      - "${NODE_DEV_HTTPS_PORT}:${NODE_DEV_HTTPS_PORT}"
-      - "${PYTHON_DEV_HTTPS_PORT}:${PYTHON_DEV_HTTPS_PORT}"
-      - "${AI_DEV_HTTPS_PORT}:${AI_DEV_HTTPS_PORT}"
-      - "${CPP_DEV_HTTPS_PORT}:${CPP_DEV_HTTPS_PORT}"
     volumes:
       - gateway-certs:/etc/caddy/certs
       - gateway-config:/etc/caddy/dynamic
@@ -51,6 +47,41 @@ services:
       - edge-net
       - apps-net
       - ai-net
+
+  gateway-workbench:
+    build:
+      context: ../..
+      dockerfile: infra/docker/images/gateway/Dockerfile
+      args:
+        CADDY_VERSION: ${CADDY_VERSION}
+    profiles: ["workbench"]
+    restart: unless-stopped
+    env_file:
+      - ../../config/env/lab.env
+    environment:
+      ATLAS_GATEWAY_TEMPLATE: Caddyfile.workbench.template
+    ports:
+      - "${NODE_DEV_HTTPS_PORT}:${NODE_DEV_HTTPS_PORT}"
+      - "${PYTHON_DEV_HTTPS_PORT}:${PYTHON_DEV_HTTPS_PORT}"
+      - "${AI_DEV_HTTPS_PORT}:${AI_DEV_HTTPS_PORT}"
+      - "${CPP_DEV_HTTPS_PORT}:${CPP_DEV_HTTPS_PORT}"
+    volumes:
+      - gateway-certs:/etc/caddy/certs
+      - gateway-config:/etc/caddy/dynamic
+      - gateway-data:/data
+    depends_on:
+      gateway:
+        condition: service_started
+      node-dev:
+        condition: service_started
+      python-dev:
+        condition: service_started
+      ai-dev:
+        condition: service_started
+      cpp-dev:
+        condition: service_started
+    networks:
+      - edge-net
       - workbench-net
 
   gitea:

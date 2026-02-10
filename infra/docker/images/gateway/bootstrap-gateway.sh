@@ -73,8 +73,14 @@ dynamic_dir="/etc/caddy/dynamic"
 cert_dir="/etc/caddy/certs"
 cert_file="${cert_dir}/lab.crt"
 key_file="${cert_dir}/lab.key"
+caddy_template="${ATLAS_GATEWAY_TEMPLATE:-Caddyfile.template}"
 
 mkdir -p "${site_root}" "${content_dir}" "${asset_dir}" "${dynamic_dir}" "${cert_dir}"
+
+if [ ! -f "${template_root}/${caddy_template}" ]; then
+  echo "Missing gateway template: ${caddy_template}" >&2
+  exit 1
+fi
 
 host_list="
 ${LAB_PUBLIC_HOST}
@@ -135,7 +141,7 @@ export OLLAMA_GATEWAY_PASSWORD_HASH
 render_vars='${LAB_HTTPS_PORT} ${GITEA_HTTPS_PORT} ${N8N_HTTPS_PORT} ${OPENWEBUI_HTTPS_PORT} ${OLLAMA_HTTPS_PORT} ${NODE_DEV_HTTPS_PORT} ${PYTHON_DEV_HTTPS_PORT} ${AI_DEV_HTTPS_PORT} ${CPP_DEV_HTTPS_PORT} ${LAB_PUBLIC_HOST} ${LAB_GATEWAY_IP} ${LAB_LOCAL_URL} ${LAB_URL} ${GITEA_URL} ${N8N_URL} ${OPENWEBUI_URL} ${OLLAMA_URL} ${NODE_DEV_URL} ${PYTHON_DEV_URL} ${AI_DEV_URL} ${CPP_DEV_URL} ${GITEA_ROOT_USERNAME} ${GITEA_ROOT_PASSWORD} ${GITEA_ROOT_EMAIL} ${N8N_ROOT_FIRST_NAME} ${N8N_ROOT_LAST_NAME} ${N8N_ROOT_EMAIL} ${N8N_ROOT_PASSWORD} ${OPENWEBUI_ROOT_NAME} ${OPENWEBUI_ROOT_EMAIL} ${OPENWEBUI_ROOT_PASSWORD} ${OLLAMA_GATEWAY_USER} ${OLLAMA_GATEWAY_PASSWORD} ${OLLAMA_GATEWAY_PASSWORD_HASH} ${POSTGRES_DEV_SUPERUSER} ${POSTGRES_DEV_PASSWORD} ${POSTGRES_DEV_DATABASE} ${NODE_DEV_PASSWORD} ${PYTHON_DEV_PASSWORD} ${AI_DEV_PASSWORD} ${CPP_DEV_PASSWORD}'
 
 envsubst "${render_vars}" \
-  < "${template_root}/Caddyfile.template" \
+  < "${template_root}/${caddy_template}" \
   > /etc/caddy/Caddyfile
 
 caddy fmt --overwrite /etc/caddy/Caddyfile >/dev/null 2>&1 || true
