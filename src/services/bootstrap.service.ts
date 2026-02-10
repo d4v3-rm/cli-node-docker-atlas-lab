@@ -52,9 +52,9 @@ export function createBootstrapTasks(
 
   if (!options.skipOllama) {
     tasks.push({
-      title: formatTaskTitle('bootstrap', 'Align Ollama embedding model'),
+      title: formatTaskTitle('bootstrap', 'Align Ollama runtime models'),
       task: async () => {
-        await ensureOllamaModel(context, env);
+        await ensureOllamaModels(context, env);
       }
     });
   }
@@ -136,53 +136,66 @@ async function ensureGiteaAdmin(
 }
 
 /**
- * Waits for Ollama and ensures the embedding model is present locally.
+ * Waits for Ollama and ensures the configured runtime models are present locally.
  */
-async function ensureOllamaModel(
+async function ensureOllamaModels(
   context: ProjectContext,
   env: BootstrapEnv
 ): Promise<'present' | 'pulled'> {
   await waitForService(context, 'ollama');
 
-  const modelCheck = await runCommand(
-    'docker',
-    createComposeCommandArgs(context, [
-      'exec',
-      '-T',
-      'ollama',
-      'ollama',
-      'show',
-      env.OLLAMA_EMBEDDING_MODEL
-    ]),
-    {
-      cwd: context.projectRoot,
-      captureOutput: true,
-      allowFailure: true,
-      scope: 'bootstrap'
-    }
-  );
+  let pulledModel = false;
 
-  if (modelCheck.exitCode === 0) {
-    return 'present';
+  for (const modelName of collectRequiredOllamaModels(env)) {
+    const modelCheck = await runCommand(
+      'docker',
+      createComposeCommandArgs(context, [
+        'exec',
+        '-T',
+        'ollama',
+        'ollama',
+        'show',
+        modelName
+      ]),
+      {
+        cwd: context.projectRoot,
+        captureOutput: true,
+        allowFailure: true,
+        scope: 'bootstrap'
+      }
+    );
+
+    if (modelCheck.exitCode === 0) {
+      continue;
+    }
+
+    await runCommand(
+      'docker',
+      createComposeCommandArgs(context, [
+        'exec',
+        '-T',
+        'ollama',
+        'ollama',
+        'pull',
+        modelName
+      ]),
+      {
+        cwd: context.projectRoot,
+        scope: 'bootstrap'
+      }
+    );
+
+    pulledModel = true;
   }
 
-  await runCommand(
-    'docker',
-    createComposeCommandArgs(context, [
-      'exec',
-      '-T',
-      'ollama',
-      'ollama',
-      'pull',
-      env.OLLAMA_EMBEDDING_MODEL
-    ]),
-    {
-      cwd: context.projectRoot,
-      scope: 'bootstrap'
-    }
-  );
+  return pulledModel ? 'pulled' : 'present';
+}
 
-  return 'pulled';
+/**
+ * Collects the distinct Ollama models required by the lab bootstrap.
+ */
+function collectRequiredOllamaModels(env: BootstrapEnv): string[] {
+  return [...new Set([env.OLLAMA_EMBEDDING_MODEL, env.OLLAMA_CHAT_MODEL])];
 }
 
 /**

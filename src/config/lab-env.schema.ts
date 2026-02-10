@@ -23,6 +23,7 @@ export const labEnvSchema = z
     GITEA_ROOT_PASSWORD: optionalEnvValue,
     GITEA_ROOT_EMAIL: optionalEnvValue,
     OLLAMA_EMBEDDING_MODEL: optionalEnvValue,
+    OLLAMA_CHAT_MODEL: optionalEnvValue,
     LAB_URL: optionalEnvValue,
     GITEA_URL: optionalEnvValue,
     N8N_URL: optionalEnvValue,
@@ -44,7 +45,8 @@ export const bootstrapEnvSchema = labEnvSchema.extend({
   GITEA_ROOT_USERNAME: requiredEnvValue,
   GITEA_ROOT_PASSWORD: requiredEnvValue,
   GITEA_ROOT_EMAIL: requiredEnvValue,
-  OLLAMA_EMBEDDING_MODEL: requiredEnvValue
+  OLLAMA_EMBEDDING_MODEL: requiredEnvValue,
+  OLLAMA_CHAT_MODEL: requiredEnvValue
 });
 
 /**

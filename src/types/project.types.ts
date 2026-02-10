@@ -11,6 +11,7 @@ export interface LabEnv {
   GITEA_ROOT_PASSWORD?: string;
   GITEA_ROOT_EMAIL?: string;
   OLLAMA_EMBEDDING_MODEL?: string;
+  OLLAMA_CHAT_MODEL?: string;
   LAB_URL?: string;
   GITEA_URL?: string;
   N8N_URL?: string;
@@ -49,6 +50,7 @@ export interface BootstrapEnv extends LabEnv {
   GITEA_ROOT_PASSWORD: string;
   GITEA_ROOT_EMAIL: string;
   OLLAMA_EMBEDDING_MODEL: string;
+  OLLAMA_CHAT_MODEL: string;
 }
 
 /**
