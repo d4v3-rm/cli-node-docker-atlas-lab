@@ -17,8 +17,6 @@ export interface LabEnv {
   N8N_URL?: string;
   OPENWEBUI_URL?: string;
   OLLAMA_URL?: string;
-  N8N_GATEWAY_USER?: string;
-  N8N_GATEWAY_PASSWORD?: string;
   OLLAMA_GATEWAY_USER?: string;
   OLLAMA_GATEWAY_PASSWORD?: string;
 }
@@ -62,8 +60,6 @@ export interface SmokeEnv extends LabEnv {
   N8N_URL: string;
   OPENWEBUI_URL: string;
   OLLAMA_URL: string;
-  N8N_GATEWAY_USER: string;
-  N8N_GATEWAY_PASSWORD: string;
   OLLAMA_GATEWAY_USER: string;
   OLLAMA_GATEWAY_PASSWORD: string;
 }

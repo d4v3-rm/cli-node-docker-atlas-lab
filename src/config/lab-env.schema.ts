@@ -29,8 +29,6 @@ export const labEnvSchema = z
     N8N_URL: optionalEnvValue,
     OPENWEBUI_URL: optionalEnvValue,
     OLLAMA_URL: optionalEnvValue,
-    N8N_GATEWAY_USER: optionalEnvValue,
-    N8N_GATEWAY_PASSWORD: optionalEnvValue,
     OLLAMA_GATEWAY_USER: optionalEnvValue,
     OLLAMA_GATEWAY_PASSWORD: optionalEnvValue
   })
@@ -58,8 +56,6 @@ export const smokeEnvSchema = labEnvSchema.extend({
   N8N_URL: requiredEnvValue,
   OPENWEBUI_URL: requiredEnvValue,
   OLLAMA_URL: requiredEnvValue,
-  N8N_GATEWAY_USER: requiredEnvValue,
-  N8N_GATEWAY_PASSWORD: requiredEnvValue,
   OLLAMA_GATEWAY_USER: requiredEnvValue,
   OLLAMA_GATEWAY_PASSWORD: requiredEnvValue
 });

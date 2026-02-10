@@ -225,11 +225,7 @@ function buildSmokeChecks(env: SmokeEnv): SmokeCheckDefinition[] {
     },
     {
       name: 'Smoke n8n',
-      url: env.N8N_URL,
-      auth: {
-        username: env.N8N_GATEWAY_USER,
-        password: env.N8N_GATEWAY_PASSWORD
-      }
+      url: env.N8N_URL
     },
     {
       name: 'Smoke Open WebUI',

@@ -30,7 +30,9 @@
   basic_auth {
     {args[0]} {args[1]}
   }
-  reverse_proxy {args[2]}
+  reverse_proxy {args[2]} {
+    header_up -Authorization
+  }
 }
 
 https://${LAB_PUBLIC_HOST}:${LAB_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${LAB_HTTPS_PORT} {
@@ -45,7 +47,7 @@ https://${LAB_PUBLIC_HOST}:${GITEA_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${GITE
 }
 
 https://${LAB_PUBLIC_HOST}:${N8N_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${N8N_HTTPS_PORT} {
-  import guarded_proxy ${N8N_GATEWAY_USER} ${N8N_GATEWAY_PASSWORD_HASH} n8n:5678
+  import service_proxy n8n:5678
 }
 
 https://${LAB_PUBLIC_HOST}:${OPENWEBUI_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${OPENWEBUI_HTTPS_PORT} {

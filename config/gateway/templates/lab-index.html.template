@@ -735,7 +735,7 @@
               <div class="aside-meta">
                 <span>Le credenziali root sono esposte qui e nel file <code>config/env/lab.env</code>.</span>
                 <span>Nessun DNS o file hosts: tutti gli ingressi pubblici usano `localhost` con porte dedicate.</span>
-                <span>n8n resta protetto da gateway auth piu owner bootstrap applicativo.</span>
+                <span>n8n usa direttamente l'auth applicativa owner, senza doppio login al gateway.</span>
                 <span>Ollama e servito come API locale dietro host separato e auth gateway.</span>
                 <span>Postgres non ha UI pubblica e viene consumato soltanto dai workbench.</span>
                 <span>I servizi core e i workbench hanno egress selettivo su reti dedicate, senza porte pubbliche aggiuntive.</span>
@@ -791,7 +791,7 @@
           <article class="service-card">
             <div class="service-top">
               <div class="icon-box"><i class="fa-solid fa-diagram-project"></i></div>
-              <span class="service-status">guarded</span>
+              <span class="service-status">online</span>
             </div>
             <h3>n8n Automation</h3>
             <p>
@@ -800,8 +800,7 @@
             </p>
             <div class="credential-grid">
               <div class="credential"><span>Endpoint</span><span>${N8N_URL}</span></div>
-              <div class="credential"><span>Gateway user</span><span>${N8N_GATEWAY_USER}</span></div>
-              <div class="credential"><span>Gateway password</span><span>${N8N_GATEWAY_PASSWORD}</span></div>
+              <div class="credential"><span>Accesso</span><span>login applicativo diretto</span></div>
               <div class="credential"><span>Owner bootstrap</span><span>${N8N_ROOT_FIRST_NAME} ${N8N_ROOT_LAST_NAME}</span></div>
               <div class="credential"><span>Owner email</span><span>${N8N_ROOT_EMAIL}</span></div>
               <div class="credential"><span>Owner password</span><span>${N8N_ROOT_PASSWORD}</span></div>
@@ -810,8 +809,8 @@
               <a class="button" href="${N8N_URL}" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-bolt"></i> entra</a>
             </div>
             <p class="service-note">
-              Primo accesso: supera il gateway con le credenziali mostrate sopra e usa le credenziali
-              owner per il bootstrap iniziale dell'istanza.
+              Primo accesso: entra direttamente con l'utente owner bootstrap senza passare da una
+              Basic Auth aggiuntiva al gateway.
             </p>
           </article>
 
