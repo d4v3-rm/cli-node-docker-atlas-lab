@@ -3,12 +3,12 @@ import pWaitFor from 'p-wait-for';
 import { createComposeCommandArgs } from '../lib/compose.js';
 import type { BootstrapCommandOptions } from '../types/cli.types.js';
 import type { BootstrapEnv, ProjectContext } from '../types/project.types.js';
+import { ensureGiteaAdmin } from './gitea-admin.service.js';
+import { ensureN8nOwner } from './n8n-owner.service.js';
 import { printCommandHeader } from '../ui/banner.js';
 import { formatTaskTitle, printSuccess } from '../ui/logger.js';
 import { runCommand } from '../utils/process.js';
 import { parseBootstrapEnv } from './project.service.js';
-
-const GITEA_CONFIG = '/data/gitea/conf/app.ini';
 
 /**
  * Runs the standalone bootstrap workflow.
@@ -45,10 +45,20 @@ export function createBootstrapTasks(
     tasks.push({
       title: formatTaskTitle('bootstrap', 'Align Gitea root account'),
       task: async () => {
+        await waitForService(context, 'gitea');
         await ensureGiteaAdmin(context, env);
       }
     });
   }
+
+  tasks.push({
+    title: formatTaskTitle('bootstrap', 'Align n8n owner account'),
+    task: async () => {
+      await waitForService(context, 'n8n');
+      await waitForService(context, 'gateway');
+      await ensureN8nOwner(context, env);
+    }
+  });
 
   if (!options.skipOllama) {
     tasks.push({
@@ -61,80 +71,6 @@ export function createBootstrapTasks(
 
   return tasks;
 }
-
-/**
- * Waits for Gitea and ensures the configured root user exists with the right password.
- */
-async function ensureGiteaAdmin(
-  context: ProjectContext,
-  env: BootstrapEnv
-): Promise<'created' | 'updated'> {
-  await waitForService(context, 'gitea');
-
-  const baseArgs = createComposeCommandArgs(context, [
-    'exec',
-    '-T',
-    '--user',
-    `${env.GITEA_UID}:${env.GITEA_GID}`,
-    'gitea',
-    'gitea',
-    'admin',
-    'user'
-  ]);
-
-  const listing = await runCommand('docker', [...baseArgs, 'list', '--config', GITEA_CONFIG], {
-    cwd: context.projectRoot,
-    captureOutput: true,
-    scope: 'bootstrap'
-  });
-
-  if (listing.stdout.includes(env.GITEA_ROOT_USERNAME)) {
-    await runCommand(
-      'docker',
-      [
-        ...baseArgs,
-        'change-password',
-        '--config',
-        GITEA_CONFIG,
-        '--username',
-        env.GITEA_ROOT_USERNAME,
-        '--password',
-        env.GITEA_ROOT_PASSWORD
-      ],
-      {
-        cwd: context.projectRoot,
-        scope: 'bootstrap'
-      }
-    );
-
-    return 'updated';
-  }
-
-  await runCommand(
-    'docker',
-    [
-      ...baseArgs,
-      'create',
-      '--config',
-      GITEA_CONFIG,
-      '--username',
-      env.GITEA_ROOT_USERNAME,
-      '--password',
-      env.GITEA_ROOT_PASSWORD,
-      '--email',
-      env.GITEA_ROOT_EMAIL,
-      '--admin',
-      '--must-change-password=false'
-    ],
-    {
-      cwd: context.projectRoot,
-      scope: 'bootstrap'
-    }
-  );
-
-  return 'created';
-}
-
 /**
  * Waits for Ollama and ensures the configured runtime models are present locally.
  */

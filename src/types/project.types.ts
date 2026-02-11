@@ -10,6 +10,12 @@ export interface LabEnv {
   GITEA_ROOT_USERNAME?: string;
   GITEA_ROOT_PASSWORD?: string;
   GITEA_ROOT_EMAIL?: string;
+  N8N_ROOT_FIRST_NAME?: string;
+  N8N_ROOT_LAST_NAME?: string;
+  N8N_ROOT_EMAIL?: string;
+  N8N_ROOT_PASSWORD?: string;
+  OPENWEBUI_ROOT_EMAIL?: string;
+  OPENWEBUI_ROOT_PASSWORD?: string;
   OLLAMA_EMBEDDING_MODEL?: string;
   OLLAMA_CHAT_MODEL?: string;
   LAB_URL?: string;
@@ -47,6 +53,11 @@ export interface BootstrapEnv extends LabEnv {
   GITEA_ROOT_USERNAME: string;
   GITEA_ROOT_PASSWORD: string;
   GITEA_ROOT_EMAIL: string;
+  N8N_URL: string;
+  N8N_ROOT_FIRST_NAME: string;
+  N8N_ROOT_LAST_NAME: string;
+  N8N_ROOT_EMAIL: string;
+  N8N_ROOT_PASSWORD: string;
   OLLAMA_EMBEDDING_MODEL: string;
   OLLAMA_CHAT_MODEL: string;
 }
@@ -58,8 +69,14 @@ export interface SmokeEnv extends LabEnv {
   LAB_URL: string;
   GITEA_URL: string;
   N8N_URL: string;
+  N8N_ROOT_EMAIL: string;
+  N8N_ROOT_PASSWORD: string;
   OPENWEBUI_URL: string;
+  OPENWEBUI_ROOT_EMAIL: string;
+  OPENWEBUI_ROOT_PASSWORD: string;
   OLLAMA_URL: string;
   OLLAMA_GATEWAY_USER: string;
   OLLAMA_GATEWAY_PASSWORD: string;
+  OLLAMA_EMBEDDING_MODEL: string;
+  OLLAMA_CHAT_MODEL: string;
 }

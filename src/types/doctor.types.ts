@@ -1,5 +1,3 @@
-import type { BasicAuthCredentials } from './project.types.js';
-
 /**
  * Result of a doctor host/smoke check.
  */
@@ -10,10 +8,9 @@ export interface HostCheckResult {
 }
 
 /**
- * Definition of an HTTPS smoke check.
+ * Definition of a concrete smoke check executed against the local lab.
  */
 export interface SmokeCheckDefinition {
   name: string;
-  url: string;
-  auth?: BasicAuthCredentials;
+  run: (caCertificate: string) => Promise<HostCheckResult>;
 }

@@ -3,6 +3,7 @@ import { createComposeCommandArgs } from '../lib/compose.js';
 import type { GlobalCliOptions, UpCommandOptions } from '../types/cli.types.js';
 import type { ProjectContext } from '../types/project.types.js';
 import { assertPublishedPortsAvailable } from './host-preflight.service.js';
+import { hasRunningComposeServices } from './compose-project.service.js';
 import { printCommandHeader } from '../ui/banner.js';
 import { formatTaskTitle, printInfo, printSuccess } from '../ui/logger.js';
 import { runCommand } from '../utils/process.js';
@@ -26,12 +27,14 @@ export async function runUpCommand(
     projectRoot: context.projectRoot
   });
 
+  const stackWasRunning = await hasRunningComposeServices(context);
+  let composeStartedInThisRun = false;
   const tasks = new Listr(
     [
       {
         title: formatTaskTitle('host', 'Validate published host ports'),
         task: async () => {
-          await assertPublishedPortsAvailable(context.env, {
+          await assertPublishedPortsAvailable(context, {
             includeWorkbench: Boolean(options.withWorkbench)
           });
         }
@@ -43,6 +46,7 @@ export async function runUpCommand(
             cwd: context.projectRoot,
             scope: 'compose'
           });
+          composeStartedInThisRun = true;
         }
       },
       {
@@ -72,7 +76,13 @@ export async function runUpCommand(
     }
   );
 
-  await tasks.run();
+  try {
+    await tasks.run();
+  } catch (error) {
+    await rollbackPartialStartup(context, stackWasRunning, composeStartedInThisRun);
+    throw error;
+  }
+
   printSuccess('Atlas Lab stack is ready.', 'stack');
 }
 
@@ -155,4 +165,24 @@ async function cleanupLegacyImages(projectRoot: string): Promise<number> {
   }
 
   return removedImages;
+}
+
+/**
+ * Stops a newly started stack after a later bootstrap failure so `up` does not leave stray runtime state behind.
+ */
+async function rollbackPartialStartup(
+  context: ProjectContext,
+  stackWasRunning: boolean,
+  composeStartedInThisRun: boolean
+): Promise<void> {
+  if (stackWasRunning || !composeStartedInThisRun) {
+    return;
+  }
+
+  printInfo('Bootstrap failed after startup; stopping the partially started Atlas Lab stack.', 'stack');
+  await runCommand('docker', createComposeCommandArgs(context, ['down', '--remove-orphans']), {
+    allowFailure: true,
+    cwd: context.projectRoot,
+    scope: 'compose'
+  });
 }

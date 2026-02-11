@@ -1,11 +1,12 @@
 import { createServer } from 'node:net';
-import type { LabEnv } from '../types/project.types.js';
+import { getRunningComposePublishedPorts } from './compose-project.service.js';
 import type {
   HostBindAddress,
   HostPortCheckResult,
   HostPortDefinition,
   HostPortProbeResult
 } from '../types/preflight.types.js';
+import type { LabEnv, ProjectContext } from '../types/project.types.js';
 
 const CORE_PORT_ENV_KEYS = [
   'LAB_HTTPS_PORT',
@@ -28,13 +29,16 @@ const BIND_ADDRESSES: readonly HostBindAddress[] = ['0.0.0.0', '::'] as const;
  * Fails fast when one or more published host ports are already occupied.
  */
 export async function assertPublishedPortsAvailable(
-  env: LabEnv,
+  context: ProjectContext,
   options: {
     includeWorkbench: boolean;
   }
 ): Promise<void> {
-  const definitions = getConfiguredHostPorts(env, options.includeWorkbench);
-  const results = await Promise.all(definitions.map((definition) => checkHostPort(definition)));
+  const definitions = getConfiguredHostPorts(context.env, options.includeWorkbench);
+  const currentProjectPorts = await getRunningComposePublishedPorts(context);
+  const results = await Promise.all(
+    definitions.map((definition) => checkHostPort(definition, currentProjectPorts))
+  );
   const unavailablePorts = results.filter((result) => !result.available);
 
   if (unavailablePorts.length === 0) {
@@ -79,7 +83,10 @@ function parseRequiredPort(env: LabEnv, envKey: string): number {
 /**
  * Checks whether a TCP port can be bound on the local machine for both IPv4 and IPv6 wildcards.
  */
-async function checkHostPort(definition: HostPortDefinition): Promise<HostPortCheckResult> {
+async function checkHostPort(
+  definition: HostPortDefinition,
+  currentProjectPorts: ReadonlySet<number>
+): Promise<HostPortCheckResult> {
   const probeResults: HostPortProbeResult[] = [];
 
   for (const host of BIND_ADDRESSES) {
@@ -89,6 +96,14 @@ async function checkHostPort(definition: HostPortDefinition): Promise<HostPortCh
   const blockingProbe = probeResults.find((result) => result.supported && !result.available);
 
   if (blockingProbe) {
+    if (currentProjectPorts.has(definition.port)) {
+      return {
+        ...definition,
+        available: true,
+        detail: 'already published by the current Atlas Lab stack'
+      };
+    }
+
     return {
       ...definition,
       available: false,
