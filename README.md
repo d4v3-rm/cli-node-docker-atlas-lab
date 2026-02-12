@@ -38,6 +38,7 @@
 
 `cli-node-docker-atlas-lab` non e una singola applicazione. E un lab infrastrutturale locale che combina:
 
+- un index grafico iniziale del lab, servito dal gateway, da cui aprire servizi, credenziali e asset operativi
 - `Gitea` per repository Git, issue tracking e code review
 - `n8n` per automazione e workflow
 - `Open WebUI` come interfaccia AI
@@ -94,7 +95,7 @@ In parallelo, il bootstrap non usa piu container Compose di init. Al loro posto 
 
 | Servizio | Ruolo | Esposto | Note |
 | --- | --- | --- | --- |
-| Deck | dashboard operativa del lab | si | mostra servizi, credenziali e link |
+| Deck | index grafico e dashboard operativa del lab | si | mostra servizi, credenziali e link |
 | Gitea | forge Git interno | si | repository, issue, review |
 | n8n | automazione e workflow | si | login applicativo diretto |
 | Open WebUI | interfaccia AI | si | collegata a Ollama |
@@ -477,11 +478,13 @@ docker compose --file infra/docker/compose.yml --env-file config/env/lab.env up 
 npm run dev -- bootstrap
 ```
 
-### 8. Apri il deck
+### 8. Apri l'index grafico del lab
 
 ```text
 https://localhost:8443/
 ```
+
+L'index grafico del lab e pubblicato dal gateway sulla porta `8443`.
 
 Dal deck puoi:
 
@@ -497,6 +500,12 @@ Dal deck puoi:
 ## Accessi E Credenziali
 
 Le credenziali operative sono in [`config/env/lab.env`](./config/env/lab.env) e sono riportate anche nel deck HTML.
+
+### Index grafico del lab
+
+- URL: `https://localhost:8443/`
+- porta host: `8443`
+- ruolo: homepage grafica del lab con link rapidi, credenziali operative e accesso ai servizi
 
 ### Gitea
 
