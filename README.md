@@ -273,6 +273,16 @@ Quindi:
 - puoi proseguire temporaneamente
 - oppure puoi importare il certificato del lab nel trust store locale
 
+Se usi `Git for Windows` con backend TLS `schannel`, importa il certificato nel trust store utente di Windows dopo averlo scaricato:
+
+```bash
+mkdir -p ~/certs
+curl -k https://localhost:8443/assets/lab.crt -o ~/certs/atlas-lab.crt
+certutil -user -addstore Root "$(cygpath -w "$HOME/certs/atlas-lab.crt")"
+```
+
+Questo passaggio serve anche per permettere a `git push` verso `https://localhost:8444/...` di fidarsi del certificato del gateway/Gitea.
+
 ---
 
 ## CLI TypeScript
@@ -765,6 +775,24 @@ Puoi:
 
 - accettarlo temporaneamente
 - oppure scaricare `/assets/lab.crt` dal deck e importarlo nel trust store locale
+
+### `git push` verso Gitea fallisce con `schannel: SEC_E_UNTRUSTED_ROOT`
+
+Git for Windows usa `schannel`, quindi si appoggia al trust store di Windows.
+
+Importa il certificato del lab:
+
+```bash
+mkdir -p ~/certs
+curl -k https://localhost:8443/assets/lab.crt -o ~/certs/atlas-lab.crt
+certutil -user -addstore Root "$(cygpath -w "$HOME/certs/atlas-lab.crt")"
+```
+
+Poi chiudi e riapri il terminale e riprova:
+
+```bash
+git push -u origin main
+```
 
 ### Non vedo l'utente root di Gitea o il modello Ollama
 
