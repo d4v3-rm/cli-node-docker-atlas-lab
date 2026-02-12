@@ -363,11 +363,13 @@ La CLI usa questo layout come contratto esplicito: risolve sempre `infra/docker/
 
 1. aspetta che `gitea` sia `healthy`
 2. crea o riallinea l'utente root di Gitea
-3. aspetta che `ollama` sia `healthy`
-4. controlla il modello embeddings configurato
-5. controlla il modello chat configurato
-6. esegue il pull dei modelli mancanti
-7. rimuove l'eventuale immagine legacy `cli-node-docker-atlas-lab-ollama-init:latest`
+3. aspetta che `n8n` e `gateway` siano raggiungibili
+4. crea o riallinea l'owner bootstrap di n8n
+5. aspetta che `ollama` sia `healthy`
+6. controlla il modello embeddings configurato
+7. controlla il modello chat configurato
+8. esegue il pull dei modelli mancanti
+9. rimuove l'eventuale immagine legacy `cli-node-docker-atlas-lab-ollama-init:latest`
 
 Il bootstrap e idempotente.
 
@@ -526,8 +528,11 @@ Le credenziali operative sono in [`config/env/lab.env`](./config/env/lab.env) e 
 ### n8n
 
 - URL: `https://localhost:8445/`
-- accesso: login applicativo diretto
-- owner bootstrap: `root@n8n.local`
+- accesso: login applicativo diretto, senza Basic Auth aggiuntiva al gateway
+- owner bootstrap: `root@n8n.local / RootN8NApp!2026`
+- owner creato o riallineato automaticamente dal bootstrap della CLI
+- il setup wizard iniziale non compare piu perche l'istanza viene preinizializzata
+- i template ufficiali restano abilitati dentro l'app dopo il login
 
 ### Open WebUI
 
@@ -876,6 +881,15 @@ Controlla:
 - `curl.exe -sk https://localhost:8445/ -o NUL -w "%{http_code}"` deve restituire `200`
 - usa l'owner bootstrap `root@n8n.local / RootN8NApp!2026`
 - se hai dati persistenti da tentativi precedenti, verifica lo stato utente in `n8n-data`
+
+### n8n non mostra il wizard iniziale o gli esempi al primo avvio
+
+Nel layout attuale e normale:
+
+- la CLI bootstrap crea o riallinea automaticamente l'owner di n8n
+- quindi il setup wizard iniziale viene saltato
+- i template ufficiali sono comunque abilitati e visibili dopo il login applicativo
+- su istanze con volume `n8n-data` gia esistente non avrai mai un vero first run stock
 
 ---
 

@@ -736,6 +736,7 @@
                 <span>Le credenziali root sono esposte qui e nel file <code>config/env/lab.env</code>.</span>
                 <span>Nessun DNS o file hosts: tutti gli ingressi pubblici usano `localhost` con porte dedicate.</span>
                 <span>n8n usa direttamente l'auth applicativa owner, senza doppio login al gateway.</span>
+                <span>La CLI preinizializza l'owner, ma lascia disponibili i template ufficiali dentro l'app.</span>
                 <span>Ollama e servito come API locale dietro host separato e auth gateway.</span>
                 <span>Postgres non ha UI pubblica e viene consumato soltanto dai workbench.</span>
                 <span>I servizi core e i workbench hanno egress selettivo su reti dedicate, senza porte pubbliche aggiuntive.</span>
@@ -810,7 +811,8 @@
             </div>
             <p class="service-note">
               Primo accesso: entra direttamente con l'utente owner bootstrap senza passare da una
-              Basic Auth aggiuntiva al gateway.
+              Basic Auth aggiuntiva al gateway. Il setup wizard iniziale viene saltato perche
+              l'istanza e gia bootstrapata, ma i template restano disponibili dopo il login.
             </p>
           </article>
 
