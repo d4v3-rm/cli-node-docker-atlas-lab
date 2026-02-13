@@ -169,7 +169,7 @@ Il progetto non usa bind mount del repository per i dati runtime. La persistenza
 | --- | --- |
 | `gateway-certs` | certificati TLS del lab |
 | `gateway-config` | configurazione runtime del gateway |
-| `gateway-site` | dashboard HTML, markdown e asset |
+| `gateway-site` | bundle statico dell'index React, briefing markdown, config runtime JSON e asset |
 | `gateway-data` | dati runtime Caddy |
 | `gitea-data` | dati applicativi Gitea |
 | `gitea-db` | dati MariaDB |
@@ -511,13 +511,15 @@ Dal deck puoi:
 
 ## Accessi E Credenziali
 
-Le credenziali operative sono in [`config/env/lab.env`](./config/env/lab.env) e sono riportate anche nel deck HTML.
+Le credenziali operative sono in [`config/env/lab.env`](./config/env/lab.env) e sono riportate anche nell'index grafico React servito dal gateway.
 
 ### Index grafico del lab
 
 - URL: `https://localhost:8443/`
 - porta host: `8443`
 - ruolo: homepage grafica del lab con link rapidi, credenziali operative e accesso ai servizi
+- implementazione: app Vite + React + TypeScript + Sass in [`apps/lab-index`](./apps/lab-index)
+- delivery: la build frontend viene prodotta dentro l'immagine gateway e poi pubblicata come bundle statico
 
 ### Gitea
 
@@ -636,7 +638,8 @@ Variabili preconfigurate nei workbench:
 | [src/ui/](./src/ui) | output CLI, banner e summary |
 | [src/utils/](./src/utils) | helper HTTP e process execution |
 | [config/gateway/templates/Caddyfile.template](./config/gateway/templates/Caddyfile.template) | routing localhost multi-porta |
-| [config/gateway/templates/lab-index.html.template](./config/gateway/templates/lab-index.html.template) | dashboard HTML del lab |
+| [apps/lab-index/](./apps/lab-index) | app Vite + React + TypeScript + Sass dell'index grafico |
+| [config/gateway/templates/runtime/lab-config.json.template](./config/gateway/templates/runtime/lab-config.json.template) | payload runtime generato dal gateway per l'app frontend |
 | [infra/docker/images/gateway/bootstrap-gateway.sh](./infra/docker/images/gateway/bootstrap-gateway.sh) | rendering template, cert e bootstrap gateway |
 | [config/gateway/templates/content/network-map.md.template](./config/gateway/templates/content/network-map.md.template) | topologia pubblica del lab |
 | [config/gateway/templates/content/node-dev.md.template](./config/gateway/templates/content/node-dev.md.template) | briefing Node Forge |
