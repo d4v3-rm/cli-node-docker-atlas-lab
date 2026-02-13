@@ -1,0 +1,122 @@
+.backdrop-orb {
+  animation: slab-drift 18s ease-in-out infinite;
+  border-radius: 12%;
+  filter: blur(8px);
+  height: 34rem;
+  opacity: 0.2;
+  pointer-events: none;
+  position: fixed;
+  width: 34rem;
+  z-index: 0;
+
+  &--left {
+    background:
+      radial-gradient(circle at 20% 20%, rgba(255, 250, 242, 0.32), transparent 24%),
+      linear-gradient(135deg, rgba(167, 119, 67, 0.22), transparent 68%);
+    left: -8rem;
+    top: -10rem;
+    transform: rotate(-16deg);
+  }
+
+  &--right {
+    animation-delay: -8s;
+    background:
+      radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.2), transparent 26%),
+      linear-gradient(135deg, rgba(54, 90, 134, 0.28), transparent 70%);
+    bottom: -12rem;
+    right: -10rem;
+    transform: rotate(18deg);
+  }
+}
+
+.deck {
+  margin: 24px auto 64px;
+  position: relative;
+  width: min(1400px, calc(100% - 40px));
+  z-index: 1;
+}
+
+.hero-grid,
+.stat-grid,
+.service-grid,
+.workbench-grid,
+.footer-bar {
+  display: grid;
+  gap: 18px;
+}
+
+.hero-grid {
+  align-items: end;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.85fr);
+  margin-top: 18px;
+}
+
+.stat-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 24px;
+}
+
+.hero-aside,
+.aside-meta,
+.credential-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.hero-strip,
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.card-actions--spaced {
+  margin-top: 16px;
+}
+
+.section {
+  margin-top: 34px;
+}
+
+.section-header {
+  align-items: end;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.service-grid,
+.workbench-grid {
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+}
+
+.footer-bar {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin-top: 30px;
+}
+
+.status-screen {
+  align-items: center;
+  display: grid;
+  min-height: 100vh;
+  padding: 24px;
+  place-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 960px) {
+  .hero-grid,
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .deck {
+    margin-top: 12px;
+    width: min(100% - 20px, 1320px);
+  }
+}
