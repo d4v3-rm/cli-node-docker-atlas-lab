@@ -1,4 +1,5 @@
 import { execa } from 'execa';
+import { isFileLoggingEnabled, writeProcessOutput, writeRuntimeLog } from '../services/runtime-log.service.js';
 import type { CommandExecutionOptions, CommandExecutionResult } from '../types/process.types.js';
 
 /**
@@ -13,16 +14,33 @@ export async function runCommand(
     cwd,
     captureOutput = false,
     allowFailure = false,
-    stdio = captureOutput ? 'pipe' : 'inherit'
+    stdio = captureOutput ? 'pipe' : 'inherit',
+    scope = 'process'
   } = options;
+  const serializedCommand = formatCommand(command, args);
+  const mirrorOutputToFile = shouldMirrorProcessOutput(captureOutput, stdio);
+
+  writeRuntimeLog('info', scope, `Run command: ${serializedCommand}`);
 
   try {
     const result = await execa(command, args, {
       cwd,
       reject: !allowFailure,
-      stdio,
+      ...(mirrorOutputToFile
+        ? {
+            stdin: 'inherit' as const,
+            stdout: ['pipe', 'inherit'] as const,
+            stderr: ['pipe', 'inherit'] as const
+          }
+        : {
+            stdio
+          }),
       windowsHide: true
     });
+
+    persistBufferedOutput(scope, result.stdout ?? '', result.stderr ?? '');
+
+    writeRuntimeLog('success', scope, `Command completed: ${serializedCommand} (exit=${result.exitCode ?? 0})`);
 
     return {
       exitCode: result.exitCode ?? 0,
@@ -31,6 +49,14 @@ export async function runCommand(
     };
   } catch (error) {
     if (allowFailure && isCommandFailure(error)) {
+      persistBufferedOutput(scope, error.stdout ?? '', error.stderr ?? error.shortMessage ?? error.message);
+
+      writeRuntimeLog(
+        'warn',
+        scope,
+        `Command returned exit=${error.exitCode ?? 1}: ${serializedCommand}`
+      );
+
       return {
         exitCode: error.exitCode ?? 1,
         stdout: error.stdout ?? '',
@@ -38,10 +64,22 @@ export async function runCommand(
       };
     }
 
-    if (error instanceof Error) {
-      throw new Error(error.message);
+    if (isCommandFailure(error)) {
+      persistBufferedOutput(scope, error.stdout ?? '', error.stderr ?? error.shortMessage ?? error.message);
     }
 
+    if (isCommandFailure(error)) {
+      const failureMessage = formatCommandFailure(serializedCommand, error);
+      writeRuntimeLog('error', scope, failureMessage);
+      throw new Error(failureMessage);
+    }
+
+    if (error instanceof Error) {
+      writeRuntimeLog('error', scope, `Command failed: ${serializedCommand} | ${error.message}`);
+      throw new Error(`Command failed: ${serializedCommand}\n${error.message}`);
+    }
+
+    writeRuntimeLog('error', scope, `Command failed: ${serializedCommand}`);
     throw new Error(`Command failed: ${formatCommand(command, args)}`);
   }
 }
@@ -59,6 +97,53 @@ interface CommandFailureShape {
  */
 function isCommandFailure(error: unknown): error is CommandFailureShape {
   return typeof error === 'object' && error !== null && 'message' in error;
+}
+
+/**
+ * Stores buffered subprocess output in the development file log.
+ */
+function persistBufferedOutput(
+  scope: CommandExecutionOptions['scope'],
+  stdout: string,
+  stderr: string
+): void {
+  writeProcessOutput(scope ?? 'process', 'stdout', stdout);
+  writeProcessOutput(scope ?? 'process', 'stderr', stderr);
+}
+
+/**
+ * Decides whether the command output should be mirrored to the file logger in development mode.
+ */
+function shouldMirrorProcessOutput(
+  captureOutput: boolean,
+  stdio: CommandExecutionOptions['stdio']
+): boolean {
+  return !captureOutput && stdio === 'inherit' && isFileLoggingEnabled();
+}
+
+/**
+ * Produces a concise, user-facing failure message without replaying the whole subprocess transcript.
+ */
+function formatCommandFailure(
+  serializedCommand: string,
+  error: CommandFailureShape
+): string {
+  const detail = summarizeFailureDetail(error);
+  return `Command failed with exit code ${error.exitCode ?? 1}: ${serializedCommand} | ${detail}`;
+}
+
+/**
+ * Extracts the most actionable line from a subprocess failure.
+ */
+function summarizeFailureDetail(error: CommandFailureShape): string {
+  const detailSource = error.stderr || error.shortMessage || error.message;
+  const normalizedLines = detailSource
+    .replace(/\r\n/gu, '\n')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+
+  return normalizedLines.at(-1) ?? 'Unknown subprocess failure';
 }
 
 /**

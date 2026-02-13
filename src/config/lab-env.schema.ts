@@ -22,14 +22,19 @@ export const labEnvSchema = z
     GITEA_ROOT_USERNAME: optionalEnvValue,
     GITEA_ROOT_PASSWORD: optionalEnvValue,
     GITEA_ROOT_EMAIL: optionalEnvValue,
+    N8N_ROOT_FIRST_NAME: optionalEnvValue,
+    N8N_ROOT_LAST_NAME: optionalEnvValue,
+    N8N_ROOT_EMAIL: optionalEnvValue,
+    N8N_ROOT_PASSWORD: optionalEnvValue,
+    OPENWEBUI_ROOT_EMAIL: optionalEnvValue,
+    OPENWEBUI_ROOT_PASSWORD: optionalEnvValue,
     OLLAMA_EMBEDDING_MODEL: optionalEnvValue,
+    OLLAMA_CHAT_MODEL: optionalEnvValue,
     LAB_URL: optionalEnvValue,
     GITEA_URL: optionalEnvValue,
     N8N_URL: optionalEnvValue,
     OPENWEBUI_URL: optionalEnvValue,
     OLLAMA_URL: optionalEnvValue,
-    N8N_GATEWAY_USER: optionalEnvValue,
-    N8N_GATEWAY_PASSWORD: optionalEnvValue,
     OLLAMA_GATEWAY_USER: optionalEnvValue,
     OLLAMA_GATEWAY_PASSWORD: optionalEnvValue
   })
@@ -44,7 +49,13 @@ export const bootstrapEnvSchema = labEnvSchema.extend({
   GITEA_ROOT_USERNAME: requiredEnvValue,
   GITEA_ROOT_PASSWORD: requiredEnvValue,
   GITEA_ROOT_EMAIL: requiredEnvValue,
-  OLLAMA_EMBEDDING_MODEL: requiredEnvValue
+  N8N_URL: requiredEnvValue,
+  N8N_ROOT_FIRST_NAME: requiredEnvValue,
+  N8N_ROOT_LAST_NAME: requiredEnvValue,
+  N8N_ROOT_EMAIL: requiredEnvValue,
+  N8N_ROOT_PASSWORD: requiredEnvValue,
+  OLLAMA_EMBEDDING_MODEL: requiredEnvValue,
+  OLLAMA_CHAT_MODEL: requiredEnvValue
 });
 
 /**
@@ -54,12 +65,16 @@ export const smokeEnvSchema = labEnvSchema.extend({
   LAB_URL: requiredEnvValue,
   GITEA_URL: requiredEnvValue,
   N8N_URL: requiredEnvValue,
+  N8N_ROOT_EMAIL: requiredEnvValue,
+  N8N_ROOT_PASSWORD: requiredEnvValue,
   OPENWEBUI_URL: requiredEnvValue,
+  OPENWEBUI_ROOT_EMAIL: requiredEnvValue,
+  OPENWEBUI_ROOT_PASSWORD: requiredEnvValue,
   OLLAMA_URL: requiredEnvValue,
-  N8N_GATEWAY_USER: requiredEnvValue,
-  N8N_GATEWAY_PASSWORD: requiredEnvValue,
   OLLAMA_GATEWAY_USER: requiredEnvValue,
-  OLLAMA_GATEWAY_PASSWORD: requiredEnvValue
+  OLLAMA_GATEWAY_PASSWORD: requiredEnvValue,
+  OLLAMA_EMBEDDING_MODEL: requiredEnvValue,
+  OLLAMA_CHAT_MODEL: requiredEnvValue
 });
 
 /**

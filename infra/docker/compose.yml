@@ -1,4 +1,6 @@
-# Infrastructure entrypoint for the local Lab Atlas stack.
+name: cli-node-docker-atlas-lab
+
+# Infrastructure entrypoint for the local Atlas Lab stack.
 x-lab-env: &lab-env
   TZ: ${TZ}
 
@@ -27,10 +29,6 @@ services:
       - "${N8N_HTTPS_PORT}:${N8N_HTTPS_PORT}"
       - "${OPENWEBUI_HTTPS_PORT}:${OPENWEBUI_HTTPS_PORT}"
       - "${OLLAMA_HTTPS_PORT}:${OLLAMA_HTTPS_PORT}"
-      - "${NODE_DEV_HTTPS_PORT}:${NODE_DEV_HTTPS_PORT}"
-      - "${PYTHON_DEV_HTTPS_PORT}:${PYTHON_DEV_HTTPS_PORT}"
-      - "${AI_DEV_HTTPS_PORT}:${AI_DEV_HTTPS_PORT}"
-      - "${CPP_DEV_HTTPS_PORT}:${CPP_DEV_HTTPS_PORT}"
     volumes:
       - gateway-certs:/etc/caddy/certs
       - gateway-config:/etc/caddy/dynamic
@@ -49,6 +47,41 @@ services:
       - edge-net
       - apps-net
       - ai-net
+
+  gateway-workbench:
+    build:
+      context: ../..
+      dockerfile: infra/docker/images/gateway/Dockerfile
+      args:
+        CADDY_VERSION: ${CADDY_VERSION}
+    profiles: ["workbench"]
+    restart: unless-stopped
+    env_file:
+      - ../../config/env/lab.env
+    environment:
+      ATLAS_GATEWAY_TEMPLATE: Caddyfile.workbench.template
+    ports:
+      - "${NODE_DEV_HTTPS_PORT}:${NODE_DEV_HTTPS_PORT}"
+      - "${PYTHON_DEV_HTTPS_PORT}:${PYTHON_DEV_HTTPS_PORT}"
+      - "${AI_DEV_HTTPS_PORT}:${AI_DEV_HTTPS_PORT}"
+      - "${CPP_DEV_HTTPS_PORT}:${CPP_DEV_HTTPS_PORT}"
+    volumes:
+      - gateway-certs:/etc/caddy/certs
+      - gateway-config:/etc/caddy/dynamic
+      - gateway-data:/data
+    depends_on:
+      gateway:
+        condition: service_started
+      node-dev:
+        condition: service_started
+      python-dev:
+        condition: service_started
+      ai-dev:
+        condition: service_started
+      cpp-dev:
+        condition: service_started
+    networks:
+      - edge-net
       - workbench-net
 
   gitea:
@@ -144,7 +177,7 @@ services:
       N8N_RUNNERS_BROKER_LISTEN_ADDRESS: 0.0.0.0
       N8N_DIAGNOSTICS_ENABLED: "false"
       N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
-      N8N_TEMPLATES_ENABLED: "false"
+      N8N_TEMPLATES_ENABLED: "true"
       EXTERNAL_FRONTEND_HOOKS_URLS: ""
       N8N_DIAGNOSTICS_CONFIG_FRONTEND: ""
       N8N_DIAGNOSTICS_CONFIG_BACKEND: ""
@@ -222,7 +255,7 @@ services:
       WEBUI_URL: ${OPENWEBUI_URL}
       WEBUI_SECRET_KEY: ${OPENWEBUI_SECRET_KEY}
       CORS_ALLOW_ORIGIN: ${OPENWEBUI_CORS_ALLOW_ORIGIN}
-      USER_AGENT: LabAtlas-OpenWebUI/1.0
+      USER_AGENT: AtlasLab-OpenWebUI/1.0
       ENABLE_OPENAI_API: "false"
       ENABLE_OLLAMA_API: "true"
       OLLAMA_BASE_URL: http://ollama:11434
@@ -392,23 +425,23 @@ services:
 
 networks:
   edge-net:
-    name: cli-node-lab_edge
+    name: cli-node-docker-atlas-lab_edge
   services-egress-net:
-    name: cli-node-lab_services_egress
+    name: cli-node-docker-atlas-lab_services_egress
   apps-net:
-    name: cli-node-lab_apps
+    name: cli-node-docker-atlas-lab_apps
     internal: true
   ai-net:
-    name: cli-node-lab_ai
+    name: cli-node-docker-atlas-lab_ai
     internal: true
   data-net:
-    name: cli-node-lab_data
+    name: cli-node-docker-atlas-lab_data
     internal: true
   workbench-net:
-    name: cli-node-lab_workbench
+    name: cli-node-docker-atlas-lab_workbench
     internal: true
   workbench-egress-net:
-    name: cli-node-lab_workbench_egress
+    name: cli-node-docker-atlas-lab_workbench_egress
 
 volumes:
   gateway-certs:

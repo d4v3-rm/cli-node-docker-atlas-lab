@@ -12,7 +12,8 @@ export const PROJECT_MARKERS = ['infra/docker/compose.yml', 'config/env/lab.env'
 export const REQUIRED_REPOSITORY_FILES = [
   'infra/docker/compose.yml',
   'config/env/lab.env',
-  'config/gateway/templates/Caddyfile.template'
+  'config/gateway/templates/Caddyfile.template',
+  'config/gateway/templates/Caddyfile.workbench.template'
 ] as const;
 
 /**

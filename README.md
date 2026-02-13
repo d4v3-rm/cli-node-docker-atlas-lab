@@ -1,4 +1,4 @@
-# Lab Atlas
+# Atlas Lab
 
 ![Docker Compose](https://img.shields.io/badge/Docker%20Compose-v2-2496ED?logo=docker&logoColor=white)
 ![Gateway](https://img.shields.io/badge/Gateway-Caddy-1F2937?logo=caddy&logoColor=white)
@@ -36,8 +36,9 @@
 
 ## Panoramica
 
-`cli-node-lab` non e una singola applicazione. E un lab infrastrutturale locale che combina:
+`cli-node-docker-atlas-lab` non e una singola applicazione. E un lab infrastrutturale locale che combina:
 
+- un index grafico iniziale del lab, servito dal gateway, da cui aprire servizi, credenziali e asset operativi
 - `Gitea` per repository Git, issue tracking e code review
 - `n8n` per automazione e workflow
 - `Open WebUI` come interfaccia AI
@@ -94,9 +95,9 @@ In parallelo, il bootstrap non usa piu container Compose di init. Al loro posto 
 
 | Servizio | Ruolo | Esposto | Note |
 | --- | --- | --- | --- |
-| Deck | dashboard operativa del lab | si | mostra servizi, credenziali e link |
+| Deck | index grafico e dashboard operativa del lab | si | mostra servizi, credenziali e link |
 | Gitea | forge Git interno | si | repository, issue, review |
-| n8n | automazione e workflow | si | protetto da auth gateway |
+| n8n | automazione e workflow | si | login applicativo diretto |
 | Open WebUI | interfaccia AI | si | collegata a Ollama |
 | Ollama | API per modelli locali | si | protetto da auth gateway |
 
@@ -168,7 +169,7 @@ Il progetto non usa bind mount del repository per i dati runtime. La persistenza
 | --- | --- |
 | `gateway-certs` | certificati TLS del lab |
 | `gateway-config` | configurazione runtime del gateway |
-| `gateway-site` | dashboard HTML, markdown e asset |
+| `gateway-site` | bundle statico dell'index React, briefing markdown, config runtime JSON e asset |
 | `gateway-data` | dati runtime Caddy |
 | `gitea-data` | dati applicativi Gitea |
 | `gitea-db` | dati MariaDB |
@@ -207,7 +208,7 @@ Se rimuovi i volumi, azzeri lo stato persistente.
 
 La CLI del progetto:
 
-- vive in [package.json](./package.json), [src/bin/lab-atlas.ts](./src/bin/lab-atlas.ts) e [src/app/create-cli-app.ts](./src/app/create-cli-app.ts)
+- vive in [package.json](./package.json), [src/bin/atlas-lab.ts](./src/bin/atlas-lab.ts) e [src/app/create-cli-app.ts](./src/app/create-cli-app.ts)
 - usa TypeScript con `tsx` in sviluppo e `tsup` per la build distributable
 - usa librerie dedicate per parsing, validazione, task rendering e output CLI
 - si appoggia in particolare a `commander`, `listr2`, `zod`, `find-up`, `got`, `consola`, `cli-table3` e `p-wait-for`
@@ -233,7 +234,7 @@ Devono essere libere:
 - `8452`
 - `8453`
 
-Se una di queste porte e occupata, l'avvio Compose fallira.
+Se una di queste porte e occupata, `atlas-lab up` fallira subito durante il preflight host, prima di far partire Docker Compose.
 
 ### Cosa non serve sul sistema host
 
@@ -259,7 +260,7 @@ npm.cmd --version
 Lo stesso vale per il binario globale della CLI:
 
 ```powershell
-lab-atlas.cmd status
+atlas-lab.cmd status
 ```
 
 ### Nota TLS locale
@@ -271,6 +272,16 @@ Quindi:
 - il browser puo mostrare un warning al primo accesso
 - puoi proseguire temporaneamente
 - oppure puoi importare il certificato del lab nel trust store locale
+
+Se usi `Git for Windows` con backend TLS `schannel`, importa il certificato nel trust store utente di Windows dopo averlo scaricato:
+
+```bash
+mkdir -p ~/certs
+curl -k https://localhost:8443/assets/lab.crt -o ~/certs/atlas-lab.crt
+certutil -user -addstore Root "$(cygpath -w "$HOME/certs/atlas-lab.crt")"
+```
+
+Questo passaggio serve anche per permettere a `git push` verso `https://localhost:8444/...` di fidarsi del certificato del gateway/Gitea.
 
 ---
 
@@ -292,13 +303,19 @@ La CLI TypeScript sostituisce il vecchio bootstrap Python e i vecchi servizi Com
 | dev mode | `npm run dev -- up` | usa `tsx` sulla CLI TypeScript sorgente |
 | build | `npm run build` | bundle ESM della CLI in `dist/` con `tsup` |
 | pack locale | `npm run pack:local` | crea un tarball npm locale |
-| install globale | `npm install -g .` | installa `lab-atlas` globalmente dalla repo |
+| install globale | `npm install -g .` | installa `atlas-lab` globalmente dalla repo |
 | link globale | `npm link` | collega la repo come CLI globale durante lo sviluppo |
+
+### Log di sviluppo
+
+Quando esegui la CLI da sorgente con `npm run dev`, viene creato automaticamente un log file per sessione in `logs/dev/atlas-lab-<timestamp>.log`.
+
+La build distributable e la CLI installata globalmente non scrivono log su filesystem.
 
 ### Layout rapido della CLI
 
-- [bin/lab-atlas](./bin/lab-atlas): launcher minimale del pacchetto npm globale
-- [src/bin/lab-atlas.ts](./src/bin/lab-atlas.ts): entrypoint TypeScript della CLI
+- [bin/atlas-lab](./bin/atlas-lab): launcher minimale del pacchetto npm globale
+- [src/bin/atlas-lab.ts](./src/bin/atlas-lab.ts): entrypoint TypeScript della CLI
 - [src/app/](./src/app): bootstrap dell'app Commander
 - [src/commands/](./src/commands): registrazione dei comandi
 - [src/config/lab-env.schema.ts](./src/config/lab-env.schema.ts): schema Zod della configurazione `config/env/lab.env`
@@ -333,23 +350,26 @@ La CLI usa questo layout come contratto esplicito: risolve sempre `infra/docker/
 
 | Comando | Ruolo |
 | --- | --- |
-| `lab-atlas up` | avvia Compose, bootstrap Gitea/Ollama e pulisce residui legacy |
-| `lab-atlas up --build` | rebuild + start + bootstrap |
-| `lab-atlas up --with-workbench` | include anche il profilo `workbench` |
-| `lab-atlas bootstrap` | riesegue solo il bootstrap |
-| `lab-atlas doctor` | controlla requisiti host e configurazione Compose |
-| `lab-atlas doctor --smoke` | aggiunge smoke test su endpoint e integrazioni |
-| `lab-atlas status` | mostra lo stato Compose |
-| `lab-atlas down` | ferma la stack |
+| `atlas-lab up` | avvia Compose, bootstrap Gitea/Ollama e pulisce residui legacy |
+| `atlas-lab up --build` | rebuild + start + bootstrap |
+| `atlas-lab up --with-workbench` | include anche il profilo `workbench` |
+| `atlas-lab bootstrap` | riesegue solo il bootstrap |
+| `atlas-lab doctor` | controlla requisiti host e configurazione Compose |
+| `atlas-lab doctor --smoke` | aggiunge smoke test su endpoint e integrazioni |
+| `atlas-lab status` | mostra lo stato Compose |
+| `atlas-lab down` | ferma la stack |
 
 ### Cosa fa il bootstrap
 
 1. aspetta che `gitea` sia `healthy`
 2. crea o riallinea l'utente root di Gitea
-3. aspetta che `ollama` sia `healthy`
-4. controlla il modello embeddings configurato
-5. esegue il pull del modello se manca
-6. rimuove l'eventuale immagine legacy `cli-node-lab-ollama-init:latest`
+3. aspetta che `n8n` e `gateway` siano raggiungibili
+4. crea o riallinea l'owner bootstrap di n8n
+5. aspetta che `ollama` sia `healthy`
+6. controlla il modello embeddings configurato
+7. controlla il modello chat configurato
+8. esegue il pull dei modelli mancanti
+9. rimuove l'eventuale immagine legacy `cli-node-docker-atlas-lab-ollama-init:latest`
 
 Il bootstrap e idempotente.
 
@@ -363,7 +383,7 @@ La CLI installata globalmente non opera sulla directory del pacchetto npm instal
 Esempio:
 
 ```powershell
-lab-atlas status --project-dir C:\Users\User\Development\repos-review\cli-node-lab
+atlas-lab status --project-dir C:\Users\User\Development\repos-review\cli-node-docker-atlas-lab
 ```
 
 ---
@@ -438,7 +458,7 @@ npm run build
 
 La build genera:
 
-- `dist/bin/lab-atlas.js`
+- `dist/bin/atlas-lab.js`
 - `dist/**/*.d.ts`
 - `dist/**/*.js.map`
 
@@ -451,16 +471,16 @@ npm install -g .
 Poi puoi usare:
 
 ```powershell
-lab-atlas up
-lab-atlas doctor --smoke
-lab-atlas status
+atlas-lab up
+atlas-lab doctor --smoke
+atlas-lab status
 ```
 
 Su PowerShell restrittivo:
 
 ```powershell
 npm.cmd install -g .
-lab-atlas.cmd up
+atlas-lab.cmd up
 ```
 
 ### 8. Modalita separata start/bootstrap
@@ -470,11 +490,13 @@ docker compose --file infra/docker/compose.yml --env-file config/env/lab.env up 
 npm run dev -- bootstrap
 ```
 
-### 8. Apri il deck
+### 8. Apri l'index grafico del lab
 
 ```text
 https://localhost:8443/
 ```
+
+L'index grafico del lab e pubblicato dal gateway sulla porta `8443`.
 
 Dal deck puoi:
 
@@ -489,7 +511,15 @@ Dal deck puoi:
 
 ## Accessi E Credenziali
 
-Le credenziali operative sono in [`config/env/lab.env`](./config/env/lab.env) e sono riportate anche nel deck HTML.
+Le credenziali operative sono in [`config/env/lab.env`](./config/env/lab.env) e sono riportate anche nell'index grafico React servito dal gateway.
+
+### Index grafico del lab
+
+- URL: `https://localhost:8443/`
+- porta host: `8443`
+- ruolo: homepage grafica del lab con link rapidi, credenziali operative e accesso ai servizi
+- implementazione: app Vite + React + TypeScript + Sass in [`apps/lab-index`](./apps/lab-index)
+- delivery: la build frontend viene prodotta dentro l'immagine gateway e poi pubblicata come bundle statico
 
 ### Gitea
 
@@ -500,8 +530,11 @@ Le credenziali operative sono in [`config/env/lab.env`](./config/env/lab.env) e 
 ### n8n
 
 - URL: `https://localhost:8445/`
-- primo livello: basic auth gateway
-- secondo livello: owner applicativo bootstrap
+- accesso: login applicativo diretto, senza Basic Auth aggiuntiva al gateway
+- owner bootstrap: `root@n8n.local / RootN8NApp!2026`
+- owner creato o riallineato automaticamente dal bootstrap della CLI
+- il setup wizard iniziale non compare piu perche l'istanza viene preinizializzata
+- i template ufficiali restano abilitati dentro l'app dopo il login
 
 ### Open WebUI
 
@@ -509,12 +542,14 @@ Le credenziali operative sono in [`config/env/lab.env`](./config/env/lab.env) e 
 - accesso: login applicativo
 - signup: disabilitato
 - admin iniziale definito via env
+- usa automaticamente il modello chat configurato in `OLLAMA_CHAT_MODEL`
 
 ### Ollama
 
 - URL: `https://localhost:8447/`
 - accesso: basic auth gateway
 - uso principale: API per inference e embeddings
+- bootstrap iniziale: `OLLAMA_EMBEDDING_MODEL` + `OLLAMA_CHAT_MODEL`
 
 ### Workbench
 
@@ -592,8 +627,8 @@ Variabili preconfigurate nei workbench:
 | [infra/docker/images/](./infra/docker/images) | Dockerfile e script di build dei servizi |
 | [package.json](./package.json) | metadata npm, scripts e comando binario |
 | [config/env/lab.env](./config/env/lab.env) | naming, URL, versioni e credenziali operative |
-| [bin/lab-atlas](./bin/lab-atlas) | launcher npm minimale che delega alla build |
-| [src/bin/lab-atlas.ts](./src/bin/lab-atlas.ts) | entrypoint TypeScript della CLI |
+| [bin/atlas-lab](./bin/atlas-lab) | launcher npm minimale che delega alla build |
+| [src/bin/atlas-lab.ts](./src/bin/atlas-lab.ts) | entrypoint TypeScript della CLI |
 | [src/app/create-cli-app.ts](./src/app/create-cli-app.ts) | bootstrap dell'app Commander |
 | [src/commands/](./src/commands) | registrazione dei comandi CLI |
 | [src/config/lab-env.schema.ts](./src/config/lab-env.schema.ts) | validazione Zod della `lab.env` |
@@ -603,7 +638,8 @@ Variabili preconfigurate nei workbench:
 | [src/ui/](./src/ui) | output CLI, banner e summary |
 | [src/utils/](./src/utils) | helper HTTP e process execution |
 | [config/gateway/templates/Caddyfile.template](./config/gateway/templates/Caddyfile.template) | routing localhost multi-porta |
-| [config/gateway/templates/lab-index.html.template](./config/gateway/templates/lab-index.html.template) | dashboard HTML del lab |
+| [apps/lab-index/](./apps/lab-index) | app Vite + React + TypeScript + Sass dell'index grafico |
+| [config/gateway/templates/runtime/lab-config.json.template](./config/gateway/templates/runtime/lab-config.json.template) | payload runtime generato dal gateway per l'app frontend |
 | [infra/docker/images/gateway/bootstrap-gateway.sh](./infra/docker/images/gateway/bootstrap-gateway.sh) | rendering template, cert e bootstrap gateway |
 | [config/gateway/templates/content/network-map.md.template](./config/gateway/templates/content/network-map.md.template) | topologia pubblica del lab |
 | [config/gateway/templates/content/node-dev.md.template](./config/gateway/templates/content/node-dev.md.template) | briefing Node Forge |
@@ -639,16 +675,16 @@ npm run pack:local
 
 ```powershell
 npm install -g .
-lab-atlas up
-lab-atlas status
-lab-atlas doctor --smoke
+atlas-lab up
+atlas-lab status
+atlas-lab doctor --smoke
 ```
 
 ### Link globale per sviluppo
 
 ```powershell
 npm link
-lab-atlas status
+atlas-lab status
 ```
 
 ### Docker Compose diretto
@@ -666,7 +702,7 @@ docker compose --file infra/docker/compose.yml --env-file config/env/lab.env log
 ### Stop
 
 ```powershell
-lab-atlas down
+atlas-lab down
 ```
 
 ### Stop con workbench
@@ -701,7 +737,7 @@ curl.exe -sk https://localhost:8444/ -o NUL -w "%{http_code}"
 ### Endpoint n8n
 
 ```powershell
-curl.exe -sk -u root:RootN8N!2026 https://localhost:8445/ -o NUL -w "%{http_code}"
+curl.exe -sk https://localhost:8445/ -o NUL -w "%{http_code}"
 ```
 
 ### Endpoint Open WebUI
@@ -719,7 +755,7 @@ curl.exe -sk -u root:RootOllama!2026 https://localhost:8447/api/tags
 ### Stato health
 
 ```powershell
-lab-atlas status
+atlas-lab status
 ```
 
 Atteso:
@@ -735,7 +771,7 @@ Atteso:
 
 Controlla:
 
-1. `lab-atlas status`
+1. `atlas-lab status`
 2. `docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs -f <servizio>`
 3. che la porta del servizio sia libera e corretta
 
@@ -748,6 +784,24 @@ Puoi:
 - accettarlo temporaneamente
 - oppure scaricare `/assets/lab.crt` dal deck e importarlo nel trust store locale
 
+### `git push` verso Gitea fallisce con `schannel: SEC_E_UNTRUSTED_ROOT`
+
+Git for Windows usa `schannel`, quindi si appoggia al trust store di Windows.
+
+Importa il certificato del lab:
+
+```bash
+mkdir -p ~/certs
+curl -k https://localhost:8443/assets/lab.crt -o ~/certs/atlas-lab.crt
+certutil -user -addstore Root "$(cygpath -w "$HOME/certs/atlas-lab.crt")"
+```
+
+Poi chiudi e riapri il terminale e riprova:
+
+```bash
+git push -u origin main
+```
+
 ### Non vedo l'utente root di Gitea o il modello Ollama
 
 Rilancia il bootstrap:
@@ -759,7 +813,7 @@ npm run dev -- bootstrap
 Oppure con CLI globale:
 
 ```powershell
-lab-atlas bootstrap
+atlas-lab bootstrap
 ```
 
 ### `npm` non funziona in PowerShell
@@ -768,8 +822,27 @@ Usa gli shim `.cmd`:
 
 ```powershell
 npm.cmd run dev -- doctor
-lab-atlas.cmd status
+atlas-lab.cmd status
 ```
+
+### `atlas-lab up` fallisce sul preflight porte
+
+La CLI controlla prima le porte pubbliche del gateway e dei workbench.
+
+Se vedi un errore tipo `Host port preflight failed`, significa che una o piu porte tra `8443-8453` sono gia occupate da un'altra stack o da un altro processo locale.
+
+Controlla:
+
+```powershell
+atlas-lab status
+docker ps --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}"
+```
+
+Poi libera le porte in uno di questi modi:
+
+- ferma la stack Atlas Lab gia presente con `atlas-lab down`
+- ferma l'altra stack Docker che pubblica le stesse porte
+- cambia le porte in `config/env/lab.env`
 
 ### I workbench non compaiono in `docker compose up`
 
@@ -791,20 +864,35 @@ npm run dev -- up --with-workbench
 
 Controlla:
 
-- `lab-atlas status`
+- `atlas-lab status`
 - `docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs open-webui`
 - `docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs ollama`
 - la risposta di `https://localhost:8447/api/tags`
+- che `OLLAMA_CHAT_MODEL` e `OLLAMA_EMBEDDING_MODEL` siano valorizzati in `config/env/lab.env`
 - `npm run dev -- doctor --smoke`
 
-### n8n chiede due livelli di credenziali
+Se hai cambiato i modelli configurati, riesegui:
 
-Normale.
+```powershell
+npm run dev -- bootstrap --skip-gitea
+```
 
-Hai:
+### n8n continua a chiedere accesso o sembra respingere il login
 
-- auth gateway
-- auth applicativa dell'owner bootstrap
+Controlla:
+
+- `curl.exe -sk https://localhost:8445/ -o NUL -w "%{http_code}"` deve restituire `200`
+- usa l'owner bootstrap `root@n8n.local / RootN8NApp!2026`
+- se hai dati persistenti da tentativi precedenti, verifica lo stato utente in `n8n-data`
+
+### n8n non mostra il wizard iniziale o gli esempi al primo avvio
+
+Nel layout attuale e normale:
+
+- la CLI bootstrap crea o riallinea automaticamente l'owner di n8n
+- quindi il setup wizard iniziale viene saltato
+- i template ufficiali sono comunque abilitati e visibili dopo il login applicativo
+- su istanze con volume `n8n-data` gia esistente non avrai mai un vero first run stock
 
 ---
 

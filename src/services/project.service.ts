@@ -6,8 +6,10 @@ import { findUpSync } from 'find-up';
 import { ZodError } from 'zod';
 import { bootstrapEnvSchema, formatZodError, labEnvSchema, smokeEnvSchema } from '../config/lab-env.schema.js';
 import { PROJECT_MARKERS, REPOSITORY_PATHS, resolveRepositoryLayout } from '../config/repository-layout.js';
+import { ensureDevelopmentFileLogging } from './runtime-log.service.js';
 import type { GlobalCliOptions } from '../types/cli.types.js';
 import type { BootstrapEnv, LabEnv, ProjectContext, SmokeEnv } from '../types/project.types.js';
+import { printInfo } from '../ui/logger.js';
 
 /**
  * Creates the runtime context used by commands that operate on a checkout.
@@ -15,6 +17,11 @@ import type { BootstrapEnv, LabEnv, ProjectContext, SmokeEnv } from '../types/pr
 export function createProjectContext(options: GlobalCliOptions): ProjectContext {
   const projectRoot = resolveProjectRoot(options.projectDir);
   const layout = resolveRepositoryLayout(projectRoot);
+  const fileLogSession = ensureDevelopmentFileLogging(projectRoot);
+
+  if (fileLogSession.initializedNow && fileLogSession.filePath) {
+    printInfo(`Development file log: ${fileLogSession.filePath}`, 'runtime');
+  }
 
   return {
     projectRoot,

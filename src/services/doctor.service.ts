@@ -7,9 +7,11 @@ import type { DoctorCommandOptions } from '../types/cli.types.js';
 import type { HostCheckResult, SmokeCheckDefinition } from '../types/doctor.types.js';
 import type { ProjectContext, SmokeEnv } from '../types/project.types.js';
 import { printCommandHeader } from '../ui/banner.js';
-import { printDoctorSummary } from '../ui/logger.js';
-import { httpsGet } from '../utils/http.js';
+import { formatTaskTitle, printDoctorSummary } from '../ui/logger.js';
+import { requestHttps } from '../utils/http.js';
 import { runCommand } from '../utils/process.js';
+import { readGatewayCertificate } from './gateway-certificate.service.js';
+import { canLoginToN8n } from './n8n-owner.service.js';
 import { parseSmokeEnv } from './project.service.js';
 
 /**
@@ -20,27 +22,27 @@ export async function runDoctorCommand(
   options: DoctorCommandOptions
 ): Promise<void> {
   printCommandHeader({
-    title: 'Doctor',
+    title: 'Atlas Lab Doctor',
     summary: options.smoke
       ? 'Validate host requirements and run smoke checks'
-      : 'Validate host requirements for the lab',
+      : 'Validate host requirements for Atlas Lab',
     projectRoot: context.projectRoot
   });
 
   const results: HostCheckResult[] = [];
   const tasks = [
-    createCheckTask(results, 'Docker CLI', () => checkCommand('docker', ['--version'], 'Docker CLI')),
-    createCheckTask(results, 'Docker Compose v2', () =>
+    createCheckTask(results, 'host', 'Docker CLI', () => checkCommand('docker', ['--version'], 'Docker CLI')),
+    createCheckTask(results, 'host', 'Docker Compose v2', () =>
       checkCommand('docker', ['compose', 'version', '--short'], 'Docker Compose v2')
     ),
-    createCheckTask(results, 'Docker daemon', () =>
+    createCheckTask(results, 'host', 'Docker daemon', () =>
       checkCommand('docker', ['info', '--format', '{{.ServerVersion}}'], 'Docker daemon')
     ),
-    createCheckTask(results, 'Node.js', () => Promise.resolve(checkNodeVersion())),
-    createCheckTask(results, 'npm', () => checkCommand(...npmCheckCommand())),
-    createCheckTask(results, 'Compose configuration', () => checkComposeConfiguration(context)),
+    createCheckTask(results, 'host', 'Node.js', () => Promise.resolve(checkNodeVersion())),
+    createCheckTask(results, 'host', 'npm', () => checkCommand(...npmCheckCommand())),
+    createCheckTask(results, 'doctor', 'Compose configuration', () => checkComposeConfiguration(context)),
     ...REQUIRED_REPOSITORY_FILES.map((relativePath) =>
-      createCheckTask(results, `Required file ${relativePath}`, () =>
+      createCheckTask(results, 'doctor', `Required file ${relativePath}`, () =>
         Promise.resolve(checkRequiredFile(context.projectRoot, relativePath))
       )
     )
@@ -48,10 +50,9 @@ export async function runDoctorCommand(
 
   if (options.smoke) {
     const env = parseSmokeEnv(context.env);
+    const gatewayCertificate = await readGatewayCertificate(context, 'smoke');
     for (const smokeCheck of buildSmokeChecks(env)) {
-      tasks.push(
-        createCheckTask(results, smokeCheck.name, () => runSmokeCheck(smokeCheck))
-      );
+      tasks.push(createCheckTask(results, 'smoke', smokeCheck.name, () => smokeCheck.run(gatewayCertificate)));
     }
   }
 
@@ -75,13 +76,25 @@ export async function runDoctorCommand(
  */
 function createCheckTask(
   results: HostCheckResult[],
+  scope: 'doctor' | 'host' | 'smoke',
   taskName: string,
   runCheck: () => Promise<HostCheckResult>
 ) {
   return {
-    title: taskName,
+    title: formatTaskTitle(scope, taskName),
     task: async () => {
-      const result = await runCheck();
+      let result: HostCheckResult;
+
+      try {
+        result = await runCheck();
+      } catch (error) {
+        result = {
+          name: taskName,
+          ok: false,
+          detail: error instanceof Error ? error.message : 'Unknown diagnostic failure'
+        };
+      }
+
       results.push(result);
 
       if (!result.ok) {
@@ -89,28 +102,6 @@ function createCheckTask(
       }
     }
   };
-}
-
-/**
- * Executes a smoke check against a local HTTPS endpoint.
- */
-async function runSmokeCheck(check: SmokeCheckDefinition): Promise<HostCheckResult> {
-  try {
-    const statusCode = await httpsGet(check.url, check.auth);
-    const ok = statusCode >= 200 && statusCode < 400;
-
-    return {
-      name: check.name,
-      ok,
-      detail: `HTTP ${statusCode}`
-    };
-  } catch (error) {
-    return {
-      name: check.name,
-      ok: false,
-      detail: error instanceof Error ? error.message : 'Unknown smoke-check failure'
-    };
-  }
 }
 
 /**
@@ -124,7 +115,8 @@ async function checkCommand(
   try {
     const result = await runCommand(command, args, {
       captureOutput: true,
-      allowFailure: true
+      allowFailure: true,
+      scope: 'host'
     });
 
     return {
@@ -181,7 +173,8 @@ async function checkComposeConfiguration(context: ProjectContext): Promise<HostC
   const result = await runCommand('docker', createComposeCommandArgs(context, ['config', '-q']), {
     cwd: context.projectRoot,
     captureOutput: true,
-    allowFailure: true
+    allowFailure: true,
+    scope: 'doctor'
   });
 
   return {
@@ -214,30 +207,109 @@ function buildSmokeChecks(env: SmokeEnv): SmokeCheckDefinition[] {
   return [
     {
       name: 'Smoke deck',
-      url: env.LAB_URL
+      run: (caCertificate) => runStatusCheck('Smoke deck', env.LAB_URL, caCertificate)
     },
     {
       name: 'Smoke Gitea',
-      url: env.GITEA_URL
+      run: (caCertificate) =>
+        runStatusCheck('Smoke Gitea', new URL('/api/healthz', env.GITEA_URL).toString(), caCertificate)
     },
     {
       name: 'Smoke n8n',
-      url: env.N8N_URL,
-      auth: {
-        username: env.N8N_GATEWAY_USER,
-        password: env.N8N_GATEWAY_PASSWORD
+      run: async (caCertificate) => {
+        const ok = await canLoginToN8n(env, caCertificate);
+
+        return {
+          name: 'Smoke n8n',
+          ok,
+          detail: ok ? 'Owner login verified' : 'Could not authenticate with the configured owner account'
+        };
       }
     },
     {
       name: 'Smoke Open WebUI',
-      url: env.OPENWEBUI_URL
+      run: async (caCertificate) => {
+        const signInResponse = await requestHttps(
+          new URL('/api/v1/auths/signin', env.OPENWEBUI_URL).toString(),
+          {
+            body: JSON.stringify({
+              email: env.OPENWEBUI_ROOT_EMAIL,
+              password: env.OPENWEBUI_ROOT_PASSWORD
+            }),
+            caCertificate,
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            method: 'POST'
+          }
+        );
+
+        if (signInResponse.statusCode !== 200) {
+          return {
+            name: 'Smoke Open WebUI',
+            ok: false,
+            detail: `Sign-in failed with HTTP ${signInResponse.statusCode}`
+          };
+        }
+
+        const token = parseJson<{ token?: string }>(signInResponse.body).token;
+        if (!token) {
+          return {
+            name: 'Smoke Open WebUI',
+            ok: false,
+            detail: 'Sign-in succeeded but no bearer token was returned'
+          };
+        }
+
+        const modelsResponse = await requestHttps(
+          new URL('/api/models', env.OPENWEBUI_URL).toString(),
+          {
+            caCertificate,
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+
+        const modelIds = collectModelIdentifiers(modelsResponse.body);
+        const missingModels = [env.OLLAMA_CHAT_MODEL, `${env.OLLAMA_EMBEDDING_MODEL}:latest`].filter(
+          (modelName) => !modelIds.includes(modelName)
+        );
+
+        return {
+          name: 'Smoke Open WebUI',
+          ok: modelsResponse.statusCode === 200 && missingModels.length === 0,
+          detail:
+            missingModels.length === 0
+              ? `Authenticated and listed ${modelIds.length} models`
+              : `Missing models in Open WebUI: ${missingModels.join(', ')}`
+        };
+      }
     },
     {
       name: 'Smoke Ollama',
-      url: new URL('/api/tags', env.OLLAMA_URL).toString(),
-      auth: {
-        username: env.OLLAMA_GATEWAY_USER,
-        password: env.OLLAMA_GATEWAY_PASSWORD
+      run: async (caCertificate) => {
+        const response = await requestHttps(new URL('/api/tags', env.OLLAMA_URL).toString(), {
+          auth: {
+            username: env.OLLAMA_GATEWAY_USER,
+            password: env.OLLAMA_GATEWAY_PASSWORD
+          },
+          caCertificate
+        });
+
+        const modelIds = collectOllamaModelIdentifiers(response.body);
+        const missingModels = [env.OLLAMA_CHAT_MODEL, `${env.OLLAMA_EMBEDDING_MODEL}:latest`].filter(
+          (modelName) => !modelIds.includes(modelName)
+        );
+
+        return {
+          name: 'Smoke Ollama',
+          ok: response.statusCode === 200 && missingModels.length === 0,
+          detail:
+            missingModels.length === 0
+              ? `Gateway auth verified with ${modelIds.length} local models`
+              : `Missing models in Ollama: ${missingModels.join(', ')}`
+        };
       }
     }
   ];
@@ -248,4 +320,52 @@ function buildSmokeChecks(env: SmokeEnv): SmokeCheckDefinition[] {
  */
 function sanitizeDetail(detail: string): string {
   return detail.trim().replace(/\s+/gu, ' ');
+}
+
+/**
+ * Executes a status-based smoke check against an HTTPS endpoint.
+ */
+async function runStatusCheck(
+  name: string,
+  url: string,
+  caCertificate: string
+): Promise<HostCheckResult> {
+  try {
+    const response = await requestHttps(url, { caCertificate });
+
+    return {
+      name,
+      ok: response.statusCode >= 200 && response.statusCode < 400,
+      detail: `HTTP ${response.statusCode}`
+    };
+  } catch (error) {
+    return {
+      name,
+      ok: false,
+      detail: error instanceof Error ? error.message : 'Unknown smoke-check failure'
+    };
+  }
+}
+
+/**
+ * Parses a JSON response body and throws a readable error when the payload is invalid.
+ */
+function parseJson<TValue>(body: string): TValue {
+  return JSON.parse(body) as TValue;
+}
+
+/**
+ * Extracts model identifiers from the Open WebUI `/api/models` payload.
+ */
+function collectModelIdentifiers(body: string): string[] {
+  const payload = parseJson<{ data?: Array<{ id?: string }> }>(body);
+  return (payload.data ?? []).flatMap((entry) => (entry.id ? [entry.id] : []));
+}
+
+/**
+ * Extracts model identifiers from the Ollama `/api/tags` payload.
+ */
+function collectOllamaModelIdentifiers(body: string): string[] {
+  const payload = parseJson<{ models?: Array<{ name?: string }> }>(body);
+  return (payload.models ?? []).flatMap((entry) => (entry.name ? [entry.name] : []));
 }

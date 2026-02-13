@@ -1,15 +1,24 @@
 import got from 'got';
-import type { BasicAuthCredentials } from '../types/project.types.js';
+import type { HttpsRequestOptions, HttpsResponse } from '../types/http.types.js';
 
 /**
- * Performs a TLS-tolerant HTTPS GET request against local lab endpoints.
+ * Performs an HTTPS request against a local lab endpoint and returns the raw response payload.
  */
-export async function httpsGet(url: string, auth?: BasicAuthCredentials): Promise<number> {
-  const response = await got.get(url, {
-    https: {
-      rejectUnauthorized: false
-    },
-    username: auth?.username,
+export async function requestHttps(
+  url: string,
+  {
+    auth,
+    body,
+    caCertificate,
+    headers,
+    method = 'GET'
+  }: HttpsRequestOptions = {}
+): Promise<HttpsResponse> {
+  const response = await got(url, {
+    body,
+    headers,
+    https: resolveHttpsOptions(caCertificate),
+    method,
     password: auth?.password,
     throwHttpErrors: false,
     retry: {
@@ -17,8 +26,28 @@ export async function httpsGet(url: string, auth?: BasicAuthCredentials): Promis
     },
     timeout: {
       request: 10_000
-    }
+    },
+    username: auth?.username
   });
 
-  return response.statusCode;
+  return {
+    body: response.body,
+    headers: response.headers,
+    statusCode: response.statusCode
+  };
+}
+
+/**
+ * Uses the live gateway certificate when available and only falls back to insecure mode when absent.
+ */
+function resolveHttpsOptions(caCertificate?: string) {
+  if (caCertificate) {
+    return {
+      certificateAuthority: caCertificate
+    };
+  }
+
+  return {
+    rejectUnauthorized: false
+  };
 }

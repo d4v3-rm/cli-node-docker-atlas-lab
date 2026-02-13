@@ -1,3 +1,5 @@
+import type { LogScope } from './logging.types.js';
+
 /**
  * Options for subprocess execution.
  */
@@ -6,6 +8,7 @@ export interface CommandExecutionOptions {
   captureOutput?: boolean;
   allowFailure?: boolean;
   stdio?: 'inherit' | 'pipe' | 'ignore';
+  scope?: LogScope;
 }
 
 /**

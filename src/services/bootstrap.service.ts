@@ -3,12 +3,12 @@ import pWaitFor from 'p-wait-for';
 import { createComposeCommandArgs } from '../lib/compose.js';
 import type { BootstrapCommandOptions } from '../types/cli.types.js';
 import type { BootstrapEnv, ProjectContext } from '../types/project.types.js';
+import { ensureGiteaAdmin } from './gitea-admin.service.js';
+import { ensureN8nOwner } from './n8n-owner.service.js';
 import { printCommandHeader } from '../ui/banner.js';
-import { printSuccess } from '../ui/logger.js';
+import { formatTaskTitle, printSuccess } from '../ui/logger.js';
 import { runCommand } from '../utils/process.js';
 import { parseBootstrapEnv } from './project.service.js';
-
-const GITEA_CONFIG = '/data/gitea/conf/app.ini';
 
 /**
  * Runs the standalone bootstrap workflow.
@@ -18,7 +18,7 @@ export async function runBootstrapCommand(
   options: BootstrapCommandOptions
 ): Promise<void> {
   printCommandHeader({
-    title: 'Bootstrap Lab',
+    title: 'Bootstrap Atlas Lab',
     summary: 'Reconcile Gitea and Ollama runtime state',
     projectRoot: context.projectRoot
   });
@@ -27,7 +27,7 @@ export async function runBootstrapCommand(
     concurrent: false,
     exitOnError: true
   }).run();
-  printSuccess('Bootstrap completed.');
+  printSuccess('Bootstrap completed.', 'bootstrap');
 }
 
 /**
@@ -43,137 +43,95 @@ export function createBootstrapTasks(
 
   if (!options.skipGitea) {
     tasks.push({
-      title: 'Align Gitea root account',
+      title: formatTaskTitle('bootstrap', 'Align Gitea root account'),
       task: async () => {
+        await waitForService(context, 'gitea');
         await ensureGiteaAdmin(context, env);
       }
     });
   }
 
+  tasks.push({
+    title: formatTaskTitle('bootstrap', 'Align n8n owner account'),
+    task: async () => {
+      await waitForService(context, 'n8n');
+      await waitForService(context, 'gateway');
+      await ensureN8nOwner(context, env);
+    }
+  });
+
   if (!options.skipOllama) {
     tasks.push({
-      title: 'Align Ollama embedding model',
+      title: formatTaskTitle('bootstrap', 'Align Ollama runtime models'),
       task: async () => {
-        await ensureOllamaModel(context, env);
+        await ensureOllamaModels(context, env);
       }
     });
   }
 
   return tasks;
 }
-
 /**
- * Waits for Gitea and ensures the configured root user exists with the right password.
+ * Waits for Ollama and ensures the configured runtime models are present locally.
  */
-async function ensureGiteaAdmin(
-  context: ProjectContext,
-  env: BootstrapEnv
-): Promise<'created' | 'updated'> {
-  await waitForService(context, 'gitea');
-
-  const baseArgs = createComposeCommandArgs(context, [
-    'exec',
-    '-T',
-    '--user',
-    `${env.GITEA_UID}:${env.GITEA_GID}`,
-    'gitea',
-    'gitea',
-    'admin',
-    'user'
-  ]);
-
-  const listing = await runCommand('docker', [...baseArgs, 'list', '--config', GITEA_CONFIG], {
-    cwd: context.projectRoot,
-    captureOutput: true
-  });
-
-  if (listing.stdout.includes(env.GITEA_ROOT_USERNAME)) {
-    await runCommand(
-      'docker',
-      [
-        ...baseArgs,
-        'change-password',
-        '--config',
-        GITEA_CONFIG,
-        '--username',
-        env.GITEA_ROOT_USERNAME,
-        '--password',
-        env.GITEA_ROOT_PASSWORD
-      ],
-      { cwd: context.projectRoot }
-    );
-
-    return 'updated';
-  }
-
-  await runCommand(
-    'docker',
-    [
-      ...baseArgs,
-      'create',
-      '--config',
-      GITEA_CONFIG,
-      '--username',
-      env.GITEA_ROOT_USERNAME,
-      '--password',
-      env.GITEA_ROOT_PASSWORD,
-      '--email',
-      env.GITEA_ROOT_EMAIL,
-      '--admin',
-      '--must-change-password=false'
-    ],
-    { cwd: context.projectRoot }
-  );
-
-  return 'created';
-}
-
-/**
- * Waits for Ollama and ensures the embedding model is present locally.
- */
-async function ensureOllamaModel(
+async function ensureOllamaModels(
   context: ProjectContext,
   env: BootstrapEnv
 ): Promise<'present' | 'pulled'> {
   await waitForService(context, 'ollama');
 
-  const modelCheck = await runCommand(
-    'docker',
-    createComposeCommandArgs(context, [
-      'exec',
-      '-T',
-      'ollama',
-      'ollama',
-      'show',
-      env.OLLAMA_EMBEDDING_MODEL
-    ]),
-    {
-      cwd: context.projectRoot,
-      captureOutput: true,
-      allowFailure: true
-    }
-  );
+  let pulledModel = false;
 
-  if (modelCheck.exitCode === 0) {
-    return 'present';
+  for (const modelName of collectRequiredOllamaModels(env)) {
+    const modelCheck = await runCommand(
+      'docker',
+      createComposeCommandArgs(context, [
+        'exec',
+        '-T',
+        'ollama',
+        'ollama',
+        'show',
+        modelName
+      ]),
+      {
+        cwd: context.projectRoot,
+        captureOutput: true,
+        allowFailure: true,
+        scope: 'bootstrap'
+      }
+    );
+
+    if (modelCheck.exitCode === 0) {
+      continue;
+    }
+
+    await runCommand(
+      'docker',
+      createComposeCommandArgs(context, [
+        'exec',
+        '-T',
+        'ollama',
+        'ollama',
+        'pull',
+        modelName
+      ]),
+      {
+        cwd: context.projectRoot,
+        scope: 'bootstrap'
+      }
+    );
+
+    pulledModel = true;
   }
 
-  await runCommand(
-    'docker',
-    createComposeCommandArgs(context, [
-      'exec',
-      '-T',
-      'ollama',
-      'ollama',
-      'pull',
-      env.OLLAMA_EMBEDDING_MODEL
-    ]),
-    {
-      cwd: context.projectRoot
-    }
-  );
+  return pulledModel ? 'pulled' : 'present';
+}
 
-  return 'pulled';
+/**
+ * Collects the distinct Ollama models required by the lab bootstrap.
+ */
+function collectRequiredOllamaModels(env: BootstrapEnv): string[] {
+  return [...new Set([env.OLLAMA_EMBEDDING_MODEL, env.OLLAMA_CHAT_MODEL])];
 }
 
 /**
@@ -191,7 +149,8 @@ async function waitForService(
         createComposeCommandArgs(context, ['ps', '-q', serviceName]),
         {
           cwd: context.projectRoot,
-          captureOutput: true
+          captureOutput: true,
+          scope: 'bootstrap'
         }
       );
 
@@ -209,7 +168,8 @@ async function waitForService(
         ],
         {
           cwd: context.projectRoot,
-          captureOutput: true
+          captureOutput: true,
+          scope: 'bootstrap'
         }
       );
 

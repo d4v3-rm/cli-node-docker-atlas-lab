@@ -1,5 +1,6 @@
 import { Command } from 'commander';
 import packageJson from '../../package.json' with { type: 'json' };
+import { APP_METADATA } from '../config/app-metadata.js';
 import { registerBootstrapCommand } from '../commands/register-bootstrap-command.js';
 import { registerDoctorCommand } from '../commands/register-doctor-command.js';
 import { registerDownCommand } from '../commands/register-down-command.js';
@@ -14,8 +15,8 @@ export function createCliApp(): Command {
   const program = new Command();
 
   program
-    .name('lab-atlas')
-    .description('Operate the local self-hosted lab stack')
+    .name(APP_METADATA.cliName)
+    .description(APP_METADATA.description)
     .version(packageJson.version)
     .showHelpAfterError()
     .showSuggestionAfterError()
