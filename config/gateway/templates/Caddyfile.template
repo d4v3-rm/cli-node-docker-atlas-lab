@@ -38,7 +38,7 @@
 https://${LAB_PUBLIC_HOST}:${LAB_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${LAB_HTTPS_PORT} {
   import lab_tls
   root * /srv
-  try_files {path} /lab-index.html
+  try_files {path} /index.html
   file_server
 }
 

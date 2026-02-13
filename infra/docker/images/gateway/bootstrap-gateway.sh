@@ -66,19 +66,26 @@ for var_name in ${required_vars}; do
 done
 
 template_root="/opt/gateway/templates"
+frontend_dist_root="/opt/gateway/lab-index-dist"
 site_root="/srv"
 content_dir="${site_root}/content"
 asset_dir="${site_root}/assets"
+runtime_dir="${site_root}/runtime"
 dynamic_dir="/etc/caddy/dynamic"
 cert_dir="/etc/caddy/certs"
 cert_file="${cert_dir}/lab.crt"
 key_file="${cert_dir}/lab.key"
 caddy_template="${ATLAS_GATEWAY_TEMPLATE:-Caddyfile.template}"
 
-mkdir -p "${site_root}" "${content_dir}" "${asset_dir}" "${dynamic_dir}" "${cert_dir}"
+mkdir -p "${site_root}" "${content_dir}" "${asset_dir}" "${runtime_dir}" "${dynamic_dir}" "${cert_dir}"
 
 if [ ! -f "${template_root}/${caddy_template}" ]; then
   echo "Missing gateway template: ${caddy_template}" >&2
+  exit 1
+fi
+
+if [ ! -f "${frontend_dist_root}/index.html" ]; then
+  echo "Missing lab index frontend build output." >&2
   exit 1
 fi
 
@@ -146,9 +153,13 @@ envsubst "${render_vars}" \
 
 caddy fmt --overwrite /etc/caddy/Caddyfile >/dev/null 2>&1 || true
 
+rm -rf "${site_root}/index.html" "${site_root}/static" "${site_root}/runtime"
+mkdir -p "${runtime_dir}"
+cp -R "${frontend_dist_root}/." "${site_root}/"
+
 envsubst "${render_vars}" \
-  < "${template_root}/lab-index.html.template" \
-  > "${site_root}/lab-index.html"
+  < "${template_root}/runtime/lab-config.json.template" \
+  > "${runtime_dir}/lab-config.json"
 
 if [ -d "${template_root}/content" ]; then
   find "${template_root}/content" -type f -name '*.template' | while read -r src; do

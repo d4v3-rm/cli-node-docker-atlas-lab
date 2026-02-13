@@ -12,3 +12,10 @@ package.json
 package-lock.json
 tsconfig.json
 tsup.config.ts
+!apps/lab-index/package.json
+!apps/lab-index/package-lock.json
+!apps/lab-index/tsconfig.json
+!apps/lab-index/vite.config.ts
+!apps/lab-index/index.html
+!apps/lab-index/src/
+!apps/lab-index/src/**
