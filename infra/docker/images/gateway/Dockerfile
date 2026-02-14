@@ -15,7 +15,16 @@ RUN npm run build
 
 FROM caddy:${CADDY_VERSION}
 
-RUN apk add --no-cache gettext openssl
+RUN set -eu; \
+    attempts=0; \
+    until apk add --no-cache gettext openssl; do \
+      attempts=$((attempts + 1)); \
+      if [ "${attempts}" -ge 5 ]; then \
+        echo "apk add failed after ${attempts} attempts" >&2; \
+        exit 1; \
+      fi; \
+      sleep $((attempts * 2)); \
+    done
 
 COPY --from=lab_index_builder /build/apps/lab-index/dist/ /opt/gateway/lab-index-dist/
 COPY config/gateway/templates/ /opt/gateway/templates/
