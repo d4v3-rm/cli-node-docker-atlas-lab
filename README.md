@@ -42,7 +42,7 @@
 - `Gitea` per repository Git, issue tracking e code review
 - `n8n` per automazione e workflow
 - `Open WebUI` come interfaccia AI
-- `Ollama` per modelli locali ed embeddings
+- `Ollama` per modelli locali ed embeddings con accelerazione GPU NVIDIA
 - `code-server` per ambienti di sviluppo browser-based
 - `PostgreSQL` condiviso per i workbench
 - `Caddy` come unico ingresso HTTPS
@@ -200,6 +200,8 @@ Se rimuovi i volumi, azzeri lo stato persistente.
 ### Requisiti software obbligatori
 
 - `Docker Desktop` con `Docker Compose v2`
+- GPU `NVIDIA` visibile da `nvidia-smi`
+- Docker configurato con supporto GPU NVIDIA verso i container
 - `Node.js >= 20`
 - `npm`
 - un terminale da cui eseguire `docker`, `node`, `npm`
@@ -218,6 +220,7 @@ La CLI del progetto:
 
 - CPU: almeno `4 vCPU`
 - RAM: almeno `8 GB`, meglio `12-16 GB` se usi anche workbench e Ollama
+- GPU: almeno `8 GB` di VRAM se vuoi eseguire comodamente il profilo AI locale; la configurazione di default e pensata per una scheda come `RTX 3070`
 - Disco: almeno `20 GB` liberi
 
 ### Porte host richieste
@@ -843,6 +846,21 @@ Poi libera le porte in uno di questi modi:
 - ferma la stack Atlas Lab gia presente con `atlas-lab down`
 - ferma l'altra stack Docker che pubblica le stesse porte
 - cambia le porte in `config/env/lab.env`
+
+### `atlas-lab up` fallisce sul preflight GPU NVIDIA
+
+La configurazione di default ora forza `Ollama` su GPU.
+
+Se vedi un errore che parla di `NVIDIA GPU` o un messaggio Docker simile a `could not select device driver "" with capabilities: [[gpu]]`, il problema non e Ollama ma il pass-through GPU del daemon Docker.
+
+Controlla:
+
+```powershell
+nvidia-smi -L
+docker info | findstr /i gpu
+```
+
+Su Linux devi avere i driver NVIDIA funzionanti e Docker configurato per esporre la GPU ai container. Su Docker Desktop devi anche abilitare il supporto GPU lato daemon.
 
 ### I workbench non compaiono in `docker compose up`
 

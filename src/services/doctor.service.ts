@@ -11,6 +11,7 @@ import { formatTaskTitle, printDoctorSummary } from '../ui/logger.js';
 import { requestHttps } from '../utils/http.js';
 import { runCommand } from '../utils/process.js';
 import { readGatewayCertificate } from './gateway-certificate.service.js';
+import { checkNvidiaGpuRuntime } from './gpu-preflight.service.js';
 import { canLoginToN8n } from './n8n-owner.service.js';
 import { parseSmokeEnv } from './project.service.js';
 
@@ -38,6 +39,7 @@ export async function runDoctorCommand(
     createCheckTask(results, 'host', 'Docker daemon', () =>
       checkCommand('docker', ['info', '--format', '{{.ServerVersion}}'], 'Docker daemon')
     ),
+    createCheckTask(results, 'host', 'NVIDIA GPU', () => checkNvidiaGpuRuntime()),
     createCheckTask(results, 'host', 'Node.js', () => Promise.resolve(checkNodeVersion())),
     createCheckTask(results, 'host', 'npm', () => checkCommand(...npmCheckCommand())),
     createCheckTask(results, 'doctor', 'Compose configuration', () => checkComposeConfiguration(context)),

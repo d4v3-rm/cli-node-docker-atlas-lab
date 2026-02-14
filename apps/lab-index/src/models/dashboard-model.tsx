@@ -50,7 +50,7 @@ export function createDashboardViewModel(config: LabRuntimeConfig): DashboardVie
       'Nessun DNS o file hosts: tutti gli ingressi pubblici usano localhost con porte dedicate.',
       "n8n usa direttamente l'auth applicativa owner, senza doppio login al gateway.",
       "La CLI preinizializza l'owner, ma lascia disponibili i template ufficiali dentro l'app.",
-      'Ollama e servito come API locale dietro host separato e auth gateway.',
+      'Ollama usa la GPU NVIDIA del host come backend predefinito per l inference locale.',
       'Postgres non ha UI pubblica e viene consumato soltanto dai workbench.'
     ],
     networkMap: {
@@ -109,7 +109,7 @@ export function createDashboardViewModel(config: LabRuntimeConfig): DashboardVie
           { label: 'password', value: config.services.openWebUi.rootPassword }
         ],
         description:
-          'Console conversazionale per modelli locali. Espone una UI operativa per usare Ollama, testare prompt e gestire flussi AI dal browser.',
+          'Console conversazionale per modelli locali eseguiti tramite Ollama sulla GPU NVIDIA del host. Espone una UI operativa per prompt, test e flussi AI dal browser.',
         icon: FaRobot,
         id: 'open-webui',
         status: 'online',
@@ -124,10 +124,10 @@ export function createDashboardViewModel(config: LabRuntimeConfig): DashboardVie
           { label: 'endpoint', value: config.services.ollama.url },
           { label: 'gateway user', value: config.services.ollama.gatewayUser },
           { label: 'gateway password', value: config.services.ollama.gatewayPassword },
-          { label: 'uso', value: 'API locale per modelli' }
+          { label: 'uso', value: 'API locale GPU-backed per modelli' }
         ],
         description:
-          'Endpoint locale per inference LLM. Serve i modelli consumati dal lab e puo essere interrogato direttamente come API protetta dal gateway.',
+          'Endpoint locale per inference LLM ed embeddings con accelerazione GPU NVIDIA. Serve i modelli consumati dal lab e puo essere interrogato direttamente come API protetta dal gateway.',
         icon: FaBrain,
         id: 'ollama',
         status: 'api',
