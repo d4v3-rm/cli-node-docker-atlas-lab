@@ -1,3 +1,4 @@
+import pWaitFor from 'p-wait-for';
 import { createComposeCommandArgs } from '../lib/compose.js';
 import { readGatewayCertificate } from './gateway-certificate.service.js';
 import type { BootstrapEnv, SmokeEnv, ProjectContext } from '../types/project.types.js';
@@ -18,6 +19,7 @@ export async function ensureN8nOwner(
   env: BootstrapEnv
 ): Promise<N8nOwnerBootstrapResult> {
   const caCertificate = await readGatewayCertificate(context, 'bootstrap');
+  await waitForN8nIngress(env.N8N_URL, caCertificate);
 
   if (await canLoginToN8n(env, caCertificate)) {
     return 'current';
@@ -47,6 +49,33 @@ export async function ensureN8nOwner(
   }
 
   throw new Error('Could not reconcile the n8n owner bootstrap account.');
+}
+
+/**
+ * Waits until the gateway can terminate TLS and forward requests to the n8n ingress.
+ */
+async function waitForN8nIngress(
+  n8nUrl: string,
+  caCertificate: string,
+  timeoutSeconds = 30
+): Promise<void> {
+  await pWaitFor(
+    async () => {
+      try {
+        const response = await requestHttps(n8nUrl, { caCertificate });
+        return response.statusCode >= 200 && response.statusCode < 500;
+      } catch {
+        return false;
+      }
+    },
+    {
+      interval: 1_000,
+      timeout: {
+        milliseconds: timeoutSeconds * 1000,
+        message: new Error(`Timed out waiting for n8n HTTPS ingress at ${n8nUrl}`)
+      }
+    }
+  );
 }
 
 /**

@@ -23,6 +23,12 @@ services:
     restart: unless-stopped
     env_file:
       - ../../config/env/lab.env
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 $$LAB_HTTPS_PORT || exit 1"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 2s
     ports:
       - "${LAB_HTTPS_PORT}:${LAB_HTTPS_PORT}"
       - "${GITEA_HTTPS_PORT}:${GITEA_HTTPS_PORT}"
