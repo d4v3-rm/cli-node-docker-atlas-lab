@@ -42,7 +42,7 @@
 - `Gitea` per repository Git, issue tracking e code review
 - `n8n` per automazione e workflow
 - `Open WebUI` come interfaccia AI
-- `Ollama` per modelli locali ed embeddings
+- `Ollama` per modelli locali ed embeddings con accelerazione GPU NVIDIA
 - `code-server` per ambienti di sviluppo browser-based
 - `PostgreSQL` condiviso per i workbench
 - `Caddy` come unico ingresso HTTPS
@@ -199,10 +199,19 @@ Se rimuovi i volumi, azzeri lo stato persistente.
 
 ### Requisiti software obbligatori
 
-- `Docker Desktop` con `Docker Compose v2`
+- `Docker Compose v2`
+- GPU `NVIDIA` visibile da `nvidia-smi`
+- Docker configurato con supporto GPU NVIDIA verso i container
 - `Node.js >= 20`
 - `npm`
 - un terminale da cui eseguire `docker`, `node`, `npm`
+
+Su Ubuntu o Linux desktop:
+
+- `Docker Desktop` non e il target giusto per la GPU NVIDIA del lab
+- usa il contesto Docker nativo `default`
+- installa `nvidia-container-toolkit` sul Docker Engine di sistema
+- se avvii Atlas Lab dal contesto `default`, nella UI di `Docker Desktop` potresti non vedere nessun container attivo
 
 ### Dipendenze CLI reali
 
@@ -218,6 +227,7 @@ La CLI del progetto:
 
 - CPU: almeno `4 vCPU`
 - RAM: almeno `8 GB`, meglio `12-16 GB` se usi anche workbench e Ollama
+- GPU: almeno `8 GB` di VRAM se vuoi eseguire comodamente il profilo AI locale; la configurazione di default e pensata per una scheda come `RTX 3070`
 - Disco: almeno `20 GB` liberi
 
 ### Porte host richieste
@@ -843,6 +853,88 @@ Poi libera le porte in uno di questi modi:
 - ferma la stack Atlas Lab gia presente con `atlas-lab down`
 - ferma l'altra stack Docker che pubblica le stesse porte
 - cambia le porte in `config/env/lab.env`
+
+### `atlas-lab up` fallisce sul preflight GPU NVIDIA
+
+La configurazione di default ora forza `Ollama` su GPU.
+
+Se vedi un errore che parla di `NVIDIA GPU` o un messaggio Docker simile a `could not select device driver "" with capabilities: [[gpu]]`, il problema non e Ollama ma il pass-through GPU del daemon Docker.
+
+Controlla:
+
+```powershell
+nvidia-smi -L
+docker info | findstr /i gpu
+```
+
+Su Linux devi avere i driver NVIDIA funzionanti e Docker configurato per esporre la GPU ai container. Su Docker Desktop devi anche abilitare il supporto GPU lato daemon.
+
+Se sei su Ubuntu/Linux e stai usando `Docker Desktop`, la strada corretta e diversa:
+
+1. passa al Docker Engine nativo
+
+```bash
+docker context use default
+```
+
+2. installa `nvidia-container-toolkit`
+
+```bash
+curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey \
+  | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+
+curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list \
+  | sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' \
+  | sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+
+sudo apt-get update
+sudo apt-get install -y nvidia-container-toolkit
+sudo nvidia-ctk runtime configure --runtime=docker
+sudo systemctl restart docker
+```
+
+3. verifica che Docker veda davvero la GPU
+
+```bash
+docker context use default
+docker run --rm --gpus all nvidia/cuda:12.8.1-base-ubuntu24.04 nvidia-smi
+```
+
+4. poi rilancia Atlas Lab
+
+```bash
+docker context use default
+npm run dev -- up
+```
+
+Se continui a usare il contesto `desktop-linux`, Atlas Lab restera bloccato sul preflight GPU anche se `nvidia-smi` sul host funziona.
+
+### Docker Desktop non mostra i container Atlas Lab
+
+Su Ubuntu/Linux e normale se Atlas Lab sta girando sul Docker Engine nativo.
+
+`Docker Desktop` e il contesto `desktop-linux` usano un daemon separato da `default`:
+
+- `default` punta tipicamente a `unix:///var/run/docker.sock`
+- `desktop-linux` punta al daemon interno di `Docker Desktop`
+
+Quindi puoi avere la stack attiva ma non vedere nulla nella UI di `Docker Desktop`.
+
+Controlla:
+
+```bash
+docker context show
+docker ps
+docker --context desktop-linux ps
+```
+
+Se `docker context show` restituisce `default`, Atlas Lab sta girando sul daemon di sistema ed e quello giusto per la GPU NVIDIA.
+
+Per lavorare sempre sul daemon corretto:
+
+```bash
+docker context use default
+```
 
 ### I workbench non compaiono in `docker compose up`
 

@@ -4,6 +4,7 @@ import type { GlobalCliOptions, UpCommandOptions } from '../types/cli.types.js';
 import type { ProjectContext } from '../types/project.types.js';
 import { assertPublishedPortsAvailable } from './host-preflight.service.js';
 import { hasRunningComposeServices } from './compose-project.service.js';
+import { assertNvidiaGpuRuntime } from './gpu-preflight.service.js';
 import { printCommandHeader } from '../ui/banner.js';
 import { formatTaskTitle, printInfo, printSuccess } from '../ui/logger.js';
 import { runCommand } from '../utils/process.js';
@@ -31,6 +32,12 @@ export async function runUpCommand(
   let composeStartedInThisRun = false;
   const tasks = new Listr(
     [
+      {
+        title: formatTaskTitle('host', 'Validate NVIDIA GPU runtime'),
+        task: async () => {
+          await assertNvidiaGpuRuntime();
+        }
+      },
       {
         title: formatTaskTitle('host', 'Validate published host ports'),
         task: async () => {
