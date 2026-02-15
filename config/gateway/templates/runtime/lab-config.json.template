@@ -4,6 +4,10 @@
     "localUrl": "${LAB_LOCAL_URL}",
     "publicUrl": "${LAB_URL}"
   },
+  "features": {
+    "aiEnabled": ${ATLAS_AI_ENABLED},
+    "workbenchEnabled": ${ATLAS_WORKBENCH_ENABLED}
+  },
   "assets": {
     "certificateUrl": "/assets/lab.crt"
   },

@@ -27,9 +27,10 @@ export function renderHelpFooter(): string {
     '',
     pc.bold('Examples:'),
     `  ${APP_METADATA.cliName} up`,
-    `  ${APP_METADATA.cliName} up --build --with-workbench`,
-    `  ${APP_METADATA.cliName} bootstrap`,
-    `  ${APP_METADATA.cliName} doctor --smoke`,
+    `  ${APP_METADATA.cliName} up --with-ai`,
+    `  ${APP_METADATA.cliName} up --build --with-ai --with-workbench`,
+    `  ${APP_METADATA.cliName} bootstrap --with-ai`,
+    `  ${APP_METADATA.cliName} doctor --with-ai --smoke`,
     `  ${APP_METADATA.cliName} status --project-dir C:\\path\\to\\${APP_METADATA.codeName}`
   ].join('\n');
 }

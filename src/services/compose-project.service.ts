@@ -11,7 +11,9 @@ export async function listRunningComposeEntries(
 ): Promise<ComposePsEntry[]> {
   const result = await runCommand(
     'docker',
-    createComposeCommandArgs(context, ['ps', '--status', 'running', '--format', 'json']),
+    createComposeCommandArgs(context, ['ps', '--status', 'running', '--format', 'json'], {
+      includeAll: true
+    }),
     {
       allowFailure: true,
       captureOutput: true,

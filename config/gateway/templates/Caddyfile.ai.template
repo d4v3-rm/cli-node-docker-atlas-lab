@@ -35,17 +35,10 @@
   }
 }
 
-https://${LAB_PUBLIC_HOST}:${LAB_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${LAB_HTTPS_PORT} {
-  import lab_tls
-  root * /srv
-  try_files {path} /index.html
-  file_server
+https://${LAB_PUBLIC_HOST}:${OPENWEBUI_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${OPENWEBUI_HTTPS_PORT} {
+  import service_proxy open-webui:8080
 }
 
-https://${LAB_PUBLIC_HOST}:${GITEA_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${GITEA_HTTPS_PORT} {
-  import service_proxy gitea:3000
-}
-
-https://${LAB_PUBLIC_HOST}:${N8N_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${N8N_HTTPS_PORT} {
-  import service_proxy n8n:5678
+https://${LAB_PUBLIC_HOST}:${OLLAMA_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${OLLAMA_HTTPS_PORT} {
+  import guarded_proxy ${OLLAMA_GATEWAY_USER} ${OLLAMA_GATEWAY_PASSWORD_HASH} ollama:11434
 }

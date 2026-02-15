@@ -5,7 +5,7 @@ import { REQUIRED_REPOSITORY_FILES } from '../config/repository-layout.js';
 import { createComposeCommandArgs } from '../lib/compose.js';
 import type { DoctorCommandOptions } from '../types/cli.types.js';
 import type { HostCheckResult, SmokeCheckDefinition } from '../types/doctor.types.js';
-import type { ProjectContext, SmokeEnv } from '../types/project.types.js';
+import type { AiSmokeEnv, ProjectContext, SmokeEnv } from '../types/project.types.js';
 import { printCommandHeader } from '../ui/banner.js';
 import { formatTaskTitle, printDoctorSummary } from '../ui/logger.js';
 import { requestHttps } from '../utils/http.js';
@@ -13,7 +13,7 @@ import { runCommand } from '../utils/process.js';
 import { readGatewayCertificate } from './gateway-certificate.service.js';
 import { checkNvidiaGpuRuntime } from './gpu-preflight.service.js';
 import { canLoginToN8n } from './n8n-owner.service.js';
-import { parseSmokeEnv } from './project.service.js';
+import { parseAiSmokeEnv, parseSmokeEnv } from './project.service.js';
 
 /**
  * Runs host checks and optional smoke checks with a styled summary.
@@ -39,10 +39,14 @@ export async function runDoctorCommand(
     createCheckTask(results, 'host', 'Docker daemon', () =>
       checkCommand('docker', ['info', '--format', '{{.ServerVersion}}'], 'Docker daemon')
     ),
-    createCheckTask(results, 'host', 'NVIDIA GPU', () => checkNvidiaGpuRuntime()),
+    ...(options.withAi
+      ? [createCheckTask(results, 'host', 'NVIDIA GPU', () => checkNvidiaGpuRuntime())]
+      : []),
     createCheckTask(results, 'host', 'Node.js', () => Promise.resolve(checkNodeVersion())),
     createCheckTask(results, 'host', 'npm', () => checkCommand(...npmCheckCommand())),
-    createCheckTask(results, 'doctor', 'Compose configuration', () => checkComposeConfiguration(context)),
+    createCheckTask(results, 'doctor', 'Compose configuration', () =>
+      checkComposeConfiguration(context, options)
+    ),
     ...REQUIRED_REPOSITORY_FILES.map((relativePath) =>
       createCheckTask(results, 'doctor', `Required file ${relativePath}`, () =>
         Promise.resolve(checkRequiredFile(context.projectRoot, relativePath))
@@ -52,8 +56,9 @@ export async function runDoctorCommand(
 
   if (options.smoke) {
     const env = parseSmokeEnv(context.env);
+    const aiEnv = options.withAi ? parseAiSmokeEnv(context.env) : undefined;
     const gatewayCertificate = await readGatewayCertificate(context, 'smoke');
-    for (const smokeCheck of buildSmokeChecks(env)) {
+    for (const smokeCheck of buildSmokeChecks(env, aiEnv)) {
       tasks.push(createCheckTask(results, 'smoke', smokeCheck.name, () => smokeCheck.run(gatewayCertificate)));
     }
   }
@@ -171,13 +176,23 @@ function npmCheckCommand(): [string, string[], string] {
 /**
  * Checks that the resolved Compose entrypoint parses successfully for the checkout.
  */
-async function checkComposeConfiguration(context: ProjectContext): Promise<HostCheckResult> {
-  const result = await runCommand('docker', createComposeCommandArgs(context, ['config', '-q']), {
-    cwd: context.projectRoot,
-    captureOutput: true,
-    allowFailure: true,
-    scope: 'doctor'
-  });
+async function checkComposeConfiguration(
+  context: ProjectContext,
+  options: Pick<DoctorCommandOptions, 'withAi' | 'withWorkbench'>
+): Promise<HostCheckResult> {
+  const result = await runCommand(
+    'docker',
+    createComposeCommandArgs(context, ['config', '-q'], {
+      includeAi: Boolean(options.withAi),
+      includeWorkbench: Boolean(options.withWorkbench)
+    }),
+    {
+      cwd: context.projectRoot,
+      captureOutput: true,
+      allowFailure: true,
+      scope: 'doctor'
+    }
+  );
 
   return {
     name: 'Compose configuration',
@@ -205,8 +220,8 @@ function checkRequiredFile(projectRoot: string, relativePath: string): HostCheck
 /**
  * Builds the smoke-check definitions from the validated lab env values.
  */
-function buildSmokeChecks(env: SmokeEnv): SmokeCheckDefinition[] {
-  return [
+function buildSmokeChecks(env: SmokeEnv, aiEnv?: AiSmokeEnv): SmokeCheckDefinition[] {
+  const checks: SmokeCheckDefinition[] = [
     {
       name: 'Smoke deck',
       run: (caCertificate) => runStatusCheck('Smoke deck', env.LAB_URL, caCertificate)
@@ -227,16 +242,23 @@ function buildSmokeChecks(env: SmokeEnv): SmokeCheckDefinition[] {
           detail: ok ? 'Owner login verified' : 'Could not authenticate with the configured owner account'
         };
       }
-    },
+    }
+  ];
+
+  if (!aiEnv) {
+    return checks;
+  }
+
+  checks.push(
     {
       name: 'Smoke Open WebUI',
       run: async (caCertificate) => {
         const signInResponse = await requestHttps(
-          new URL('/api/v1/auths/signin', env.OPENWEBUI_URL).toString(),
+          new URL('/api/v1/auths/signin', aiEnv.OPENWEBUI_URL).toString(),
           {
             body: JSON.stringify({
-              email: env.OPENWEBUI_ROOT_EMAIL,
-              password: env.OPENWEBUI_ROOT_PASSWORD
+              email: aiEnv.OPENWEBUI_ROOT_EMAIL,
+              password: aiEnv.OPENWEBUI_ROOT_PASSWORD
             }),
             caCertificate,
             headers: {
@@ -264,7 +286,7 @@ function buildSmokeChecks(env: SmokeEnv): SmokeCheckDefinition[] {
         }
 
         const modelsResponse = await requestHttps(
-          new URL('/api/models', env.OPENWEBUI_URL).toString(),
+          new URL('/api/models', aiEnv.OPENWEBUI_URL).toString(),
           {
             caCertificate,
             headers: {
@@ -274,7 +296,7 @@ function buildSmokeChecks(env: SmokeEnv): SmokeCheckDefinition[] {
         );
 
         const modelIds = collectModelIdentifiers(modelsResponse.body);
-        const missingModels = [env.OLLAMA_CHAT_MODEL, `${env.OLLAMA_EMBEDDING_MODEL}:latest`].filter(
+        const missingModels = [aiEnv.OLLAMA_CHAT_MODEL, `${aiEnv.OLLAMA_EMBEDDING_MODEL}:latest`].filter(
           (modelName) => !modelIds.includes(modelName)
         );
 
@@ -291,16 +313,16 @@ function buildSmokeChecks(env: SmokeEnv): SmokeCheckDefinition[] {
     {
       name: 'Smoke Ollama',
       run: async (caCertificate) => {
-        const response = await requestHttps(new URL('/api/tags', env.OLLAMA_URL).toString(), {
+        const response = await requestHttps(new URL('/api/tags', aiEnv.OLLAMA_URL).toString(), {
           auth: {
-            username: env.OLLAMA_GATEWAY_USER,
-            password: env.OLLAMA_GATEWAY_PASSWORD
+            username: aiEnv.OLLAMA_GATEWAY_USER,
+            password: aiEnv.OLLAMA_GATEWAY_PASSWORD
           },
           caCertificate
         });
 
         const modelIds = collectOllamaModelIdentifiers(response.body);
-        const missingModels = [env.OLLAMA_CHAT_MODEL, `${env.OLLAMA_EMBEDDING_MODEL}:latest`].filter(
+        const missingModels = [aiEnv.OLLAMA_CHAT_MODEL, `${aiEnv.OLLAMA_EMBEDDING_MODEL}:latest`].filter(
           (modelName) => !modelIds.includes(modelName)
         );
 
@@ -314,7 +336,9 @@ function buildSmokeChecks(env: SmokeEnv): SmokeCheckDefinition[] {
         };
       }
     }
-  ];
+  );
+
+  return checks;
 }
 
 /**

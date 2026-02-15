@@ -32,16 +32,21 @@ export async function runUpCommand(
   let composeStartedInThisRun = false;
   const tasks = new Listr(
     [
-      {
-        title: formatTaskTitle('host', 'Validate NVIDIA GPU runtime'),
-        task: async () => {
-          await assertNvidiaGpuRuntime();
-        }
-      },
+      ...(options.withAi
+        ? [
+            {
+              title: formatTaskTitle('host', 'Validate NVIDIA GPU runtime'),
+              task: async () => {
+                await assertNvidiaGpuRuntime();
+              }
+            }
+          ]
+        : []),
       {
         title: formatTaskTitle('host', 'Validate published host ports'),
         task: async () => {
           await assertPublishedPortsAvailable(context, {
+            includeAi: Boolean(options.withAi),
             includeWorkbench: Boolean(options.withWorkbench)
           });
         }
@@ -62,7 +67,8 @@ export async function runUpCommand(
           new Listr(
             createBootstrapTasks(context, {
               skipGitea: false,
-              skipOllama: false
+              skipOllama: !options.withAi,
+              withAi: Boolean(options.withAi)
             }),
             {
               concurrent: false,
@@ -106,7 +112,7 @@ export async function runStatusCommand(
     projectRoot: context.projectRoot
   });
 
-  await runCommand('docker', createComposeCommandArgs(context, ['ps', '--all']), {
+  await runCommand('docker', createComposeCommandArgs(context, ['ps', '--all'], { includeAll: true }), {
     cwd: context.projectRoot,
     scope: 'compose'
   });
@@ -126,10 +132,14 @@ export async function runDownCommand(
   });
 
   printInfo('Stopping the Atlas Lab stack...', 'stack');
-  await runCommand('docker', createComposeCommandArgs(context, ['down', '--remove-orphans']), {
-    cwd: context.projectRoot,
-    scope: 'compose'
-  });
+  await runCommand(
+    'docker',
+    createComposeCommandArgs(context, ['down', '--remove-orphans'], { includeAll: true }),
+    {
+      cwd: context.projectRoot,
+      scope: 'compose'
+    }
+  );
   printSuccess('Atlas Lab stack stopped.', 'stack');
 }
 
@@ -137,19 +147,16 @@ export async function runDownCommand(
  * Builds the Docker Compose invocation for the `up` command.
  */
 function createComposeUpArgs(context: ProjectContext, options: UpCommandOptions): string[] {
-  const composeArgs = [];
-
-  if (options.withWorkbench) {
-    composeArgs.push('--profile', 'workbench');
-  }
-
-  composeArgs.push('up', '-d', '--remove-orphans');
+  const composeArgs = ['up', '-d', '--remove-orphans'];
 
   if (options.build) {
     composeArgs.push('--build');
   }
 
-  return createComposeCommandArgs(context, composeArgs);
+  return createComposeCommandArgs(context, composeArgs, {
+    includeAi: Boolean(options.withAi),
+    includeWorkbench: Boolean(options.withWorkbench)
+  });
 }
 
 /**
@@ -187,9 +194,13 @@ async function rollbackPartialStartup(
   }
 
   printInfo('Bootstrap failed after startup; stopping the partially started Atlas Lab stack.', 'stack');
-  await runCommand('docker', createComposeCommandArgs(context, ['down', '--remove-orphans']), {
-    allowFailure: true,
-    cwd: context.projectRoot,
-    scope: 'compose'
-  });
+  await runCommand(
+    'docker',
+    createComposeCommandArgs(context, ['down', '--remove-orphans'], { includeAll: true }),
+    {
+      allowFailure: true,
+      cwd: context.projectRoot,
+      scope: 'compose'
+    }
+  );
 }

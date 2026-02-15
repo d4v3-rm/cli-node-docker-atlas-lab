@@ -1,14 +1,14 @@
 import { Listr } from 'listr2';
 import pWaitFor from 'p-wait-for';
-import { createComposeCommandArgs } from '../lib/compose.js';
+import { createComposeCommandArgs, type ComposeLayerSelection } from '../lib/compose.js';
 import type { BootstrapCommandOptions } from '../types/cli.types.js';
-import type { BootstrapEnv, ProjectContext } from '../types/project.types.js';
+import type { AiBootstrapEnv, BootstrapEnv, ProjectContext } from '../types/project.types.js';
 import { ensureGiteaAdmin } from './gitea-admin.service.js';
 import { ensureN8nOwner } from './n8n-owner.service.js';
 import { printCommandHeader } from '../ui/banner.js';
 import { formatTaskTitle, printSuccess } from '../ui/logger.js';
 import { runCommand } from '../utils/process.js';
-import { parseBootstrapEnv } from './project.service.js';
+import { parseAiBootstrapEnv, parseBootstrapEnv } from './project.service.js';
 
 /**
  * Runs the standalone bootstrap workflow.
@@ -19,7 +19,7 @@ export async function runBootstrapCommand(
 ): Promise<void> {
   printCommandHeader({
     title: 'Bootstrap Atlas Lab',
-    summary: 'Reconcile Gitea and Ollama runtime state',
+    summary: 'Reconcile core runtime state and optional AI models',
     projectRoot: context.projectRoot
   });
 
@@ -38,6 +38,7 @@ export function createBootstrapTasks(
   options: BootstrapCommandOptions
 ) {
   const env = parseBootstrapEnv(context.env);
+  const aiEnv = options.withAi ? parseAiBootstrapEnv(context.env) : undefined;
 
   const tasks = [];
 
@@ -60,11 +61,11 @@ export function createBootstrapTasks(
     }
   });
 
-  if (!options.skipOllama) {
+  if (options.withAi && !options.skipOllama && aiEnv) {
     tasks.push({
       title: formatTaskTitle('bootstrap', 'Align Ollama runtime models'),
       task: async () => {
-        await ensureOllamaModels(context, env);
+        await ensureOllamaModels(context, aiEnv);
       }
     });
   }
@@ -76,9 +77,9 @@ export function createBootstrapTasks(
  */
 async function ensureOllamaModels(
   context: ProjectContext,
-  env: BootstrapEnv
+  env: AiBootstrapEnv
 ): Promise<'present' | 'pulled'> {
-  await waitForService(context, 'ollama');
+  await waitForService(context, 'ollama', 180, { includeAi: true });
 
   let pulledModel = false;
 
@@ -92,7 +93,7 @@ async function ensureOllamaModels(
         'ollama',
         'show',
         modelName
-      ]),
+      ], { includeAi: true }),
       {
         cwd: context.projectRoot,
         captureOutput: true,
@@ -114,7 +115,7 @@ async function ensureOllamaModels(
         'ollama',
         'pull',
         modelName
-      ]),
+      ], { includeAi: true }),
       {
         cwd: context.projectRoot,
         scope: 'bootstrap'
@@ -130,7 +131,7 @@ async function ensureOllamaModels(
 /**
  * Collects the distinct Ollama models required by the lab bootstrap.
  */
-function collectRequiredOllamaModels(env: BootstrapEnv): string[] {
+function collectRequiredOllamaModels(env: AiBootstrapEnv): string[] {
   return [...new Set([env.OLLAMA_EMBEDDING_MODEL, env.OLLAMA_CHAT_MODEL])];
 }
 
@@ -140,13 +141,14 @@ function collectRequiredOllamaModels(env: BootstrapEnv): string[] {
 async function waitForService(
   context: ProjectContext,
   serviceName: string,
-  timeoutSeconds = 180
+  timeoutSeconds = 180,
+  selection: ComposeLayerSelection = {}
 ): Promise<void> {
   await pWaitFor(
     async () => {
       const containerId = await runCommand(
         'docker',
-        createComposeCommandArgs(context, ['ps', '-q', serviceName]),
+        createComposeCommandArgs(context, ['ps', '-q', serviceName], selection),
         {
           cwd: context.projectRoot,
           captureOutput: true,

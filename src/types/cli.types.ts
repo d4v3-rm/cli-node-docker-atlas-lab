@@ -10,6 +10,7 @@ export interface GlobalCliOptions {
  */
 export interface UpCommandOptions extends GlobalCliOptions {
   build?: boolean;
+  withAi?: boolean;
   withWorkbench?: boolean;
 }
 
@@ -19,6 +20,7 @@ export interface UpCommandOptions extends GlobalCliOptions {
 export interface BootstrapCommandOptions extends GlobalCliOptions {
   skipGitea?: boolean;
   skipOllama?: boolean;
+  withAi?: boolean;
 }
 
 /**
@@ -26,4 +28,6 @@ export interface BootstrapCommandOptions extends GlobalCliOptions {
  */
 export interface DoctorCommandOptions extends GlobalCliOptions {
   smoke?: boolean;
+  withAi?: boolean;
+  withWorkbench?: boolean;
 }
