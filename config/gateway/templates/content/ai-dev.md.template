@@ -10,7 +10,7 @@ Ambiente `code-server` focalizzato su AI e data science. Integra un set di pacch
 - URL operativo: `${AI_DEV_URL}`
 - Modalita di accesso: `password`
 - Password root: `${AI_DEV_PASSWORD}`
-- Attivazione: `docker compose --profile workbench up -d postgres-dev ai-dev`
+- Attivazione: `atlas-lab up --with-workbench`
 
 ## Cosa trovi dentro
 
@@ -27,4 +27,4 @@ Ambiente `code-server` focalizzato su AI e data science. Integra un set di pacch
 
 ## Nota operativa
 
-Questo workbench e il punto corretto per sviluppo AI lato codice. `Open WebUI` resta invece la console di interazione browser, raggiungibile sempre su `localhost` con la sua porta dedicata.
+Questo workbench e il punto corretto per sviluppo AI lato codice. `Open WebUI` resta invece la console di interazione browser del layer `ai`, raggiungibile solo quando abiliti anche `--with-ai`.

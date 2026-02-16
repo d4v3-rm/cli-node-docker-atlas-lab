@@ -20,38 +20,47 @@ import type { LabRuntimeConfig } from '@/types/lab-config.types';
  * Builds the UI view model from the gateway runtime configuration.
  */
 export function createDashboardViewModel(config: LabRuntimeConfig): DashboardViewModel {
+  const aiEnabled = config.features.aiEnabled;
+  const workbenchEnabled = config.features.workbenchEnabled;
+
   return {
     hero: {
       eyebrow: 'atlas control index',
       summary:
-        'Pannello operativo unificato per repository, automazione, AI locale e workbench opzionali. Il gateway espone ogni servizio su una porta HTTPS dedicata di localhost.',
+        'Pannello operativo unificato per repository, automazione e layer opzionali del lab. Core, AI e workbench vengono esposti separatamente su porte HTTPS dedicate di localhost.',
       titleLines: ['LAB', 'ATLAS'],
       pills: [
         { icon: FaLink, label: `deck locale ${config.lab.localUrl}` },
         { icon: FaLock, label: 'ingress solo https' },
         { icon: FaEarthEurope, label: `endpoint localhost ${config.lab.publicUrl}` },
         { icon: FaDatabase, label: 'persistenza su volumi' },
-        { icon: FaCertificate, label: 'certificato e credenziali in chiaro' }
+        { icon: aiEnabled ? FaBrain : FaCertificate, label: aiEnabled ? 'layer ai attivo' : 'layer ai opzionale' },
+        { icon: workbenchEnabled ? FaTerminal : FaCertificate, label: workbenchEnabled ? 'workbench attivi' : 'workbench opzionali' }
       ],
       metrics: [
-        { label: 'servizi core', value: 4 },
-        { label: 'nodi workbench', value: 5 },
+        { label: 'servizi core', value: 2 },
+        { label: 'servizi ai', value: aiEnabled ? 2 : 0 },
+        { label: 'nodi workbench', value: workbenchEnabled ? 5 : 0 },
         { label: 'gateway atlas', value: 1 }
       ]
     },
     operatingCharter: [
       'Gitea governa codice, review e flusso Git interno.',
       'n8n orchestra webhook, automazioni e job operativi.',
-      "Open WebUI e Ollama coprono interfaccia e inference locale per l'AI.",
-      'I workbench code-server e Postgres restano su profilo dedicato e raggiungibili tramite briefing locale.'
+      "Open WebUI e Ollama restano in un layer AI opzionale, attivabile solo quando serve.",
+      'I workbench code-server e Postgres vivono in un layer dedicato, separato dal core operativo.'
     ],
     accessNotes: [
       'Le credenziali root sono esposte qui e nel file config/env/lab.env.',
       'Nessun DNS o file hosts: tutti gli ingressi pubblici usano localhost con porte dedicate.',
       "n8n usa direttamente l'auth applicativa owner, senza doppio login al gateway.",
       "La CLI preinizializza l'owner, ma lascia disponibili i template ufficiali dentro l'app.",
-      'Ollama usa la GPU NVIDIA del host come backend predefinito per l inference locale.',
-      'Postgres non ha UI pubblica e viene consumato soltanto dai workbench.'
+      aiEnabled
+        ? 'Il layer AI e attivo: Open WebUI e Ollama sono raggiungibili sulle loro porte dedicate.'
+        : 'Il layer AI e spento: Open WebUI e Ollama non vengono avviati finche non abiliti --with-ai.',
+      workbenchEnabled
+        ? 'Il layer workbench e attivo: Postgres e gli ambienti code-server sono online.'
+        : 'Il layer workbench e spento: gli ambienti browser-based restano opzionali e isolati.'
     ],
     networkMap: {
       path: config.content.networkMapPath,
@@ -96,7 +105,16 @@ export function createDashboardViewModel(config: LabRuntimeConfig): DashboardVie
           "Primo accesso: entra direttamente con l'utente owner bootstrap senza Basic Auth al gateway. Il setup wizard iniziale viene saltato, ma i template restano disponibili dopo il login.",
         status: 'online',
         title: 'n8n Automation'
-      },
+      }
+    ],
+    aiLayer: {
+      activationCommand: 'atlas-lab up --with-ai',
+      description:
+        'Open WebUI e Ollama non fanno piu parte del bootstrap di default. Attivali solo quando ti servono UI conversazionale locale e inference GPU-backed.',
+      enabled: aiEnabled,
+      title: 'Layer AI'
+    },
+    aiServices: [
       {
         action: {
           href: config.services.openWebUi.url,
@@ -134,6 +152,13 @@ export function createDashboardViewModel(config: LabRuntimeConfig): DashboardVie
         title: 'Ollama Core'
       }
     ],
+    workbenchLayer: {
+      activationCommand: 'atlas-lab up --with-workbench',
+      description:
+        'I workbench restano in un layer distinto dal core. Attivali solo quando ti serve un ambiente browser-based o il Postgres condiviso.',
+      enabled: workbenchEnabled,
+      title: 'Layer Workbench'
+    },
     workbenches: [
       {
         briefing: {
@@ -233,12 +258,12 @@ export function createDashboardViewModel(config: LabRuntimeConfig): DashboardVie
         label: 'persistenza'
       },
       {
-        body: 'Gitea per codice, n8n per automazione, Open WebUI per chat AI, Ollama per inference locale e Postgres per il data plane dei workbench.',
+        body: 'Gitea e n8n restano il core sempre attivo; AI e workbench vengono invece abilitati per layer solo quando richiesti.',
         id: 'usage',
         label: 'core usage'
       },
       {
-        body: 'apps-net, ai-net, data-net e workbench-net restano interne; il gateway rimane l\'unico punto esposto verso il browser.',
+        body: 'apps-net, ai-net, data-net e workbench-net restano interne; i gateway pubblici vengono separati per layer e rimangono gli unici punti esposti verso il browser.',
         id: 'segmentation',
         label: 'segmentazione'
       }

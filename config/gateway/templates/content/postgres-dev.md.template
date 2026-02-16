@@ -8,7 +8,7 @@ Server PostgreSQL dedicato ai workbench del lab. Serve per sviluppo relazionale,
 
 - Nessuna UI web pubblica
 - Profilo Compose: `workbench`
-- Attivazione: `docker compose --profile workbench up -d postgres-dev`
+- Attivazione: `atlas-lab up --with-workbench`
 - Host interno: `postgres-dev`
 - Porta: `5432`
 - Database: `${POSTGRES_DEV_DATABASE}`
