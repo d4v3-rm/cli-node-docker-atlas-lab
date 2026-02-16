@@ -5,7 +5,9 @@ import { registerBootstrapCommand } from '../commands/register-bootstrap-command
 import { registerDoctorCommand } from '../commands/register-doctor-command.js';
 import { registerDownCommand } from '../commands/register-down-command.js';
 import { registerRestoreImagesCommand } from '../commands/register-restore-images-command.js';
+import { registerRestoreVolumesCommand } from '../commands/register-restore-volumes-command.js';
 import { registerSaveImagesCommand } from '../commands/register-save-images-command.js';
+import { registerSaveVolumesCommand } from '../commands/register-save-volumes-command.js';
 import { registerStatusCommand } from '../commands/register-status-command.js';
 import { registerUpCommand } from '../commands/register-up-command.js';
 import { renderHelpBanner, renderHelpFooter } from '../ui/banner.js';
@@ -32,6 +34,8 @@ export function createCliApp(): Command {
   registerDownCommand(program);
   registerSaveImagesCommand(program);
   registerRestoreImagesCommand(program);
+  registerSaveVolumesCommand(program);
+  registerRestoreVolumesCommand(program);
 
   return program;
 }

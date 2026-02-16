@@ -28,3 +28,21 @@ export interface ImageArchiveManifest {
   images: string[];
   project: string;
 }
+
+/**
+ * Metadata for a single archived Docker volume.
+ */
+export interface VolumeArchiveEntry {
+  archiveFile: string;
+  dockerName: string;
+  logicalName: string;
+}
+
+/**
+ * Metadata persisted for a directory of archived Docker volumes.
+ */
+export interface VolumeArchiveManifest {
+  createdAt: string;
+  project: string;
+  volumes: VolumeArchiveEntry[];
+}
