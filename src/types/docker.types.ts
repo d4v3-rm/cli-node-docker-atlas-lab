@@ -19,3 +19,12 @@ export interface ComposePsEntry {
   State?: string;
   Status?: string;
 }
+
+/**
+ * Metadata persisted next to a saved Docker image archive.
+ */
+export interface ImageArchiveManifest {
+  createdAt: string;
+  images: string[];
+  project: string;
+}

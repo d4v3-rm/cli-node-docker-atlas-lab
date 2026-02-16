@@ -31,3 +31,19 @@ export interface DoctorCommandOptions extends GlobalCliOptions {
   withAi?: boolean;
   withWorkbench?: boolean;
 }
+
+/**
+ * Options supported by the `save-images` command.
+ */
+export interface SaveImagesCommandOptions extends GlobalCliOptions {
+  output?: string;
+  withAi?: boolean;
+  withWorkbench?: boolean;
+}
+
+/**
+ * Options supported by the `restore-images` command.
+ */
+export interface RestoreImagesCommandOptions extends GlobalCliOptions {
+  input: string;
+}

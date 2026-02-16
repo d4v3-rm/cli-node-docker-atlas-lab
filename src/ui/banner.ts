@@ -31,6 +31,8 @@ export function renderHelpFooter(): string {
     `  ${APP_METADATA.cliName} up --build --with-ai --with-workbench`,
     `  ${APP_METADATA.cliName} bootstrap --with-ai`,
     `  ${APP_METADATA.cliName} doctor --with-ai --smoke`,
+    `  ${APP_METADATA.cliName} save-images --with-ai --with-workbench`,
+    `  ${APP_METADATA.cliName} restore-images --input .\\backups\\images\\atlas-lab-images.tar`,
     `  ${APP_METADATA.cliName} status --project-dir C:\\path\\to\\${APP_METADATA.codeName}`
   ].join('\n');
 }
