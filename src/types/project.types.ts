@@ -18,6 +18,7 @@ export interface LabEnv {
   OPENWEBUI_ROOT_PASSWORD?: string;
   OLLAMA_EMBEDDING_MODEL?: string;
   OLLAMA_CHAT_MODEL?: string;
+  POSTGRES_DEV_HOST_PORT?: string;
   LAB_URL?: string;
   GITEA_URL?: string;
   N8N_URL?: string;

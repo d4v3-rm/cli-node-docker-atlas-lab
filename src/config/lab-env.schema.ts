@@ -30,6 +30,7 @@ export const labEnvSchema = z
     OPENWEBUI_ROOT_PASSWORD: optionalEnvValue,
     OLLAMA_EMBEDDING_MODEL: optionalEnvValue,
     OLLAMA_CHAT_MODEL: optionalEnvValue,
+    POSTGRES_DEV_HOST_PORT: optionalEnvValue,
     LAB_URL: optionalEnvValue,
     GITEA_URL: optionalEnvValue,
     N8N_URL: optionalEnvValue,
