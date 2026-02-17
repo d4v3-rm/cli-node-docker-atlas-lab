@@ -1,5 +1,6 @@
 import { createComposeCommandArgs } from '../lib/compose.js';
 import type { BootstrapEnv, ProjectContext } from '../types/project.types.js';
+import { printInfo } from '../ui/logger.js';
 import { runCommand } from '../utils/process.js';
 
 const GITEA_CONFIG = '/data/gitea/conf/app.ini';
@@ -29,6 +30,7 @@ export async function ensureGiteaAdmin(
   });
 
   if (parseGiteaUsernames(listing.stdout).includes(env.GITEA_ROOT_USERNAME)) {
+    printInfo(`Gitea root user '${env.GITEA_ROOT_USERNAME}' already exists. Updating password.`, 'bootstrap');
     await runCommand(
       'docker',
       [
@@ -50,6 +52,7 @@ export async function ensureGiteaAdmin(
     return 'updated';
   }
 
+  printInfo(`Gitea root user '${env.GITEA_ROOT_USERNAME}' not found. Creating it.`, 'bootstrap');
   await runCommand(
     'docker',
     [

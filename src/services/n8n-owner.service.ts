@@ -8,6 +8,7 @@ import type {
   N8nOwnerSetupPayload,
   N8nOwnerSetupStatus
 } from '../types/n8n.types.js';
+import { printInfo, printSuccess } from '../ui/logger.js';
 import { requestHttps } from '../utils/http.js';
 import { runCommand } from '../utils/process.js';
 
@@ -22,17 +23,21 @@ export async function ensureN8nOwner(
   await waitForN8nIngress(env.N8N_URL, caCertificate);
 
   if (await canLoginToN8n(env, caCertificate)) {
+    printInfo('n8n owner credentials already match the configured bootstrap account.', 'bootstrap');
     return 'current';
   }
 
+  printInfo('n8n owner bootstrap account is not active yet. Attempting owner setup.', 'bootstrap');
   const setupResponse = await setupN8nOwner(env, caCertificate);
   const setupStatus = classifyN8nOwnerSetupResponse(setupResponse);
 
   if (setupStatus === 'created') {
+    printSuccess('n8n owner bootstrap account created.', 'bootstrap');
     return 'created';
   }
 
   if (setupStatus === 'already_setup') {
+    printInfo('n8n reports an existing owner. Resetting owner management to reconcile credentials.', 'bootstrap');
     await runCommand(
       'docker',
       createComposeCommandArgs(context, ['exec', '-T', 'n8n', 'n8n', 'user-management:reset']),
@@ -44,6 +49,7 @@ export async function ensureN8nOwner(
 
     const resetResponse = await setupN8nOwner(env, caCertificate);
     if (classifyN8nOwnerSetupResponse(resetResponse) === 'created') {
+      printSuccess('n8n owner bootstrap account recreated after reset.', 'bootstrap');
       return 'reset';
     }
   }
@@ -59,12 +65,23 @@ async function waitForN8nIngress(
   caCertificate: string,
   timeoutSeconds = 30
 ): Promise<void> {
+  let attempts = 0;
+
   await pWaitFor(
     async () => {
       try {
         const response = await requestHttps(n8nUrl, { caCertificate });
-        return response.statusCode >= 200 && response.statusCode < 500;
+        const isReady = response.statusCode >= 200 && response.statusCode < 500;
+
+        if (!isReady) {
+          reportN8nIngressWait(n8nUrl, attempts);
+          attempts += 1;
+        }
+
+        return isReady;
       } catch {
+        reportN8nIngressWait(n8nUrl, attempts);
+        attempts += 1;
         return false;
       }
     },
@@ -76,6 +93,17 @@ async function waitForN8nIngress(
       }
     }
   );
+
+  printSuccess(`n8n HTTPS ingress is reachable at ${n8nUrl}.`, 'bootstrap');
+}
+
+/**
+ * Emits a periodic wait line while the HTTPS ingress is still warming up.
+ */
+function reportN8nIngressWait(n8nUrl: string, attempts: number): void {
+  if (attempts === 0 || attempts % 5 === 0) {
+    printInfo(`Waiting for n8n HTTPS ingress at ${n8nUrl} (${attempts}s elapsed).`, 'bootstrap');
+  }
 }
 
 /**

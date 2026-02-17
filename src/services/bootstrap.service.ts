@@ -6,9 +6,11 @@ import type { AiBootstrapEnv, BootstrapEnv, ProjectContext } from '../types/proj
 import { ensureGiteaAdmin } from './gitea-admin.service.js';
 import { ensureN8nOwner } from './n8n-owner.service.js';
 import { printCommandHeader } from '../ui/banner.js';
-import { formatTaskTitle, printSuccess } from '../ui/logger.js';
+import { formatTaskTitle, printInfo, printSuccess } from '../ui/logger.js';
 import { runCommand } from '../utils/process.js';
 import { parseAiBootstrapEnv, parseBootstrapEnv } from './project.service.js';
+
+const VERBOSE_TASK_RENDERER = 'verbose' as const;
 
 /**
  * Runs the standalone bootstrap workflow.
@@ -25,7 +27,8 @@ export async function runBootstrapCommand(
 
   await new Listr(createBootstrapTasks(context, options), {
     concurrent: false,
-    exitOnError: true
+    exitOnError: true,
+    renderer: VERBOSE_TASK_RENDERER
   }).run();
   printSuccess('Bootstrap completed.', 'bootstrap');
 }
@@ -47,7 +50,8 @@ export function createBootstrapTasks(
       title: formatTaskTitle('bootstrap', 'Align Gitea root account'),
       task: async () => {
         await waitForService(context, 'gitea');
-        await ensureGiteaAdmin(context, env);
+        const result = await ensureGiteaAdmin(context, env);
+        printInfo(`Gitea root account ${result}.`, 'bootstrap');
       }
     });
   }
@@ -57,7 +61,8 @@ export function createBootstrapTasks(
     task: async () => {
       await waitForService(context, 'n8n');
       await waitForService(context, 'gateway');
-      await ensureN8nOwner(context, env);
+      const result = await ensureN8nOwner(context, env);
+      printInfo(`n8n owner account ${result}.`, 'bootstrap');
     }
   });
 
@@ -65,7 +70,8 @@ export function createBootstrapTasks(
     tasks.push({
       title: formatTaskTitle('bootstrap', 'Align Ollama runtime models'),
       task: async () => {
-        await ensureOllamaModels(context, aiEnv);
+        const result = await ensureOllamaModels(context, aiEnv);
+        printInfo(`Ollama runtime models ${result}.`, 'bootstrap');
       }
     });
   }
@@ -84,6 +90,7 @@ async function ensureOllamaModels(
   let pulledModel = false;
 
   for (const modelName of collectRequiredOllamaModels(env)) {
+    printInfo(`Checking Ollama model '${modelName}'.`, 'bootstrap');
     const modelCheck = await runCommand(
       'docker',
       createComposeCommandArgs(context, [
@@ -103,9 +110,11 @@ async function ensureOllamaModels(
     );
 
     if (modelCheck.exitCode === 0) {
+      printInfo(`Ollama model '${modelName}' is already available locally.`, 'bootstrap');
       continue;
     }
 
+    printInfo(`Pulling missing Ollama model '${modelName}'.`, 'bootstrap');
     await runCommand(
       'docker',
       createComposeCommandArgs(context, [
@@ -121,6 +130,7 @@ async function ensureOllamaModels(
         scope: 'bootstrap'
       }
     );
+    printInfo(`Finished pulling Ollama model '${modelName}'.`, 'bootstrap');
 
     pulledModel = true;
   }
@@ -144,6 +154,8 @@ async function waitForService(
   timeoutSeconds = 180,
   selection: ComposeLayerSelection = {}
 ): Promise<void> {
+  let lastReportedState = '';
+
   await pWaitFor(
     async () => {
       const containerId = await runCommand(
@@ -157,6 +169,8 @@ async function waitForService(
       );
 
       if (!containerId.stdout.trim()) {
+        reportServiceWaitState(serviceName, 'container not created yet', lastReportedState);
+        lastReportedState = 'container not created yet';
         return false;
       }
 
@@ -175,7 +189,11 @@ async function waitForService(
         }
       );
 
-      return ['healthy', 'running'].includes(state.stdout.trim());
+      const normalizedState = normalizeServiceRuntimeState(state.stdout);
+      reportServiceWaitState(serviceName, normalizedState, lastReportedState);
+      lastReportedState = normalizedState;
+
+      return ['healthy', 'running'].includes(normalizedState);
     },
     {
       interval: 2_000,
@@ -185,4 +203,25 @@ async function waitForService(
       }
     }
   );
+
+  printSuccess(`Service '${serviceName}' is ready (${lastReportedState || 'healthy'}).`, 'bootstrap');
+}
+
+/**
+ * Emits a progress line only when the observed service state changes.
+ */
+function reportServiceWaitState(serviceName: string, nextState: string, previousState: string): void {
+  if (nextState === previousState) {
+    return;
+  }
+
+  printInfo(`Waiting for service '${serviceName}': ${nextState}.`, 'bootstrap');
+}
+
+/**
+ * Normalizes the runtime state returned by `docker inspect`.
+ */
+function normalizeServiceRuntimeState(rawState: string): string {
+  const normalizedState = rawState.trim();
+  return normalizedState.length > 0 ? normalizedState : 'unknown';
 }
