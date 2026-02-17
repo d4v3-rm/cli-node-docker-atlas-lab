@@ -14,6 +14,7 @@ const LEGACY_IMAGES = [
   'cli-node-lab-ollama-init:latest',
   'cli-node-docker-atlas-lab-ollama-init:latest'
 ] as const;
+const VERBOSE_TASK_RENDERER = 'verbose' as const;
 
 /**
  * Runs `docker compose up`, the bootstrap workflow, and the legacy image cleanup.
@@ -27,6 +28,7 @@ export async function runUpCommand(
     summary: 'Bring Docker Compose up and reconcile runtime state',
     projectRoot: context.projectRoot
   });
+  printInfo(`Enabled layers: ${describeEnabledLayers(options)}`, 'stack');
 
   const stackWasRunning = await hasRunningComposeServices(context);
   let composeStartedInThisRun = false;
@@ -54,10 +56,12 @@ export async function runUpCommand(
       {
         title: formatTaskTitle('stack', 'Start Docker Compose stack'),
         task: async () => {
+          printInfo('Starting Docker Compose services in detached mode.', 'stack');
           await runCommand('docker', createComposeUpArgs(context, options), {
             cwd: context.projectRoot,
             scope: 'compose'
           });
+          printInfo('Docker Compose startup completed. Continuing with runtime bootstrap.', 'stack');
           composeStartedInThisRun = true;
         }
       },
@@ -72,7 +76,8 @@ export async function runUpCommand(
             }),
             {
               concurrent: false,
-              exitOnError: true
+              exitOnError: true,
+              renderer: VERBOSE_TASK_RENDERER
             }
           )
       },
@@ -85,7 +90,8 @@ export async function runUpCommand(
     ],
     {
       concurrent: false,
-      exitOnError: true
+      exitOnError: true,
+      renderer: VERBOSE_TASK_RENDERER
     }
   );
 
@@ -97,6 +103,23 @@ export async function runUpCommand(
   }
 
   printSuccess('Atlas Lab stack is ready.', 'stack');
+}
+
+/**
+ * Formats the selected Compose layers for the startup log header.
+ */
+function describeEnabledLayers(options: Pick<UpCommandOptions, 'withAi' | 'withWorkbench'>): string {
+  const layers = ['core'];
+
+  if (options.withAi) {
+    layers.push('ai');
+  }
+
+  if (options.withWorkbench) {
+    layers.push('workbench');
+  }
+
+  return layers.join(', ');
 }
 
 /**
