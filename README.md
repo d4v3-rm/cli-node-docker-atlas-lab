@@ -21,6 +21,7 @@
 - [Persistenza E Dati](#persistenza-e-dati)
 - [Requisiti Host E Dipendenze](#requisiti-host-e-dipendenze)
 - [CLI Node.js](#cli-nodejs)
+- [Backup E Ripristino](#backup-e-ripristino)
 - [Scaffolding Del Repository](#scaffolding-del-repository)
 - [Quick Start](#quick-start)
 - [Accessi E Credenziali](#accessi-e-credenziali)
@@ -196,6 +197,11 @@ Se ricrei i container:
 - i workbench mantengono home e workspace
 
 Se rimuovi i volumi, azzeri lo stato persistente.
+
+Per esportare o ripristinare lo stato senza tenere il lab acceso puoi usare anche la CLI:
+
+- `save-images` e `restore-images` per le immagini Docker del lab
+- `save-volumes` e `restore-volumes` per i volumi Docker del lab
 
 ---
 
@@ -375,6 +381,34 @@ La CLI usa questo layout come contratto esplicito: risolve sempre `infra/docker/
 | `atlas-lab doctor --with-ai --smoke` | aggiunge anche smoke test AI |
 | `atlas-lab status` | mostra lo stato Compose |
 | `atlas-lab down` | ferma la stack |
+| `atlas-lab save-images --with-ai --with-workbench` | esporta su disco le immagini richieste dai layer selezionati |
+| `atlas-lab restore-images --input <archive.tar>` | ricarica nel daemon Docker un archivio di immagini precedentemente esportato |
+| `atlas-lab save-volumes --with-ai --with-workbench` | salva su disco i volumi dei layer selezionati |
+| `atlas-lab restore-volumes --input-dir <directory>` | ripristina i volumi Docker da un backup su disco |
+
+### Backup e ripristino
+
+Le immagini e i volumi possono essere gestiti separatamente:
+
+- il backup immagini produce un archivio `.tar` e un manifest JSON di supporto
+- il restore immagini esegue `docker image load` sull'archivio salvato
+- il backup volumi produce una directory con un archivio `.tar.gz` per ogni volume e un `manifest.json`
+- il restore volumi ricrea i volumi mancanti e ripristina il contenuto dai relativi archivi
+
+Vincoli operativi:
+
+- per `save-volumes` e `restore-volumes` la stack Atlas Lab deve essere ferma
+- i flag `--with-ai` e `--with-workbench` filtrano quali layer includere nel backup
+- senza flag aggiuntivi vengono inclusi solo immagini e volumi del layer `core`
+
+Esempi:
+
+```powershell
+npm run dev -- save-images --with-ai --with-workbench
+npm run dev -- restore-images --input .\backups\images\atlas-lab-images-2026-03-09T12-00-00-000Z.tar
+npm run dev -- save-volumes --with-ai --with-workbench
+npm run dev -- restore-volumes --input-dir .\backups\volumes\atlas-lab-volumes-2026-03-09T12-00-00-000Z
+```
 
 ### Cosa fa il bootstrap
 
@@ -707,6 +741,10 @@ npm run dev -- bootstrap --with-ai
 npm run dev -- doctor --smoke
 npm run dev -- doctor --with-ai --smoke
 npm run dev -- status
+npm run dev -- save-images --with-ai --with-workbench
+npm run dev -- save-volumes --with-ai --with-workbench
+npm run dev -- restore-images --input .\backups\images\atlas-lab-images.tar
+npm run dev -- restore-volumes --input-dir .\backups\volumes\atlas-lab-volumes
 ```
 
 ### Build e packaging
@@ -725,6 +763,8 @@ atlas-lab up --with-ai
 atlas-lab status
 atlas-lab doctor --smoke
 atlas-lab doctor --with-ai --smoke
+atlas-lab save-images --with-ai --with-workbench
+atlas-lab save-volumes --with-ai --with-workbench
 ```
 
 ### Link globale per sviluppo
