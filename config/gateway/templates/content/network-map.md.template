@@ -48,6 +48,7 @@ Il gateway genera un certificato self-signed SAN che copre `localhost` e `127.0.
 - `ai-net`: Ollama e Open WebUI
 - `data-net`: database infrastrutturali
 - `workbench-net`: Postgres e ambienti code-server opzionali
+- `workbench-host-net`: bridge dedicato al bind TCP di Postgres verso `localhost`
 - `services-egress-net`: uscita internet selettiva per servizi core senza esposizione diretta
 - `workbench-egress-net`: uscita internet selettiva per gli ambienti di sviluppo
 

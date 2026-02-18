@@ -156,6 +156,7 @@ La topologia e segmentata deliberatamente.
 | `ai-net` | interna | Ollama e Open WebUI |
 | `data-net` | interna | MariaDB e servizi dati |
 | `workbench-net` | interna | Postgres e workbench |
+| `workbench-host-net` | bridge host | abilita il bind TCP di Postgres su `localhost` |
 | `services-egress-net` | egress | uscita selettiva per servizi core |
 | `workbench-egress-net` | egress | uscita selettiva per i workbench |
 
