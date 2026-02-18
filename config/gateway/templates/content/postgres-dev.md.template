@@ -9,8 +9,10 @@ Server PostgreSQL dedicato ai workbench del lab. Serve per sviluppo relazionale,
 - Nessuna UI web pubblica
 - Profilo Compose: `workbench`
 - Attivazione: `atlas-lab up --with-workbench`
-- Host interno: `postgres-dev`
-- Porta: `5432`
+- Host esterno per client desktop: `localhost`
+- Porta esterna per client desktop: `${POSTGRES_DEV_HOST_PORT}`
+- Host interno Docker: `postgres-dev`
+- Porta interna Docker: `5432`
 - Database: `${POSTGRES_DEV_DATABASE}`
 - Superuser root: `${POSTGRES_DEV_SUPERUSER}`
 - Password root: `${POSTGRES_DEV_PASSWORD}`
@@ -35,4 +37,4 @@ Dentro ogni ambiente `code-server` sono gia esportate queste variabili:
 
 ## Nota operativa
 
-Il server resta isolato su `workbench-net` e non viene pubblicato sul gateway HTTPS. Si usa solo dai workbench o da altri container collegati alla stessa rete.
+Da strumenti sul sistema host come DBeaver o `psql` locale usa `localhost:${POSTGRES_DEV_HOST_PORT}`. Dentro i workbench e negli altri container collegati a `workbench-net` continua invece a usare `postgres-dev:5432`.

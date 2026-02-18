@@ -61,8 +61,10 @@
       "briefingPath": "/content/cpp-dev.md"
     },
     "postgres": {
-      "host": "postgres-dev",
-      "port": "5432",
+      "host": "localhost",
+      "port": "${POSTGRES_DEV_HOST_PORT}",
+      "internalHost": "postgres-dev",
+      "internalPort": "5432",
       "database": "${POSTGRES_DEV_DATABASE}",
       "superuser": "${POSTGRES_DEV_SUPERUSER}",
       "password": "${POSTGRES_DEV_PASSWORD}",

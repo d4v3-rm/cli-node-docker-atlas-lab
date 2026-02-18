@@ -62,6 +62,8 @@ export interface LabRuntimeConfig {
       briefingPath: string;
       database: string;
       host: string;
+      internalHost: string;
+      internalPort: string;
       password: string;
       port: string;
       superuser: string;

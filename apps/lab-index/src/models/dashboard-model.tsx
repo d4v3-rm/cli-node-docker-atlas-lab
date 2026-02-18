@@ -27,7 +27,7 @@ export function createDashboardViewModel(config: LabRuntimeConfig): DashboardVie
     hero: {
       eyebrow: 'atlas control index',
       summary:
-        'Pannello operativo unificato per repository, automazione e layer opzionali del lab. Core, AI e workbench vengono esposti separatamente su porte HTTPS dedicate di localhost.',
+        'Pannello operativo unificato per repository, automazione e layer opzionali del lab. I servizi web usano porte HTTPS dedicate su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.',
       titleLines: ['LAB', 'ATLAS'],
       pills: [
         { icon: FaLink, label: `deck locale ${config.lab.localUrl}` },
@@ -232,6 +232,8 @@ export function createDashboardViewModel(config: LabRuntimeConfig): DashboardVie
         credentials: [
           { label: 'host', value: config.workbenches.postgres.host },
           { label: 'porta', value: config.workbenches.postgres.port },
+          { label: 'host interno docker', value: config.workbenches.postgres.internalHost },
+          { label: 'porta interna docker', value: config.workbenches.postgres.internalPort },
           { label: 'database', value: config.workbenches.postgres.database },
           { label: 'superuser', value: config.workbenches.postgres.superuser },
           { label: 'password', value: config.workbenches.postgres.password }
@@ -241,14 +243,14 @@ export function createDashboardViewModel(config: LabRuntimeConfig): DashboardVie
         icon: FaDatabase,
         id: 'postgres',
         note:
-          'Nessuna UI web pubblica: i workbench ricevono gia PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD e DATABASE_URL.',
+          'Da tool desktop usa localhost sulla porta host dedicata; dentro i container/workbench continua invece a usare postgres-dev:5432.',
         status: 'db',
         title: 'Postgres Vault'
       }
     ],
     footerCards: [
       {
-        body: `Il deck resta raggiungibile da ${config.lab.localUrl}, mentre ogni servizio usa una porta HTTPS dedicata instradata dal gateway Caddy.`,
+        body: `Il deck resta raggiungibile da ${config.lab.localUrl}; i servizi web passano dal gateway Caddy su HTTPS, mentre Postgres usa ${config.workbenches.postgres.host}:${config.workbenches.postgres.port} per i client desktop.`,
         id: 'routing',
         label: 'routing'
       },

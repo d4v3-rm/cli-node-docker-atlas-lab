@@ -8,7 +8,7 @@ Il deck resta raggiungibile in locale su `${LAB_LOCAL_URL}`. Il lab ora e separa
 - `ai`: Open WebUI e Ollama
 - `workbench`: Postgres e ambienti code-server
 
-Ogni layer pubblica i propri endpoint HTTPS su `localhost` tramite un gateway dedicato.
+Ogni layer pubblica i propri endpoint HTTPS su `localhost` tramite un gateway dedicato. In piu, il layer `workbench` espone anche `Postgres` su una porta TCP host dedicata.
 
 ## Endpoint pubblici del lab
 
@@ -21,6 +21,7 @@ Ogni layer pubblica i propri endpoint HTTPS su `localhost` tramite un gateway de
 - Python workbench: `${PYTHON_DEV_URL}` solo se il layer `workbench` e attivo
 - AI workbench: `${AI_DEV_URL}` solo se il layer `workbench` e attivo
 - C++ workbench: `${CPP_DEV_URL}` solo se il layer `workbench` e attivo
+- Postgres host access: `localhost:${POSTGRES_DEV_HOST_PORT}` solo se il layer `workbench` e attivo
 
 ## Routing localhost multi-porta
 
@@ -33,6 +34,7 @@ Ogni layer pubblica i propri endpoint HTTPS su `localhost` tramite un gateway de
 - `8451`: Python workbench, layer `workbench`
 - `8452`: AI workbench, layer `workbench`
 - `8453`: C++ workbench, layer `workbench`
+- `${POSTGRES_DEV_HOST_PORT}`: Postgres host access, layer `workbench`
 
 Nessuna modifica a DNS o file `hosts`: basta usare `https://localhost:<porta>/`.
 

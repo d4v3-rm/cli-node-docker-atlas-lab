@@ -120,7 +120,7 @@ In parallelo, il bootstrap non usa piu container Compose di init. Al loro posto 
 
 ## Mappa Porte E URL
 
-Tutti gli ingressi pubblici usano HTTPS su `localhost`.
+Tutti gli ingressi web pubblici usano HTTPS su `localhost`. `Postgres Vault` espone invece una porta TCP dedicata sul sistema host.
 
 | Servizio | URL |
 | --- | --- |
@@ -133,6 +133,7 @@ Tutti gli ingressi pubblici usano HTTPS su `localhost`.
 | Python Grid | `https://localhost:8451/` solo con layer `workbench` |
 | AI Reactor | `https://localhost:8452/` solo con layer `workbench` |
 | C++ Foundry | `https://localhost:8453/` solo con layer `workbench` |
+| Postgres Vault | `localhost:55432` TCP solo con layer `workbench` |
 
 ### Vantaggi pratici
 
@@ -160,8 +161,9 @@ La topologia e segmentata deliberatamente.
 
 Principio operativo:
 
-- solo `gateway` pubblica porte sulla macchina host
-- i servizi applicativi restano su reti Docker
+- i gateway pubblicano gli ingressi HTTPS su `localhost`
+- `postgres-dev` pubblica anche una porta TCP host dedicata per client desktop come DBeaver
+- gli altri servizi applicativi restano su reti Docker
 - il browser passa sempre da Caddy
 
 ---
@@ -253,6 +255,7 @@ Devono essere libere:
 - `8451`
 - `8452`
 - `8453`
+- `55432` solo se avvii il layer `workbench`
 
 Se una di queste porte e occupata, `atlas-lab up` fallira subito durante il preflight host, prima di far partire Docker Compose.
 
@@ -676,8 +679,10 @@ npm run dev -- up --with-workbench
 ### Postgres Vault
 
 - nessuna UI web pubblica
-- host interno: `postgres-dev`
-- porta interna: `5432`
+- host desktop: `localhost`
+- porta desktop: `55432`
+- host interno Docker: `postgres-dev`
+- porta interna Docker: `5432`
 - database condiviso dai workbench
 
 Variabili preconfigurate nei workbench:
@@ -688,6 +693,14 @@ Variabili preconfigurate nei workbench:
 - `PGUSER`
 - `PGPASSWORD`
 - `DATABASE_URL`
+
+Per DBeaver o `psql` eseguiti sul sistema host usa:
+
+- host: `localhost`
+- porta: `55432`
+- database: `lab`
+- username: `postgres`
+- password: `RootPostgresDev!2026`
 
 ---
 
@@ -926,7 +939,7 @@ atlas-lab.cmd status
 
 La CLI controlla prima le porte pubbliche del gateway e dei workbench.
 
-Se vedi un errore tipo `Host port preflight failed`, significa che una o piu porte tra `8443-8453` sono gia occupate da un'altra stack o da un altro processo locale.
+Se vedi un errore tipo `Host port preflight failed`, significa che una o piu porte tra `8443-8453` oppure `55432` sono gia occupate da un'altra stack o da un altro processo locale.
 
 Controlla:
 
