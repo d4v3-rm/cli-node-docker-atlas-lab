@@ -72,6 +72,7 @@ services:
       - postgres-dev-data:/var/lib/postgresql/data
     networks:
       - workbench-net
+      - workbench-host-net
 
   node-dev:
     build:
@@ -200,6 +201,8 @@ networks:
   workbench-net:
     name: cli-node-docker-atlas-lab_workbench
     internal: true
+  workbench-host-net:
+    name: cli-node-docker-atlas-lab_workbench_host
   workbench-egress-net:
     name: cli-node-docker-atlas-lab_workbench_egress
 
