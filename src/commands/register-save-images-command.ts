@@ -10,8 +10,8 @@ export function registerSaveImagesCommand(program: Command): void {
   program
     .command('save-images')
     .description('Save Docker images for the selected lab layers to disk')
-    .option('--project-dir <path>', 'Explicit project root if you are not in the repo')
-    .option('--output <path>', 'Output tar archive path (defaults under backups/images)')
+    .option('--project-dir <path>', 'Explicit lab asset root instead of the packaged install')
+    .option('--output <path>', 'Output tar archive path (defaults under ./backups/images)')
     .option('--with-ai', 'Include the optional AI layer images')
     .option('--with-workbench', 'Include the optional workbench layer images')
     .action(async (options: SaveImagesCommandOptions) => {

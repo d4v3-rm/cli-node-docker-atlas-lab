@@ -27,7 +27,8 @@ export async function runDoctorCommand(
     summary: options.smoke
       ? 'Validate host requirements and run smoke checks'
       : 'Validate host requirements for Atlas Lab',
-    projectRoot: context.projectRoot
+    projectRoot: context.projectRoot,
+    workingDirectory: context.workingDirectory
   });
 
   const results: HostCheckResult[] = [];

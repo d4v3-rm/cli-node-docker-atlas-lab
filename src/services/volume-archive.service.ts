@@ -22,10 +22,11 @@ export async function runSaveVolumesCommand(
   printCommandHeader({
     title: 'Save Docker Volumes',
     summary: 'Export Docker volumes for the selected Atlas Lab layers to disk',
-    projectRoot: context.projectRoot
+    projectRoot: context.projectRoot,
+    workingDirectory: context.workingDirectory
   });
 
-  const outputDirectory = resolveVolumeArchiveOutputDirectory(context.projectRoot, options.outputDir);
+  const outputDirectory = resolveVolumeArchiveOutputDirectory(context.workingDirectory, options.outputDir);
   let volumes: VolumeArchiveEntry[] = [];
 
   await new Listr(
@@ -140,10 +141,11 @@ export async function runRestoreVolumesCommand(
   printCommandHeader({
     title: 'Restore Docker Volumes',
     summary: 'Restore Docker volumes from an archive directory on disk',
-    projectRoot: context.projectRoot
+    projectRoot: context.projectRoot,
+    workingDirectory: context.workingDirectory
   });
 
-  const inputDirectory = resolveArchiveDirectoryPath(context.projectRoot, options.inputDir);
+  const inputDirectory = resolveArchiveDirectoryPath(context.workingDirectory, options.inputDir);
   const manifestPath = join(inputDirectory, VOLUME_MANIFEST_FILE);
   let manifest: VolumeArchiveManifest | null = null;
 
@@ -250,18 +252,18 @@ async function ensureDockerVolumeExists(volumeName: string, projectRoot: string)
 /**
  * Resolves the volume archive output directory, defaulting under `backups/volumes`.
  */
-function resolveVolumeArchiveOutputDirectory(projectRoot: string, explicitOutputDir?: string): string {
-  const defaultPath = join(projectRoot, 'backups', 'volumes', `atlas-lab-volumes-${createTimestamp()}`);
+function resolveVolumeArchiveOutputDirectory(workingDirectory: string, explicitOutputDir?: string): string {
+  const defaultPath = join(workingDirectory, 'backups', 'volumes', `atlas-lab-volumes-${createTimestamp()}`);
   return explicitOutputDir
-    ? resolveArchiveDirectoryPath(projectRoot, explicitOutputDir)
+    ? resolveArchiveDirectoryPath(workingDirectory, explicitOutputDir)
     : defaultPath;
 }
 
 /**
  * Resolves a user-provided archive directory against the project root.
  */
-function resolveArchiveDirectoryPath(projectRoot: string, directoryPath: string): string {
-  return isAbsolute(directoryPath) ? directoryPath : resolve(projectRoot, directoryPath);
+function resolveArchiveDirectoryPath(workingDirectory: string, directoryPath: string): string {
+  return isAbsolute(directoryPath) ? directoryPath : resolve(workingDirectory, directoryPath);
 }
 
 /**

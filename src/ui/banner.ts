@@ -50,7 +50,11 @@ export function printCommandHeader(options: CommandHeaderOptions): void {
   }
 
   if (options.projectRoot) {
-    lines.push(`${pc.dim('Project')} ${options.projectRoot}`);
+    lines.push(`${pc.dim('Assets')} ${options.projectRoot}`);
+  }
+
+  if (options.workingDirectory && options.workingDirectory !== options.projectRoot) {
+    lines.push(`${pc.dim('Working dir')} ${options.workingDirectory}`);
   }
 
   console.log(

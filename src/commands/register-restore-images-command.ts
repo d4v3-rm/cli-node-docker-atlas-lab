@@ -11,7 +11,7 @@ export function registerRestoreImagesCommand(program: Command): void {
     .command('restore-images')
     .description('Restore Docker images from a tar archive on disk')
     .requiredOption('--input <path>', 'Input tar archive path')
-    .option('--project-dir <path>', 'Explicit project root if you are not in the repo')
+    .option('--project-dir <path>', 'Explicit lab asset root instead of the packaged install')
     .action(async (options: RestoreImagesCommandOptions) => {
       const context = createProjectContext(options);
       await runRestoreImagesCommand(context, options);

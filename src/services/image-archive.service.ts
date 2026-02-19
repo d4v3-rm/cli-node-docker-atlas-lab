@@ -19,10 +19,11 @@ export async function runSaveImagesCommand(
   printCommandHeader({
     title: 'Save Docker Images',
     summary: 'Export Docker images for the selected Atlas Lab layers',
-    projectRoot: context.projectRoot
+    projectRoot: context.projectRoot,
+    workingDirectory: context.workingDirectory
   });
 
-  const outputPath = resolveImageArchiveOutputPath(context.projectRoot, options.output);
+  const outputPath = resolveImageArchiveOutputPath(context.workingDirectory, options.output);
   const manifestPath = `${outputPath}.manifest.json`;
   let images: string[] = [];
 
@@ -80,10 +81,11 @@ export async function runRestoreImagesCommand(
   printCommandHeader({
     title: 'Restore Docker Images',
     summary: 'Load a Docker image archive from disk into the local daemon',
-    projectRoot: context.projectRoot
+    projectRoot: context.projectRoot,
+    workingDirectory: context.workingDirectory
   });
 
-  const inputPath = resolveArchiveInputPath(context.projectRoot, options.input);
+  const inputPath = resolveArchiveInputPath(context.workingDirectory, options.input);
   const manifestPath = `${inputPath}.manifest.json`;
 
   await new Listr(
@@ -128,10 +130,10 @@ export async function runRestoreImagesCommand(
 /**
  * Resolves the image archive output file, defaulting under `backups/images`.
  */
-function resolveImageArchiveOutputPath(projectRoot: string, explicitOutput?: string): string {
-  const defaultPath = join(projectRoot, 'backups', 'images', `atlas-lab-images-${createTimestamp()}.tar`);
+function resolveImageArchiveOutputPath(workingDirectory: string, explicitOutput?: string): string {
+  const defaultPath = join(workingDirectory, 'backups', 'images', `atlas-lab-images-${createTimestamp()}.tar`);
   const outputPath = explicitOutput
-    ? (isAbsolute(explicitOutput) ? explicitOutput : resolve(projectRoot, explicitOutput))
+    ? (isAbsolute(explicitOutput) ? explicitOutput : resolve(workingDirectory, explicitOutput))
     : defaultPath;
 
   return outputPath.endsWith('.tar') ? outputPath : `${outputPath}.tar`;
@@ -140,8 +142,8 @@ function resolveImageArchiveOutputPath(projectRoot: string, explicitOutput?: str
 /**
  * Resolves a user-provided archive input path against the project root.
  */
-function resolveArchiveInputPath(projectRoot: string, inputPath: string): string {
-  return isAbsolute(inputPath) ? inputPath : resolve(projectRoot, inputPath);
+function resolveArchiveInputPath(workingDirectory: string, inputPath: string): string {
+  return isAbsolute(inputPath) ? inputPath : resolve(workingDirectory, inputPath);
 }
 
 /**
