@@ -66,9 +66,9 @@ export default function App() {
 
         <section className="section">
           <SectionHeader
-            body="Ogni card spiega il servizio, mostra le credenziali root e apre direttamente il target operativo sul proprio endpoint localhost."
+            body="Il core del lab resta sempre attivo: repository, automazione e deck operativo. Ogni card mostra credenziali e accesso diretto ai target di base."
             kicker="service catalog"
-            title="Servizi Attivi"
+            title="Servizi Core"
           />
 
           <div className="service-grid">
@@ -80,20 +80,58 @@ export default function App() {
 
         <section className="section">
           <SectionHeader
-            body="Gli ambienti restano opzionali e vivono nel profilo Compose workbench. Dal deck apri un briefing locale che spiega scopo, accesso e credenziali."
+            body={
+              dashboard.aiLayer.enabled
+                ? 'Il layer AI e attivo: puoi entrare in Open WebUI o usare Ollama via gateway protetto.'
+                : 'Il layer AI e opzionale. Quando non e attivo, il deck mostra il comando di attivazione invece di fingere che i servizi siano online.'
+            }
+            kicker="ai layer"
+            title="Servizi AI"
+          />
+
+          {dashboard.aiLayer.enabled ? (
+            <div className="service-grid">
+              {dashboard.aiServices.map((service) => (
+                <ServiceCard key={service.id} service={service} />
+              ))}
+            </div>
+          ) : (
+            <article className="layer-panel" data-reveal>
+              <strong>{dashboard.aiLayer.title}</strong>
+              <p>{dashboard.aiLayer.description}</p>
+              <code>{dashboard.aiLayer.activationCommand}</code>
+            </article>
+          )}
+        </section>
+
+        <section className="section">
+          <SectionHeader
+            body={
+              dashboard.workbenchLayer.enabled
+                ? 'Il layer workbench e attivo: dal deck apri i briefing locali e poi raggiungi gli ambienti browser-based.'
+                : 'Gli ambienti restano opzionali e isolati dal core. Attivali solo quando ti serve Postgres o un workspace code-server.'
+            }
             kicker="workbench layer"
             title="Ambienti Di Sviluppo"
           />
 
-          <div className="workbench-grid">
-            {dashboard.workbenches.map((workbench) => (
-              <WorkbenchCard
-                key={workbench.id}
-                onOpenBriefing={setActiveBriefing}
-                workbench={workbench}
-              />
-            ))}
-          </div>
+          {dashboard.workbenchLayer.enabled ? (
+            <div className="workbench-grid">
+              {dashboard.workbenches.map((workbench) => (
+                <WorkbenchCard
+                  key={workbench.id}
+                  onOpenBriefing={setActiveBriefing}
+                  workbench={workbench}
+                />
+              ))}
+            </div>
+          ) : (
+            <article className="layer-panel" data-reveal>
+              <strong>{dashboard.workbenchLayer.title}</strong>
+              <p>{dashboard.workbenchLayer.description}</p>
+              <code>{dashboard.workbenchLayer.activationCommand}</code>
+            </article>
+          )}
         </section>
 
         <section className="footer-bar">

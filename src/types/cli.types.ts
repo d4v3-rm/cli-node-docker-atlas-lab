@@ -10,6 +10,7 @@ export interface GlobalCliOptions {
  */
 export interface UpCommandOptions extends GlobalCliOptions {
   build?: boolean;
+  withAi?: boolean;
   withWorkbench?: boolean;
 }
 
@@ -19,6 +20,7 @@ export interface UpCommandOptions extends GlobalCliOptions {
 export interface BootstrapCommandOptions extends GlobalCliOptions {
   skipGitea?: boolean;
   skipOllama?: boolean;
+  withAi?: boolean;
 }
 
 /**
@@ -26,4 +28,38 @@ export interface BootstrapCommandOptions extends GlobalCliOptions {
  */
 export interface DoctorCommandOptions extends GlobalCliOptions {
   smoke?: boolean;
+  withAi?: boolean;
+  withWorkbench?: boolean;
+}
+
+/**
+ * Options supported by the `save-images` command.
+ */
+export interface SaveImagesCommandOptions extends GlobalCliOptions {
+  output?: string;
+  withAi?: boolean;
+  withWorkbench?: boolean;
+}
+
+/**
+ * Options supported by the `restore-images` command.
+ */
+export interface RestoreImagesCommandOptions extends GlobalCliOptions {
+  input: string;
+}
+
+/**
+ * Options supported by the `save-volumes` command.
+ */
+export interface SaveVolumesCommandOptions extends GlobalCliOptions {
+  outputDir?: string;
+  withAi?: boolean;
+  withWorkbench?: boolean;
+}
+
+/**
+ * Options supported by the `restore-volumes` command.
+ */
+export interface RestoreVolumesCommandOptions extends GlobalCliOptions {
+  inputDir: string;
 }

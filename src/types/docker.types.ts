@@ -19,3 +19,30 @@ export interface ComposePsEntry {
   State?: string;
   Status?: string;
 }
+
+/**
+ * Metadata persisted next to a saved Docker image archive.
+ */
+export interface ImageArchiveManifest {
+  createdAt: string;
+  images: string[];
+  project: string;
+}
+
+/**
+ * Metadata for a single archived Docker volume.
+ */
+export interface VolumeArchiveEntry {
+  archiveFile: string;
+  dockerName: string;
+  logicalName: string;
+}
+
+/**
+ * Metadata persisted for a directory of archived Docker volumes.
+ */
+export interface VolumeArchiveManifest {
+  createdAt: string;
+  project: string;
+  volumes: VolumeArchiveEntry[];
+}

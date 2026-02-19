@@ -1,17 +1,8 @@
 name: cli-node-docker-atlas-lab
 
-# Infrastructure entrypoint for the local Atlas Lab stack.
+# Core infrastructure entrypoint for the local Atlas Lab stack.
 x-lab-env: &lab-env
   TZ: ${TZ}
-
-x-workbench-db-env: &workbench-db-env
-  PGHOST: postgres-dev
-  PGPORT: "5432"
-  PGDATABASE: ${POSTGRES_DEV_DATABASE}
-  PGUSER: ${POSTGRES_DEV_SUPERUSER}
-  PGPASSWORD: ${POSTGRES_DEV_PASSWORD}
-  PGSSLMODE: disable
-  DATABASE_URL: postgresql://${POSTGRES_DEV_SUPERUSER}:${POSTGRES_DEV_PASSWORD}@postgres-dev:5432/${POSTGRES_DEV_DATABASE}
 
 services:
   gateway:
@@ -23,6 +14,9 @@ services:
     restart: unless-stopped
     env_file:
       - ../../config/env/lab.env
+    environment:
+      ATLAS_AI_ENABLED: "false"
+      ATLAS_WORKBENCH_ENABLED: "false"
     healthcheck:
       test: ["CMD-SHELL", "nc -z 127.0.0.1 $$LAB_HTTPS_PORT || exit 1"]
       interval: 2s
@@ -33,8 +27,6 @@ services:
       - "${LAB_HTTPS_PORT}:${LAB_HTTPS_PORT}"
       - "${GITEA_HTTPS_PORT}:${GITEA_HTTPS_PORT}"
       - "${N8N_HTTPS_PORT}:${N8N_HTTPS_PORT}"
-      - "${OPENWEBUI_HTTPS_PORT}:${OPENWEBUI_HTTPS_PORT}"
-      - "${OLLAMA_HTTPS_PORT}:${OLLAMA_HTTPS_PORT}"
     volumes:
       - gateway-certs:/etc/caddy/certs
       - gateway-config:/etc/caddy/dynamic
@@ -45,50 +37,9 @@ services:
         condition: service_healthy
       n8n:
         condition: service_healthy
-      open-webui:
-        condition: service_healthy
-      ollama:
-        condition: service_healthy
     networks:
       - edge-net
       - apps-net
-      - ai-net
-
-  gateway-workbench:
-    build:
-      context: ../..
-      dockerfile: infra/docker/images/gateway/Dockerfile
-      args:
-        CADDY_VERSION: ${CADDY_VERSION}
-    profiles: ["workbench"]
-    restart: unless-stopped
-    env_file:
-      - ../../config/env/lab.env
-    environment:
-      ATLAS_GATEWAY_TEMPLATE: Caddyfile.workbench.template
-    ports:
-      - "${NODE_DEV_HTTPS_PORT}:${NODE_DEV_HTTPS_PORT}"
-      - "${PYTHON_DEV_HTTPS_PORT}:${PYTHON_DEV_HTTPS_PORT}"
-      - "${AI_DEV_HTTPS_PORT}:${AI_DEV_HTTPS_PORT}"
-      - "${CPP_DEV_HTTPS_PORT}:${CPP_DEV_HTTPS_PORT}"
-    volumes:
-      - gateway-certs:/etc/caddy/certs
-      - gateway-config:/etc/caddy/dynamic
-      - gateway-data:/data
-    depends_on:
-      gateway:
-        condition: service_started
-      node-dev:
-        condition: service_started
-      python-dev:
-        condition: service_started
-      ai-dev:
-        condition: service_started
-      cpp-dev:
-        condition: service_started
-    networks:
-      - edge-net
-      - workbench-net
 
   gitea:
     image: gitea/gitea:${GITEA_VERSION}
@@ -226,212 +177,6 @@ services:
       services-egress-net:
         gw_priority: 1
 
-  ollama:
-    build:
-      context: ../..
-      dockerfile: infra/docker/images/ollama/Dockerfile
-      args:
-        OLLAMA_VERSION: ${OLLAMA_VERSION}
-    restart: unless-stopped
-    gpus: ${OLLAMA_GPU_REQUEST}
-    healthcheck:
-      test: ["CMD-SHELL", "nc -z 127.0.0.1 11434 || exit 1"]
-      interval: 15s
-      timeout: 10s
-      retries: 10
-      start_period: 10s
-    environment:
-      <<: *lab-env
-      OLLAMA_HOST: 0.0.0.0:11434
-      OLLAMA_ORIGINS: ${OPENWEBUI_URL}
-      NVIDIA_VISIBLE_DEVICES: ${OLLAMA_NVIDIA_VISIBLE_DEVICES}
-      NVIDIA_DRIVER_CAPABILITIES: ${OLLAMA_NVIDIA_DRIVER_CAPABILITIES}
-    volumes:
-      - ollama-data:/root/.ollama
-    networks:
-      ai-net:
-      services-egress-net:
-        gw_priority: 1
-
-  open-webui:
-    image: ghcr.io/open-webui/open-webui:${OPENWEBUI_VERSION}
-    restart: unless-stopped
-    depends_on:
-      ollama:
-        condition: service_healthy
-    environment:
-      <<: *lab-env
-      WEBUI_URL: ${OPENWEBUI_URL}
-      WEBUI_SECRET_KEY: ${OPENWEBUI_SECRET_KEY}
-      CORS_ALLOW_ORIGIN: ${OPENWEBUI_CORS_ALLOW_ORIGIN}
-      USER_AGENT: AtlasLab-OpenWebUI/1.0
-      ENABLE_OPENAI_API: "false"
-      ENABLE_OLLAMA_API: "true"
-      OLLAMA_BASE_URL: http://ollama:11434
-      RAG_OLLAMA_BASE_URL: http://ollama:11434
-      RAG_EMBEDDING_ENGINE: ollama
-      RAG_EMBEDDING_MODEL: ${OLLAMA_EMBEDDING_MODEL}
-      USE_EMBEDDING_MODEL_DOCKER: ""
-      USE_AUXILIARY_EMBEDDING_MODEL_DOCKER: ""
-      AUXILIARY_EMBEDDING_MODEL: ""
-      WEBUI_ADMIN_NAME: ${OPENWEBUI_ROOT_NAME}
-      WEBUI_ADMIN_EMAIL: ${OPENWEBUI_ROOT_EMAIL}
-      WEBUI_ADMIN_PASSWORD: ${OPENWEBUI_ROOT_PASSWORD}
-      ENABLE_SIGNUP: "false"
-      WEBUI_AUTH: "true"
-    volumes:
-      - open-webui-data:/app/backend/data
-    networks:
-      apps-net:
-      ai-net:
-      services-egress-net:
-        gw_priority: 1
-
-  postgres-dev:
-    image: postgres:${POSTGRES_DEV_VERSION}
-    profiles: ["workbench"]
-    restart: unless-stopped
-    shm_size: 256mb
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-    environment:
-      TZ: ${TZ}
-      POSTGRES_USER: ${POSTGRES_DEV_SUPERUSER}
-      POSTGRES_PASSWORD: ${POSTGRES_DEV_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DEV_DATABASE}
-    volumes:
-      - postgres-dev-data:/var/lib/postgresql/data
-    networks:
-      - workbench-net
-
-  node-dev:
-    build:
-      context: ../..
-      dockerfile: infra/docker/images/workbenches/node/Dockerfile
-      args:
-        BASE_IMAGE: ${NODE_DEV_BASE_IMAGE}
-        NODE_VERSION: ${NODE_DEV_NODE_VERSION}
-        PNPM_VERSION: ${NODE_DEV_PNPM_VERSION}
-        YARN_VERSION: ${NODE_DEV_YARN_VERSION}
-        INSTALL_PACKAGES: ${NODE_DEV_INSTALL_PACKAGES}
-    profiles: ["workbench"]
-    restart: unless-stopped
-    depends_on:
-      postgres-dev:
-        condition: service_healthy
-    environment:
-      CODE_SERVER_PASSWORD: ${NODE_DEV_PASSWORD}
-      CODE_SERVER_AUTH: ${NODE_DEV_AUTH}
-      CODE_SERVER_BIND_ADDR: 0.0.0.0:8080
-      CODE_SERVER_WORKDIR: /workspace
-      CODE_SERVER_EXTENSIONS: ${NODE_DEV_EXTENSIONS}
-      NODE_GLOBAL_PACKAGES: ${NODE_DEV_GLOBAL_PACKAGES}
-      <<: *workbench-db-env
-    volumes:
-      - node-dev-home:/home/coder
-      - node-dev-workspace:/workspace
-    networks:
-      workbench-net:
-      workbench-egress-net:
-        gw_priority: 1
-
-  python-dev:
-    build:
-      context: ../..
-      dockerfile: infra/docker/images/workbenches/python/Dockerfile
-      args:
-        BASE_IMAGE: ${PYTHON_DEV_BASE_IMAGE}
-        PYTHON_VERSION: ${PYTHON_DEV_PYTHON_VERSION}
-        INSTALL_PACKAGES: ${PYTHON_DEV_INSTALL_PACKAGES}
-        PYTHON_PIP_PACKAGES: ${PYTHON_DEV_PIP_PACKAGES}
-        PIP_INDEX_URL: ${PYTHON_DEV_PIP_INDEX_URL}
-        PIP_EXTRA_INDEX_URL: ${PYTHON_DEV_PIP_EXTRA_INDEX_URL}
-    profiles: ["workbench"]
-    restart: unless-stopped
-    depends_on:
-      postgres-dev:
-        condition: service_healthy
-    environment:
-      CODE_SERVER_PASSWORD: ${PYTHON_DEV_PASSWORD}
-      CODE_SERVER_AUTH: ${PYTHON_DEV_AUTH}
-      CODE_SERVER_BIND_ADDR: 0.0.0.0:8080
-      CODE_SERVER_WORKDIR: /workspace
-      CODE_SERVER_EXTENSIONS: ${PYTHON_DEV_EXTENSIONS}
-      PYTHON_DEV_PIP_PACKAGES: ${PYTHON_DEV_RUNTIME_PIP_PACKAGES}
-      PYTHON_DEV_PIP_EXTRA_INDEX_URL: ${PYTHON_DEV_PIP_EXTRA_INDEX_URL}
-      <<: *workbench-db-env
-    volumes:
-      - python-dev-home:/home/coder
-      - python-dev-workspace:/workspace
-    networks:
-      workbench-net:
-      workbench-egress-net:
-        gw_priority: 1
-
-  ai-dev:
-    build:
-      context: ../..
-      dockerfile: infra/docker/images/workbenches/python/Dockerfile
-      args:
-        BASE_IMAGE: ${AI_DEV_BASE_IMAGE}
-        PYTHON_VERSION: ${AI_DEV_PYTHON_VERSION}
-        INSTALL_PACKAGES: ${AI_DEV_INSTALL_PACKAGES}
-        PYTHON_PIP_PACKAGES: ${AI_DEV_PIP_PACKAGES}
-        PIP_INDEX_URL: ${AI_DEV_PIP_INDEX_URL}
-        PIP_EXTRA_INDEX_URL: ${AI_DEV_PIP_EXTRA_INDEX_URL}
-    profiles: ["workbench"]
-    restart: unless-stopped
-    depends_on:
-      postgres-dev:
-        condition: service_healthy
-    environment:
-      CODE_SERVER_PASSWORD: ${AI_DEV_PASSWORD}
-      CODE_SERVER_AUTH: ${AI_DEV_AUTH}
-      CODE_SERVER_BIND_ADDR: 0.0.0.0:8080
-      CODE_SERVER_WORKDIR: /workspace
-      CODE_SERVER_EXTENSIONS: ${AI_DEV_EXTENSIONS}
-      PYTHON_DEV_PIP_PACKAGES: ${AI_DEV_RUNTIME_PIP_PACKAGES}
-      PYTHON_DEV_PIP_EXTRA_INDEX_URL: ${AI_DEV_PIP_EXTRA_INDEX_URL}
-      <<: *workbench-db-env
-    volumes:
-      - ai-dev-home:/home/coder
-      - ai-dev-workspace:/workspace
-    networks:
-      workbench-net:
-      workbench-egress-net:
-        gw_priority: 1
-
-  cpp-dev:
-    build:
-      context: ../..
-      dockerfile: infra/docker/images/workbenches/cpp/Dockerfile
-      args:
-        BASE_IMAGE: ${CPP_DEV_BASE_IMAGE}
-        CPP_PACKAGES: ${CPP_DEV_PACKAGES}
-        INSTALL_PACKAGES: ${CPP_DEV_INSTALL_PACKAGES}
-    profiles: ["workbench"]
-    restart: unless-stopped
-    depends_on:
-      postgres-dev:
-        condition: service_healthy
-    environment:
-      CODE_SERVER_PASSWORD: ${CPP_DEV_PASSWORD}
-      CODE_SERVER_AUTH: ${CPP_DEV_AUTH}
-      CODE_SERVER_BIND_ADDR: 0.0.0.0:8080
-      CODE_SERVER_WORKDIR: /workspace
-      CODE_SERVER_EXTENSIONS: ${CPP_DEV_EXTENSIONS}
-      <<: *workbench-db-env
-    volumes:
-      - cpp-dev-home:/home/coder
-      - cpp-dev-workspace:/workspace
-    networks:
-      workbench-net:
-      workbench-egress-net:
-        gw_priority: 1
-
 networks:
   edge-net:
     name: cli-node-docker-atlas-lab_edge
@@ -440,17 +185,9 @@ networks:
   apps-net:
     name: cli-node-docker-atlas-lab_apps
     internal: true
-  ai-net:
-    name: cli-node-docker-atlas-lab_ai
-    internal: true
   data-net:
     name: cli-node-docker-atlas-lab_data
     internal: true
-  workbench-net:
-    name: cli-node-docker-atlas-lab_workbench
-    internal: true
-  workbench-egress-net:
-    name: cli-node-docker-atlas-lab_workbench_egress
 
 volumes:
   gateway-certs:
@@ -460,14 +197,3 @@ volumes:
   gitea-data:
   gitea-db:
   n8n-data:
-  ollama-data:
-  open-webui-data:
-  postgres-dev-data:
-  node-dev-home:
-  node-dev-workspace:
-  python-dev-home:
-  python-dev-workspace:
-  ai-dev-home:
-  ai-dev-workspace:
-  cpp-dev-home:
-  cpp-dev-workspace:

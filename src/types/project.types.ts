@@ -18,6 +18,7 @@ export interface LabEnv {
   OPENWEBUI_ROOT_PASSWORD?: string;
   OLLAMA_EMBEDDING_MODEL?: string;
   OLLAMA_CHAT_MODEL?: string;
+  POSTGRES_DEV_HOST_PORT?: string;
   LAB_URL?: string;
   GITEA_URL?: string;
   N8N_URL?: string;
@@ -58,6 +59,12 @@ export interface BootstrapEnv extends LabEnv {
   N8N_ROOT_LAST_NAME: string;
   N8N_ROOT_EMAIL: string;
   N8N_ROOT_PASSWORD: string;
+}
+
+/**
+ * Env shape guaranteed after AI bootstrap validation.
+ */
+export interface AiBootstrapEnv extends LabEnv {
   OLLAMA_EMBEDDING_MODEL: string;
   OLLAMA_CHAT_MODEL: string;
 }
@@ -71,6 +78,12 @@ export interface SmokeEnv extends LabEnv {
   N8N_URL: string;
   N8N_ROOT_EMAIL: string;
   N8N_ROOT_PASSWORD: string;
+}
+
+/**
+ * Env shape guaranteed after AI smoke-check validation.
+ */
+export interface AiSmokeEnv extends LabEnv {
   OPENWEBUI_URL: string;
   OPENWEBUI_ROOT_EMAIL: string;
   OPENWEBUI_ROOT_PASSWORD: string;

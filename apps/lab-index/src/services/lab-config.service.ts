@@ -28,7 +28,7 @@ function assertLabRuntimeConfig(value: unknown): asserts value is LabRuntimeConf
   }
 
   const candidate = value as Record<string, unknown>;
-  if (!candidate.lab || !candidate.services || !candidate.workbenches) {
+  if (!candidate.features || !candidate.lab || !candidate.services || !candidate.workbenches) {
     throw new Error('Configurazione runtime incompleta.');
   }
 }

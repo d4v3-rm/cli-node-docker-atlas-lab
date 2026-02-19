@@ -4,11 +4,25 @@ import process from 'node:process';
 import dotenv from 'dotenv';
 import { findUpSync } from 'find-up';
 import { ZodError } from 'zod';
-import { bootstrapEnvSchema, formatZodError, labEnvSchema, smokeEnvSchema } from '../config/lab-env.schema.js';
+import {
+  aiBootstrapEnvSchema,
+  aiSmokeEnvSchema,
+  bootstrapEnvSchema,
+  formatZodError,
+  labEnvSchema,
+  smokeEnvSchema
+} from '../config/lab-env.schema.js';
 import { PROJECT_MARKERS, REPOSITORY_PATHS, resolveRepositoryLayout } from '../config/repository-layout.js';
 import { ensureDevelopmentFileLogging } from './runtime-log.service.js';
 import type { GlobalCliOptions } from '../types/cli.types.js';
-import type { BootstrapEnv, LabEnv, ProjectContext, SmokeEnv } from '../types/project.types.js';
+import type {
+  AiBootstrapEnv,
+  AiSmokeEnv,
+  BootstrapEnv,
+  LabEnv,
+  ProjectContext,
+  SmokeEnv
+} from '../types/project.types.js';
 import { printInfo } from '../ui/logger.js';
 
 /**
@@ -38,10 +52,24 @@ export function parseBootstrapEnv(env: LabEnv): BootstrapEnv {
 }
 
 /**
+ * Validates and narrows the env for AI bootstrap workflows.
+ */
+export function parseAiBootstrapEnv(env: LabEnv): AiBootstrapEnv {
+  return parseWithSchema(() => aiBootstrapEnvSchema.parse(env));
+}
+
+/**
  * Validates and narrows the env for smoke-check workflows.
  */
 export function parseSmokeEnv(env: LabEnv): SmokeEnv {
   return parseWithSchema(() => smokeEnvSchema.parse(env));
+}
+
+/**
+ * Validates and narrows the env for AI smoke-check workflows.
+ */
+export function parseAiSmokeEnv(env: LabEnv): AiSmokeEnv {
+  return parseWithSchema(() => aiSmokeEnvSchema.parse(env));
 }
 
 /**

@@ -1,5 +1,7 @@
+import { APP_METADATA } from '../config/app-metadata.js';
 import { createComposeCommandArgs } from '../lib/compose.js';
 import type { ComposePsEntry } from '../types/docker.types.js';
+import type { GlobalCliOptions, SaveImagesCommandOptions } from '../types/cli.types.js';
 import type { ProjectContext } from '../types/project.types.js';
 import { runCommand } from '../utils/process.js';
 
@@ -11,7 +13,9 @@ export async function listRunningComposeEntries(
 ): Promise<ComposePsEntry[]> {
   const result = await runCommand(
     'docker',
-    createComposeCommandArgs(context, ['ps', '--status', 'running', '--format', 'json']),
+    createComposeCommandArgs(context, ['ps', '--status', 'running', '--format', 'json'], {
+      includeAll: true
+    }),
     {
       allowFailure: true,
       captureOutput: true,
@@ -46,6 +50,55 @@ export async function getRunningComposePublishedPorts(
 }
 
 /**
+ * Lists the Docker images declared by the selected Compose layers.
+ */
+export async function listConfiguredComposeImages(
+  context: ProjectContext,
+  options: Pick<SaveImagesCommandOptions, 'withAi' | 'withWorkbench'>
+): Promise<string[]> {
+  const result = await runCommand(
+    'docker',
+    createComposeCommandArgs(context, ['config', '--images'], {
+      includeAi: Boolean(options.withAi),
+      includeWorkbench: Boolean(options.withWorkbench)
+    }),
+    {
+      captureOutput: true,
+      cwd: context.projectRoot,
+      scope: 'compose'
+    }
+  );
+
+  return collectUniqueTextLines(result.stdout).map(normalizeImageReference);
+}
+
+/**
+ * Returns the concrete Docker volume names for the selected Compose layers.
+ */
+export async function listConfiguredDockerVolumes(
+  context: ProjectContext,
+  options: Pick<GlobalCliOptions, never> & { withAi?: boolean; withWorkbench?: boolean }
+): Promise<Array<{ dockerName: string; logicalName: string }>> {
+  const result = await runCommand(
+    'docker',
+    createComposeCommandArgs(context, ['config', '--volumes'], {
+      includeAi: Boolean(options.withAi),
+      includeWorkbench: Boolean(options.withWorkbench)
+    }),
+    {
+      captureOutput: true,
+      cwd: context.projectRoot,
+      scope: 'compose'
+    }
+  );
+
+  return collectUniqueTextLines(result.stdout).map((logicalName) => ({
+    dockerName: `${APP_METADATA.codeName}_${logicalName}`,
+    logicalName
+  }));
+}
+
+/**
  * Parses the newline-delimited JSON emitted by `docker compose ps --format json`.
  */
 export function parseComposePsEntries(stdout: string): ComposePsEntry[] {
@@ -71,4 +124,28 @@ export function collectPublishedPorts(entries: ComposePsEntry[]): Set<number> {
   }
 
   return publishedPorts;
+}
+
+/**
+ * Collects non-empty unique text lines while preserving the original order.
+ */
+function collectUniqueTextLines(stdout: string): string[] {
+  return [...new Set(
+    stdout
+      .split(/\r?\n/gu)
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0)
+  )];
+}
+
+/**
+ * Normalizes Docker image references to their explicit `:latest` form when no tag is present.
+ */
+export function normalizeImageReference(image: string): string {
+  if (image.includes('@')) {
+    return image;
+  }
+
+  const finalSegment = image.split('/').at(-1) ?? image;
+  return finalSegment.includes(':') ? image : `${image}:latest`;
 }

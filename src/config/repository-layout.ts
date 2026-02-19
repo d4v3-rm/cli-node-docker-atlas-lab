@@ -11,8 +11,11 @@ export const PROJECT_MARKERS = ['infra/docker/compose.yml', 'config/env/lab.env'
  */
 export const REQUIRED_REPOSITORY_FILES = [
   'infra/docker/compose.yml',
+  'infra/docker/compose.ai.yml',
+  'infra/docker/compose.workbench.yml',
   'config/env/lab.env',
   'config/gateway/templates/Caddyfile.template',
+  'config/gateway/templates/Caddyfile.ai.template',
   'config/gateway/templates/Caddyfile.workbench.template'
 ] as const;
 
@@ -21,8 +24,12 @@ export const REQUIRED_REPOSITORY_FILES = [
  */
 export const REPOSITORY_PATHS = {
   composeFile: 'infra/docker/compose.yml',
+  composeAiFile: 'infra/docker/compose.ai.yml',
+  composeWorkbenchFile: 'infra/docker/compose.workbench.yml',
   envFile: 'config/env/lab.env',
-  gatewayTemplateFile: 'config/gateway/templates/Caddyfile.template'
+  gatewayTemplateFile: 'config/gateway/templates/Caddyfile.template',
+  gatewayAiTemplateFile: 'config/gateway/templates/Caddyfile.ai.template',
+  gatewayWorkbenchTemplateFile: 'config/gateway/templates/Caddyfile.workbench.template'
 } as const satisfies RepositoryPathDefinitions;
 
 /**
@@ -31,7 +38,11 @@ export const REPOSITORY_PATHS = {
 export function resolveRepositoryLayout(projectRoot: string): RepositoryLayout {
   return {
     composeFile: join(projectRoot, REPOSITORY_PATHS.composeFile),
+    composeAiFile: join(projectRoot, REPOSITORY_PATHS.composeAiFile),
+    composeWorkbenchFile: join(projectRoot, REPOSITORY_PATHS.composeWorkbenchFile),
     envFile: join(projectRoot, REPOSITORY_PATHS.envFile),
-    gatewayTemplateFile: join(projectRoot, REPOSITORY_PATHS.gatewayTemplateFile)
+    gatewayTemplateFile: join(projectRoot, REPOSITORY_PATHS.gatewayTemplateFile),
+    gatewayAiTemplateFile: join(projectRoot, REPOSITORY_PATHS.gatewayAiTemplateFile),
+    gatewayWorkbenchTemplateFile: join(projectRoot, REPOSITORY_PATHS.gatewayWorkbenchTemplateFile)
   };
 }

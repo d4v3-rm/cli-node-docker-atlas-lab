@@ -10,7 +10,7 @@ Ambiente `code-server` per backend Python, automazioni, script operativi e tooli
 - URL operativo: `${PYTHON_DEV_URL}`
 - Modalita di accesso: `password`
 - Password root: `${PYTHON_DEV_PASSWORD}`
-- Attivazione: `docker compose --profile workbench up -d postgres-dev python-dev`
+- Attivazione: `atlas-lab up --with-workbench`
 
 ## Cosa trovi dentro
 

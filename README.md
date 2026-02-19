@@ -7,7 +7,7 @@
 ![CLI](https://img.shields.io/badge/CLI-Node.js%20npm-3C873A?logo=nodedotjs&logoColor=white)
 ![Persistence](https://img.shields.io/badge/Persistence-Docker%20Volumes-CA8A04)
 
-> Piattaforma self-hosted locale per repository, automazione, AI e workbench browser-based, esposta interamente su `localhost` con porte HTTPS dedicate, orchestrata da Docker Compose e governata da una CLI Node.js installabile anche come comando globale.
+> Piattaforma self-hosted locale per repository, automazione e layer opzionali AI/workbench, esposta interamente su `localhost` con porte HTTPS dedicate, orchestrata da Docker Compose e governata da una CLI Node.js installabile anche come comando globale.
 
 ---
 
@@ -21,6 +21,7 @@
 - [Persistenza E Dati](#persistenza-e-dati)
 - [Requisiti Host E Dipendenze](#requisiti-host-e-dipendenze)
 - [CLI Node.js](#cli-nodejs)
+- [Backup E Ripristino](#backup-e-ripristino)
 - [Scaffolding Del Repository](#scaffolding-del-repository)
 - [Quick Start](#quick-start)
 - [Accessi E Credenziali](#accessi-e-credenziali)
@@ -41,8 +42,8 @@
 - un index grafico iniziale del lab, servito dal gateway, da cui aprire servizi, credenziali e asset operativi
 - `Gitea` per repository Git, issue tracking e code review
 - `n8n` per automazione e workflow
-- `Open WebUI` come interfaccia AI
-- `Ollama` per modelli locali ed embeddings con accelerazione GPU NVIDIA
+- `Open WebUI` come interfaccia AI opzionale
+- `Ollama` per modelli locali ed embeddings con accelerazione GPU NVIDIA, opzionale
 - `code-server` per ambienti di sviluppo browser-based
 - `PostgreSQL` condiviso per i workbench
 - `Caddy` come unico ingresso HTTPS
@@ -81,7 +82,7 @@ La scelta finale e la piu pragmatica per un lab locale:
 In parallelo, il bootstrap non usa piu container Compose di init. Al loro posto c'e una CLI Node.js che:
 
 - avvia la stack
-- riallinea Gitea e Ollama
+- riallinea Gitea e, quando richiesto, Ollama
 - pulisce residui legacy
 - puo essere eseguita da sorgente
 - puo essere buildata
@@ -98,36 +99,41 @@ In parallelo, il bootstrap non usa piu container Compose di init. Al loro posto 
 | Deck | index grafico e dashboard operativa del lab | si | mostra servizi, credenziali e link |
 | Gitea | forge Git interno | si | repository, issue, review |
 | n8n | automazione e workflow | si | login applicativo diretto |
-| Open WebUI | interfaccia AI | si | collegata a Ollama |
-| Ollama | API per modelli locali | si | protetto da auth gateway |
+### Layer AI opzionale
+
+| Servizio | Ruolo | Esposto | Note |
+| --- | --- | --- | --- |
+| Open WebUI | interfaccia AI | si | disponibile solo con `--with-ai` |
+| Ollama | API per modelli locali | si | disponibile solo con `--with-ai` |
 
 ### Workbench opzionali
 
 | Servizio | Ruolo | Esposto | Profilo |
 | --- | --- | --- | --- |
-| Node Forge | sviluppo JS/TS/Node | si | `workbench` |
-| Python Grid | backend Python e scripting | si | `workbench` |
-| AI Reactor | AI, notebook, data work | si | `workbench` |
-| C++ Foundry | toolchain C/C++ | si | `workbench` |
-| Postgres Vault | database condiviso | no UI web | `workbench` |
+| Node Forge | sviluppo JS/TS/Node | si | layer `workbench` |
+| Python Grid | backend Python e scripting | si | layer `workbench` |
+| AI Reactor | AI, notebook, data work | si | layer `workbench` |
+| C++ Foundry | toolchain C/C++ | si | layer `workbench` |
+| Postgres Vault | database condiviso | no UI web | layer `workbench` |
 
 ---
 
 ## Mappa Porte E URL
 
-Tutti gli ingressi pubblici usano HTTPS su `localhost`.
+Tutti gli ingressi web pubblici usano HTTPS su `localhost`. `Postgres Vault` espone invece una porta TCP dedicata sul sistema host.
 
 | Servizio | URL |
 | --- | --- |
 | Deck | `https://localhost:8443/` |
 | Gitea | `https://localhost:8444/` |
 | n8n | `https://localhost:8445/` |
-| Open WebUI | `https://localhost:8446/` |
-| Ollama | `https://localhost:8447/` |
-| Node Forge | `https://localhost:8450/` |
-| Python Grid | `https://localhost:8451/` |
-| AI Reactor | `https://localhost:8452/` |
-| C++ Foundry | `https://localhost:8453/` |
+| Open WebUI | `https://localhost:8446/` solo con layer `ai` |
+| Ollama | `https://localhost:8447/` solo con layer `ai` |
+| Node Forge | `https://localhost:8450/` solo con layer `workbench` |
+| Python Grid | `https://localhost:8451/` solo con layer `workbench` |
+| AI Reactor | `https://localhost:8452/` solo con layer `workbench` |
+| C++ Foundry | `https://localhost:8453/` solo con layer `workbench` |
+| Postgres Vault | `localhost:55432` TCP solo con layer `workbench` |
 
 ### Vantaggi pratici
 
@@ -150,13 +156,15 @@ La topologia e segmentata deliberatamente.
 | `ai-net` | interna | Ollama e Open WebUI |
 | `data-net` | interna | MariaDB e servizi dati |
 | `workbench-net` | interna | Postgres e workbench |
+| `workbench-host-net` | bridge host | abilita il bind TCP di Postgres su `localhost` |
 | `services-egress-net` | egress | uscita selettiva per servizi core |
 | `workbench-egress-net` | egress | uscita selettiva per i workbench |
 
 Principio operativo:
 
-- solo `gateway` pubblica porte sulla macchina host
-- i servizi applicativi restano su reti Docker
+- i gateway pubblicano gli ingressi HTTPS su `localhost`
+- `postgres-dev` pubblica anche una porta TCP host dedicata per client desktop come DBeaver
+- gli altri servizi applicativi restano su reti Docker
 - il browser passa sempre da Caddy
 
 ---
@@ -192,6 +200,11 @@ Se ricrei i container:
 - i workbench mantengono home e workspace
 
 Se rimuovi i volumi, azzeri lo stato persistente.
+
+Per esportare o ripristinare lo stato senza tenere il lab acceso puoi usare anche la CLI:
+
+- `save-images` e `restore-images` per le immagini Docker del lab
+- `save-volumes` e `restore-volumes` per i volumi Docker del lab
 
 ---
 
@@ -243,6 +256,7 @@ Devono essere libere:
 - `8451`
 - `8452`
 - `8453`
+- `55432` solo se avvii il layer `workbench`
 
 Se una di queste porte e occupata, `atlas-lab up` fallira subito durante il preflight host, prima di far partire Docker Compose.
 
@@ -344,7 +358,7 @@ La root del repository resta volutamente leggera. Le responsabilita sono separat
 | Dominio | Scopo | Percorsi principali |
 | --- | --- | --- |
 | codice applicativo | CLI TypeScript, command layer, servizi e tipizzazioni | `src/`, `bin/` |
-| infrastruttura Docker | orchestrazione Compose, Dockerfile e script di immagine | `infra/docker/compose.yml`, `infra/docker/images/` |
+| infrastruttura Docker | orchestrazione Compose, Dockerfile e script di immagine | `infra/docker/compose.yml`, `infra/docker/compose.ai.yml`, `infra/docker/compose.workbench.yml`, `infra/docker/images/` |
 | configurazione operativa | env del lab, template gateway e briefing locali | `config/env/lab.env`, `config/gateway/templates/` |
 | tooling repo | packaging, build e script di supporto | `tools/`, `scripts/`, `package.json` |
 
@@ -354,20 +368,51 @@ Regola pratica:
 - se cambi build container o orchestrazione, lavori in `infra/docker/`
 - se cambi credenziali, porte, template o contenuti gateway, lavori in `config/`
 
-La CLI usa questo layout come contratto esplicito: risolve sempre `infra/docker/compose.yml` e `config/env/lab.env`, quindi non dipende piu da file infrastrutturali sparsi in root.
+La CLI usa questo layout come contratto esplicito: risolve sempre `infra/docker/compose.yml` come layer `core`, piu gli eventuali `infra/docker/compose.ai.yml` e `infra/docker/compose.workbench.yml`, oltre a `config/env/lab.env`.
 
 ### Comandi della CLI
 
 | Comando | Ruolo |
 | --- | --- |
-| `atlas-lab up` | avvia Compose, bootstrap Gitea/Ollama e pulisce residui legacy |
-| `atlas-lab up --build` | rebuild + start + bootstrap |
-| `atlas-lab up --with-workbench` | include anche il profilo `workbench` |
-| `atlas-lab bootstrap` | riesegue solo il bootstrap |
+| `atlas-lab up` | avvia solo il layer `core` e bootstrappa Gitea/n8n |
+| `atlas-lab up --with-ai` | aggiunge il layer AI con Open WebUI e Ollama |
+| `atlas-lab up --with-workbench` | aggiunge il layer workbench |
+| `atlas-lab up --with-ai --with-workbench` | avvia l'intero lab |
+| `atlas-lab bootstrap` | riesegue solo il bootstrap core |
+| `atlas-lab bootstrap --with-ai` | riesegue anche il riallineamento modelli Ollama |
 | `atlas-lab doctor` | controlla requisiti host e configurazione Compose |
-| `atlas-lab doctor --smoke` | aggiunge smoke test su endpoint e integrazioni |
+| `atlas-lab doctor --smoke` | aggiunge smoke test sul solo core |
+| `atlas-lab doctor --with-ai --smoke` | aggiunge anche smoke test AI |
 | `atlas-lab status` | mostra lo stato Compose |
 | `atlas-lab down` | ferma la stack |
+| `atlas-lab save-images --with-ai --with-workbench` | esporta su disco le immagini richieste dai layer selezionati |
+| `atlas-lab restore-images --input <archive.tar>` | ricarica nel daemon Docker un archivio di immagini precedentemente esportato |
+| `atlas-lab save-volumes --with-ai --with-workbench` | salva su disco i volumi dei layer selezionati |
+| `atlas-lab restore-volumes --input-dir <directory>` | ripristina i volumi Docker da un backup su disco |
+
+### Backup e ripristino
+
+Le immagini e i volumi possono essere gestiti separatamente:
+
+- il backup immagini produce un archivio `.tar` e un manifest JSON di supporto
+- il restore immagini esegue `docker image load` sull'archivio salvato
+- il backup volumi produce una directory con un archivio `.tar.gz` per ogni volume e un `manifest.json`
+- il restore volumi ricrea i volumi mancanti e ripristina il contenuto dai relativi archivi
+
+Vincoli operativi:
+
+- per `save-volumes` e `restore-volumes` la stack Atlas Lab deve essere ferma
+- i flag `--with-ai` e `--with-workbench` filtrano quali layer includere nel backup
+- senza flag aggiuntivi vengono inclusi solo immagini e volumi del layer `core`
+
+Esempi:
+
+```powershell
+npm run dev -- save-images --with-ai --with-workbench
+npm run dev -- restore-images --input .\backups\images\atlas-lab-images-2026-03-09T12-00-00-000Z.tar
+npm run dev -- save-volumes --with-ai --with-workbench
+npm run dev -- restore-volumes --input-dir .\backups\volumes\atlas-lab-volumes-2026-03-09T12-00-00-000Z
+```
 
 ### Cosa fa il bootstrap
 
@@ -375,10 +420,10 @@ La CLI usa questo layout come contratto esplicito: risolve sempre `infra/docker/
 2. crea o riallinea l'utente root di Gitea
 3. aspetta che `n8n` e `gateway` siano raggiungibili
 4. crea o riallinea l'owner bootstrap di n8n
-5. aspetta che `ollama` sia `healthy`
-6. controlla il modello embeddings configurato
-7. controlla il modello chat configurato
-8. esegue il pull dei modelli mancanti
+5. se il layer AI e attivo, aspetta che `ollama` sia `healthy`
+6. se il layer AI e attivo, controlla il modello embeddings configurato
+7. se il layer AI e attivo, controlla il modello chat configurato
+8. se il layer AI e attivo, esegue il pull dei modelli mancanti
 9. rimuove l'eventuale immagine legacy `cli-node-docker-atlas-lab-ollama-init:latest`
 
 Il bootstrap e idempotente.
@@ -454,13 +499,25 @@ npm.cmd run dev -- up
 
 Questo e il flusso consigliato durante lo sviluppo della CLI e della stack.
 
-### 5. Avvio con workbench inclusi
+### 5. Avvio con layer AI
+
+```powershell
+npm run dev -- up --with-ai
+```
+
+### 6. Avvio con workbench inclusi
 
 ```powershell
 npm run dev -- up --with-workbench
 ```
 
-### 6. Build del pacchetto
+### 7. Avvio completo con AI e workbench
+
+```powershell
+npm run dev -- up --with-ai --with-workbench
+```
+
+### 8. Build del pacchetto
 
 ```powershell
 npm run build
@@ -472,7 +529,7 @@ La build genera:
 - `dist/**/*.d.ts`
 - `dist/**/*.js.map`
 
-### 7. Installazione globale locale
+### 9. Installazione globale locale
 
 ```powershell
 npm install -g .
@@ -493,14 +550,21 @@ npm.cmd install -g .
 atlas-lab.cmd up
 ```
 
-### 8. Modalita separata start/bootstrap
+### 10. Modalita separata start/bootstrap core
 
 ```powershell
 docker compose --file infra/docker/compose.yml --env-file config/env/lab.env up -d
 npm run dev -- bootstrap
 ```
 
-### 8. Apri l'index grafico del lab
+### 11. Modalita separata start/bootstrap con AI
+
+```powershell
+docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --env-file config/env/lab.env up -d
+npm run dev -- bootstrap --with-ai
+```
+
+### 12. Apri l'index grafico del lab
 
 ```text
 https://localhost:8443/
@@ -550,6 +614,7 @@ Le credenziali operative sono in [`config/env/lab.env`](./config/env/lab.env) e 
 
 - URL: `https://localhost:8446/`
 - accesso: login applicativo
+- disponibile solo quando avvii il layer AI con `--with-ai`
 - signup: disabilitato
 - admin iniziale definito via env
 - usa automaticamente il modello chat configurato in `OLLAMA_CHAT_MODEL`
@@ -558,6 +623,7 @@ Le credenziali operative sono in [`config/env/lab.env`](./config/env/lab.env) e 
 
 - URL: `https://localhost:8447/`
 - accesso: basic auth gateway
+- disponibile solo quando avvii il layer AI con `--with-ai`
 - uso principale: API per inference e embeddings
 - bootstrap iniziale: `OLLAMA_EMBEDDING_MODEL` + `OLLAMA_CHAT_MODEL`
 
@@ -576,12 +642,12 @@ Il deck non apre direttamente i workbench: mostra prima il briefing locale.
 
 ## Workbench Opzionali
 
-I workbench non fanno parte del core obbligatorio. Stanno dietro profilo Compose `workbench`.
+I workbench non fanno parte del core obbligatorio. Stanno in un layer Compose separato.
 
 ### Avvio
 
 ```powershell
-docker compose --file infra/docker/compose.yml --env-file config/env/lab.env --profile workbench up -d
+docker compose --file infra/docker/compose.yml --file infra/docker/compose.workbench.yml --env-file config/env/lab.env up -d
 ```
 
 Oppure tramite CLI:
@@ -614,8 +680,10 @@ npm run dev -- up --with-workbench
 ### Postgres Vault
 
 - nessuna UI web pubblica
-- host interno: `postgres-dev`
-- porta interna: `5432`
+- host desktop: `localhost`
+- porta desktop: `55432`
+- host interno Docker: `postgres-dev`
+- porta interna Docker: `5432`
 - database condiviso dai workbench
 
 Variabili preconfigurate nei workbench:
@@ -627,13 +695,23 @@ Variabili preconfigurate nei workbench:
 - `PGPASSWORD`
 - `DATABASE_URL`
 
+Per DBeaver o `psql` eseguiti sul sistema host usa:
+
+- host: `localhost`
+- porta: `55432`
+- database: `lab`
+- username: `postgres`
+- password: `RootPostgresDev!2026`
+
 ---
 
 ## File Importanti Del Repository
 
 | File | Ruolo |
 | --- | --- |
-| [infra/docker/compose.yml](./infra/docker/compose.yml) | orchestrazione principale del lab |
+| [infra/docker/compose.yml](./infra/docker/compose.yml) | orchestrazione del layer core |
+| [infra/docker/compose.ai.yml](./infra/docker/compose.ai.yml) | orchestrazione del layer AI opzionale |
+| [infra/docker/compose.workbench.yml](./infra/docker/compose.workbench.yml) | orchestrazione del layer workbench opzionale |
 | [infra/docker/images/](./infra/docker/images) | Dockerfile e script di build dei servizi |
 | [package.json](./package.json) | metadata npm, scripts e comando binario |
 | [config/env/lab.env](./config/env/lab.env) | naming, URL, versioni e credenziali operative |
@@ -647,7 +725,8 @@ Variabili preconfigurate nei workbench:
 | [src/types/](./src/types) | tipizzazioni condivise `*.types.ts` |
 | [src/ui/](./src/ui) | output CLI, banner e summary |
 | [src/utils/](./src/utils) | helper HTTP e process execution |
-| [config/gateway/templates/Caddyfile.template](./config/gateway/templates/Caddyfile.template) | routing localhost multi-porta |
+| [config/gateway/templates/Caddyfile.template](./config/gateway/templates/Caddyfile.template) | routing del layer core |
+| [config/gateway/templates/Caddyfile.ai.template](./config/gateway/templates/Caddyfile.ai.template) | routing del layer AI |
 | [apps/lab-index/](./apps/lab-index) | app Vite + React + TypeScript + Sass dell'index grafico |
 | [config/gateway/templates/runtime/lab-config.json.template](./config/gateway/templates/runtime/lab-config.json.template) | payload runtime generato dal gateway per l'app frontend |
 | [infra/docker/images/gateway/bootstrap-gateway.sh](./infra/docker/images/gateway/bootstrap-gateway.sh) | rendering template, cert e bootstrap gateway |
@@ -669,9 +748,17 @@ Variabili preconfigurate nei workbench:
 
 ```powershell
 npm run dev -- up
+npm run dev -- up --with-ai
+npm run dev -- up --with-ai --with-workbench
 npm run dev -- bootstrap
+npm run dev -- bootstrap --with-ai
 npm run dev -- doctor --smoke
+npm run dev -- doctor --with-ai --smoke
 npm run dev -- status
+npm run dev -- save-images --with-ai --with-workbench
+npm run dev -- save-volumes --with-ai --with-workbench
+npm run dev -- restore-images --input .\backups\images\atlas-lab-images.tar
+npm run dev -- restore-volumes --input-dir .\backups\volumes\atlas-lab-volumes
 ```
 
 ### Build e packaging
@@ -686,8 +773,12 @@ npm run pack:local
 ```powershell
 npm install -g .
 atlas-lab up
+atlas-lab up --with-ai
 atlas-lab status
 atlas-lab doctor --smoke
+atlas-lab doctor --with-ai --smoke
+atlas-lab save-images --with-ai --with-workbench
+atlas-lab save-volumes --with-ai --with-workbench
 ```
 
 ### Link globale per sviluppo
@@ -701,10 +792,11 @@ atlas-lab status
 
 ```powershell
 docker compose --file infra/docker/compose.yml --env-file config/env/lab.env ps -a
+docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --env-file config/env/lab.env ps -a
+docker compose --file infra/docker/compose.yml --file infra/docker/compose.workbench.yml --env-file config/env/lab.env ps -a
 docker compose --file infra/docker/compose.yml --env-file config/env/lab.env config
-docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs -f
-docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs -f gateway
-docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs -f open-webui
+docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --env-file config/env/lab.env logs -f open-webui
+docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --env-file config/env/lab.env logs -f ollama
 docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs -f n8n
 docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs -f gitea
 ```
@@ -715,10 +807,10 @@ docker compose --file infra/docker/compose.yml --env-file config/env/lab.env log
 atlas-lab down
 ```
 
-### Stop con workbench
+### Stop completo dei layer opzionali
 
 ```powershell
-docker compose --file infra/docker/compose.yml --env-file config/env/lab.env --profile workbench down
+docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --file infra/docker/compose.workbench.yml --env-file config/env/lab.env down
 ```
 
 ---
@@ -730,6 +822,7 @@ docker compose --file infra/docker/compose.yml --env-file config/env/lab.env --p
 ```powershell
 npm run dev -- doctor
 npm run dev -- doctor --smoke
+npm run dev -- doctor --with-ai --smoke
 ```
 
 ### Endpoint deck
@@ -770,7 +863,8 @@ atlas-lab status
 
 Atteso:
 
-- `gitea`, `gitea-db`, `n8n`, `n8n-runners`, `ollama`, `open-webui` in salute
+- `gitea`, `gitea-db`, `n8n`, `n8n-runners` in salute nel core
+- `ollama`, `open-webui` in salute solo se hai avviato `--with-ai`
 - nessun servizio di init presente
 
 ---
@@ -782,7 +876,7 @@ Atteso:
 Controlla:
 
 1. `atlas-lab status`
-2. `docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs -f <servizio>`
+2. `docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --file infra/docker/compose.workbench.yml --env-file config/env/lab.env logs -f <servizio>`
 3. che la porta del servizio sia libera e corretta
 
 ### Il browser mostra warning certificato
@@ -826,6 +920,13 @@ Oppure con CLI globale:
 atlas-lab bootstrap
 ```
 
+Se devi riallineare anche Ollama, usa invece:
+
+```powershell
+npm run dev -- bootstrap --with-ai
+atlas-lab bootstrap --with-ai
+```
+
 ### `npm` non funziona in PowerShell
 
 Usa gli shim `.cmd`:
@@ -839,7 +940,7 @@ atlas-lab.cmd status
 
 La CLI controlla prima le porte pubbliche del gateway e dei workbench.
 
-Se vedi un errore tipo `Host port preflight failed`, significa che una o piu porte tra `8443-8453` sono gia occupate da un'altra stack o da un altro processo locale.
+Se vedi un errore tipo `Host port preflight failed`, significa che una o piu porte tra `8443-8453` oppure `55432` sono gia occupate da un'altra stack o da un altro processo locale.
 
 Controlla:
 
@@ -856,7 +957,7 @@ Poi libera le porte in uno di questi modi:
 
 ### `atlas-lab up` fallisce sul preflight GPU NVIDIA
 
-La configurazione di default ora forza `Ollama` su GPU.
+Il preflight GPU NVIDIA viene eseguito solo se avvii il layer AI con `--with-ai`.
 
 Se vedi un errore che parla di `NVIDIA GPU` o un messaggio Docker simile a `could not select device driver "" with capabilities: [[gpu]]`, il problema non e Ollama ma il pass-through GPU del daemon Docker.
 
@@ -900,11 +1001,11 @@ docker context use default
 docker run --rm --gpus all nvidia/cuda:12.8.1-base-ubuntu24.04 nvidia-smi
 ```
 
-4. poi rilancia Atlas Lab
+4. poi rilancia Atlas Lab con il layer AI
 
 ```bash
 docker context use default
-npm run dev -- up
+npm run dev -- up --with-ai
 ```
 
 Se continui a usare il contesto `desktop-linux`, Atlas Lab restera bloccato sul preflight GPU anche se `nvidia-smi` sul host funziona.
@@ -938,12 +1039,12 @@ docker context use default
 
 ### I workbench non compaiono in `docker compose up`
 
-Normale: stanno dietro profilo Compose.
+Normale: stanno in un file Compose separato.
 
 Usa:
 
 ```powershell
-docker compose --file infra/docker/compose.yml --env-file config/env/lab.env --profile workbench up -d
+docker compose --file infra/docker/compose.yml --file infra/docker/compose.workbench.yml --env-file config/env/lab.env up -d
 ```
 
 Oppure:
@@ -957,16 +1058,17 @@ npm run dev -- up --with-workbench
 Controlla:
 
 - `atlas-lab status`
-- `docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs open-webui`
-- `docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs ollama`
+- che tu abbia avviato il layer AI con `npm run dev -- up --with-ai`
+- `docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --env-file config/env/lab.env logs open-webui`
+- `docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --env-file config/env/lab.env logs ollama`
 - la risposta di `https://localhost:8447/api/tags`
 - che `OLLAMA_CHAT_MODEL` e `OLLAMA_EMBEDDING_MODEL` siano valorizzati in `config/env/lab.env`
-- `npm run dev -- doctor --smoke`
+- `npm run dev -- doctor --with-ai --smoke`
 
 Se hai cambiato i modelli configurati, riesegui:
 
 ```powershell
-npm run dev -- bootstrap --skip-gitea
+npm run dev -- bootstrap --with-ai --skip-gitea
 ```
 
 ### n8n continua a chiedere accesso o sembra respingere il login
@@ -1067,4 +1169,4 @@ Se vuoi irrigidire ulteriormente il lab, i passi sensati sono:
 
 ---
 
-In una frase: questo progetto e un lab locale self-hosted con servizi core, workbench opzionali e una CLI Node.js che consente sia sviluppo diretto sia packaging e installazione globale in stile npm.
+In una frase: questo progetto e un lab locale self-hosted con un layer core sempre attivo, layer AI e workbench opzionali, e una CLI Node.js che consente sviluppo diretto, bootstrap selettivo e packaging in stile npm.

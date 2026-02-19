@@ -12,6 +12,7 @@ export function registerUpCommand(program: Command): void {
     .description('Start Docker Compose, run bootstrap, and clean legacy artifacts')
     .option('--project-dir <path>', 'Explicit project root if you are not in the repo')
     .option('--build', 'Rebuild images before starting the stack')
+    .option('--with-ai', 'Include the optional AI layer (Open WebUI and Ollama)')
     .option('--with-workbench', 'Include the optional workbench profile')
     .action(async (options: UpCommandOptions) => {
       const context = createProjectContext(options);

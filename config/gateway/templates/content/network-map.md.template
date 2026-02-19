@@ -2,31 +2,39 @@
 
 ## Come funziona il rework
 
-Il deck resta raggiungibile in locale su `${LAB_LOCAL_URL}`. Ogni servizio applicativo vive su una porta HTTPS dedicata di `localhost`, sempre dietro lo stesso gateway Caddy.
+Il deck resta raggiungibile in locale su `${LAB_LOCAL_URL}`. Il lab ora e separato in tre layer:
+
+- `core`: deck, Gitea e n8n
+- `ai`: Open WebUI e Ollama
+- `workbench`: Postgres e ambienti code-server
+
+Ogni layer pubblica i propri endpoint HTTPS su `localhost` tramite un gateway dedicato. In piu, il layer `workbench` espone anche `Postgres` su una porta TCP host dedicata.
 
 ## Endpoint pubblici del lab
 
 - Deck locale: `${LAB_LOCAL_URL}`
 - Gitea: `${GITEA_URL}`
 - n8n: `${N8N_URL}`
-- Open WebUI: `${OPENWEBUI_URL}`
-- Ollama: `${OLLAMA_URL}`
-- Node workbench: `${NODE_DEV_URL}`
-- Python workbench: `${PYTHON_DEV_URL}`
-- AI workbench: `${AI_DEV_URL}`
-- C++ workbench: `${CPP_DEV_URL}`
+- Open WebUI: `${OPENWEBUI_URL}` solo se il layer `ai` e attivo
+- Ollama: `${OLLAMA_URL}` solo se il layer `ai` e attivo
+- Node workbench: `${NODE_DEV_URL}` solo se il layer `workbench` e attivo
+- Python workbench: `${PYTHON_DEV_URL}` solo se il layer `workbench` e attivo
+- AI workbench: `${AI_DEV_URL}` solo se il layer `workbench` e attivo
+- C++ workbench: `${CPP_DEV_URL}` solo se il layer `workbench` e attivo
+- Postgres host access: `localhost:${POSTGRES_DEV_HOST_PORT}` solo se il layer `workbench` e attivo
 
 ## Routing localhost multi-porta
 
 - `8443`: deck locale
 - `8444`: Gitea
 - `8445`: n8n
-- `8446`: Open WebUI
-- `8447`: Ollama
-- `8450`: Node workbench
-- `8451`: Python workbench
-- `8452`: AI workbench
-- `8453`: C++ workbench
+- `8446`: Open WebUI, layer `ai`
+- `8447`: Ollama, layer `ai`
+- `8450`: Node workbench, layer `workbench`
+- `8451`: Python workbench, layer `workbench`
+- `8452`: AI workbench, layer `workbench`
+- `8453`: C++ workbench, layer `workbench`
+- `${POSTGRES_DEV_HOST_PORT}`: Postgres host access, layer `workbench`
 
 Nessuna modifica a DNS o file `hosts`: basta usare `https://localhost:<porta>/`.
 
@@ -40,7 +48,8 @@ Il gateway genera un certificato self-signed SAN che copre `localhost` e `127.0.
 - `ai-net`: Ollama e Open WebUI
 - `data-net`: database infrastrutturali
 - `workbench-net`: Postgres e ambienti code-server opzionali
+- `workbench-host-net`: bridge dedicato al bind TCP di Postgres verso `localhost`
 - `services-egress-net`: uscita internet selettiva per servizi core senza esposizione diretta
 - `workbench-egress-net`: uscita internet selettiva per gli ambienti di sviluppo
 
-Il solo container esposto e il gateway.
+I container esposti verso il browser sono soltanto i gateway di layer.

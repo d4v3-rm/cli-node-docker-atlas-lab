@@ -49,8 +49,17 @@ export interface FooterCardViewModel {
   label: string;
 }
 
+export interface OptionalLayerViewModel {
+  activationCommand: string;
+  description: string;
+  enabled: boolean;
+  title: string;
+}
+
 export interface DashboardViewModel {
   accessNotes: string[];
+  aiLayer: OptionalLayerViewModel;
+  aiServices: ServiceCardViewModel[];
   footerCards: FooterCardViewModel[];
   hero: {
     eyebrow: string;
@@ -62,6 +71,7 @@ export interface DashboardViewModel {
   networkMap: BriefingReference;
   operatingCharter: string[];
   services: ServiceCardViewModel[];
+  workbenchLayer: OptionalLayerViewModel;
   workbenches: WorkbenchCardViewModel[];
 }
 

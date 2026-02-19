@@ -14,6 +14,7 @@ const LEGACY_IMAGES = [
   'cli-node-lab-ollama-init:latest',
   'cli-node-docker-atlas-lab-ollama-init:latest'
 ] as const;
+const VERBOSE_TASK_RENDERER = 'verbose' as const;
 
 /**
  * Runs `docker compose up`, the bootstrap workflow, and the legacy image cleanup.
@@ -27,21 +28,27 @@ export async function runUpCommand(
     summary: 'Bring Docker Compose up and reconcile runtime state',
     projectRoot: context.projectRoot
   });
+  printInfo(`Enabled layers: ${describeEnabledLayers(options)}`, 'stack');
 
   const stackWasRunning = await hasRunningComposeServices(context);
   let composeStartedInThisRun = false;
   const tasks = new Listr(
     [
-      {
-        title: formatTaskTitle('host', 'Validate NVIDIA GPU runtime'),
-        task: async () => {
-          await assertNvidiaGpuRuntime();
-        }
-      },
+      ...(options.withAi
+        ? [
+            {
+              title: formatTaskTitle('host', 'Validate NVIDIA GPU runtime'),
+              task: async () => {
+                await assertNvidiaGpuRuntime();
+              }
+            }
+          ]
+        : []),
       {
         title: formatTaskTitle('host', 'Validate published host ports'),
         task: async () => {
           await assertPublishedPortsAvailable(context, {
+            includeAi: Boolean(options.withAi),
             includeWorkbench: Boolean(options.withWorkbench)
           });
         }
@@ -49,10 +56,12 @@ export async function runUpCommand(
       {
         title: formatTaskTitle('stack', 'Start Docker Compose stack'),
         task: async () => {
+          printInfo('Starting Docker Compose services in detached mode.', 'stack');
           await runCommand('docker', createComposeUpArgs(context, options), {
             cwd: context.projectRoot,
             scope: 'compose'
           });
+          printInfo('Docker Compose startup completed. Continuing with runtime bootstrap.', 'stack');
           composeStartedInThisRun = true;
         }
       },
@@ -62,11 +71,13 @@ export async function runUpCommand(
           new Listr(
             createBootstrapTasks(context, {
               skipGitea: false,
-              skipOllama: false
+              skipOllama: !options.withAi,
+              withAi: Boolean(options.withAi)
             }),
             {
               concurrent: false,
-              exitOnError: true
+              exitOnError: true,
+              renderer: VERBOSE_TASK_RENDERER
             }
           )
       },
@@ -79,7 +90,8 @@ export async function runUpCommand(
     ],
     {
       concurrent: false,
-      exitOnError: true
+      exitOnError: true,
+      renderer: VERBOSE_TASK_RENDERER
     }
   );
 
@@ -91,6 +103,23 @@ export async function runUpCommand(
   }
 
   printSuccess('Atlas Lab stack is ready.', 'stack');
+}
+
+/**
+ * Formats the selected Compose layers for the startup log header.
+ */
+function describeEnabledLayers(options: Pick<UpCommandOptions, 'withAi' | 'withWorkbench'>): string {
+  const layers = ['core'];
+
+  if (options.withAi) {
+    layers.push('ai');
+  }
+
+  if (options.withWorkbench) {
+    layers.push('workbench');
+  }
+
+  return layers.join(', ');
 }
 
 /**
@@ -106,7 +135,7 @@ export async function runStatusCommand(
     projectRoot: context.projectRoot
   });
 
-  await runCommand('docker', createComposeCommandArgs(context, ['ps', '--all']), {
+  await runCommand('docker', createComposeCommandArgs(context, ['ps', '--all'], { includeAll: true }), {
     cwd: context.projectRoot,
     scope: 'compose'
   });
@@ -126,10 +155,14 @@ export async function runDownCommand(
   });
 
   printInfo('Stopping the Atlas Lab stack...', 'stack');
-  await runCommand('docker', createComposeCommandArgs(context, ['down', '--remove-orphans']), {
-    cwd: context.projectRoot,
-    scope: 'compose'
-  });
+  await runCommand(
+    'docker',
+    createComposeCommandArgs(context, ['down', '--remove-orphans'], { includeAll: true }),
+    {
+      cwd: context.projectRoot,
+      scope: 'compose'
+    }
+  );
   printSuccess('Atlas Lab stack stopped.', 'stack');
 }
 
@@ -137,19 +170,16 @@ export async function runDownCommand(
  * Builds the Docker Compose invocation for the `up` command.
  */
 function createComposeUpArgs(context: ProjectContext, options: UpCommandOptions): string[] {
-  const composeArgs = [];
-
-  if (options.withWorkbench) {
-    composeArgs.push('--profile', 'workbench');
-  }
-
-  composeArgs.push('up', '-d', '--remove-orphans');
+  const composeArgs = ['up', '-d', '--remove-orphans'];
 
   if (options.build) {
     composeArgs.push('--build');
   }
 
-  return createComposeCommandArgs(context, composeArgs);
+  return createComposeCommandArgs(context, composeArgs, {
+    includeAi: Boolean(options.withAi),
+    includeWorkbench: Boolean(options.withWorkbench)
+  });
 }
 
 /**
@@ -187,9 +217,13 @@ async function rollbackPartialStartup(
   }
 
   printInfo('Bootstrap failed after startup; stopping the partially started Atlas Lab stack.', 'stack');
-  await runCommand('docker', createComposeCommandArgs(context, ['down', '--remove-orphans']), {
-    allowFailure: true,
-    cwd: context.projectRoot,
-    scope: 'compose'
-  });
+  await runCommand(
+    'docker',
+    createComposeCommandArgs(context, ['down', '--remove-orphans'], { includeAll: true }),
+    {
+      allowFailure: true,
+      cwd: context.projectRoot,
+      scope: 'compose'
+    }
+  );
 }

@@ -11,6 +11,7 @@ export function registerBootstrapCommand(program: Command): void {
     .command('bootstrap')
     .description('Run the idempotent bootstrap only')
     .option('--project-dir <path>', 'Explicit project root if you are not in the repo')
+    .option('--with-ai', 'Include the optional AI layer bootstrap (Ollama models)')
     .option('--skip-gitea', 'Skip the Gitea admin reconciliation step')
     .option('--skip-ollama', 'Skip the Ollama model reconciliation step')
     .action(async (options: BootstrapCommandOptions) => {

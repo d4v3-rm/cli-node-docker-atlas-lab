@@ -11,12 +11,16 @@ import type { LabEnv, ProjectContext } from '../types/project.types.js';
 const CORE_PORT_ENV_KEYS = [
   'LAB_HTTPS_PORT',
   'GITEA_HTTPS_PORT',
-  'N8N_HTTPS_PORT',
+  'N8N_HTTPS_PORT'
+] as const;
+
+const AI_PORT_ENV_KEYS = [
   'OPENWEBUI_HTTPS_PORT',
   'OLLAMA_HTTPS_PORT'
 ] as const;
 
 const WORKBENCH_PORT_ENV_KEYS = [
+  'POSTGRES_DEV_HOST_PORT',
   'NODE_DEV_HTTPS_PORT',
   'PYTHON_DEV_HTTPS_PORT',
   'AI_DEV_HTTPS_PORT',
@@ -31,10 +35,15 @@ const BIND_ADDRESSES: readonly HostBindAddress[] = ['0.0.0.0', '::'] as const;
 export async function assertPublishedPortsAvailable(
   context: ProjectContext,
   options: {
+    includeAi: boolean;
     includeWorkbench: boolean;
   }
 ): Promise<void> {
-  const definitions = getConfiguredHostPorts(context.env, options.includeWorkbench);
+  const definitions = getConfiguredHostPorts(
+    context.env,
+    options.includeWorkbench,
+    options.includeAi
+  );
   const currentProjectPorts = await getRunningComposePublishedPorts(context);
   const results = await Promise.all(
     definitions.map((definition) => checkHostPort(definition, currentProjectPorts))
@@ -55,10 +64,16 @@ export async function assertPublishedPortsAvailable(
 /**
  * Resolves the list of configured public ports that Compose will publish on the host.
  */
-function getConfiguredHostPorts(env: LabEnv, includeWorkbench: boolean): HostPortDefinition[] {
-  const envKeys = includeWorkbench
-    ? [...CORE_PORT_ENV_KEYS, ...WORKBENCH_PORT_ENV_KEYS]
-    : [...CORE_PORT_ENV_KEYS];
+function getConfiguredHostPorts(
+  env: LabEnv,
+  includeWorkbench: boolean,
+  includeAi: boolean
+): HostPortDefinition[] {
+  const envKeys = [
+    ...CORE_PORT_ENV_KEYS,
+    ...(includeAi ? [...AI_PORT_ENV_KEYS] : []),
+    ...(includeWorkbench ? [...WORKBENCH_PORT_ENV_KEYS] : [])
+  ];
 
   return envKeys.map((envKey) => ({
     envKey,
