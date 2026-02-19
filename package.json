@@ -15,8 +15,12 @@
     "pack:local": "npm pack"
   },
   "files": [
+    ".dockerignore",
+    "apps/lab-index",
     "bin",
+    "config",
     "dist",
+    "infra/docker",
     "README.md"
   ],
   "engines": {
