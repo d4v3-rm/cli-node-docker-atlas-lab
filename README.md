@@ -326,8 +326,8 @@ La CLI TypeScript sostituisce il vecchio bootstrap Python e i vecchi servizi Com
 | --- | --- | --- |
 | dev mode | `npm run dev -- up` | usa `tsx` sulla CLI TypeScript sorgente |
 | build | `npm run build` | bundle ESM della CLI in `dist/` con `tsup` |
-| pack locale | `npm run pack:local` | crea un tarball npm locale |
-| install globale | `npm install -g .` | installa `atlas-lab` globalmente dalla repo |
+| pack locale | `npm run pack:local` | crea un tarball npm self-contained con gli asset runtime del lab |
+| install globale | `npm install -g .` | installa `atlas-lab` globalmente dalla repo con asset inclusi |
 | link globale | `npm link` | collega la repo come CLI globale durante lo sviluppo |
 
 ### Log di sviluppo
@@ -430,14 +430,27 @@ Il bootstrap e idempotente.
 
 ### Come funziona la global install
 
-La CLI installata globalmente non opera sulla directory del pacchetto npm installato. Cerca il progetto:
+La CLI installata globalmente include gia gli asset runtime del lab:
 
-- nella directory corrente
-- oppure in un path esplicito passato con `--project-dir`
+- file Compose
+- `config/env/lab.env`
+- template gateway
+- Dockerfile e script delle immagini custom
+- frontend `apps/lab-index`
 
-Esempio:
+Quindi `atlas-lab` puo essere eseguito da qualsiasi directory anche senza checkout del repository.
+
+Ordine di risoluzione degli asset:
+
+- se sei dentro un checkout del lab, usa quel checkout
+- se passi `--project-dir`, usa il path esplicito
+- altrimenti usa gli asset inclusi nel pacchetto npm installato globalmente
+
+Esempi:
 
 ```powershell
+atlas-lab status
+atlas-lab up --with-workbench
 atlas-lab status --project-dir C:\Users\User\Development\repos-review\cli-node-docker-atlas-lab
 ```
 
@@ -779,6 +792,16 @@ atlas-lab doctor --smoke
 atlas-lab doctor --with-ai --smoke
 atlas-lab save-images --with-ai --with-workbench
 atlas-lab save-volumes --with-ai --with-workbench
+```
+
+### Installazione dal tarball self-contained
+
+```powershell
+npm run pack:local
+npm install -g .\cli-node-docker-atlas-lab-1.0.0.tgz
+cd $HOME\Downloads
+atlas-lab status
+atlas-lab up
 ```
 
 ### Link globale per sviluppo
