@@ -9,8 +9,8 @@ import { runRestoreImagesCommand } from '../services/image-archive.service.js';
 export function registerRestoreImagesCommand(program: Command): void {
   program
     .command('restore-images')
-    .description('Restore Docker images from a tar archive on disk')
-    .requiredOption('--input <path>', 'Input tar archive path')
+    .description('Restore Docker images from a single archive on disk')
+    .requiredOption('--input <path>', 'Input image archive path')
     .option('--project-dir <path>', 'Explicit lab asset root instead of the packaged install')
     .action(async (options: RestoreImagesCommandOptions) => {
       const context = createProjectContext(options);

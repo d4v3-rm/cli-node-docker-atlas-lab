@@ -9,9 +9,9 @@ import { runSaveImagesCommand } from '../services/image-archive.service.js';
 export function registerSaveImagesCommand(program: Command): void {
   program
     .command('save-images')
-    .description('Save Docker images for the selected lab layers to disk')
+    .description('Save Docker images for the selected lab layers into a single archive')
     .option('--project-dir <path>', 'Explicit lab asset root instead of the packaged install')
-    .option('--output <path>', 'Output tar archive path (defaults under ./backups/images)')
+    .option('--output <path>', 'Output archive path (defaults under ./backups/images)')
     .option('--with-ai', 'Include the optional AI layer images')
     .option('--with-workbench', 'Include the optional workbench layer images')
     .action(async (options: SaveImagesCommandOptions) => {
