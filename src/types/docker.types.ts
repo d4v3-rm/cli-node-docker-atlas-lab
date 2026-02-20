@@ -21,7 +21,7 @@ export interface ComposePsEntry {
 }
 
 /**
- * Metadata persisted next to a saved Docker image archive.
+ * Metadata persisted inside a saved Docker image archive bundle.
  */
 export interface ImageArchiveManifest {
   createdAt: string;
@@ -30,7 +30,7 @@ export interface ImageArchiveManifest {
 }
 
 /**
- * Metadata for a single archived Docker volume.
+ * Metadata for a single archived Docker volume payload embedded in a bundle archive.
  */
 export interface VolumeArchiveEntry {
   archiveFile: string;
@@ -39,7 +39,7 @@ export interface VolumeArchiveEntry {
 }
 
 /**
- * Metadata persisted for a directory of archived Docker volumes.
+ * Metadata persisted inside a Docker volume bundle archive.
  */
 export interface VolumeArchiveManifest {
   createdAt: string;

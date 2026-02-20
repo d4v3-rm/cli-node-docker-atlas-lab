@@ -9,8 +9,8 @@ import { runRestoreVolumesCommand } from '../services/volume-archive.service.js'
 export function registerRestoreVolumesCommand(program: Command): void {
   program
     .command('restore-volumes')
-    .description('Restore Docker volumes from an archive directory on disk')
-    .requiredOption('--input-dir <path>', 'Input volume archive directory')
+    .description('Restore Docker volumes from a single archive on disk')
+    .requiredOption('--input <path>', 'Input volume archive path')
     .option('--project-dir <path>', 'Explicit lab asset root instead of the packaged install')
     .action(async (options: RestoreVolumesCommandOptions) => {
       const context = createProjectContext(options);

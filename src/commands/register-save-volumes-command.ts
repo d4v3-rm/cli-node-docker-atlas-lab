@@ -9,9 +9,9 @@ import { runSaveVolumesCommand } from '../services/volume-archive.service.js';
 export function registerSaveVolumesCommand(program: Command): void {
   program
     .command('save-volumes')
-    .description('Save Docker volumes for the selected lab layers to disk')
+    .description('Save Docker volumes for the selected lab layers into a single archive')
     .option('--project-dir <path>', 'Explicit lab asset root instead of the packaged install')
-    .option('--output-dir <path>', 'Output directory path (defaults under ./backups/volumes)')
+    .option('--output <path>', 'Output archive path (defaults under ./backups/volumes)')
     .option('--with-ai', 'Include the optional AI layer volumes')
     .option('--with-workbench', 'Include the optional workbench layer volumes')
     .action(async (options: SaveVolumesCommandOptions) => {

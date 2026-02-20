@@ -7,7 +7,7 @@ describe('volume archive manifest', () => {
       project: '/lab',
       volumes: [
         {
-          archiveFile: 'gateway-data.tar.gz',
+          archiveFile: 'gateway-data.tar',
           dockerName: 'cli-node-docker-atlas-lab_gateway-data',
           logicalName: 'gateway-data'
         }
