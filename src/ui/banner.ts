@@ -32,9 +32,9 @@ export function renderHelpFooter(): string {
     `  ${APP_METADATA.cliName} bootstrap --with-ai`,
     `  ${APP_METADATA.cliName} doctor --with-ai --smoke`,
     `  ${APP_METADATA.cliName} save-images --with-ai --with-workbench`,
-    `  ${APP_METADATA.cliName} restore-images --input .\\backups\\images\\atlas-lab-images.tar`,
+    `  ${APP_METADATA.cliName} restore-images --input .\\backups\\images\\atlas-lab-images.tar.gz`,
     `  ${APP_METADATA.cliName} save-volumes --with-ai --with-workbench`,
-    `  ${APP_METADATA.cliName} restore-volumes --input-dir .\\backups\\volumes\\atlas-lab-volumes`,
+    `  ${APP_METADATA.cliName} restore-volumes --input .\\backups\\volumes\\atlas-lab-volumes.tar.gz`,
     `  ${APP_METADATA.cliName} status --project-dir C:\\path\\to\\${APP_METADATA.codeName}`
   ].join('\n');
 }

@@ -386,18 +386,19 @@ La CLI usa questo layout come contratto esplicito: risolve sempre `infra/docker/
 | `atlas-lab status` | mostra lo stato Compose |
 | `atlas-lab down` | ferma la stack |
 | `atlas-lab save-images --with-ai --with-workbench` | esporta su disco le immagini richieste dai layer selezionati |
-| `atlas-lab restore-images --input <archive.tar>` | ricarica nel daemon Docker un archivio di immagini precedentemente esportato |
+| `atlas-lab restore-images --input <archive.tar.gz>` | ricarica nel daemon Docker un archivio di immagini precedentemente esportato |
 | `atlas-lab save-volumes --with-ai --with-workbench` | salva su disco i volumi dei layer selezionati |
-| `atlas-lab restore-volumes --input-dir <directory>` | ripristina i volumi Docker da un backup su disco |
+| `atlas-lab restore-volumes --input <archive.tar.gz>` | ripristina i volumi Docker da un backup su disco |
 
 ### Backup e ripristino
 
 Le immagini e i volumi possono essere gestiti separatamente:
 
-- il backup immagini produce un archivio `.tar` e un manifest JSON di supporto
-- il restore immagini esegue `docker image load` sull'archivio salvato
-- il backup volumi produce una directory con un archivio `.tar.gz` per ogni volume e un `manifest.json`
-- il restore volumi ricrea i volumi mancanti e ripristina il contenuto dai relativi archivi
+- il backup immagini produce un singolo archivio `.tar.gz` con payload Docker e `manifest.json` interno
+- il restore immagini accetta un solo file e ricarica il payload nel daemon Docker
+- il backup volumi produce un singolo archivio `.tar.gz` con un payload `.tar` per volume e `manifest.json` interno
+- il restore volumi accetta un solo file, ricrea i volumi mancanti e ripristina i contenuti
+- durante save e restore la CLI stampa log progressivi per ogni fase e per ogni volume coinvolto
 
 Vincoli operativi:
 
@@ -409,9 +410,9 @@ Esempi:
 
 ```powershell
 npm run dev -- save-images --with-ai --with-workbench
-npm run dev -- restore-images --input .\backups\images\atlas-lab-images-2026-03-09T12-00-00-000Z.tar
+npm run dev -- restore-images --input .\backups\images\atlas-lab-images-2026-03-09T12-00-00-000Z.tar.gz
 npm run dev -- save-volumes --with-ai --with-workbench
-npm run dev -- restore-volumes --input-dir .\backups\volumes\atlas-lab-volumes-2026-03-09T12-00-00-000Z
+npm run dev -- restore-volumes --input .\backups\volumes\atlas-lab-volumes-2026-03-09T12-00-00-000Z.tar.gz
 ```
 
 ### Cosa fa il bootstrap
@@ -770,8 +771,8 @@ npm run dev -- doctor --with-ai --smoke
 npm run dev -- status
 npm run dev -- save-images --with-ai --with-workbench
 npm run dev -- save-volumes --with-ai --with-workbench
-npm run dev -- restore-images --input .\backups\images\atlas-lab-images.tar
-npm run dev -- restore-volumes --input-dir .\backups\volumes\atlas-lab-volumes
+npm run dev -- restore-images --input .\backups\images\atlas-lab-images.tar.gz
+npm run dev -- restore-volumes --input .\backups\volumes\atlas-lab-volumes.tar.gz
 ```
 
 ### Build e packaging
