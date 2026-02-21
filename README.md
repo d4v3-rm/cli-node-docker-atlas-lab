@@ -607,6 +607,7 @@ Le credenziali operative sono in [`config/env/lab.env`](./config/env/lab.env) e 
 - porta host: `8443`
 - ruolo: homepage grafica del lab con link rapidi, credenziali operative e accesso ai servizi
 - implementazione: app Vite + React + TypeScript + Sass in [`apps/lab-index`](./apps/lab-index)
+- toolchain frontend: script npm e config Vite/TypeScript al livello root della repo (`package.json`, `lab-index.vite.config.ts`, `tsconfig.lab-index.json`)
 - delivery: la build frontend viene prodotta dentro l'immagine gateway e poi pubblicata come bundle statico
 
 ### Gitea
@@ -739,9 +740,11 @@ Per DBeaver o `psql` eseguiti sul sistema host usa:
 | [src/types/](./src/types) | tipizzazioni condivise `*.types.ts` |
 | [src/ui/](./src/ui) | output CLI, banner e summary |
 | [src/utils/](./src/utils) | helper HTTP e process execution |
+| [lab-index.vite.config.ts](./lab-index.vite.config.ts) | configurazione Vite root-level dell'index grafico |
+| [tsconfig.lab-index.json](./tsconfig.lab-index.json) | TypeScript config root-level dell'index grafico |
 | [config/gateway/templates/Caddyfile.template](./config/gateway/templates/Caddyfile.template) | routing del layer core |
 | [config/gateway/templates/Caddyfile.ai.template](./config/gateway/templates/Caddyfile.ai.template) | routing del layer AI |
-| [apps/lab-index/](./apps/lab-index) | app Vite + React + TypeScript + Sass dell'index grafico |
+| [apps/lab-index/](./apps/lab-index) | sorgenti dell'index grafico: solo `src`, `public`, `index.html` |
 | [config/gateway/templates/runtime/lab-config.json.template](./config/gateway/templates/runtime/lab-config.json.template) | payload runtime generato dal gateway per l'app frontend |
 | [infra/docker/images/gateway/bootstrap-gateway.sh](./infra/docker/images/gateway/bootstrap-gateway.sh) | rendering template, cert e bootstrap gateway |
 | [config/gateway/templates/content/network-map.md.template](./config/gateway/templates/content/network-map.md.template) | topologia pubblica del lab |
