@@ -22,7 +22,8 @@ export async function runBootstrapCommand(
   printCommandHeader({
     title: 'Bootstrap Atlas Lab',
     summary: 'Reconcile core runtime state and optional AI models',
-    projectRoot: context.projectRoot
+    projectRoot: context.projectRoot,
+    workingDirectory: context.workingDirectory
   });
 
   await new Listr(createBootstrapTasks(context, options), {

@@ -33,6 +33,8 @@ export interface LabEnv {
  */
 export interface ProjectContext {
   projectRoot: string;
+  runtimeSource: 'checkout' | 'explicit-path' | 'packaged-install';
+  workingDirectory: string;
   layout: RepositoryLayout;
   env: LabEnv;
 }

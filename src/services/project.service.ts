@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
 import { findUpSync } from 'find-up';
 import { ZodError } from 'zod';
@@ -29,7 +30,9 @@ import { printInfo } from '../ui/logger.js';
  * Creates the runtime context used by commands that operate on a checkout.
  */
 export function createProjectContext(options: GlobalCliOptions): ProjectContext {
-  const projectRoot = resolveProjectRoot(options.projectDir);
+  const workingDirectory = process.cwd();
+  const resolution = resolveProjectRoot(options.projectDir, workingDirectory);
+  const projectRoot = resolution.projectRoot;
   const layout = resolveRepositoryLayout(projectRoot);
   const fileLogSession = ensureDevelopmentFileLogging(projectRoot);
 
@@ -39,6 +42,8 @@ export function createProjectContext(options: GlobalCliOptions): ProjectContext 
 
   return {
     projectRoot,
+    runtimeSource: resolution.runtimeSource,
+    workingDirectory,
     layout,
     env: loadLabEnv(layout.envFile)
   };
@@ -73,29 +78,47 @@ export function parseAiSmokeEnv(env: LabEnv): AiSmokeEnv {
 }
 
 /**
- * Resolves the project root either from `--project-dir` or from the cwd.
+ * Resolves the lab asset root from an explicit path, the current checkout, or the installed package.
  */
-export function resolveProjectRoot(explicitProjectDir?: string): string {
+export function resolveProjectRoot(
+  explicitProjectDir?: string,
+  cwd = process.cwd(),
+  packagedProjectRoot = resolvePackagedProjectRoot()
+): {
+  projectRoot: string;
+  runtimeSource: ProjectContext['runtimeSource'];
+} {
   if (explicitProjectDir) {
     const projectRoot = resolve(explicitProjectDir);
     validateProjectRoot(projectRoot);
-    return projectRoot;
+    return {
+      projectRoot,
+      runtimeSource: 'explicit-path'
+    };
   }
 
   const projectRoot = findUpSync(
     (directory) => (isProjectRoot(directory) ? directory : undefined),
     {
-      cwd: process.cwd(),
+      cwd,
       type: 'directory'
     }
   );
   if (!projectRoot) {
-    throw new Error(
-      'Could not locate the lab project root from the current directory. Use --project-dir <path>.'
-    );
+    if (isProjectRoot(packagedProjectRoot)) {
+      return {
+        projectRoot: packagedProjectRoot,
+        runtimeSource: 'packaged-install'
+      };
+    }
+
+    throw new Error('Could not locate the Atlas Lab assets from the current directory or the installed package.');
   }
 
-  return projectRoot;
+  return {
+    projectRoot,
+    runtimeSource: 'checkout'
+  };
 }
 
 /**
@@ -136,4 +159,12 @@ function validateProjectRoot(projectRoot: string): void {
  */
 function isProjectRoot(directory: string): boolean {
   return PROJECT_MARKERS.every((marker) => existsSync(join(directory, marker)));
+}
+
+/**
+ * Resolves the package root that contains the bundled CLI and the embedded lab assets.
+ */
+export function resolvePackagedProjectRoot(moduleUrl = import.meta.url): string {
+  const moduleFile = fileURLToPath(moduleUrl);
+  return resolve(dirname(moduleFile), '..', '..');
 }

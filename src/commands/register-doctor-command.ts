@@ -10,7 +10,7 @@ export function registerDoctorCommand(program: Command): void {
   program
     .command('doctor')
     .description('Check host requirements and optionally run smoke tests')
-    .option('--project-dir <path>', 'Explicit project root if you are not in the repo')
+    .option('--project-dir <path>', 'Explicit lab asset root instead of the packaged install')
     .option('--with-ai', 'Include the optional AI layer checks')
     .option('--with-workbench', 'Validate the optional workbench Compose layer')
     .option('--smoke', 'Run smoke checks against the local HTTPS endpoints')

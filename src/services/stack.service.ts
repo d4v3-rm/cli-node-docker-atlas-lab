@@ -26,7 +26,8 @@ export async function runUpCommand(
   printCommandHeader({
     title: 'Start Atlas Lab Stack',
     summary: 'Bring Docker Compose up and reconcile runtime state',
-    projectRoot: context.projectRoot
+    projectRoot: context.projectRoot,
+    workingDirectory: context.workingDirectory
   });
   printInfo(`Enabled layers: ${describeEnabledLayers(options)}`, 'stack');
 
@@ -131,8 +132,9 @@ export async function runStatusCommand(
 ): Promise<void> {
   printCommandHeader({
     title: 'Atlas Lab Status',
-    summary: 'Display Docker Compose services for this checkout',
-    projectRoot: context.projectRoot
+    summary: 'Display Docker Compose services for this lab install',
+    projectRoot: context.projectRoot,
+    workingDirectory: context.workingDirectory
   });
 
   await runCommand('docker', createComposeCommandArgs(context, ['ps', '--all'], { includeAll: true }), {
@@ -151,7 +153,8 @@ export async function runDownCommand(
   printCommandHeader({
     title: 'Stop Atlas Lab Stack',
     summary: 'Stop Docker Compose services and remove orphans',
-    projectRoot: context.projectRoot
+    projectRoot: context.projectRoot,
+    workingDirectory: context.workingDirectory
   });
 
   printInfo('Stopping the Atlas Lab stack...', 'stack');

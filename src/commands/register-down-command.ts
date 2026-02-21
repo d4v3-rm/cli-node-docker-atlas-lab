@@ -10,7 +10,7 @@ export function registerDownCommand(program: Command): void {
   program
     .command('down')
     .description('Stop the lab stack')
-    .option('--project-dir <path>', 'Explicit project root if you are not in the repo')
+    .option('--project-dir <path>', 'Explicit lab asset root instead of the packaged install')
     .action(async (options: GlobalCliOptions) => {
       const context = createProjectContext(options);
       await runDownCommand(context, options);

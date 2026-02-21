@@ -12,7 +12,9 @@ const context: ProjectContext = {
     gatewayTemplateFile: 'config/gateway/templates/Caddyfile.template',
     gatewayWorkbenchTemplateFile: 'config/gateway/templates/Caddyfile.workbench.template'
   },
-  projectRoot: '/lab'
+  projectRoot: '/lab',
+  runtimeSource: 'checkout',
+  workingDirectory: '/lab'
 };
 
 describe('compose lib', () => {

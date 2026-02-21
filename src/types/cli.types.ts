@@ -52,7 +52,7 @@ export interface RestoreImagesCommandOptions extends GlobalCliOptions {
  * Options supported by the `save-volumes` command.
  */
 export interface SaveVolumesCommandOptions extends GlobalCliOptions {
-  outputDir?: string;
+  output?: string;
   withAi?: boolean;
   withWorkbench?: boolean;
 }
@@ -61,5 +61,5 @@ export interface SaveVolumesCommandOptions extends GlobalCliOptions {
  * Options supported by the `restore-volumes` command.
  */
 export interface RestoreVolumesCommandOptions extends GlobalCliOptions {
-  inputDir: string;
+  input: string;
 }

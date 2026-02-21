@@ -1,16 +1,25 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, isAbsolute, join, resolve } from 'node:path';
-import { Listr } from 'listr2';
+import { existsSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { isAbsolute, join, resolve } from 'node:path';
 import type { RestoreImagesCommandOptions, SaveImagesCommandOptions } from '../types/cli.types.js';
 import type { ImageArchiveManifest } from '../types/docker.types.js';
 import type { ProjectContext } from '../types/project.types.js';
 import { printCommandHeader } from '../ui/banner.js';
-import { formatTaskTitle, printSuccess } from '../ui/logger.js';
+import { printInfo, printSuccess } from '../ui/logger.js';
 import { listConfiguredComposeImages } from './compose-project.service.js';
+import {
+  cleanupArchiveWorkspace,
+  createArchiveWorkspace,
+  ensureArchiveHelperImage,
+  extractArchiveBundleToDirectory,
+  packDirectoryToArchiveBundle
+} from './archive-bundle.service.js';
 import { runCommand } from '../utils/process.js';
 
+const IMAGE_ARCHIVE_MANIFEST_FILE = 'manifest.json';
+const IMAGE_ARCHIVE_PAYLOAD_FILE = 'images.tar';
+
 /**
- * Saves the Docker images declared by the selected lab layers into a tar archive on disk.
+ * Saves the Docker images declared by the selected lab layers into a single bundle archive on disk.
  */
 export async function runSaveImagesCommand(
   context: ProjectContext,
@@ -19,59 +28,59 @@ export async function runSaveImagesCommand(
   printCommandHeader({
     title: 'Save Docker Images',
     summary: 'Export Docker images for the selected Atlas Lab layers',
-    projectRoot: context.projectRoot
+    projectRoot: context.projectRoot,
+    workingDirectory: context.workingDirectory
   });
 
-  const outputPath = resolveImageArchiveOutputPath(context.projectRoot, options.output);
-  const manifestPath = `${outputPath}.manifest.json`;
-  let images: string[] = [];
+  const outputPath = resolveImageArchiveOutputPath(context.workingDirectory, options.output);
+  const workspacePath = createArchiveWorkspace('images');
 
-  await new Listr(
-    [
-      {
-        title: formatTaskTitle('compose', 'Resolve configured image references'),
-        task: async () => {
-          images = await listConfiguredComposeImages(context, options);
+  try {
+    printInfo('Resolving configured Docker image references...', 'compose');
+    const images = await listConfiguredComposeImages(context, options);
 
-          if (images.length === 0) {
-            throw new Error('No Docker images were resolved for the selected lab layers.');
-          }
-        }
-      },
-      {
-        title: formatTaskTitle('stack', 'Export Docker images archive'),
-        task: async () => {
-          mkdirSync(dirname(outputPath), { recursive: true });
-          await runCommand('docker', ['image', 'save', '--output', outputPath, ...images], {
-            cwd: context.projectRoot,
-            scope: 'stack'
-          });
-        }
-      },
-      {
-        title: formatTaskTitle('stack', 'Write image archive manifest'),
-        task: async () => {
-          const manifest: ImageArchiveManifest = {
-            createdAt: new Date().toISOString(),
-            images,
-            project: context.projectRoot
-          };
-
-          writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
-        }
-      }
-    ],
-    {
-      concurrent: false,
-      exitOnError: true
+    if (images.length === 0) {
+      throw new Error('No Docker images were resolved for the selected lab layers.');
     }
-  ).run();
+
+    printInfo(`Resolved ${images.length} Docker images for export.`, 'compose');
+    for (const image of images) {
+      printInfo(`Queue image ${image}`, 'compose');
+    }
+
+    await ensureArchiveHelperImage(context.projectRoot, 'stack');
+
+    const payloadPath = join(workspacePath, IMAGE_ARCHIVE_PAYLOAD_FILE);
+    printInfo(`Saving Docker images into staging payload ${payloadPath}`, 'stack');
+    await runCommand('docker', ['image', 'save', '--output', payloadPath, ...images], {
+      cwd: context.projectRoot,
+      scope: 'stack'
+    });
+
+    const manifest: ImageArchiveManifest = {
+      createdAt: new Date().toISOString(),
+      images,
+      project: context.projectRoot
+    };
+
+    writeFileSync(
+      join(workspacePath, IMAGE_ARCHIVE_MANIFEST_FILE),
+      `${JSON.stringify(manifest, null, 2)}\n`,
+      'utf8'
+    );
+    printInfo(`Embedded image manifest with ${images.length} entries.`, 'stack');
+
+    await packDirectoryToArchiveBundle(workspacePath, outputPath, context.projectRoot, 'stack');
+  } finally {
+    cleanupArchiveWorkspace(workspacePath);
+  }
 
   printSuccess(`Docker images saved to ${outputPath}`, 'stack');
 }
 
 /**
  * Restores a Docker image archive previously exported by `save-images`.
+ * Also supports the legacy raw `docker image save` tar format.
  */
 export async function runRestoreImagesCommand(
   context: ProjectContext,
@@ -80,47 +89,66 @@ export async function runRestoreImagesCommand(
   printCommandHeader({
     title: 'Restore Docker Images',
     summary: 'Load a Docker image archive from disk into the local daemon',
-    projectRoot: context.projectRoot
+    projectRoot: context.projectRoot,
+    workingDirectory: context.workingDirectory
   });
 
-  const inputPath = resolveArchiveInputPath(context.projectRoot, options.input);
-  const manifestPath = `${inputPath}.manifest.json`;
+  const inputPath = resolveArchiveInputPath(context.workingDirectory, options.input);
+  const legacyManifestPath = `${inputPath}.manifest.json`;
 
-  await new Listr(
-    [
-      {
-        title: formatTaskTitle('stack', 'Validate image archive path'),
-        task: async () => {
-          if (!existsSync(inputPath)) {
-            throw new Error(`Image archive not found: ${inputPath}`);
-          }
-        }
-      },
-      {
-        title: formatTaskTitle('stack', 'Load Docker image archive'),
-        task: async () => {
-          await runCommand('docker', ['image', 'load', '--input', inputPath], {
-            cwd: context.projectRoot,
-            scope: 'stack'
-          });
-        }
-      },
-      {
-        title: formatTaskTitle('stack', 'Validate image archive manifest'),
-        enabled: () => existsSync(manifestPath),
-        task: async () => {
-          const manifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as ImageArchiveManifest;
-          if (!Array.isArray(manifest.images) || manifest.images.length === 0) {
-            throw new Error(`Invalid image archive manifest: ${manifestPath}`);
-          }
-        }
-      }
-    ],
-    {
-      concurrent: false,
-      exitOnError: true
+  if (!existsSync(inputPath)) {
+    throw new Error(`Image archive not found: ${inputPath}`);
+  }
+
+  if (isLegacyImageArchive(inputPath)) {
+    printInfo(`Detected legacy Docker image archive ${inputPath}`, 'stack');
+
+    if (existsSync(legacyManifestPath)) {
+      const manifest = parseImageArchiveManifest(legacyManifestPath, readFileSync(legacyManifestPath, 'utf8'));
+      printInfo(`Validated legacy image manifest with ${manifest.images.length} entries.`, 'stack');
     }
-  ).run();
+
+    printInfo(`Loading Docker image archive ${inputPath}`, 'stack');
+    await runCommand('docker', ['image', 'load', '--input', inputPath], {
+      cwd: context.projectRoot,
+      scope: 'stack'
+    });
+
+    printSuccess(`Docker images restored from ${inputPath}`, 'stack');
+    return;
+  }
+
+  await ensureArchiveHelperImage(context.projectRoot, 'stack');
+
+  const workspacePath = createArchiveWorkspace('images-restore');
+
+  try {
+    await extractArchiveBundleToDirectory(inputPath, workspacePath, context.projectRoot, 'stack');
+
+    const manifestPath = join(workspacePath, IMAGE_ARCHIVE_MANIFEST_FILE);
+    if (!existsSync(manifestPath)) {
+      throw new Error(`Image archive manifest not found inside bundle: ${manifestPath}`);
+    }
+
+    const manifest = parseImageArchiveManifest(manifestPath, readFileSync(manifestPath, 'utf8'));
+    printInfo(`Validated bundled image manifest with ${manifest.images.length} entries.`, 'stack');
+    for (const image of manifest.images) {
+      printInfo(`Restore image ${image}`, 'stack');
+    }
+
+    const payloadPath = join(workspacePath, IMAGE_ARCHIVE_PAYLOAD_FILE);
+    if (!existsSync(payloadPath) || !statSync(payloadPath).isFile()) {
+      throw new Error(`Bundled Docker image payload not found: ${payloadPath}`);
+    }
+
+    printInfo(`Loading bundled Docker image payload ${payloadPath}`, 'stack');
+    await runCommand('docker', ['image', 'load', '--input', payloadPath], {
+      cwd: context.projectRoot,
+      scope: 'stack'
+    });
+  } finally {
+    cleanupArchiveWorkspace(workspacePath);
+  }
 
   printSuccess(`Docker images restored from ${inputPath}`, 'stack');
 }
@@ -128,20 +156,57 @@ export async function runRestoreImagesCommand(
 /**
  * Resolves the image archive output file, defaulting under `backups/images`.
  */
-function resolveImageArchiveOutputPath(projectRoot: string, explicitOutput?: string): string {
-  const defaultPath = join(projectRoot, 'backups', 'images', `atlas-lab-images-${createTimestamp()}.tar`);
-  const outputPath = explicitOutput
-    ? (isAbsolute(explicitOutput) ? explicitOutput : resolve(projectRoot, explicitOutput))
-    : defaultPath;
+function resolveImageArchiveOutputPath(workingDirectory: string, explicitOutput?: string): string {
+  const defaultFileName = `atlas-lab-images-${createTimestamp()}.tar.gz`;
+  const defaultPath = join(workingDirectory, 'backups', 'images', defaultFileName);
 
-  return outputPath.endsWith('.tar') ? outputPath : `${outputPath}.tar`;
+  if (!explicitOutput) {
+    return defaultPath;
+  }
+
+  const outputPath = isAbsolute(explicitOutput) ? explicitOutput : resolve(workingDirectory, explicitOutput);
+
+  if (existsSync(outputPath) && statSync(outputPath).isDirectory()) {
+    return join(outputPath, defaultFileName);
+  }
+
+  return hasArchiveBundleExtension(outputPath) ? outputPath : `${outputPath}.tar.gz`;
 }
 
 /**
- * Resolves a user-provided archive input path against the project root.
+ * Resolves a user-provided archive input path against the working directory.
  */
-function resolveArchiveInputPath(projectRoot: string, inputPath: string): string {
-  return isAbsolute(inputPath) ? inputPath : resolve(projectRoot, inputPath);
+function resolveArchiveInputPath(workingDirectory: string, inputPath: string): string {
+  return isAbsolute(inputPath) ? inputPath : resolve(workingDirectory, inputPath);
+}
+
+/**
+ * Recognizes the previous raw `docker image save` export format.
+ */
+function isLegacyImageArchive(inputPath: string): boolean {
+  const normalizedPath = inputPath.toLowerCase();
+  return normalizedPath.endsWith('.tar') && !normalizedPath.endsWith('.tar.gz');
+}
+
+/**
+ * Validates the JSON manifest embedded in or persisted next to an image archive.
+ */
+function parseImageArchiveManifest(manifestPath: string, rawManifest: string): ImageArchiveManifest {
+  const manifest = JSON.parse(rawManifest) as ImageArchiveManifest;
+
+  if (!Array.isArray(manifest.images) || manifest.images.length === 0) {
+    throw new Error(`Invalid image archive manifest: ${manifestPath}`);
+  }
+
+  return manifest;
+}
+
+/**
+ * Detects whether a path already ends with a supported archive extension.
+ */
+function hasArchiveBundleExtension(filePath: string): boolean {
+  const normalizedPath = filePath.toLowerCase();
+  return normalizedPath.endsWith('.tar.gz') || normalizedPath.endsWith('.tgz');
 }
 
 /**

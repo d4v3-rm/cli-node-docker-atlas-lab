@@ -326,8 +326,8 @@ La CLI TypeScript sostituisce il vecchio bootstrap Python e i vecchi servizi Com
 | --- | --- | --- |
 | dev mode | `npm run dev -- up` | usa `tsx` sulla CLI TypeScript sorgente |
 | build | `npm run build` | bundle ESM della CLI in `dist/` con `tsup` |
-| pack locale | `npm run pack:local` | crea un tarball npm locale |
-| install globale | `npm install -g .` | installa `atlas-lab` globalmente dalla repo |
+| pack locale | `npm run pack:local` | crea un tarball npm self-contained con gli asset runtime del lab |
+| install globale | `npm install -g .` | installa `atlas-lab` globalmente dalla repo con asset inclusi |
 | link globale | `npm link` | collega la repo come CLI globale durante lo sviluppo |
 
 ### Log di sviluppo
@@ -386,18 +386,19 @@ La CLI usa questo layout come contratto esplicito: risolve sempre `infra/docker/
 | `atlas-lab status` | mostra lo stato Compose |
 | `atlas-lab down` | ferma la stack |
 | `atlas-lab save-images --with-ai --with-workbench` | esporta su disco le immagini richieste dai layer selezionati |
-| `atlas-lab restore-images --input <archive.tar>` | ricarica nel daemon Docker un archivio di immagini precedentemente esportato |
+| `atlas-lab restore-images --input <archive.tar.gz>` | ricarica nel daemon Docker un archivio di immagini precedentemente esportato |
 | `atlas-lab save-volumes --with-ai --with-workbench` | salva su disco i volumi dei layer selezionati |
-| `atlas-lab restore-volumes --input-dir <directory>` | ripristina i volumi Docker da un backup su disco |
+| `atlas-lab restore-volumes --input <archive.tar.gz>` | ripristina i volumi Docker da un backup su disco |
 
 ### Backup e ripristino
 
 Le immagini e i volumi possono essere gestiti separatamente:
 
-- il backup immagini produce un archivio `.tar` e un manifest JSON di supporto
-- il restore immagini esegue `docker image load` sull'archivio salvato
-- il backup volumi produce una directory con un archivio `.tar.gz` per ogni volume e un `manifest.json`
-- il restore volumi ricrea i volumi mancanti e ripristina il contenuto dai relativi archivi
+- il backup immagini produce un singolo archivio `.tar.gz` con payload Docker e `manifest.json` interno
+- il restore immagini accetta un solo file e ricarica il payload nel daemon Docker
+- il backup volumi produce un singolo archivio `.tar.gz` con un payload `.tar` per volume e `manifest.json` interno
+- il restore volumi accetta un solo file, ricrea i volumi mancanti e ripristina i contenuti
+- durante save e restore la CLI stampa log progressivi per ogni fase e per ogni volume coinvolto
 
 Vincoli operativi:
 
@@ -409,9 +410,9 @@ Esempi:
 
 ```powershell
 npm run dev -- save-images --with-ai --with-workbench
-npm run dev -- restore-images --input .\backups\images\atlas-lab-images-2026-03-09T12-00-00-000Z.tar
+npm run dev -- restore-images --input .\backups\images\atlas-lab-images-2026-03-09T12-00-00-000Z.tar.gz
 npm run dev -- save-volumes --with-ai --with-workbench
-npm run dev -- restore-volumes --input-dir .\backups\volumes\atlas-lab-volumes-2026-03-09T12-00-00-000Z
+npm run dev -- restore-volumes --input .\backups\volumes\atlas-lab-volumes-2026-03-09T12-00-00-000Z.tar.gz
 ```
 
 ### Cosa fa il bootstrap
@@ -430,14 +431,27 @@ Il bootstrap e idempotente.
 
 ### Come funziona la global install
 
-La CLI installata globalmente non opera sulla directory del pacchetto npm installato. Cerca il progetto:
+La CLI installata globalmente include gia gli asset runtime del lab:
 
-- nella directory corrente
-- oppure in un path esplicito passato con `--project-dir`
+- file Compose
+- `config/env/lab.env`
+- template gateway
+- Dockerfile e script delle immagini custom
+- frontend `apps/lab-index`
 
-Esempio:
+Quindi `atlas-lab` puo essere eseguito da qualsiasi directory anche senza checkout del repository.
+
+Ordine di risoluzione degli asset:
+
+- se sei dentro un checkout del lab, usa quel checkout
+- se passi `--project-dir`, usa il path esplicito
+- altrimenti usa gli asset inclusi nel pacchetto npm installato globalmente
+
+Esempi:
 
 ```powershell
+atlas-lab status
+atlas-lab up --with-workbench
 atlas-lab status --project-dir C:\Users\User\Development\repos-review\cli-node-docker-atlas-lab
 ```
 
@@ -757,8 +771,8 @@ npm run dev -- doctor --with-ai --smoke
 npm run dev -- status
 npm run dev -- save-images --with-ai --with-workbench
 npm run dev -- save-volumes --with-ai --with-workbench
-npm run dev -- restore-images --input .\backups\images\atlas-lab-images.tar
-npm run dev -- restore-volumes --input-dir .\backups\volumes\atlas-lab-volumes
+npm run dev -- restore-images --input .\backups\images\atlas-lab-images.tar.gz
+npm run dev -- restore-volumes --input .\backups\volumes\atlas-lab-volumes.tar.gz
 ```
 
 ### Build e packaging
@@ -779,6 +793,16 @@ atlas-lab doctor --smoke
 atlas-lab doctor --with-ai --smoke
 atlas-lab save-images --with-ai --with-workbench
 atlas-lab save-volumes --with-ai --with-workbench
+```
+
+### Installazione dal tarball self-contained
+
+```powershell
+npm run pack:local
+npm install -g .\cli-node-docker-atlas-lab-1.0.0.tgz
+cd $HOME\Downloads
+atlas-lab status
+atlas-lab up
 ```
 
 ### Link globale per sviluppo
