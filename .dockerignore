@@ -1,5 +1,6 @@
 .git
 .gitignore
+.lab-index-dist
 bin
 dist
 node_modules
@@ -12,10 +13,12 @@ package.json
 package-lock.json
 tsconfig.json
 tsup.config.ts
-!apps/lab-index/package.json
-!apps/lab-index/package-lock.json
-!apps/lab-index/tsconfig.json
-!apps/lab-index/vite.config.ts
+!lab-index.vite.config.ts
+!package.json
+!package-lock.json
+!tsconfig.lab-index.json
 !apps/lab-index/index.html
+!apps/lab-index/public/
+!apps/lab-index/public/**
 !apps/lab-index/src/
 !apps/lab-index/src/**
