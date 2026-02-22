@@ -2,16 +2,17 @@ ARG CADDY_VERSION=2.10.2-alpine
 
 FROM node:22-alpine AS lab_index_builder
 
-WORKDIR /build/apps/lab-index
+WORKDIR /build
 
-COPY apps/lab-index/package.json ./
-COPY apps/lab-index/package-lock.json ./
+COPY package*.json ./
 
-RUN npm ci
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
-COPY apps/lab-index/ ./
+COPY lab-index.vite.config.ts ./
+COPY tsconfig.lab-index.json ./
+COPY apps/lab-index/ ./apps/lab-index/
 
-RUN npm run build
+RUN npm run build:lab-index
 
 FROM caddy:${CADDY_VERSION}
 
@@ -26,7 +27,7 @@ RUN set -eu; \
       sleep $((attempts * 2)); \
     done
 
-COPY --from=lab_index_builder /build/apps/lab-index/dist/ /opt/gateway/lab-index-dist/
+COPY --from=lab_index_builder /build/.lab-index-dist/ /opt/gateway/lab-index-dist/
 COPY config/gateway/templates/ /opt/gateway/templates/
 COPY infra/docker/images/gateway/bootstrap-gateway.sh /usr/local/bin/bootstrap-gateway.sh
 COPY infra/docker/images/gateway/start-gateway.sh /usr/local/bin/start-gateway.sh

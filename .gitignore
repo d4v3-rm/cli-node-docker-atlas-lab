@@ -2,5 +2,6 @@ __pycache__/
 *.py[cod]
 node_modules/
 dist/
+.lab-index-dist/
 *.tgz
 logs/
