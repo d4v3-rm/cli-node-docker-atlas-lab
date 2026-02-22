@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { basename, isAbsolute, join, resolve } from 'node:path';
 import type { RestoreVolumesCommandOptions, SaveVolumesCommandOptions } from '../types/cli.types.js';
 import type { VolumeArchiveEntry, VolumeArchiveManifest } from '../types/docker.types.js';
@@ -215,33 +215,64 @@ async function restoreVolumesFromDirectory(
   archiveDirectory: string,
   volumes: VolumeArchiveEntry[]
 ): Promise<void> {
-  for (const volume of volumes) {
-    const archivePath = join(archiveDirectory, volume.archiveFile);
-    if (!existsSync(archivePath) || !statSync(archivePath).isFile()) {
-      throw new Error(`Volume archive file not found: ${archivePath}`);
-    }
+  const stagingRoot = createArchiveWorkspace('volumes-stage');
 
-    printInfo(`Restoring volume ${volume.logicalName} from ${basename(archivePath)}`, 'stack');
-    await ensureDockerVolumeExists(volume.dockerName, projectRoot);
-    await runCommand(
-      'docker',
-      [
-        'run',
-        '--rm',
-        '--mount',
-        `type=volume,source=${volume.dockerName},target=/target`,
-        '--mount',
-        `type=bind,source=${archiveDirectory},target=/backup,readonly`,
-        ARCHIVE_BUNDLE_HELPER_IMAGE,
-        'sh',
-        '-c',
-        `find /target -mindepth 1 -delete && tar ${resolveTarExtractFlag(volume.archiveFile)} /backup/${quotePosixShellArgument(volume.archiveFile)} -C /target`
-      ],
-      {
-        cwd: projectRoot,
-        scope: 'stack'
+  try {
+    for (const volume of volumes) {
+      const archivePath = join(archiveDirectory, volume.archiveFile);
+      if (!existsSync(archivePath) || !statSync(archivePath).isFile()) {
+        throw new Error(`Volume archive file not found: ${archivePath}`);
       }
-    );
+
+      printInfo(`Restoring volume ${volume.logicalName} from ${basename(archivePath)}`, 'stack');
+      await ensureDockerVolumeExists(volume.dockerName, projectRoot);
+      const stagingDirectory = join(stagingRoot, volume.logicalName);
+      mkdirSync(stagingDirectory, { recursive: true });
+
+      printInfo(`Extracting ${volume.logicalName} into staging before replacing the target volume`, 'stack');
+      await runCommand(
+        'docker',
+        [
+          'run',
+          '--rm',
+          '--mount',
+          `type=bind,source=${stagingDirectory},target=/staging`,
+          '--mount',
+          `type=bind,source=${archiveDirectory},target=/backup,readonly`,
+          ARCHIVE_BUNDLE_HELPER_IMAGE,
+          'sh',
+          '-c',
+          `find /staging -mindepth 1 -delete && tar ${resolveTarExtractFlag(volume.archiveFile)} /backup/${quotePosixShellArgument(volume.archiveFile)} -C /staging`
+        ],
+        {
+          cwd: projectRoot,
+          scope: 'stack'
+        }
+      );
+
+      printInfo(`Replacing contents of Docker volume ${volume.logicalName}`, 'stack');
+      await runCommand(
+        'docker',
+        [
+          'run',
+          '--rm',
+          '--mount',
+          `type=volume,source=${volume.dockerName},target=/target`,
+          '--mount',
+          `type=bind,source=${stagingDirectory},target=/staging,readonly`,
+          ARCHIVE_BUNDLE_HELPER_IMAGE,
+          'sh',
+          '-c',
+          'find /target -mindepth 1 -delete && cp -a /staging/. /target/'
+        ],
+        {
+          cwd: projectRoot,
+          scope: 'stack'
+        }
+      );
+    }
+  } finally {
+    cleanupArchiveWorkspace(stagingRoot);
   }
 }
 
@@ -289,6 +320,9 @@ function resolveArchivePath(workingDirectory: string, archivePath: string): stri
   return isAbsolute(archivePath) ? archivePath : resolve(workingDirectory, archivePath);
 }
 
+/**
+ * Chooses the correct tar extraction flag for plain tar vs gzip-compressed payloads.
+ */
 /**
  * Detects whether a path already ends with a supported archive extension.
  */
