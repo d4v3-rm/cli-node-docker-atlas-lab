@@ -1,4 +1,5 @@
 import { createServer } from 'node:net';
+import process from 'node:process';
 import { getRunningComposePublishedPorts } from './compose-project.service.js';
 import type {
   HostBindAddress,
@@ -7,6 +8,7 @@ import type {
   HostPortProbeResult
 } from '../types/preflight.types.js';
 import type { LabEnv, ProjectContext } from '../types/project.types.js';
+import { runCommand } from '../utils/process.js';
 
 const CORE_PORT_ENV_KEYS = [
   'LAB_HTTPS_PORT',
@@ -119,10 +121,12 @@ async function checkHostPort(
       };
     }
 
+    const detail = await enrichPortFailureDetail(definition.port, blockingProbe.detail);
+
     return {
       ...definition,
       available: false,
-      detail: `${blockingProbe.detail} (bind ${blockingProbe.host})`
+      detail: `${detail} (bind ${blockingProbe.host})`
     };
   }
 
@@ -188,6 +192,10 @@ function formatPortError(error: unknown): string {
     return 'is already allocated on the host';
   }
 
+  if (isNodeError(error) && error.code === 'EACCES') {
+    return 'is unavailable on the host';
+  }
+
   return error instanceof Error ? error.message : 'is unavailable';
 }
 
@@ -203,4 +211,70 @@ function isUnsupportedBindAddress(error: unknown): boolean {
  */
 function isNodeError(error: unknown): error is NodeJS.ErrnoException {
   return typeof error === 'object' && error !== null && 'code' in error;
+}
+
+/**
+ * Adds platform-specific detail for port probe failures.
+ */
+async function enrichPortFailureDetail(port: number, detail: string): Promise<string> {
+  if (process.platform !== 'win32' || detail !== 'is unavailable on the host') {
+    return detail;
+  }
+
+  const windowsRange = await findWindowsExcludedPortRange(port);
+  if (!windowsRange) {
+    return `${detail} (permission denied)`;
+  }
+
+  return `is reserved by Windows excluded port range ${windowsRange.start}-${windowsRange.end}`;
+}
+
+/**
+ * Queries Windows reserved TCP port ranges and returns the matching range when present.
+ */
+async function findWindowsExcludedPortRange(
+  port: number
+): Promise<{ start: number; end: number } | null> {
+  for (const family of ['ipv4', 'ipv6'] as const) {
+    const result = await runCommand('netsh', ['interface', family, 'show', 'excludedportrange', 'protocol=tcp'], {
+      allowFailure: true,
+      captureOutput: true,
+      scope: 'host'
+    });
+
+    if (result.exitCode !== 0) {
+      continue;
+    }
+
+    const ranges = parseWindowsExcludedPortRanges(result.stdout);
+    const matchingRange = ranges.find((range) => port >= range.start && port <= range.end);
+    if (matchingRange) {
+      return matchingRange;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Parses the `netsh interface ... show excludedportrange` output.
+ */
+function parseWindowsExcludedPortRanges(output: string): Array<{ start: number; end: number }> {
+  return output
+    .replace(/\r\n/gu, '\n')
+    .split('\n')
+    .map((line) => line.trim())
+    .flatMap((line) => {
+      const match = line.match(/^(\d+)\s+(\d+)(?:\s+\*)?$/u);
+      if (!match) {
+        return [];
+      }
+
+      return [
+        {
+          start: Number.parseInt(match[1], 10),
+          end: Number.parseInt(match[2], 10)
+        }
+      ];
+    });
 }
