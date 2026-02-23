@@ -133,7 +133,7 @@ Tutti gli ingressi web pubblici usano HTTPS su `localhost`. `Postgres Vault` esp
 | Python Grid | `https://localhost:8451/` solo con layer `workbench` |
 | AI Reactor | `https://localhost:8452/` solo con layer `workbench` |
 | C++ Foundry | `https://localhost:8453/` solo con layer `workbench` |
-| Postgres Vault | `localhost:55432` TCP solo con layer `workbench` |
+| Postgres Vault | `localhost:54432` TCP solo con layer `workbench` |
 
 ### Vantaggi pratici
 
@@ -256,7 +256,7 @@ Devono essere libere:
 - `8451`
 - `8452`
 - `8453`
-- `55432` solo se avvii il layer `workbench`
+- `54432` solo se avvii il layer `workbench`
 
 Se una di queste porte e occupata, `atlas-lab up` fallira subito durante il preflight host, prima di far partire Docker Compose.
 
@@ -696,7 +696,7 @@ npm run dev -- up --with-workbench
 
 - nessuna UI web pubblica
 - host desktop: `localhost`
-- porta desktop: `55432`
+- porta desktop: `54432`
 - host interno Docker: `postgres-dev`
 - porta interna Docker: `5432`
 - database condiviso dai workbench
@@ -713,7 +713,7 @@ Variabili preconfigurate nei workbench:
 Per DBeaver o `psql` eseguiti sul sistema host usa:
 
 - host: `localhost`
-- porta: `55432`
+- porta: `54432`
 - database: `lab`
 - username: `postgres`
 - password: `RootPostgresDev!2026`
@@ -967,7 +967,7 @@ atlas-lab.cmd status
 
 La CLI controlla prima le porte pubbliche del gateway e dei workbench.
 
-Se vedi un errore tipo `Host port preflight failed`, significa che una o piu porte tra `8443-8453` oppure `55432` sono gia occupate da un'altra stack o da un altro processo locale.
+Se vedi un errore tipo `Host port preflight failed`, significa che una o piu porte tra `8443-8453` oppure `54432` sono gia occupate da un'altra stack o da un altro processo locale.
 
 Controlla:
 
