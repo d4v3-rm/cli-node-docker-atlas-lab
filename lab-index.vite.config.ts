@@ -14,6 +14,31 @@ export default defineConfig({
     assetsDir: 'static',
     outDir: resolve(fileURLToPath(new URL('.', import.meta.url)), '.lab-index-dist'),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) {
+            return undefined;
+          }
+
+          if (id.includes('@mui') || id.includes('@emotion')) {
+            return 'mui';
+          }
+
+          if (
+            id.includes('react-markdown') ||
+            id.includes('remark-gfm') ||
+            id.includes('mdast') ||
+            id.includes('micromark') ||
+            id.includes('unist')
+          ) {
+            return 'markdown';
+          }
+          
+          return undefined;
+        }
+      }
+    },
     sourcemap: true
   },
   resolve: {
