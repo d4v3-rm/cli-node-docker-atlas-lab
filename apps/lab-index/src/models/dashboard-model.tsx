@@ -1,124 +1,46 @@
-import {
-  FaBrain,
-  FaCertificate,
-  FaCodeBranch,
-  FaDatabase,
-  FaDiagramProject,
-  FaEarthEurope,
-  FaLink,
-  FaLock,
-  FaMicrochip,
-  FaPython,
-  FaRobot,
-  FaTerminal
-} from 'react-icons/fa6';
-import { FaNodeJs } from 'react-icons/fa';
 import type { DashboardViewModel } from '@/types/dashboard.types';
 import type { LabRuntimeConfig } from '@/types/lab-config.types';
 
 /**
- * Builds the UI view model from the gateway runtime configuration.
+ * Converts the gateway runtime payload into the view model consumed by the MUI dashboard.
  */
 export function createDashboardViewModel(config: LabRuntimeConfig): DashboardViewModel {
   const aiEnabled = config.features.aiEnabled;
   const workbenchEnabled = config.features.workbenchEnabled;
 
   return {
-    hero: {
-      eyebrow: 'atlas control index',
-      summary:
-        'Pannello operativo unificato per repository, automazione e layer opzionali del lab. I servizi web usano porte HTTPS dedicate su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.',
-      titleLines: ['LAB', 'ATLAS'],
-      pills: [
-        { icon: FaLink, label: `deck locale ${config.lab.localUrl}` },
-        { icon: FaLock, label: 'ingress solo https' },
-        { icon: FaEarthEurope, label: `endpoint localhost ${config.lab.publicUrl}` },
-        { icon: FaDatabase, label: 'persistenza su volumi' },
-        { icon: aiEnabled ? FaBrain : FaCertificate, label: aiEnabled ? 'layer ai attivo' : 'layer ai opzionale' },
-        { icon: workbenchEnabled ? FaTerminal : FaCertificate, label: workbenchEnabled ? 'workbench attivi' : 'workbench opzionali' }
-      ],
-      metrics: [
-        { label: 'servizi core', value: 2 },
-        { label: 'servizi ai', value: aiEnabled ? 2 : 0 },
-        { label: 'nodi workbench', value: workbenchEnabled ? 5 : 0 },
-        { label: 'gateway atlas', value: 1 }
-      ]
-    },
-    operatingCharter: [
-      'Gitea governa codice, review e flusso Git interno.',
-      'n8n orchestra webhook, automazioni e job operativi.',
-      "Open WebUI e Ollama restano in un layer AI opzionale, attivabile solo quando serve.",
-      'I workbench code-server e Postgres vivono in un layer dedicato, separato dal core operativo.'
-    ],
     accessNotes: [
-      'Le credenziali root sono esposte qui e nel file config/env/lab.env.',
-      'Nessun DNS o file hosts: tutti gli ingressi pubblici usano localhost con porte dedicate.',
-      "n8n usa direttamente l'auth applicativa owner, senza doppio login al gateway.",
-      "La CLI preinizializza l'owner, ma lascia disponibili i template ufficiali dentro l'app.",
+      'Le credenziali operative sono esposte qui e restano allineate al bootstrap del lab.',
+      'Tutti gli ingressi browser usano localhost con HTTPS dedicato, senza DNS custom o file hosts.',
+      'n8n entra direttamente con owner bootstrap: non c e un secondo login al gateway.',
       aiEnabled
-        ? 'Il layer AI e attivo: Open WebUI e Ollama sono raggiungibili sulle loro porte dedicate.'
-        : 'Il layer AI e spento: Open WebUI e Ollama non vengono avviati finche non abiliti --with-ai.',
+        ? 'Open WebUI e Ollama sono realmente online e raggiungibili sulle porte AI del gateway.'
+        : 'Il layer AI non viene piu acceso di default: il deck lo marca come opzionale invece di fingere che sia online.',
       workbenchEnabled
-        ? 'Il layer workbench e attivo: Postgres e gli ambienti code-server sono online.'
-        : 'Il layer workbench e spento: gli ambienti browser-based restano opzionali e isolati.'
-    ],
-    networkMap: {
-      path: config.content.networkMapPath,
-      title: 'Network Map'
-    },
-    services: [
-      {
-        action: {
-          href: config.services.gitea.url,
-          label: 'entra'
-        },
-        credentials: [
-          { label: 'endpoint', value: config.services.gitea.url },
-          { label: 'root user', value: config.services.gitea.rootUsername },
-          { label: 'password', value: config.services.gitea.rootPassword },
-          { label: 'email', value: config.services.gitea.rootEmail }
-        ],
-        description:
-          'Repository Git, issue tracking e collaborazione tecnica interna. Punto di ingresso per codice, review e governance del progetto.',
-        icon: FaCodeBranch,
-        id: 'gitea',
-        status: 'online',
-        title: 'Gitea Forge'
-      },
-      {
-        action: {
-          href: config.services.n8n.url,
-          label: 'entra'
-        },
-        credentials: [
-          { label: 'endpoint', value: config.services.n8n.url },
-          { label: 'accesso', value: 'login applicativo diretto' },
-          { label: 'owner bootstrap', value: config.services.n8n.ownerName },
-          { label: 'owner email', value: config.services.n8n.ownerEmail },
-          { label: 'owner password', value: config.services.n8n.ownerPassword }
-        ],
-        description:
-          'Motore di workflow e integrazione. Ideale per orchestrare webhook, job, pipeline applicative e connessioni tra servizi del lab.',
-        icon: FaDiagramProject,
-        id: 'n8n',
-        note:
-          "Primo accesso: entra direttamente con l'utente owner bootstrap senza Basic Auth al gateway. Il setup wizard iniziale viene saltato, ma i template restano disponibili dopo il login.",
-        status: 'online',
-        title: 'n8n Automation'
-      }
+        ? 'I workbench e Postgres sono attivi: puoi aprire ambienti browser-based o connetterti dal desktop alla porta host di Postgres.'
+        : 'Workbench e Postgres restano separati dal core operativo finche non abiliti il layer dedicato.'
     ],
     aiLayer: {
       activationCommand: 'atlas-lab up --with-ai',
+      capabilities: [
+        { icon: 'openWebUi', label: 'Open WebUI locale' },
+        { icon: 'ollama', label: 'API Ollama protetta' },
+        { icon: 'ai', label: 'modelli GPU-backed' }
+      ],
       description:
-        'Open WebUI e Ollama non fanno piu parte del bootstrap di default. Attivali solo quando ti servono UI conversazionale locale e inference GPU-backed.',
+        'Layer AI opzionale per console conversazionale locale e inference LLM GPU-backed. Il deck lo attiva solo quando lo chiedi esplicitamente.',
       enabled: aiEnabled,
-      title: 'Layer AI'
+      summary: aiEnabled
+        ? 'Open WebUI e Ollama sono attivi e serviti dal gateway AI.'
+        : 'AI layer spento. Nessun servizio AI viene avviato o esposto finche non abiliti il flag dedicato.',
+      title: 'AI Layer',
+      tone: 'ai'
     },
     aiServices: [
       {
         action: {
           href: config.services.openWebUi.url,
-          label: 'entra'
+          label: 'Apri Open WebUI'
         },
         credentials: [
           { label: 'endpoint', value: config.services.openWebUi.url },
@@ -127,102 +49,265 @@ export function createDashboardViewModel(config: LabRuntimeConfig): DashboardVie
           { label: 'password', value: config.services.openWebUi.rootPassword }
         ],
         description:
-          'Console conversazionale per modelli locali eseguiti tramite Ollama sulla GPU NVIDIA del host. Espone una UI operativa per prompt, test e flussi AI dal browser.',
-        icon: FaRobot,
+          'Interfaccia conversazionale per lavorare sui modelli locali del lab dal browser, con credenziali esplicite e accesso immediato dal gateway.',
+        icon: 'openWebUi',
         id: 'open-webui',
-        status: 'online',
-        title: 'Open WebUI'
+        status: 'browser console',
+        title: 'Open WebUI',
+        tone: 'ai'
       },
       {
         action: {
           href: config.services.ollama.url,
-          label: 'apri api'
+          label: 'Apri endpoint API'
         },
         credentials: [
           { label: 'endpoint', value: config.services.ollama.url },
           { label: 'gateway user', value: config.services.ollama.gatewayUser },
           { label: 'gateway password', value: config.services.ollama.gatewayPassword },
-          { label: 'uso', value: 'API locale GPU-backed per modelli' }
+          { label: 'usage', value: 'local inference API' }
         ],
         description:
-          'Endpoint locale per inference LLM ed embeddings con accelerazione GPU NVIDIA. Serve i modelli consumati dal lab e puo essere interrogato direttamente come API protetta dal gateway.',
-        icon: FaBrain,
+          'Gateway sicuro verso l endpoint Ollama locale. Serve modelli LLM ed embeddings con accelerazione GPU del nodo host.',
+        icon: 'ollama',
         id: 'ollama',
-        status: 'api',
-        title: 'Ollama Core'
+        status: 'protected API',
+        title: 'Ollama Core',
+        tone: 'ai'
+      }
+    ],
+    footerCards: [
+      {
+        body: `Il deck resta su ${config.lab.localUrl}; i servizi browser passano dal gateway HTTPS mentre Postgres per i client desktop usa ${config.workbenches.postgres.host}:${config.workbenches.postgres.port}.`,
+        icon: 'route',
+        id: 'routing',
+        label: 'routing'
+      },
+      {
+        body: 'Database, workspace, modelli, certificati e configurazione runtime restano persistiti solo in volumi Docker nominati.',
+        icon: 'postgres',
+        id: 'persistence',
+        label: 'persistence'
+      },
+      {
+        body: 'Gitea e n8n sono il piano core sempre acceso; AI e workbench vengono abilitati a layer solo quando servono davvero.',
+        icon: 'spark',
+        id: 'usage',
+        label: 'usage'
+      },
+      {
+        body: 'Le reti interne restano separate per edge, AI, servizi dati e workbench. I gateway sono gli unici ingressi pubblicati.',
+        icon: 'network',
+        id: 'segmentation',
+        label: 'segmentation'
+      }
+    ],
+    hero: {
+      eyebrow: 'atlas command deck',
+      metrics: [
+        { caption: 'servizi sempre accesi e bootstrap mandatory', label: 'core online', value: 2 },
+        { caption: aiEnabled ? 'layer AI pubblicato sul gateway dedicato' : 'layer AI non attivo', label: 'ai live', value: aiEnabled ? 2 : 0 },
+        {
+          caption: workbenchEnabled ? 'workspace e database esposti nel layer dedicato' : 'layer workbench non attivo',
+          label: 'workbench live',
+          value: workbenchEnabled ? 5 : 0
+        },
+        {
+          caption: 'gateway pubblici serviti adesso',
+          label: 'ingress planes',
+          value: 1 + (aiEnabled ? 1 : 0) + (workbenchEnabled ? 1 : 0)
+        }
+      ],
+      pills: [
+        { icon: 'route', label: `deck ${config.lab.localUrl}`, tone: 'core' },
+        { icon: 'secure', label: 'ingress solo https', tone: 'neutral' },
+        { icon: 'host', label: `host ${config.lab.publicUrl}`, tone: 'neutral' },
+        { icon: 'postgres', label: 'persistenza su volumi', tone: 'core' },
+        { icon: aiEnabled ? 'spark' : 'certificate', label: aiEnabled ? 'layer ai attivo' : 'layer ai opzionale', tone: 'ai' },
+        {
+          icon: workbenchEnabled ? 'terminal' : 'certificate',
+          label: workbenchEnabled ? 'workbench attivi' : 'workbench opzionali',
+          tone: 'workbench'
+        }
+      ],
+      quickActions: [
+        {
+          briefing: {
+            path: config.content.networkMapPath,
+            title: 'Network Map'
+          },
+          description: 'Leggi la topologia del lab e i piani di rete pubblicati.',
+          icon: 'network',
+          label: 'Network map'
+        },
+        {
+          description: 'Rivedi da browser il routing locale che il deck sta usando.',
+          href: config.lab.localUrl,
+          icon: 'host',
+          label: 'Local deck'
+        }
+      ],
+      summary:
+        'Control room unificata per repository, automazione, AI opzionale e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.',
+      titleLines: ['LAB', 'ATLAS']
+    },
+    networkMap: {
+      path: config.content.networkMapPath,
+      title: 'Network Map'
+    },
+    operatingCharter: [
+      'Gitea governa codice, review e governance Git del progetto.',
+      'n8n coordina automazioni, webhook e job operativi del lab.',
+      'Open WebUI e Ollama vivono in un layer AI esplicitamente opzionale.',
+      'Code-server e Postgres restano in un piano workbench separato dal core.'
+    ],
+    services: [
+      {
+        action: {
+          href: config.services.gitea.url,
+          label: 'Apri Gitea'
+        },
+        credentials: [
+          { label: 'endpoint', value: config.services.gitea.url },
+          { label: 'root user', value: config.services.gitea.rootUsername },
+          { label: 'password', value: config.services.gitea.rootPassword },
+          { label: 'email', value: config.services.gitea.rootEmail }
+        ],
+        description:
+          'Forge Git interna per repository, issue, review e flusso di collaborazione tecnica del lab.',
+        icon: 'forge',
+        id: 'gitea',
+        status: 'always-on forge',
+        title: 'Gitea Forge',
+        tone: 'core'
+      },
+      {
+        action: {
+          href: config.services.n8n.url,
+          label: 'Apri n8n'
+        },
+        credentials: [
+          { label: 'endpoint', value: config.services.n8n.url },
+          { label: 'access mode', value: 'direct app login' },
+          { label: 'owner bootstrap', value: config.services.n8n.ownerName },
+          { label: 'owner email', value: config.services.n8n.ownerEmail },
+          { label: 'owner password', value: config.services.n8n.ownerPassword }
+        ],
+        description:
+          'Motore di orchestrazione per webhook, integrazioni e pipeline operative, gia bootstrapato con owner applicativo.',
+        icon: 'workflow',
+        id: 'n8n',
+        note:
+          'Il primo accesso salta il setup wizard ma non nasconde i template ufficiali disponibili dentro l applicazione.',
+        status: 'workflow control',
+        title: 'n8n Automation',
+        tone: 'core'
       }
     ],
     workbenchLayer: {
       activationCommand: 'atlas-lab up --with-workbench',
+      capabilities: [
+        { icon: 'node', label: 'workbench Node' },
+        { icon: 'terminal', label: 'code-server dedicati' },
+        { icon: 'postgres', label: 'Postgres condiviso' }
+      ],
       description:
-        'I workbench restano in un layer distinto dal core. Attivali solo quando ti serve un ambiente browser-based o il Postgres condiviso.',
+        'Layer separato per workspace browser-based e database condiviso. Il core resta pulito finche non ti serve realmente l ambiente di sviluppo.',
       enabled: workbenchEnabled,
-      title: 'Layer Workbench'
+      summary: workbenchEnabled
+        ? 'Node, Python, AI, C++ e Postgres sono online nel piano workbench.'
+        : 'Workbench layer spento. Nessun code-server o Postgres viene esposto dal lab.',
+      title: 'Workbench Layer',
+      tone: 'workbench'
     },
     workbenches: [
       {
+        action: {
+          href: config.workbenches.node.url,
+          label: 'Apri workspace'
+        },
         briefing: {
           path: config.workbenches.node.briefingPath,
           title: 'Node Forge'
         },
         credentials: [
+          { label: 'endpoint', value: config.workbenches.node.url },
           { label: 'auth mode', value: 'password' },
           { label: 'root password', value: config.workbenches.node.password }
         ],
         description:
-          'Workbench code-server dedicato a JavaScript, TypeScript, frontend e tooling npm, pnpm e yarn.',
-        icon: FaNodeJs,
+          'Workspace code-server per JavaScript, TypeScript, frontend e tooling npm o pnpm.',
+        icon: 'node',
         id: 'node',
-        status: 'code',
-        title: 'Node Forge'
+        status: 'browser workspace',
+        title: 'Node Forge',
+        tone: 'workbench'
       },
       {
+        action: {
+          href: config.workbenches.python.url,
+          label: 'Apri workspace'
+        },
         briefing: {
           path: config.workbenches.python.briefingPath,
           title: 'Python Grid'
         },
         credentials: [
+          { label: 'endpoint', value: config.workbenches.python.url },
           { label: 'auth mode', value: 'password' },
           { label: 'root password', value: config.workbenches.python.password }
         ],
         description:
-          'Workbench code-server per backend Python, automazioni, script operativi e tooling di progetto.',
-        icon: FaPython,
+          'Workspace code-server per backend Python, scripting e automazioni operative.',
+        icon: 'terminal',
         id: 'python',
-        status: 'code',
-        title: 'Python Grid'
+        status: 'browser workspace',
+        title: 'Python Grid',
+        tone: 'workbench'
       },
       {
+        action: {
+          href: config.workbenches.ai.url,
+          label: 'Apri workspace'
+        },
         briefing: {
           path: config.workbenches.ai.briefingPath,
           title: 'AI Reactor'
         },
         credentials: [
+          { label: 'endpoint', value: config.workbenches.ai.url },
           { label: 'auth mode', value: 'password' },
           { label: 'root password', value: config.workbenches.ai.password }
         ],
         description:
-          'Workbench code-server con stack AI e data science per notebook, prototipi ML e pipeline locali.',
-        icon: FaMicrochip,
+          'Workspace code-server per notebook, esperimenti ML e tooling AI locale.',
+        icon: 'ai',
         id: 'ai',
-        status: 'code',
-        title: 'AI Reactor'
+        status: 'browser workspace',
+        title: 'AI Reactor',
+        tone: 'workbench'
       },
       {
+        action: {
+          href: config.workbenches.cpp.url,
+          label: 'Apri workspace'
+        },
         briefing: {
           path: config.workbenches.cpp.briefingPath,
           title: 'C++ Foundry'
         },
         credentials: [
+          { label: 'endpoint', value: config.workbenches.cpp.url },
           { label: 'auth mode', value: 'password' },
           { label: 'root password', value: config.workbenches.cpp.password }
         ],
         description:
-          'Workbench code-server per sviluppo C/C++, compilazione nativa, debugging e profiling toolchain.',
-        icon: FaTerminal,
+          'Workspace code-server per sviluppo C o C++, compilazione nativa e debugging.',
+        icon: 'cpp',
         id: 'cpp',
-        status: 'code',
-        title: 'C++ Foundry'
+        status: 'browser workspace',
+        title: 'C++ Foundry',
+        tone: 'workbench'
       },
       {
         briefing: {
@@ -230,44 +315,23 @@ export function createDashboardViewModel(config: LabRuntimeConfig): DashboardVie
           title: 'Postgres Vault'
         },
         credentials: [
-          { label: 'host', value: config.workbenches.postgres.host },
-          { label: 'porta', value: config.workbenches.postgres.port },
-          { label: 'host interno docker', value: config.workbenches.postgres.internalHost },
-          { label: 'porta interna docker', value: config.workbenches.postgres.internalPort },
+          { label: 'desktop host', value: config.workbenches.postgres.host },
+          { label: 'desktop port', value: config.workbenches.postgres.port },
+          { label: 'docker host', value: config.workbenches.postgres.internalHost },
+          { label: 'docker port', value: config.workbenches.postgres.internalPort },
           { label: 'database', value: config.workbenches.postgres.database },
           { label: 'superuser', value: config.workbenches.postgres.superuser },
           { label: 'password', value: config.workbenches.postgres.password }
         ],
         description:
-          'Server PostgreSQL dedicato a schema design, migrazioni, seed data, test relazionali e storage locale per i workbench.',
-        icon: FaDatabase,
+          'PostgreSQL condiviso per schema design, query locali, migrazioni e test relazionali dal desktop o dai container.',
+        icon: 'postgres',
         id: 'postgres',
         note:
-          'Da tool desktop usa localhost sulla porta host dedicata; dentro i container/workbench continua invece a usare postgres-dev:5432.',
-        status: 'db',
-        title: 'Postgres Vault'
-      }
-    ],
-    footerCards: [
-      {
-        body: `Il deck resta raggiungibile da ${config.lab.localUrl}; i servizi web passano dal gateway Caddy su HTTPS, mentre Postgres usa ${config.workbenches.postgres.host}:${config.workbenches.postgres.port} per i client desktop.`,
-        id: 'routing',
-        label: 'routing'
-      },
-      {
-        body: 'Database, workspace, modelli, UI e certificati usano solo volumi Docker nominati.',
-        id: 'persistence',
-        label: 'persistenza'
-      },
-      {
-        body: 'Gitea e n8n restano il core sempre attivo; AI e workbench vengono invece abilitati per layer solo quando richiesti.',
-        id: 'usage',
-        label: 'core usage'
-      },
-      {
-        body: 'apps-net, ai-net, data-net e workbench-net restano interne; i gateway pubblici vengono separati per layer e rimangono gli unici punti esposti verso il browser.',
-        id: 'segmentation',
-        label: 'segmentazione'
+          'Dal sistema host usa localhost con la porta desktop. Dentro i container continua invece a usare postgres-dev:5432.',
+        status: 'shared database',
+        title: 'Postgres Vault',
+        tone: 'workbench'
       }
     ]
   };

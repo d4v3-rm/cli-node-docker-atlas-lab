@@ -1,59 +1,105 @@
-import type { IconType } from 'react-icons';
 import type { BriefingReference } from '@/types/briefing.types';
+
+export type DashboardIconKey =
+  | 'ai'
+  | 'certificate'
+  | 'cpp'
+  | 'forge'
+  | 'host'
+  | 'network'
+  | 'node'
+  | 'ollama'
+  | 'openWebUi'
+  | 'postgres'
+  | 'route'
+  | 'secure'
+  | 'spark'
+  | 'terminal'
+  | 'workflow';
+
+export type DashboardTone = 'ai' | 'core' | 'neutral' | 'workbench';
 
 export interface CredentialItem {
   label: string;
   value: string;
 }
 
-export interface ActionItem {
+export interface LinkActionItem {
   href: string;
   label: string;
 }
 
-export interface PillItem {
-  icon: IconType;
+export interface BriefingActionItem {
+  briefing: BriefingReference;
+  description: string;
+  icon: DashboardIconKey;
   label: string;
 }
 
+export interface HeroLinkActionItem {
+  description: string;
+  href: string;
+  icon: DashboardIconKey;
+  label: string;
+}
+
+export interface PillItem {
+  icon: DashboardIconKey;
+  label: string;
+  tone: DashboardTone;
+}
+
 export interface MetricItem {
+  caption: string;
   label: string;
   value: number;
 }
 
 export interface ServiceCardViewModel {
-  action: ActionItem;
+  action: LinkActionItem;
   credentials: CredentialItem[];
   description: string;
-  icon: IconType;
+  icon: DashboardIconKey;
   id: string;
   note?: string;
   status: string;
   title: string;
+  tone: DashboardTone;
 }
 
 export interface WorkbenchCardViewModel {
+  action?: LinkActionItem;
   briefing: BriefingReference;
   credentials: CredentialItem[];
   description: string;
-  icon: IconType;
+  icon: DashboardIconKey;
   id: string;
   note?: string;
   status: string;
   title: string;
+  tone: DashboardTone;
 }
 
 export interface FooterCardViewModel {
   body: string;
+  icon: DashboardIconKey;
   id: string;
+  label: string;
+}
+
+export interface LayerCapability {
+  icon: DashboardIconKey;
   label: string;
 }
 
 export interface OptionalLayerViewModel {
   activationCommand: string;
+  capabilities: LayerCapability[];
   description: string;
   enabled: boolean;
+  summary: string;
   title: string;
+  tone: DashboardTone;
 }
 
 export interface DashboardViewModel {
@@ -65,6 +111,7 @@ export interface DashboardViewModel {
     eyebrow: string;
     metrics: MetricItem[];
     pills: PillItem[];
+    quickActions: (HeroLinkActionItem | BriefingActionItem)[];
     summary: string;
     titleLines: string[];
   };
@@ -73,45 +120,4 @@ export interface DashboardViewModel {
   services: ServiceCardViewModel[];
   workbenchLayer: OptionalLayerViewModel;
   workbenches: WorkbenchCardViewModel[];
-}
-
-export interface HeroSectionProps {
-  accessNotes: string[];
-  certificateUrl: string;
-  eyebrow: string;
-  metrics: MetricItem[];
-  networkMap: BriefingReference;
-  onOpenBriefing: (briefing: BriefingReference) => void;
-  operatingCharter: string[];
-  pills: PillItem[];
-  summary: string;
-  titleLines: string[];
-}
-
-export interface MetricCardProps {
-  metric: MetricItem;
-}
-
-export interface SectionHeaderProps {
-  body: string;
-  kicker: string;
-  title: string;
-}
-
-export interface ServiceCardProps {
-  service: ServiceCardViewModel;
-}
-
-export interface WorkbenchCardProps {
-  onOpenBriefing: (briefing: BriefingReference) => void;
-  workbench: WorkbenchCardViewModel;
-}
-
-export interface FooterCardProps {
-  card: FooterCardViewModel;
-}
-
-export interface BriefingModalProps {
-  briefing: BriefingReference | null;
-  onClose: () => void;
 }
