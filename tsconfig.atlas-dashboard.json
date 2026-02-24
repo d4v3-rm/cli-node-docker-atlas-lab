@@ -17,8 +17,8 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["apps/lab-index/src/*"]
+      "@/*": ["apps/atlas-dashboard/src/*"]
     }
   },
-  "include": ["apps/lab-index/src", "lab-index.vite.config.ts"]
+  "include": ["apps/atlas-dashboard/src", "atlas-dashboard.vite.config.ts"]
 }

@@ -9,10 +9,10 @@
   "scripts": {
     "dev": "tsx ./src/bin/atlas-lab.ts",
     "build": "tsup",
-    "dev:lab-index": "vite --config ./lab-index.vite.config.ts",
-    "build:lab-index": "tsc -p ./tsconfig.lab-index.json --noEmit && vite build --config ./lab-index.vite.config.ts",
-    "typecheck:lab-index": "tsc -p ./tsconfig.lab-index.json --noEmit",
-    "preview:lab-index": "vite preview --config ./lab-index.vite.config.ts",
+    "dev:atlas-dashboard": "vite --config ./atlas-dashboard.vite.config.ts",
+    "build:atlas-dashboard": "tsc -p ./tsconfig.atlas-dashboard.json --noEmit && vite build --config ./atlas-dashboard.vite.config.ts",
+    "typecheck:atlas-dashboard": "tsc -p ./tsconfig.atlas-dashboard.json --noEmit",
+    "preview:atlas-dashboard": "vite preview --config ./atlas-dashboard.vite.config.ts",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "prepack": "npm run build",
@@ -20,14 +20,14 @@
   },
   "files": [
     ".dockerignore",
-    "apps/lab-index",
+    "apps/atlas-dashboard",
     "bin",
     "config",
     "dist",
     "infra/docker",
-    "lab-index.vite.config.ts",
+    "atlas-dashboard.vite.config.ts",
     "README.md",
-    "tsconfig.lab-index.json"
+    "tsconfig.atlas-dashboard.json"
   ],
   "engines": {
     "node": ">=20"

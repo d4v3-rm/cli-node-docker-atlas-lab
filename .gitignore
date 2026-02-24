@@ -3,5 +3,6 @@ __pycache__/
 node_modules/
 dist/
 .lab-index-dist/
+.atlas-dashboard-dist/
 *.tgz
 logs/
