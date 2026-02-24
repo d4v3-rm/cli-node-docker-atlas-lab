@@ -70,7 +70,7 @@ for var_name in ${required_vars}; do
 done
 
 template_root="/opt/gateway/templates"
-frontend_dist_root="/opt/gateway/lab-index-dist"
+frontend_dist_root="/opt/gateway/atlas-dashboard-dist"
 site_root="/srv"
 content_dir="${site_root}/content"
 asset_dir="${site_root}/assets"
@@ -89,7 +89,7 @@ if [ ! -f "${template_root}/${caddy_template}" ]; then
 fi
 
 if [ ! -f "${frontend_dist_root}/index.html" ]; then
-  echo "Missing lab index frontend build output." >&2
+  echo "Missing Atlas Dashboard frontend build output." >&2
   exit 1
 fi
 
