@@ -608,6 +608,8 @@ Le credenziali operative sono in [`config/env/lab.env`](./config/env/lab.env) e 
 - ruolo: homepage grafica del lab con link rapidi, credenziali operative e accesso ai servizi
 - implementazione: app Vite + React + TypeScript in [`apps/atlas-dashboard`](./apps/atlas-dashboard)
 - toolchain frontend: script npm e config Vite/TypeScript al livello root della repo (`package.json`, `atlas-dashboard.vite.config.ts`, `tsconfig.atlas-dashboard.json`)
+- sviluppo locale UI: `npm run dev:atlas-dashboard` serve Atlas Dashboard via Vite e genera localmente `runtime/lab-config.json`, briefing markdown e asset placeholder senza richiedere il gateway
+- toggle locali layer opzionali: `ATLAS_DASHBOARD_DEV_AI_ENABLED` e `ATLAS_DASHBOARD_DEV_WORKBENCH_ENABLED` permettono di simulare dashboard con o senza layer opzionali; il default locale li considera attivi per mostrare tutta la UI
 - delivery: la build frontend viene prodotta dentro l'immagine gateway e poi pubblicata come bundle statico
 
 ### Gitea

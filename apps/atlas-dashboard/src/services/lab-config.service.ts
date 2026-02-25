@@ -14,7 +14,30 @@ export async function loadLabConfig(): Promise<LabRuntimeConfig> {
     throw new Error(`Impossibile leggere ${LAB_CONFIG_PATH} (${response.status}).`);
   }
 
-  const payload = (await response.json()) as unknown;
+  const payloadText = await response.text();
+  let payload: unknown;
+
+  try {
+    payload = JSON.parse(payloadText) as unknown;
+  } catch (error) {
+    const normalizedPayload = payloadText.trimStart().toLowerCase();
+
+    if (
+      normalizedPayload.startsWith('<!doctype') ||
+      normalizedPayload.startsWith('<html')
+    ) {
+      throw new Error(
+        'La config runtime non e disponibile: avvia Atlas Lab tramite gateway oppure usa npm run dev:atlas-dashboard.'
+      );
+    }
+
+    throw new Error(
+      error instanceof Error
+        ? `Risposta runtime non valida: ${error.message}`
+        : 'Risposta runtime non valida.'
+    );
+  }
+
   assertLabRuntimeConfig(payload);
   return payload;
 }
