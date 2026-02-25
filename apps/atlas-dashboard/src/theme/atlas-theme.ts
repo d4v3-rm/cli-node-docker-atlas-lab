@@ -7,7 +7,7 @@ export const atlasTheme = createTheme({
   palette: {
     background: {
       default: '#efe7db',
-      paper: 'rgba(255, 252, 247, 0.82)'
+      paper: '#fffaf3'
     },
     error: {
       main: '#b24a3a'
@@ -34,7 +34,7 @@ export const atlasTheme = createTheme({
     }
   },
   shape: {
-    borderRadius: 28
+    borderRadius: 24
   },
   typography: {
     fontFamily: '"DM Sans", sans-serif',
@@ -98,10 +98,9 @@ export const atlasTheme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          backdropFilter: 'blur(18px)',
-          backgroundColor: 'rgba(255, 252, 247, 0.82)',
+          backgroundColor: '#fffaf3',
           border: '1px solid rgba(17, 33, 42, 0.08)',
-          boxShadow: '0 24px 70px rgba(17, 33, 42, 0.08)'
+          boxShadow: '0 18px 42px rgba(17, 33, 42, 0.08)'
         }
       }
     },
@@ -118,7 +117,9 @@ export const atlasTheme = createTheme({
         body: {
           background:
             'radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 28%), radial-gradient(circle at 85% 15%, rgba(187, 95, 24, 0.12), transparent 24%), linear-gradient(180deg, #f6f0e8 0%, #efe7db 100%)',
-          minHeight: '100vh'
+          minHeight: '100vh',
+          overflowX: 'hidden',
+          WebkitFontSmoothing: 'antialiased'
         },
         '#root': {
           minHeight: '100vh'
@@ -131,8 +132,7 @@ export const atlasTheme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paper: {
-          backgroundColor: 'rgba(255, 252, 247, 0.95)',
-          backdropFilter: 'blur(22px)'
+          backgroundColor: '#fffaf7'
         }
       }
     },
