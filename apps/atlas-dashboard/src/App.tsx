@@ -126,9 +126,7 @@ export default function App() {
 
   return (
     <>
-      <BackdropDecorations />
-
-      <Container maxWidth="xl" sx={{ position: 'relative', py: { xs: 3, md: 5 } }}>
+      <Container maxWidth="xl" sx={{ position: 'relative', py: { xs: 3, md: 5 }, zIndex: 1 }}>
         <Stack spacing={{ xs: 3, md: 4 }}>
           <Box
             sx={{
@@ -383,11 +381,11 @@ function StatusScreen({ eyebrow, summary, title, tone = 'default' }: StatusScree
         display: 'flex',
         justifyContent: 'center',
         minHeight: '100vh',
+        overflow: 'hidden',
         px: 2,
         position: 'relative'
       }}
     >
-      <BackdropDecorations />
       <Card
         sx={{
           maxWidth: 680,
@@ -401,7 +399,7 @@ function StatusScreen({ eyebrow, summary, title, tone = 'default' }: StatusScree
             <Typography color="text.secondary" sx={{ letterSpacing: '0.14em', textTransform: 'uppercase' }} variant="overline">
               {eyebrow}
             </Typography>
-            <Typography sx={{ maxWidth: 12 }} variant="h2">
+            <Typography sx={{ lineHeight: 1.02, maxWidth: 16 }} variant="h2">
               {title}
             </Typography>
             <Typography color="text.secondary" variant="body1">
@@ -427,39 +425,6 @@ function StatusScreen({ eyebrow, summary, title, tone = 'default' }: StatusScree
         </CardContent>
       </Card>
     </Box>
-  );
-}
-
-function BackdropDecorations() {
-  return (
-    <>
-      <Box
-        sx={{
-          background: 'radial-gradient(circle at center, rgba(15, 118, 110, 0.18), rgba(15, 118, 110, 0) 72%)',
-          filter: 'blur(18px)',
-          height: 460,
-          left: { xs: -180, md: -60 },
-          pointerEvents: 'none',
-          position: 'fixed',
-          top: { xs: -140, md: -120 },
-          width: 460,
-          zIndex: 0
-        }}
-      />
-      <Box
-        sx={{
-          background: 'radial-gradient(circle at center, rgba(187, 95, 24, 0.18), rgba(187, 95, 24, 0) 72%)',
-          filter: 'blur(18px)',
-          height: 420,
-          pointerEvents: 'none',
-          position: 'fixed',
-          right: { xs: -180, md: -60 },
-          top: { xs: 240, md: 200 },
-          width: 420,
-          zIndex: 0
-        }}
-      />
-    </>
   );
 }
 
@@ -491,6 +456,7 @@ function HeroPanel({
   return (
     <Card
       sx={{
+        isolation: 'isolate',
         minHeight: { xs: 'auto', lg: 460 },
         overflow: 'hidden',
         position: 'relative'
@@ -499,14 +465,13 @@ function HeroPanel({
       <Box
         sx={{
           background:
-            'linear-gradient(135deg, rgba(14, 83, 83, 0.96) 0%, rgba(15, 118, 110, 0.9) 48%, rgba(187, 95, 24, 0.84) 100%)',
+            'linear-gradient(135deg, #0b4b46 0%, #0f766e 54%, #b76523 100%)',
           inset: 0,
           position: 'absolute'
         }}
       />
       <Box
         sx={{
-          backdropFilter: 'blur(2px)',
           display: 'grid',
           gap: 3,
           gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 1.4fr) minmax(280px, 0.9fr)' },
@@ -527,8 +492,8 @@ function HeroPanel({
                 key={line}
                 sx={{
                   color: 'common.white',
-                  fontSize: { xs: '3.2rem', md: '5rem' },
-                  lineHeight: 0.92
+                  fontSize: { xs: '2.9rem', sm: '3.8rem', md: '4.8rem' },
+                  lineHeight: 0.96
                 }}
                 variant="h1"
               >
@@ -552,7 +517,7 @@ function HeroPanel({
                   key={pill.label}
                   label={pill.label}
                   sx={{
-                    backgroundColor: alpha(tone.accent, 0.18),
+                    backgroundColor: alpha('#ffffff', 0.14),
                     border: `1px solid ${alpha('#ffffff', 0.16)}`,
                     color: 'common.white',
                     '& .MuiChip-icon': {
@@ -568,7 +533,7 @@ function HeroPanel({
         <Card
           sx={{
             alignSelf: 'stretch',
-            backgroundColor: alpha('#082028', 0.28),
+            backgroundColor: 'rgba(8, 32, 40, 0.76)',
             borderColor: alpha('#ffffff', 0.16),
             color: 'common.white'
           }}
@@ -586,7 +551,7 @@ function HeroPanel({
                 endIcon={<OpenInNewRoundedIcon />}
                 onClick={() => onOpenBriefing(primaryBriefing)}
                 sx={{
-                  backgroundColor: alpha('#ffffff', 0.12),
+                  backgroundColor: alpha('#ffffff', 0.18),
                   justifyContent: 'space-between',
                   px: 2.25
                 }}
@@ -601,7 +566,7 @@ function HeroPanel({
                 href={certificateUrl}
                 rel="noreferrer"
                 sx={{
-                  backgroundColor: alpha('#ffffff', 0.08),
+                  backgroundColor: alpha('#ffffff', 0.12),
                   borderColor: alpha('#ffffff', 0.18),
                   justifyContent: 'space-between',
                   px: 2.25
@@ -623,7 +588,7 @@ function HeroPanel({
                   <Card
                     key={action.label}
                     sx={{
-                      backgroundColor: alpha('#ffffff', 0.08),
+                      backgroundColor: alpha('#ffffff', 0.12),
                       borderColor: alpha('#ffffff', 0.14),
                       color: 'inherit'
                     }}
@@ -692,7 +657,7 @@ function MetricTile({ caption, label, value }: MetricTileProps) {
   return (
     <Box
       sx={{
-        backgroundColor: alpha('#ffffff', 0.7),
+        backgroundColor: '#fffaf5',
         border: (theme) => `1px solid ${alpha(theme.palette.primary.dark, 0.08)}`,
         borderRadius: 3,
         minHeight: 128,
@@ -881,7 +846,7 @@ function LayerStateCard({ layer }: LayerStateCardProps) {
   return (
     <Card
       sx={{
-        background: `linear-gradient(135deg, ${alpha(palette.accent, 0.16)} 0%, ${alpha('#ffffff', 0.82)} 100%)`,
+        background: `linear-gradient(135deg, ${alpha(palette.accent, 0.12)} 0%, #fffaf3 100%)`,
         borderColor: palette.border
       }}
     >
@@ -935,7 +900,7 @@ function LayerStateCard({ layer }: LayerStateCardProps) {
           <Card
             sx={{
               alignSelf: 'stretch',
-              backgroundColor: alpha('#ffffff', 0.82),
+              backgroundColor: '#fffaf6',
               borderColor: palette.border
             }}
             variant="outlined"
@@ -1060,7 +1025,7 @@ function OperationalCard({
             <Box
               key={`${item.id}-${credential.label}`}
               sx={{
-                backgroundColor: alpha('#ffffff', 0.72),
+                backgroundColor: '#fffaf5',
                 border: `1px solid ${alpha(palette.accent, 0.12)}`,
                 borderRadius: 3,
                 minHeight: 84,
