@@ -3,34 +3,49 @@ import { alpha, createTheme } from '@mui/material/styles';
 /**
  * Shared MUI theme for the redesigned Atlas Lab dashboard.
  */
+export const atlasDashboardColors = {
+  ai: '#b56a2f',
+  canvas: '#edf1ec',
+  core: '#0f766e',
+  coreDark: '#0a4f4a',
+  heroCard: '#163238',
+  ink: '#102127',
+  neutral: '#5c6870',
+  onDark: '#f7faf7',
+  panel: '#f8fbf7',
+  panelAlt: '#f1f5f2',
+  panelMuted: '#e8efea',
+  workbench: '#2f5f8a'
+} as const;
+
 export const atlasTheme = createTheme({
   palette: {
     background: {
-      default: '#efe7db',
-      paper: '#fffaf3'
+      default: atlasDashboardColors.canvas,
+      paper: atlasDashboardColors.panel
     },
     error: {
       main: '#b24a3a'
     },
     info: {
-      main: '#265d8d'
+      main: atlasDashboardColors.workbench
     },
     primary: {
-      dark: '#0b4b46',
-      main: '#0f766e'
+      dark: atlasDashboardColors.coreDark,
+      main: atlasDashboardColors.core
     },
     secondary: {
-      main: '#bb5f18'
+      main: atlasDashboardColors.ai
     },
     success: {
       main: '#21685d'
     },
     text: {
-      primary: '#11212a',
-      secondary: '#495a62'
+      primary: atlasDashboardColors.ink,
+      secondary: '#526169'
     },
     warning: {
-      main: '#a9601e'
+      main: '#9f5b22'
     }
   },
   shape: {
@@ -98,9 +113,9 @@ export const atlasTheme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          backgroundColor: '#fffaf3',
-          border: '1px solid rgba(17, 33, 42, 0.08)',
-          boxShadow: '0 18px 42px rgba(17, 33, 42, 0.08)'
+          backgroundColor: atlasDashboardColors.panel,
+          border: `1px solid ${alpha(atlasDashboardColors.ink, 0.08)}`,
+          boxShadow: `0 18px 42px ${alpha(atlasDashboardColors.coreDark, 0.08)}`
         }
       }
     },
@@ -116,7 +131,7 @@ export const atlasTheme = createTheme({
       styleOverrides: {
         body: {
           background:
-            'radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 28%), radial-gradient(circle at 85% 15%, rgba(187, 95, 24, 0.12), transparent 24%), linear-gradient(180deg, #f6f0e8 0%, #efe7db 100%)',
+            `radial-gradient(circle at top left, ${alpha(atlasDashboardColors.core, 0.12)}, transparent 28%), radial-gradient(circle at 85% 15%, ${alpha(atlasDashboardColors.ai, 0.12)}, transparent 24%), linear-gradient(180deg, #f4f7f3 0%, ${atlasDashboardColors.canvas} 100%)`,
           minHeight: '100vh',
           overflowX: 'hidden',
           WebkitFontSmoothing: 'antialiased'
@@ -125,14 +140,14 @@ export const atlasTheme = createTheme({
           minHeight: '100vh'
         },
         '::selection': {
-          backgroundColor: alpha('#0f766e', 0.22)
+          backgroundColor: alpha(atlasDashboardColors.core, 0.22)
         }
       }
     },
     MuiDialog: {
       styleOverrides: {
         paper: {
-          backgroundColor: '#fffaf7'
+          backgroundColor: atlasDashboardColors.panel
         }
       }
     },

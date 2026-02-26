@@ -36,6 +36,7 @@ import {
 import { BriefingDialog } from '@/components/briefing-dialog';
 import { useLabConfig } from '@/hooks/use-lab-config';
 import { createDashboardViewModel } from '@/models/dashboard-model';
+import { atlasDashboardColors } from '@/theme/atlas-theme';
 import type {
   BriefingActionItem,
   DashboardIconKey,
@@ -73,24 +74,24 @@ const toneStyles: Record<
   }
 > = {
   ai: {
-    accent: '#bb5f18',
-    border: alpha('#bb5f18', 0.24),
-    surface: alpha('#bb5f18', 0.08)
+    accent: atlasDashboardColors.ai,
+    border: alpha(atlasDashboardColors.ai, 0.22),
+    surface: alpha(atlasDashboardColors.ai, 0.08)
   },
   core: {
-    accent: '#0f766e',
-    border: alpha('#0f766e', 0.24),
-    surface: alpha('#0f766e', 0.08)
+    accent: atlasDashboardColors.core,
+    border: alpha(atlasDashboardColors.core, 0.22),
+    surface: alpha(atlasDashboardColors.core, 0.08)
   },
   neutral: {
-    accent: '#4c5d62',
-    border: alpha('#4c5d62', 0.18),
-    surface: alpha('#4c5d62', 0.06)
+    accent: atlasDashboardColors.neutral,
+    border: alpha(atlasDashboardColors.neutral, 0.18),
+    surface: alpha(atlasDashboardColors.neutral, 0.07)
   },
   workbench: {
-    accent: '#265d8d',
-    border: alpha('#265d8d', 0.24),
-    surface: alpha('#265d8d', 0.08)
+    accent: atlasDashboardColors.workbench,
+    border: alpha(atlasDashboardColors.workbench, 0.22),
+    surface: alpha(atlasDashboardColors.workbench, 0.08)
   }
 };
 
@@ -465,7 +466,7 @@ function HeroPanel({
       <Box
         sx={{
           background:
-            'linear-gradient(135deg, #0b4b46 0%, #0f766e 54%, #b76523 100%)',
+            `linear-gradient(135deg, ${atlasDashboardColors.coreDark} 0%, ${atlasDashboardColors.core} 52%, ${atlasDashboardColors.ai} 100%)`,
           inset: 0,
           position: 'absolute'
         }}
@@ -482,7 +483,7 @@ function HeroPanel({
         }}
       >
         <Stack spacing={3}>
-          <Typography sx={{ color: 'rgba(255,255,255,0.72)', letterSpacing: '0.16em', textTransform: 'uppercase' }} variant="overline">
+          <Typography sx={{ color: alpha(atlasDashboardColors.onDark, 0.72), letterSpacing: '0.16em', textTransform: 'uppercase' }} variant="overline">
             {eyebrow}
           </Typography>
 
@@ -491,7 +492,7 @@ function HeroPanel({
               <Typography
                 key={line}
                 sx={{
-                  color: 'common.white',
+                  color: atlasDashboardColors.onDark,
                   fontSize: { xs: '2.9rem', sm: '3.8rem', md: '4.8rem' },
                   lineHeight: 0.96
                 }}
@@ -502,7 +503,7 @@ function HeroPanel({
             ))}
           </Stack>
 
-          <Typography sx={{ color: 'rgba(255,255,255,0.84)', maxWidth: '42ch' }} variant="h6">
+          <Typography sx={{ color: alpha(atlasDashboardColors.onDark, 0.84), maxWidth: '42ch' }} variant="h6">
             {summary}
           </Typography>
 
@@ -517,11 +518,11 @@ function HeroPanel({
                   key={pill.label}
                   label={pill.label}
                   sx={{
-                    backgroundColor: alpha('#ffffff', 0.14),
-                    border: `1px solid ${alpha('#ffffff', 0.16)}`,
-                    color: 'common.white',
+                    backgroundColor: alpha(atlasDashboardColors.onDark, 0.14),
+                    border: `1px solid ${alpha(atlasDashboardColors.onDark, 0.14)}`,
+                    color: atlasDashboardColors.onDark,
                     '& .MuiChip-icon': {
-                      color: 'common.white'
+                      color: atlasDashboardColors.onDark
                     }
                   }}
                 />
@@ -533,15 +534,15 @@ function HeroPanel({
         <Card
           sx={{
             alignSelf: { xs: 'stretch', md: 'start' },
-            backgroundColor: 'rgba(8, 32, 40, 0.76)',
-            borderColor: alpha('#ffffff', 0.16),
-            color: 'common.white',
+            backgroundColor: alpha(atlasDashboardColors.heroCard, 0.92),
+            borderColor: alpha(atlasDashboardColors.onDark, 0.12),
+            color: atlasDashboardColors.onDark,
             width: '100%'
           }}
         >
           <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 3, p: { xs: 2.5, md: 3 } }}>
             <Stack spacing={1.25}>
-              <Typography sx={{ color: 'rgba(255,255,255,0.72)', letterSpacing: '0.14em', textTransform: 'uppercase' }} variant="overline">
+              <Typography sx={{ color: alpha(atlasDashboardColors.onDark, 0.72), letterSpacing: '0.14em', textTransform: 'uppercase' }} variant="overline">
                 quick access
               </Typography>
               <Typography sx={{ maxWidth: '18ch' }} variant="h4">
@@ -555,7 +556,7 @@ function HeroPanel({
                 endIcon={<OpenInNewRoundedIcon />}
                 onClick={() => onOpenBriefing(primaryBriefing)}
                 sx={{
-                  backgroundColor: alpha('#ffffff', 0.18),
+                  backgroundColor: alpha(atlasDashboardColors.onDark, 0.16),
                   justifyContent: 'space-between',
                   minHeight: 52,
                   px: 2.5,
@@ -572,8 +573,8 @@ function HeroPanel({
                 href={certificateUrl}
                 rel="noreferrer"
                 sx={{
-                  backgroundColor: alpha('#ffffff', 0.12),
-                  borderColor: alpha('#ffffff', 0.18),
+                  backgroundColor: alpha(atlasDashboardColors.onDark, 0.08),
+                  borderColor: alpha(atlasDashboardColors.onDark, 0.16),
                   justifyContent: 'space-between',
                   minHeight: 52,
                   px: 2.5,
@@ -586,7 +587,7 @@ function HeroPanel({
               </Button>
             </Stack>
 
-            <Divider sx={{ borderColor: alpha('#ffffff', 0.16), my: 0.25 }} />
+            <Divider sx={{ borderColor: alpha(atlasDashboardColors.onDark, 0.12), my: 0.25 }} />
 
             <Stack spacing={1.75}>
               {quickActions.map((action) => {
@@ -596,8 +597,8 @@ function HeroPanel({
                   <Card
                     key={action.label}
                     sx={{
-                      backgroundColor: alpha('#ffffff', 0.12),
-                      borderColor: alpha('#ffffff', 0.14),
+                      backgroundColor: alpha(atlasDashboardColors.onDark, 0.07),
+                      borderColor: alpha(atlasDashboardColors.onDark, 0.12),
                       color: 'inherit'
                     }}
                     variant="outlined"
@@ -606,8 +607,8 @@ function HeroPanel({
                       <Stack alignItems="flex-start" direction="row" spacing={1.75}>
                         <Avatar
                           sx={{
-                            backgroundColor: alpha('#ffffff', 0.12),
-                            color: 'common.white',
+                            backgroundColor: alpha(atlasDashboardColors.onDark, 0.08),
+                            color: atlasDashboardColors.onDark,
                             height: 40,
                             mt: 0.25,
                             width: 40
@@ -625,7 +626,7 @@ function HeroPanel({
                                 color="inherit"
                                 href={action.href}
                                 rel="noreferrer"
-                                sx={{ textDecorationColor: alpha('#ffffff', 0.32) }}
+                                sx={{ textDecorationColor: alpha(atlasDashboardColors.onDark, 0.26) }}
                                 target="_blank"
                                 underline="hover"
                                 variant="body2"
@@ -636,7 +637,7 @@ function HeroPanel({
                               <Link
                                 component="button"
                                 onClick={() => onOpenBriefing(action.briefing)}
-                                sx={{ color: 'inherit', textAlign: 'left', textDecorationColor: alpha('#ffffff', 0.32) }}
+                                sx={{ color: 'inherit', textAlign: 'left', textDecorationColor: alpha(atlasDashboardColors.onDark, 0.26) }}
                                 underline="hover"
                                 variant="body2"
                               >
@@ -668,7 +669,7 @@ function MetricTile({ caption, label, value }: MetricTileProps) {
   return (
     <Box
       sx={{
-        backgroundColor: '#fffaf5',
+        backgroundColor: atlasDashboardColors.panelAlt,
         border: (theme) => `1px solid ${alpha(theme.palette.primary.dark, 0.08)}`,
         borderRadius: 3,
         minHeight: 128,
@@ -857,7 +858,7 @@ function LayerStateCard({ layer }: LayerStateCardProps) {
   return (
     <Card
       sx={{
-        background: `linear-gradient(135deg, ${alpha(palette.accent, 0.12)} 0%, #fffaf3 100%)`,
+        background: `linear-gradient(135deg, ${alpha(palette.accent, 0.12)} 0%, ${atlasDashboardColors.panel} 100%)`,
         borderColor: palette.border
       }}
     >
@@ -911,7 +912,7 @@ function LayerStateCard({ layer }: LayerStateCardProps) {
           <Card
             sx={{
               alignSelf: 'stretch',
-              backgroundColor: '#fffaf6',
+              backgroundColor: atlasDashboardColors.panelAlt,
               borderColor: palette.border
             }}
             variant="outlined"
@@ -937,9 +938,9 @@ function LayerStateCard({ layer }: LayerStateCardProps) {
                 <Box
                   component="code"
                   sx={{
-                    backgroundColor: alpha('#0b1720', 0.92),
+                    backgroundColor: alpha(atlasDashboardColors.ink, 0.94),
                     borderRadius: 3,
-                    color: '#f6eadb',
+                    color: atlasDashboardColors.onDark,
                     display: 'block',
                     fontFamily: '"IBM Plex Mono", "SFMono-Regular", Consolas, monospace',
                     fontSize: '0.95rem',
@@ -983,7 +984,7 @@ function OperationalCard({
       <Box
         sx={{
           alignItems: 'center',
-          background: `linear-gradient(135deg, ${alpha(palette.accent, 0.16)} 0%, ${alpha('#ffffff', 0)} 100%)`,
+          background: `linear-gradient(135deg, ${alpha(palette.accent, 0.14)} 0%, ${alpha(atlasDashboardColors.panel, 0)} 100%)`,
           borderBottom: `1px solid ${palette.border}`,
           display: 'flex',
           justifyContent: 'space-between',
@@ -1036,7 +1037,7 @@ function OperationalCard({
             <Box
               key={`${item.id}-${credential.label}`}
               sx={{
-                backgroundColor: '#fffaf5',
+                backgroundColor: atlasDashboardColors.panelAlt,
                 border: `1px solid ${alpha(palette.accent, 0.12)}`,
                 borderRadius: 3,
                 minHeight: 84,
