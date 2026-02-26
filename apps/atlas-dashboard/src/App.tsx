@@ -156,7 +156,7 @@ export default function App() {
                     <Typography color="text.secondary" sx={{ letterSpacing: '0.12em', textTransform: 'uppercase' }} variant="overline">
                       live footprint
                     </Typography>
-                    <Typography sx={{ maxWidth: 34 }} variant="h4">
+                    <Typography sx={{ maxWidth: '34ch' }} variant="h4">
                       Stato sintetico dei layer che il gateway sta esponendo adesso.
                     </Typography>
                   </Box>
@@ -399,7 +399,7 @@ function StatusScreen({ eyebrow, summary, title, tone = 'default' }: StatusScree
             <Typography color="text.secondary" sx={{ letterSpacing: '0.14em', textTransform: 'uppercase' }} variant="overline">
               {eyebrow}
             </Typography>
-            <Typography sx={{ lineHeight: 1.02, maxWidth: 16 }} variant="h2">
+            <Typography sx={{ lineHeight: 1.02, maxWidth: '16ch' }} variant="h2">
               {title}
             </Typography>
             <Typography color="text.secondary" variant="body1">
@@ -502,7 +502,7 @@ function HeroPanel({
             ))}
           </Stack>
 
-          <Typography sx={{ color: 'rgba(255,255,255,0.84)', maxWidth: 42 }} variant="h6">
+          <Typography sx={{ color: 'rgba(255,255,255,0.84)', maxWidth: '42ch' }} variant="h6">
             {summary}
           </Typography>
 
@@ -542,7 +542,7 @@ function HeroPanel({
             <Typography sx={{ color: 'rgba(255,255,255,0.72)', letterSpacing: '0.14em', textTransform: 'uppercase' }} variant="overline">
               quick access
             </Typography>
-            <Typography sx={{ maxWidth: 18 }} variant="h4">
+            <Typography sx={{ maxWidth: '18ch' }} variant="h4">
               Apri subito il briefing topologico o il certificato del gateway.
             </Typography>
             <Stack spacing={1.5}>
@@ -820,7 +820,7 @@ function SectionBand({ body, kicker, title }: SectionBandProps) {
         </Typography>
         <Typography variant="h2">{title}</Typography>
       </Box>
-      <Typography color="text.secondary" sx={{ maxWidth: { md: 52 } }} variant="body1">
+      <Typography color="text.secondary" sx={{ maxWidth: { md: '52ch' } }} variant="body1">
         {body}
       </Typography>
     </Box>
