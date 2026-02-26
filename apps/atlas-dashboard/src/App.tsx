@@ -532,20 +532,24 @@ function HeroPanel({
 
         <Card
           sx={{
-            alignSelf: 'stretch',
+            alignSelf: { xs: 'stretch', md: 'start' },
             backgroundColor: 'rgba(8, 32, 40, 0.76)',
             borderColor: alpha('#ffffff', 0.16),
-            color: 'common.white'
+            color: 'common.white',
+            width: '100%'
           }}
         >
-          <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, height: '100%', p: 3 }}>
-            <Typography sx={{ color: 'rgba(255,255,255,0.72)', letterSpacing: '0.14em', textTransform: 'uppercase' }} variant="overline">
-              quick access
-            </Typography>
-            <Typography sx={{ maxWidth: '18ch' }} variant="h4">
-              Apri subito il briefing topologico o il certificato del gateway.
-            </Typography>
-            <Stack spacing={1.5}>
+          <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 3, p: { xs: 2.5, md: 3 } }}>
+            <Stack spacing={1.25}>
+              <Typography sx={{ color: 'rgba(255,255,255,0.72)', letterSpacing: '0.14em', textTransform: 'uppercase' }} variant="overline">
+                quick access
+              </Typography>
+              <Typography sx={{ maxWidth: '18ch' }} variant="h4">
+                Apri subito il briefing topologico o il certificato del gateway.
+              </Typography>
+            </Stack>
+
+            <Stack spacing={1.25}>
               <Button
                 color="inherit"
                 endIcon={<OpenInNewRoundedIcon />}
@@ -553,7 +557,9 @@ function HeroPanel({
                 sx={{
                   backgroundColor: alpha('#ffffff', 0.18),
                   justifyContent: 'space-between',
-                  px: 2.25
+                  minHeight: 52,
+                  px: 2.5,
+                  py: 1.25
                 }}
                 variant="contained"
               >
@@ -569,7 +575,9 @@ function HeroPanel({
                   backgroundColor: alpha('#ffffff', 0.12),
                   borderColor: alpha('#ffffff', 0.18),
                   justifyContent: 'space-between',
-                  px: 2.25
+                  minHeight: 52,
+                  px: 2.5,
+                  py: 1.25
                 }}
                 target="_blank"
                 variant="outlined"
@@ -578,9 +586,9 @@ function HeroPanel({
               </Button>
             </Stack>
 
-            <Divider sx={{ borderColor: alpha('#ffffff', 0.16) }} />
+            <Divider sx={{ borderColor: alpha('#ffffff', 0.16), my: 0.25 }} />
 
-            <Stack spacing={1.5}>
+            <Stack spacing={1.75}>
               {quickActions.map((action) => {
                 const Icon = iconMap[action.icon];
 
@@ -594,45 +602,48 @@ function HeroPanel({
                     }}
                     variant="outlined"
                   >
-                    <CardContent sx={{ p: 2 }}>
-                      <Stack alignItems="center" direction="row" spacing={1.5}>
+                    <CardContent sx={{ p: 2.25 }}>
+                      <Stack alignItems="flex-start" direction="row" spacing={1.75}>
                         <Avatar
                           sx={{
                             backgroundColor: alpha('#ffffff', 0.12),
                             color: 'common.white',
                             height: 40,
+                            mt: 0.25,
                             width: 40
                           }}
                         >
                           <Icon fontSize="small" />
                         </Avatar>
                         <Box sx={{ flex: 1, minWidth: 0 }}>
-                          <Typography sx={{ fontWeight: 700 }} variant="body2">
-                            {action.label}
-                          </Typography>
-                          {'href' in action ? (
-                            <Link
-                              color="inherit"
-                              href={action.href}
-                              rel="noreferrer"
-                              sx={{ textDecorationColor: alpha('#ffffff', 0.32) }}
-                              target="_blank"
-                              underline="hover"
-                              variant="body2"
-                            >
-                              {action.description}
-                            </Link>
-                          ) : (
-                            <Link
-                              component="button"
-                              onClick={() => onOpenBriefing(action.briefing)}
-                              sx={{ color: 'inherit', textAlign: 'left', textDecorationColor: alpha('#ffffff', 0.32) }}
-                              underline="hover"
-                              variant="body2"
-                            >
-                              {action.description}
-                            </Link>
-                          )}
+                          <Stack spacing={0.625}>
+                            <Typography sx={{ fontWeight: 700 }} variant="body2">
+                              {action.label}
+                            </Typography>
+                            {'href' in action ? (
+                              <Link
+                                color="inherit"
+                                href={action.href}
+                                rel="noreferrer"
+                                sx={{ textDecorationColor: alpha('#ffffff', 0.32) }}
+                                target="_blank"
+                                underline="hover"
+                                variant="body2"
+                              >
+                                {action.description}
+                              </Link>
+                            ) : (
+                              <Link
+                                component="button"
+                                onClick={() => onOpenBriefing(action.briefing)}
+                                sx={{ color: 'inherit', textAlign: 'left', textDecorationColor: alpha('#ffffff', 0.32) }}
+                                underline="hover"
+                                variant="body2"
+                              >
+                                {action.description}
+                              </Link>
+                            )}
+                          </Stack>
                         </Box>
                       </Stack>
                     </CardContent>
