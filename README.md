@@ -607,7 +607,7 @@ Le credenziali operative sono in [`config/env/lab.env`](./config/env/lab.env) e 
 - porta host: `8443`
 - ruolo: homepage grafica del lab con link rapidi, credenziali operative e accesso ai servizi
 - implementazione: app Vite + React + TypeScript in [`apps/atlas-dashboard`](./apps/atlas-dashboard)
-- toolchain frontend: script npm e config Vite/TypeScript al livello root della repo (`package.json`, `atlas-dashboard.vite.config.ts`, `tsconfig.atlas-dashboard.json`)
+- toolchain frontend: script npm al root e config dedicate in `config/atlas-dashboard/` (`package.json`, `config/atlas-dashboard/vite.config.ts`, `config/atlas-dashboard/tsconfig.json`)
 - sviluppo locale UI: `npm run dev:atlas-dashboard` serve Atlas Dashboard via Vite e genera localmente `runtime/lab-config.json`, briefing markdown e asset placeholder senza richiedere il gateway
 - toggle locali layer opzionali: `ATLAS_DASHBOARD_DEV_AI_ENABLED` e `ATLAS_DASHBOARD_DEV_WORKBENCH_ENABLED` permettono di simulare dashboard con o senza layer opzionali; il default locale li considera attivi per mostrare tutta la UI
 - delivery: la build frontend viene prodotta dentro l'immagine gateway e poi pubblicata come bundle statico
@@ -742,8 +742,8 @@ Per DBeaver o `psql` eseguiti sul sistema host usa:
 | [src/types/](./src/types) | tipizzazioni condivise `*.types.ts` |
 | [src/ui/](./src/ui) | output CLI, banner e summary |
 | [src/utils/](./src/utils) | helper HTTP e process execution |
-| [atlas-dashboard.vite.config.ts](./atlas-dashboard.vite.config.ts) | configurazione Vite root-level di Atlas Dashboard |
-| [tsconfig.atlas-dashboard.json](./tsconfig.atlas-dashboard.json) | TypeScript config root-level di Atlas Dashboard |
+| [config/atlas-dashboard/vite.config.ts](./config/atlas-dashboard/vite.config.ts) | configurazione Vite di Atlas Dashboard |
+| [config/atlas-dashboard/tsconfig.json](./config/atlas-dashboard/tsconfig.json) | TypeScript config di Atlas Dashboard |
 | [config/gateway/templates/Caddyfile.template](./config/gateway/templates/Caddyfile.template) | routing del layer core |
 | [config/gateway/templates/Caddyfile.ai.template](./config/gateway/templates/Caddyfile.ai.template) | routing del layer AI |
 | [apps/atlas-dashboard/](./apps/atlas-dashboard) | sorgenti di Atlas Dashboard: solo `src`, `public`, `index.html` |
