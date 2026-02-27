@@ -1,13 +1,14 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { existsSync, readFileSync } from 'node:fs';
-import { fileURLToPath, URL } from 'node:url';
 import { resolve } from 'node:path';
+import { fileURLToPath, URL } from 'node:url';
 import { parse as parseDotenv } from 'dotenv';
-import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
+import { defineConfig, type Plugin } from 'vite';
 
-const repositoryRoot = fileURLToPath(new URL('.', import.meta.url));
-const atlasDashboardSourceRoot = fileURLToPath(new URL('./apps/atlas-dashboard/src', import.meta.url));
+const repositoryRoot = fileURLToPath(new URL('../../', import.meta.url));
+const atlasDashboardRoot = resolve(repositoryRoot, 'apps/atlas-dashboard');
+const atlasDashboardSourceRoot = resolve(atlasDashboardRoot, 'src');
 const labEnvPath = resolve(repositoryRoot, 'config/env/lab.env');
 const runtimeConfigTemplatePath = resolve(
   repositoryRoot,
@@ -20,11 +21,11 @@ const contentTemplateRoot = resolve(repositoryRoot, 'config/gateway/templates/co
  * the app directory limited to source assets only.
  */
 export default defineConfig({
-  root: './apps/atlas-dashboard',
+  root: atlasDashboardRoot,
   plugins: [react(), atlasDashboardLocalRuntimePlugin()],
   build: {
     assetsDir: 'static',
-    outDir: resolve(fileURLToPath(new URL('.', import.meta.url)), '.atlas-dashboard-dist'),
+    outDir: resolve(repositoryRoot, '.atlas-dashboard-dist'),
     emptyOutDir: true,
     rollupOptions: {
       output: {
@@ -33,8 +34,8 @@ export default defineConfig({
             return undefined;
           }
 
-          if (id.includes('@mui') || id.includes('@emotion')) {
-            return 'mui';
+          if (id.includes('antd') || id.includes('@ant-design')) {
+            return 'antd';
           }
 
           if (

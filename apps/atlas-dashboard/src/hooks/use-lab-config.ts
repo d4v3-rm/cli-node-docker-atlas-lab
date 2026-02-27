@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import i18n from '@/i18n';
 import { loadLabConfig } from '@/services/lab-config.service';
 import type { LabRuntimeConfig } from '@/types/lab-config.types';
 
@@ -40,7 +41,7 @@ export function useLabConfig(): LabConfigState {
 
         setState({
           config: null,
-          error: error instanceof Error ? error.message : 'Configurazione runtime non valida.',
+          error: error instanceof Error ? error.message : i18n.t('errors.invalidRuntimeConfig'),
           isLoading: false
         });
       });

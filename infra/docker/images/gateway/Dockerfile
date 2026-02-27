@@ -8,8 +8,7 @@ COPY package*.json ./
 
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
-COPY atlas-dashboard.vite.config.ts ./
-COPY tsconfig.atlas-dashboard.json ./
+COPY config/atlas-dashboard/ ./config/atlas-dashboard/
 COPY apps/atlas-dashboard/ ./apps/atlas-dashboard/
 
 RUN npm run build:atlas-dashboard

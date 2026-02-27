@@ -1,3 +1,5 @@
+import i18n from '@/i18n';
+
 const BRIEFING_REQUEST_OPTIONS: RequestInit = {
   cache: 'no-store'
 };
@@ -8,7 +10,11 @@ const BRIEFING_REQUEST_OPTIONS: RequestInit = {
 export async function loadBriefing(path: string): Promise<string> {
   const response = await fetch(path, BRIEFING_REQUEST_OPTIONS);
   if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
+    throw new Error(
+      i18n.t('errors.briefingHttpStatus', {
+        status: response.status
+      })
+    );
   }
 
   return response.text();

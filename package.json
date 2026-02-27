@@ -9,10 +9,10 @@
   "scripts": {
     "dev": "tsx ./src/bin/atlas-lab.ts",
     "build": "tsup",
-    "dev:atlas-dashboard": "vite --config ./atlas-dashboard.vite.config.ts",
-    "build:atlas-dashboard": "tsc -p ./tsconfig.atlas-dashboard.json --noEmit && vite build --config ./atlas-dashboard.vite.config.ts",
-    "typecheck:atlas-dashboard": "tsc -p ./tsconfig.atlas-dashboard.json --noEmit",
-    "preview:atlas-dashboard": "vite preview --config ./atlas-dashboard.vite.config.ts",
+    "dev:atlas-dashboard": "vite --config ./config/atlas-dashboard/vite.config.ts",
+    "build:atlas-dashboard": "tsc -p ./config/atlas-dashboard/tsconfig.json --noEmit && vite build --config ./config/atlas-dashboard/vite.config.ts",
+    "typecheck:atlas-dashboard": "tsc -p ./config/atlas-dashboard/tsconfig.json --noEmit",
+    "preview:atlas-dashboard": "vite preview --config ./config/atlas-dashboard/vite.config.ts",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "prepack": "npm run build",
@@ -25,20 +25,14 @@
     "config",
     "dist",
     "infra/docker",
-    "atlas-dashboard.vite.config.ts",
-    "README.md",
-    "tsconfig.atlas-dashboard.json"
+    "README.md"
   ],
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
-    "@fontsource/dm-sans": "^5.2.8",
-    "@fontsource/space-grotesk": "^5.2.10",
-    "@mui/icons-material": "^7.3.9",
-    "@mui/material": "^7.3.9",
+    "@ant-design/icons": "^6.1.0",
+    "antd": "^6.3.2",
     "boxen": "^8.0.1",
     "cli-table3": "^0.6.5",
     "commander": "^14.0.1",
@@ -47,12 +41,14 @@
     "execa": "^9.6.0",
     "find-up": "^8.0.0",
     "got": "^14.6.1",
+    "i18next": "^25.8.18",
     "listr2": "^9.0.4",
     "log-symbols": "^7.0.1",
     "p-wait-for": "^6.0.0",
     "picocolors": "^1.1.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-i18next": "^16.5.8",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
     "zod": "^4.1.11"

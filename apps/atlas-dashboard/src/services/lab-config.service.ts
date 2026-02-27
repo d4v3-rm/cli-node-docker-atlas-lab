@@ -1,3 +1,4 @@
+import i18n from '@/i18n';
 import type { LabRuntimeConfig } from '@/types/lab-config.types';
 
 const LAB_CONFIG_PATH = '/runtime/lab-config.json';
@@ -11,7 +12,12 @@ export async function loadLabConfig(): Promise<LabRuntimeConfig> {
   });
 
   if (!response.ok) {
-    throw new Error(`Impossibile leggere ${LAB_CONFIG_PATH} (${response.status}).`);
+    throw new Error(
+      i18n.t('errors.runtimeFetchFailed', {
+        path: LAB_CONFIG_PATH,
+        status: response.status
+      })
+    );
   }
 
   const payloadText = await response.text();
@@ -26,15 +32,15 @@ export async function loadLabConfig(): Promise<LabRuntimeConfig> {
       normalizedPayload.startsWith('<!doctype') ||
       normalizedPayload.startsWith('<html')
     ) {
-      throw new Error(
-        'La config runtime non e disponibile: avvia Atlas Lab tramite gateway oppure usa npm run dev:atlas-dashboard.'
-      );
+      throw new Error(i18n.t('errors.runtimeHtmlFallback'));
     }
 
     throw new Error(
       error instanceof Error
-        ? `Risposta runtime non valida: ${error.message}`
-        : 'Risposta runtime non valida.'
+        ? i18n.t('errors.runtimeInvalidResponseWithReason', {
+            reason: error.message
+          })
+        : i18n.t('errors.runtimeInvalidResponse')
     );
   }
 
@@ -47,11 +53,11 @@ export async function loadLabConfig(): Promise<LabRuntimeConfig> {
  */
 function assertLabRuntimeConfig(value: unknown): asserts value is LabRuntimeConfig {
   if (!value || typeof value !== 'object') {
-    throw new Error('Configurazione runtime assente o non valida.');
+    throw new Error(i18n.t('errors.invalidRuntimeObject'));
   }
 
   const candidate = value as Record<string, unknown>;
   if (!candidate.features || !candidate.lab || !candidate.services || !candidate.workbenches) {
-    throw new Error('Configurazione runtime incompleta.');
+    throw new Error(i18n.t('errors.runtimeIncomplete'));
   }
 }

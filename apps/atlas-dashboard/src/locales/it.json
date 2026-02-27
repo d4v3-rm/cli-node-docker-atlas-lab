@@ -1,0 +1,292 @@
+{
+  "language": {
+    "selectorLabel": "Lingua",
+    "ariaLabel": "Seleziona la lingua del dashboard",
+    "options": {
+      "en": "English",
+      "it": "Italiano"
+    }
+  },
+  "status": {
+    "eyebrow": "atlas command deck",
+    "errorTitle": "Impossibile inizializzare il dashboard",
+    "loadingSummary": "Sto caricando configurazione runtime, layer e briefing.",
+    "loadingTitle": "Allineamento del dashboard in corso",
+    "missingConfig": "La configurazione runtime del lab non e disponibile.",
+    "runtimeBadge": "atlas lab runtime"
+  },
+  "hero": {
+    "actionsEyebrow": "azioni dirette",
+    "actionsSummary": "Fascia di accesso rapido pensata per i task iniziali quando il lab e gia in esecuzione.",
+    "actionsTitle": "Entra nel routing, verifica la topologia o installa il certificato del gateway.",
+    "downloadCertificate": "Scarica certificato",
+    "openNetworkMap": "Apri network map"
+  },
+  "rails": {
+    "briefingsAndLinks": "briefing e link",
+    "layerHeartbeat": "stato dei layer",
+    "liveFootprint": "impronta live"
+  },
+  "panels": {
+    "accessNotesEyebrow": "note di accesso",
+    "accessNotesTitle": "Indicazioni operative e di accesso",
+    "operatingDoctrineEyebrow": "dottrina operativa",
+    "operatingDoctrineTitle": "Come e stato pensato il lab"
+  },
+  "sections": {
+    "aiBodyDisabled": "Il layer AI resta opzionale. Quando e spento il dashboard mostra il comando esatto per abilitarlo.",
+    "aiBodyEnabled": "Il layer AI e online: il dashboard porta in Open WebUI o alle API Ollama con credenziali e contesto operativo sempre visibili.",
+    "aiKicker": "piano opzionale",
+    "aiTitle": "AI Layer",
+    "footerBody": "Quattro segnali rapidi su routing, persistenza, uso consigliato e segmentazione dei layer.",
+    "footerKicker": "segnali atlas",
+    "footerTitle": "Chiusura operativa",
+    "servicesBody": "Il piano core resta sempre disponibile. Ogni card raccoglie endpoint, credenziali operative e un accesso diretto al servizio.",
+    "servicesKicker": "piano servizi",
+    "servicesTitle": "Servizi Core",
+    "workbenchBodyDisabled": "Gli ambienti restano staccati dal core. Li abiliti solo quando ti servono code-server o Postgres condiviso.",
+    "workbenchBodyEnabled": "Gli ambienti sono attivi: puoi entrare direttamente nel workspace o aprire prima il briefing dedicato per capire rete, credenziali e strumenti.",
+    "workbenchKicker": "piano workspace",
+    "workbenchTitle": "Workbench Layer"
+  },
+  "layerState": {
+    "activeTitle": "Layer attivo",
+    "inactiveTitle": "Layer non attivo",
+    "manualBadge": "attivazione manuale",
+    "onlineBadge": "online"
+  },
+  "layerSummary": {
+    "active": "attivo",
+    "optional": "opzionale"
+  },
+  "cards": {
+    "openBriefing": "Apri briefing",
+    "tones": {
+      "ai": "AI",
+      "core": "Core",
+      "neutral": "Neutro",
+      "workbench": "Workbench"
+    }
+  },
+  "briefing": {
+    "close": "Chiudi",
+    "contentServedByRuntime": "Contenuto servito dal runtime Atlas.",
+    "fallbackTitle": "Briefing",
+    "loading": "Sto caricando il briefing selezionato.",
+    "openSourceFile": "Apri file sorgente",
+    "openSourceMarkdown": "Apri il markdown sorgente",
+    "titleEyebrow": "atlas briefing"
+  },
+  "errors": {
+    "briefingHttpStatus": "Impossibile caricare il briefing (HTTP {{status}}).",
+    "invalidBriefing": "Briefing non disponibile.",
+    "invalidRuntimeConfig": "Configurazione runtime non valida.",
+    "invalidRuntimeObject": "Configurazione runtime assente o non valida.",
+    "runtimeFetchFailed": "Impossibile leggere {{path}} ({{status}}).",
+    "runtimeHtmlFallback": "La config runtime non e disponibile: avvia Atlas Lab tramite gateway oppure usa npm run dev:atlas-dashboard.",
+    "runtimeIncomplete": "Configurazione runtime incompleta.",
+    "runtimeInvalidResponse": "Risposta runtime non valida.",
+    "runtimeInvalidResponseWithReason": "Risposta runtime non valida: {{reason}}."
+  },
+  "credentials": {
+    "accessMode": "modalita di accesso",
+    "authMode": "modalita auth",
+    "database": "database",
+    "desktopHost": "host desktop",
+    "desktopPort": "porta desktop",
+    "dockerHost": "host docker",
+    "dockerPort": "porta docker",
+    "email": "email",
+    "endpoint": "endpoint",
+    "gatewayPassword": "password gateway",
+    "gatewayUser": "utente gateway",
+    "ownerBootstrap": "owner bootstrap",
+    "ownerEmail": "email owner",
+    "ownerPassword": "password owner",
+    "password": "password",
+    "rootEmail": "email root",
+    "rootName": "nome root",
+    "rootPassword": "password root",
+    "rootUser": "utente root",
+    "superuser": "superuser",
+    "usage": "uso"
+  },
+  "values": {
+    "browserConsole": "console browser",
+    "browserWorkspace": "workspace browser",
+    "directAppLogin": "login diretto applicazione",
+    "localInferenceApi": "API di inference locale",
+    "password": "password",
+    "protectedApi": "API protetta",
+    "sharedDatabase": "database condiviso",
+    "workflowControl": "controllo workflow",
+    "alwaysOnForge": "forge sempre accesa"
+  },
+  "dashboard": {
+    "coreLayerSummary": "Gitea e n8n restano il piano sempre acceso del lab.",
+    "accessNotes": {
+      "aiDisabled": "Il layer AI non viene piu acceso di default: il deck lo marca come opzionale invece di fingere che sia online.",
+      "aiEnabled": "Open WebUI e Ollama sono realmente online e raggiungibili sulle porte AI del gateway.",
+      "credentials": "Le credenziali operative sono esposte qui e restano allineate al bootstrap del lab.",
+      "https": "Tutti gli ingressi browser usano localhost con HTTPS dedicato, senza DNS custom o file hosts.",
+      "n8n": "n8n entra direttamente con owner bootstrap: non c e un secondo login al gateway.",
+      "workbenchDisabled": "Workbench e Postgres restano separati dal core operativo finche non abiliti il layer dedicato.",
+      "workbenchEnabled": "I workbench e Postgres sono attivi: puoi aprire ambienti browser-based o connetterti dal desktop alla porta host di Postgres."
+    },
+    "aiLayer": {
+      "capabilities": {
+        "aiModels": "modelli GPU-backed",
+        "ollama": "API Ollama protetta",
+        "openWebUi": "Open WebUI locale"
+      },
+      "description": "Layer AI opzionale per console conversazionale locale e inference LLM GPU-backed. Il deck lo attiva solo quando lo chiedi esplicitamente.",
+      "summaryDisabled": "AI layer spento. Nessun servizio AI viene avviato o esposto finche non abiliti il flag dedicato.",
+      "summaryEnabled": "Open WebUI e Ollama sono attivi e serviti dal gateway AI.",
+      "title": "AI Layer"
+    },
+    "aiServices": {
+      "ollama": {
+        "action": "Apri endpoint API",
+        "description": "Gateway sicuro verso l endpoint Ollama locale. Serve modelli LLM ed embeddings con accelerazione GPU del nodo host.",
+        "title": "Ollama Core"
+      },
+      "openWebUi": {
+        "action": "Apri Open WebUI",
+        "description": "Interfaccia conversazionale per lavorare sui modelli locali del lab dal browser, con credenziali esplicite e accesso immediato dal gateway.",
+        "title": "Open WebUI"
+      }
+    },
+    "footerCards": {
+      "persistence": {
+        "body": "Database, workspace, modelli, certificati e configurazione runtime restano persistiti solo in volumi Docker nominati.",
+        "label": "persistenza"
+      },
+      "routing": {
+        "body": "Il deck resta su {{localUrl}}; i servizi browser passano dal gateway HTTPS mentre Postgres per i client desktop usa {{postgresHost}}:{{postgresPort}}.",
+        "label": "routing"
+      },
+      "segmentation": {
+        "body": "Le reti interne restano separate per edge, AI, servizi dati e workbench. I gateway sono gli unici ingressi pubblicati.",
+        "label": "segmentazione"
+      },
+      "usage": {
+        "body": "Gitea e n8n sono il piano core sempre acceso; AI e workbench vengono abilitati a layer solo quando servono davvero.",
+        "label": "uso"
+      }
+    },
+    "hero": {
+      "eyebrow": "atlas command deck",
+      "pills": {
+        "aiActive": "layer ai attivo",
+        "aiOptional": "layer ai opzionale",
+        "deck": "deck {{localUrl}}",
+        "host": "host {{publicUrl}}",
+        "httpsOnly": "ingress solo https",
+        "volumes": "persistenza su volumi",
+        "workbenchActive": "workbench attivi",
+        "workbenchOptional": "workbench opzionali"
+      },
+      "quickActions": {
+        "localDeckDescription": "Rivedi da browser il routing locale che il deck sta usando.",
+        "localDeckLabel": "Local deck",
+        "networkMapDescription": "Leggi la topologia del lab e i piani di rete pubblicati.",
+        "networkMapLabel": "Network map"
+      },
+      "summary": "Control room unificata per repository, automazione, AI opzionale e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.",
+      "titleLines": {
+        "first": "LAB",
+        "second": "ATLAS"
+      }
+    },
+    "metrics": {
+      "aiDisabled": {
+        "caption": "layer AI non attivo",
+        "label": "ai live"
+      },
+      "aiEnabled": {
+        "caption": "layer AI pubblicato sul gateway dedicato",
+        "label": "ai live"
+      },
+      "core": {
+        "caption": "servizi sempre accesi e bootstrap mandatory",
+        "label": "core online"
+      },
+      "ingress": {
+        "caption": "gateway pubblici serviti adesso",
+        "label": "ingress planes"
+      },
+      "workbenchDisabled": {
+        "caption": "layer workbench non attivo",
+        "label": "workbench live"
+      },
+      "workbenchEnabled": {
+        "caption": "workspace e database esposti nel layer dedicato",
+        "label": "workbench live"
+      }
+    },
+    "networkMap": {
+      "title": "Network Map"
+    },
+    "operatingCharter": {
+      "ai": "Open WebUI e Ollama vivono in un layer AI esplicitamente opzionale.",
+      "gitea": "Gitea governa codice, review e governance Git del progetto.",
+      "n8n": "n8n coordina automazioni, webhook e job operativi del lab.",
+      "workbench": "Code-server e Postgres restano in un piano workbench separato dal core."
+    },
+    "services": {
+      "gitea": {
+        "action": "Apri Gitea",
+        "description": "Forge Git interna per repository, issue, review e flusso di collaborazione tecnica del lab.",
+        "title": "Gitea Forge"
+      },
+      "n8n": {
+        "action": "Apri n8n",
+        "description": "Motore di orchestrazione per webhook, integrazioni e pipeline operative, gia bootstrapato con owner applicativo.",
+        "note": "Il primo accesso salta il setup wizard ma non nasconde i template ufficiali disponibili dentro l applicazione.",
+        "title": "n8n Automation"
+      }
+    },
+    "workbenchLayer": {
+      "capabilities": {
+        "codeServer": "code-server dedicati",
+        "node": "workbench Node",
+        "postgres": "Postgres condiviso"
+      },
+      "description": "Layer separato per workspace browser-based e database condiviso. Il core resta pulito finche non ti serve realmente l ambiente di sviluppo.",
+      "summaryDisabled": "Workbench layer spento. Nessun code-server o Postgres viene esposto dal lab.",
+      "summaryEnabled": "Node, Python, AI, C++ e Postgres sono online nel piano workbench.",
+      "title": "Workbench Layer"
+    },
+    "workbenches": {
+      "ai": {
+        "briefingTitle": "AI Reactor",
+        "description": "Workspace code-server per notebook, esperimenti ML e tooling AI locale.",
+        "title": "AI Reactor"
+      },
+      "common": {
+        "openWorkspace": "Apri workspace"
+      },
+      "cpp": {
+        "briefingTitle": "C++ Foundry",
+        "description": "Workspace code-server per sviluppo C o C++, compilazione nativa e debugging.",
+        "title": "C++ Foundry"
+      },
+      "node": {
+        "briefingTitle": "Node Forge",
+        "description": "Workspace code-server per JavaScript, TypeScript, frontend e tooling npm o pnpm.",
+        "title": "Node Forge"
+      },
+      "postgres": {
+        "briefingTitle": "Postgres Vault",
+        "description": "PostgreSQL condiviso per schema design, query locali, migrazioni e test relazionali dal desktop o dai container.",
+        "note": "Dal sistema host usa localhost con la porta desktop. Dentro i container continua invece a usare postgres-dev:5432.",
+        "title": "Postgres Vault"
+      },
+      "python": {
+        "briefingTitle": "Python Grid",
+        "description": "Workspace code-server per backend Python, scripting e automazioni operative.",
+        "title": "Python Grid"
+      }
+    }
+  }
+}

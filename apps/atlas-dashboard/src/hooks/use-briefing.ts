@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import i18n from '@/i18n';
 import { loadBriefing } from '@/services/briefing.service';
 import type { BriefingReference, BriefingState } from '@/types/briefing.types';
 
@@ -49,7 +50,7 @@ export function useBriefing(briefing: BriefingReference | null): BriefingState {
 
         setState({
           content: '',
-          error: error instanceof Error ? error.message : 'Briefing non disponibile.',
+          error: error instanceof Error ? error.message : i18n.t('errors.invalidBriefing'),
           isLoading: false
         });
       });
