@@ -9,7 +9,7 @@ import { defineConfig, type Plugin } from 'vite';
 const repositoryRoot = fileURLToPath(new URL('../../', import.meta.url));
 const atlasDashboardRoot = resolve(repositoryRoot, 'apps/atlas-dashboard');
 const atlasDashboardSourceRoot = resolve(atlasDashboardRoot, 'src');
-const labEnvPath = resolve(repositoryRoot, 'config/env/lab.env');
+const labEnvPath = resolve(repositoryRoot, 'env/lab.env');
 const runtimeConfigTemplatePath = resolve(
   repositoryRoot,
   'config/gateway/templates/runtime/lab-config.json.template'

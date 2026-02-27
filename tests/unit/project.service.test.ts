@@ -25,9 +25,9 @@ describe('project.service', () => {
 
     try {
       mkdirSync(join(packageRoot, 'infra', 'docker'), { recursive: true });
-      mkdirSync(join(packageRoot, 'config', 'env'), { recursive: true });
+      mkdirSync(join(packageRoot, 'env'), { recursive: true });
       writeFileSync(join(packageRoot, 'infra', 'docker', 'compose.yml'), '');
-      writeFileSync(join(packageRoot, 'config', 'env', 'lab.env'), '');
+      writeFileSync(join(packageRoot, 'env', 'lab.env'), '');
 
       const resolution = resolveProjectRoot(undefined, randomDirectory, packageRoot);
 

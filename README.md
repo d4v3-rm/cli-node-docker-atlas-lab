@@ -326,6 +326,7 @@ La CLI TypeScript sostituisce il vecchio bootstrap Python e i vecchi servizi Com
 | --- | --- | --- |
 | dev mode | `npm run dev -- up` | usa `tsx` sulla CLI TypeScript sorgente |
 | build | `npm run build` | bundle ESM della CLI in `dist/` con `tsup` |
+| versioning | `npm run set:version` | calcola la prossima semver dai commit/tag Git, aggiorna `package.json`, `package-lock.json`, `env/*`, `README.md`, rigenera `CHANGELOG.md` e crea un commit `build(release): vX.Y.Z` |
 | pack locale | `npm run pack:local` | crea un tarball npm self-contained con gli asset runtime del lab |
 | install globale | `npm install -g .` | installa `atlas-lab` globalmente dalla repo con asset inclusi |
 | link globale | `npm link` | collega la repo come CLI globale durante lo sviluppo |
@@ -342,7 +343,7 @@ La build distributable e la CLI installata globalmente non scrivono log su files
 - [src/bin/atlas-lab.ts](./src/bin/atlas-lab.ts): entrypoint TypeScript della CLI
 - [src/app/](./src/app): bootstrap dell'app Commander
 - [src/commands/](./src/commands): registrazione dei comandi
-- [src/config/lab-env.schema.ts](./src/config/lab-env.schema.ts): schema Zod della configurazione `config/env/lab.env`
+- [src/config/lab-env.schema.ts](./src/config/lab-env.schema.ts): schema Zod della configurazione `env/lab.env`
 - [src/config/repository-layout.ts](./src/config/repository-layout.ts): contratto dei path infrastrutturali della repo
 - [src/services/](./src/services): logica operativa del lab
 - [src/types/](./src/types): tipizzazioni dedicate con suffisso `*.types.ts`
@@ -359,7 +360,7 @@ La root del repository resta volutamente leggera. Le responsabilita sono separat
 | --- | --- | --- |
 | codice applicativo | CLI TypeScript, command layer, servizi e tipizzazioni | `src/`, `bin/` |
 | infrastruttura Docker | orchestrazione Compose, Dockerfile e script di immagine | `infra/docker/compose.yml`, `infra/docker/compose.ai.yml`, `infra/docker/compose.workbench.yml`, `infra/docker/images/` |
-| configurazione operativa | env del lab, template gateway e briefing locali | `config/env/lab.env`, `config/gateway/templates/` |
+| configurazione operativa | env del lab, template gateway e briefing locali | `env/lab.env`, `config/gateway/templates/` |
 | tooling repo | packaging, build e script di supporto | `tools/`, `scripts/`, `package.json` |
 
 Regola pratica:
@@ -368,7 +369,7 @@ Regola pratica:
 - se cambi build container o orchestrazione, lavori in `infra/docker/`
 - se cambi credenziali, porte, template o contenuti gateway, lavori in `config/`
 
-La CLI usa questo layout come contratto esplicito: risolve sempre `infra/docker/compose.yml` come layer `core`, piu gli eventuali `infra/docker/compose.ai.yml` e `infra/docker/compose.workbench.yml`, oltre a `config/env/lab.env`.
+La CLI usa questo layout come contratto esplicito: risolve sempre `infra/docker/compose.yml` come layer `core`, piu gli eventuali `infra/docker/compose.ai.yml` e `infra/docker/compose.workbench.yml`, oltre a `env/lab.env`.
 
 ### Comandi della CLI
 
@@ -434,7 +435,7 @@ Il bootstrap e idempotente.
 La CLI installata globalmente include gia gli asset runtime del lab:
 
 - file Compose
-- `config/env/lab.env`
+- `env/lab.env`
 - template gateway
 - Dockerfile e script delle immagini custom
 - frontend `apps/atlas-dashboard`
@@ -476,7 +477,7 @@ npm.cmd --version
 
 ### 2. Controlla la configurazione
 
-La configurazione centrale e in [`config/env/lab.env`](./config/env/lab.env).
+La configurazione centrale e in [`env/lab.env`](./env/lab.env).
 
 Le sezioni principali sono:
 
@@ -567,14 +568,14 @@ atlas-lab.cmd up
 ### 10. Modalita separata start/bootstrap core
 
 ```powershell
-docker compose --file infra/docker/compose.yml --env-file config/env/lab.env up -d
+docker compose --file infra/docker/compose.yml --env-file env/lab.env up -d
 npm run dev -- bootstrap
 ```
 
 ### 11. Modalita separata start/bootstrap con AI
 
 ```powershell
-docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --env-file config/env/lab.env up -d
+docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --env-file env/lab.env up -d
 npm run dev -- bootstrap --with-ai
 ```
 
@@ -599,7 +600,7 @@ Dal deck puoi:
 
 ## Accessi E Credenziali
 
-Le credenziali operative sono in [`config/env/lab.env`](./config/env/lab.env) e sono riportate anche nell'index grafico React servito dal gateway.
+Le credenziali operative sono in [`env/lab.env`](./env/lab.env) e sono riportate anche nell'index grafico React servito dal gateway.
 
 ### Index grafico del lab
 
@@ -664,7 +665,7 @@ I workbench non fanno parte del core obbligatorio. Stanno in un layer Compose se
 ### Avvio
 
 ```powershell
-docker compose --file infra/docker/compose.yml --file infra/docker/compose.workbench.yml --env-file config/env/lab.env up -d
+docker compose --file infra/docker/compose.yml --file infra/docker/compose.workbench.yml --env-file env/lab.env up -d
 ```
 
 Oppure tramite CLI:
@@ -731,7 +732,7 @@ Per DBeaver o `psql` eseguiti sul sistema host usa:
 | [infra/docker/compose.workbench.yml](./infra/docker/compose.workbench.yml) | orchestrazione del layer workbench opzionale |
 | [infra/docker/images/](./infra/docker/images) | Dockerfile e script di build dei servizi |
 | [package.json](./package.json) | metadata npm, scripts e comando binario |
-| [config/env/lab.env](./config/env/lab.env) | naming, URL, versioni e credenziali operative |
+| [env/lab.env](./env/lab.env) | naming, URL, versioni e credenziali operative |
 | [bin/atlas-lab](./bin/atlas-lab) | launcher npm minimale che delega alla build |
 | [src/bin/atlas-lab.ts](./src/bin/atlas-lab.ts) | entrypoint TypeScript della CLI |
 | [src/app/create-cli-app.ts](./src/app/create-cli-app.ts) | bootstrap dell'app Commander |
@@ -784,8 +785,11 @@ npm run dev -- restore-volumes --input .\backups\volumes\atlas-lab-volumes.tar.g
 
 ```powershell
 npm run build
+npm run set:version
 npm run pack:local
 ```
+
+`npm run set:version` non accetta argomenti o flag: ricostruisce la versione dai tag `v*` disponibili e dal range fino a `HEAD`, aggiorna i file gestiti e crea automaticamente un commit dedicato di release.
 
 ### Installazione globale locale
 
@@ -820,14 +824,14 @@ atlas-lab status
 ### Docker Compose diretto
 
 ```powershell
-docker compose --file infra/docker/compose.yml --env-file config/env/lab.env ps -a
-docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --env-file config/env/lab.env ps -a
-docker compose --file infra/docker/compose.yml --file infra/docker/compose.workbench.yml --env-file config/env/lab.env ps -a
-docker compose --file infra/docker/compose.yml --env-file config/env/lab.env config
-docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --env-file config/env/lab.env logs -f open-webui
-docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --env-file config/env/lab.env logs -f ollama
-docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs -f n8n
-docker compose --file infra/docker/compose.yml --env-file config/env/lab.env logs -f gitea
+docker compose --file infra/docker/compose.yml --env-file env/lab.env ps -a
+docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --env-file env/lab.env ps -a
+docker compose --file infra/docker/compose.yml --file infra/docker/compose.workbench.yml --env-file env/lab.env ps -a
+docker compose --file infra/docker/compose.yml --env-file env/lab.env config
+docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --env-file env/lab.env logs -f open-webui
+docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --env-file env/lab.env logs -f ollama
+docker compose --file infra/docker/compose.yml --env-file env/lab.env logs -f n8n
+docker compose --file infra/docker/compose.yml --env-file env/lab.env logs -f gitea
 ```
 
 ### Stop
@@ -839,7 +843,7 @@ atlas-lab down
 ### Stop completo dei layer opzionali
 
 ```powershell
-docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --file infra/docker/compose.workbench.yml --env-file config/env/lab.env down
+docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --file infra/docker/compose.workbench.yml --env-file env/lab.env down
 ```
 
 ---
@@ -905,7 +909,7 @@ Atteso:
 Controlla:
 
 1. `atlas-lab status`
-2. `docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --file infra/docker/compose.workbench.yml --env-file config/env/lab.env logs -f <servizio>`
+2. `docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --file infra/docker/compose.workbench.yml --env-file env/lab.env logs -f <servizio>`
 3. che la porta del servizio sia libera e corretta
 
 ### Il browser mostra warning certificato
@@ -982,7 +986,7 @@ Poi libera le porte in uno di questi modi:
 
 - ferma la stack Atlas Lab gia presente con `atlas-lab down`
 - ferma l'altra stack Docker che pubblica le stesse porte
-- cambia le porte in `config/env/lab.env`
+- cambia le porte in `env/lab.env`
 
 ### `atlas-lab up` fallisce sul preflight GPU NVIDIA
 
@@ -1073,7 +1077,7 @@ Normale: stanno in un file Compose separato.
 Usa:
 
 ```powershell
-docker compose --file infra/docker/compose.yml --file infra/docker/compose.workbench.yml --env-file config/env/lab.env up -d
+docker compose --file infra/docker/compose.yml --file infra/docker/compose.workbench.yml --env-file env/lab.env up -d
 ```
 
 Oppure:
@@ -1088,10 +1092,10 @@ Controlla:
 
 - `atlas-lab status`
 - che tu abbia avviato il layer AI con `npm run dev -- up --with-ai`
-- `docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --env-file config/env/lab.env logs open-webui`
-- `docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --env-file config/env/lab.env logs ollama`
+- `docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --env-file env/lab.env logs open-webui`
+- `docker compose --file infra/docker/compose.yml --file infra/docker/compose.ai.yml --env-file env/lab.env logs ollama`
 - la risposta di `https://localhost:8447/api/tags`
-- che `OLLAMA_CHAT_MODEL` e `OLLAMA_EMBEDDING_MODEL` siano valorizzati in `config/env/lab.env`
+- che `OLLAMA_CHAT_MODEL` e `OLLAMA_EMBEDDING_MODEL` siano valorizzati in `env/lab.env`
 - `npm run dev -- doctor --with-ai --smoke`
 
 Se hai cambiato i modelli configurati, riesegui:
@@ -1131,7 +1135,7 @@ Non e un deployment internet-facing gia hardenizzato.
 
 Punti importanti:
 
-- credenziali locali presenti in `config/env/lab.env`
+- credenziali locali presenti in `env/lab.env`
 - certificato TLS self-signed
 - servizi AI e automazione pensati per ambiente fidato
 - gateway come singolo punto di esposizione

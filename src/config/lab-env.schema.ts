@@ -13,7 +13,7 @@ const optionalEnvValue = z.preprocess(
 const requiredEnvValue = z.string().trim().min(1);
 
 /**
- * Base schema for the `config/env/lab.env` file consumed by the CLI.
+ * Base schema for the `env/lab.env` file consumed by the CLI.
  */
 export const labEnvSchema = z
   .object({

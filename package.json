@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "tsx ./src/bin/atlas-lab.ts",
     "build": "tsup",
+    "set:version": "node ./scripts/set-version.mjs",
     "dev:atlas-dashboard": "vite --config ./config/atlas-dashboard/vite.config.ts",
     "build:atlas-dashboard": "tsc -p ./config/atlas-dashboard/tsconfig.json --noEmit && vite build --config ./config/atlas-dashboard/vite.config.ts",
     "typecheck:atlas-dashboard": "tsc -p ./config/atlas-dashboard/tsconfig.json --noEmit",
@@ -22,8 +23,10 @@
     ".dockerignore",
     "apps/atlas-dashboard",
     "bin",
+    "CHANGELOG.md",
     "config",
     "dist",
+    "env",
     "infra/docker",
     "README.md"
   ],

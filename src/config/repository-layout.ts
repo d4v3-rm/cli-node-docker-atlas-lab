@@ -4,7 +4,7 @@ import type { RepositoryLayout, RepositoryPathDefinitions } from '../types/repos
 /**
  * Minimal files that must exist for a folder to be considered a lab checkout.
  */
-export const PROJECT_MARKERS = ['infra/docker/compose.yml', 'config/env/lab.env'] as const;
+export const PROJECT_MARKERS = ['infra/docker/compose.yml', 'env/lab.env'] as const;
 
 /**
  * Files validated by the doctor command as part of the repository layout contract.
@@ -13,7 +13,7 @@ export const REQUIRED_REPOSITORY_FILES = [
   'infra/docker/compose.yml',
   'infra/docker/compose.ai.yml',
   'infra/docker/compose.workbench.yml',
-  'config/env/lab.env',
+  'env/lab.env',
   'config/gateway/templates/Caddyfile.template',
   'config/gateway/templates/Caddyfile.ai.template',
   'config/gateway/templates/Caddyfile.workbench.template'
@@ -26,7 +26,7 @@ export const REPOSITORY_PATHS = {
   composeFile: 'infra/docker/compose.yml',
   composeAiFile: 'infra/docker/compose.ai.yml',
   composeWorkbenchFile: 'infra/docker/compose.workbench.yml',
-  envFile: 'config/env/lab.env',
+  envFile: 'env/lab.env',
   gatewayTemplateFile: 'config/gateway/templates/Caddyfile.template',
   gatewayAiTemplateFile: 'config/gateway/templates/Caddyfile.ai.template',
   gatewayWorkbenchTemplateFile: 'config/gateway/templates/Caddyfile.workbench.template'
