@@ -1,33 +1,34 @@
-import type { ThemeConfig } from 'antd';
+import { theme, type ThemeConfig } from 'antd';
 
 export const atlasDashboardPalette = {
-  ai: '#bf7136',
-  bg: '#e8f0eb',
-  border: '#bfd0c7',
-  core: '#12776d',
-  coreDark: '#0b4e48',
-  hero: '#0e2c32',
-  heroAlt: '#173c43',
-  ink: '#102127',
-  line: '#cfddd5',
-  muted: '#53645f',
-  panel: '#fbfdfb',
-  panelAlt: '#f2f7f4',
-  signal: '#31658f',
-  white: '#f9fcfa',
-  workbench: '#3a6f9c'
+  ai: '#d68a48',
+  bg: '#071015',
+  border: '#2a3a42',
+  core: '#1f9f8d',
+  coreDark: '#07181d',
+  hero: '#091920',
+  heroAlt: '#0d242c',
+  ink: '#eff7f4',
+  line: '#22323a',
+  muted: '#96a8a4',
+  panel: '#0d171d',
+  panelAlt: '#132129',
+  signal: '#5b92c8',
+  white: '#f5fbf8',
+  workbench: '#5a8fc9'
 } as const;
 
 /**
  * Shared Ant Design theme for the Atlas Dashboard.
  */
 export const atlasTheme: ThemeConfig = {
+  algorithm: theme.darkAlgorithm,
   token: {
     borderRadius: 24,
-    colorBgBase: atlasDashboardPalette.panel,
+    colorBgBase: atlasDashboardPalette.bg,
     colorBgContainer: atlasDashboardPalette.panel,
     colorBorder: atlasDashboardPalette.line,
-    colorError: '#b24a3a',
+    colorError: '#de6d60',
     colorInfo: atlasDashboardPalette.signal,
     colorPrimary: atlasDashboardPalette.core,
     colorSuccess: atlasDashboardPalette.core,
@@ -48,7 +49,7 @@ export const atlasTheme: ThemeConfig = {
     },
     Card: {
       borderRadiusLG: 28,
-      boxShadowTertiary: '0 14px 32px rgba(16, 33, 39, 0.07)'
+      boxShadowTertiary: '0 18px 36px rgba(0, 0, 0, 0.28)'
     },
     Modal: {
       borderRadiusLG: 24,

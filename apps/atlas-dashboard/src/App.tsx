@@ -77,23 +77,23 @@ const toneStyles: Record<
 > = {
   ai: {
     accent: atlasDashboardPalette.ai,
-    border: 'rgba(199, 122, 63, 0.22)',
-    soft: 'rgba(199, 122, 63, 0.10)'
+    border: 'rgba(214, 138, 72, 0.28)',
+    soft: 'rgba(214, 138, 72, 0.14)'
   },
   core: {
     accent: atlasDashboardPalette.core,
-    border: 'rgba(22, 124, 115, 0.22)',
-    soft: 'rgba(22, 124, 115, 0.10)'
+    border: 'rgba(31, 159, 141, 0.28)',
+    soft: 'rgba(31, 159, 141, 0.14)'
   },
   neutral: {
     accent: atlasDashboardPalette.signal,
-    border: 'rgba(47, 95, 138, 0.18)',
-    soft: 'rgba(47, 95, 138, 0.08)'
+    border: 'rgba(91, 146, 200, 0.24)',
+    soft: 'rgba(91, 146, 200, 0.12)'
   },
   workbench: {
     accent: atlasDashboardPalette.workbench,
-    border: 'rgba(53, 106, 152, 0.22)',
-    soft: 'rgba(53, 106, 152, 0.10)'
+    border: 'rgba(90, 143, 201, 0.28)',
+    soft: 'rgba(90, 143, 201, 0.14)'
   }
 };
 
@@ -101,7 +101,7 @@ const surfaceCardStyle: CSSProperties = {
   background: atlasDashboardPalette.panel,
   border: `1px solid ${atlasDashboardPalette.line}`,
   borderRadius: 28,
-  boxShadow: '0 14px 32px rgba(16, 33, 39, 0.07)'
+  boxShadow: '0 18px 36px rgba(0, 0, 0, 0.28)'
 };
 
 const cardBodyPadding = {
@@ -152,7 +152,7 @@ export default function App() {
       <Layout
         style={{
           background:
-            `radial-gradient(circle at top left, rgba(18, 119, 109, 0.16), transparent 28%), radial-gradient(circle at 88% 10%, rgba(191, 113, 54, 0.16), transparent 24%), linear-gradient(180deg, #f7faf7 0%, ${atlasDashboardPalette.bg} 100%)`,
+            `radial-gradient(circle at top left, rgba(31, 159, 141, 0.24), transparent 28%), radial-gradient(circle at 88% 10%, rgba(214, 138, 72, 0.18), transparent 24%), linear-gradient(180deg, #081117 0%, ${atlasDashboardPalette.bg} 100%)`,
           minHeight: '100vh'
         }}
       >
@@ -169,8 +169,8 @@ export default function App() {
               <LanguageSelect />
             </Flex>
 
-            <Row align="stretch" gutter={[24, 24]}>
-              <Col xs={24} xl={15}>
+            <Row gutter={[24, 24]}>
+              <Col xs={24}>
                 <HeroSection
                   certificateUrl={config.assets.certificateUrl}
                   eyebrow={dashboard.hero.eyebrow}
@@ -181,19 +181,24 @@ export default function App() {
                   titleLines={dashboard.hero.titleLines}
                 />
               </Col>
-              <Col xs={24} xl={9}>
-                <Flex vertical gap={18}>
-                  <StatsRail metrics={dashboard.hero.metrics} />
-                  <LayerRail
-                    aiLayer={dashboard.aiLayer}
-                    workbenchLayer={dashboard.workbenchLayer}
-                  />
-                  <QuickRail
-                    accessNotes={dashboard.accessNotes}
-                    onOpenBriefing={setActiveBriefing}
-                    quickActions={dashboard.hero.quickActions}
-                  />
-                </Flex>
+            </Row>
+
+            <Row gutter={[24, 24]}>
+              <Col xs={24} xl={8} style={{ display: 'flex' }}>
+                <StatsRail metrics={dashboard.hero.metrics} />
+              </Col>
+              <Col xs={24} xl={8} style={{ display: 'flex' }}>
+                <LayerRail
+                  aiLayer={dashboard.aiLayer}
+                  workbenchLayer={dashboard.workbenchLayer}
+                />
+              </Col>
+              <Col xs={24} xl={8} style={{ display: 'flex' }}>
+                <QuickRail
+                  accessNotes={dashboard.accessNotes}
+                  onOpenBriefing={setActiveBriefing}
+                  quickActions={dashboard.hero.quickActions}
+                />
               </Col>
             </Row>
 
@@ -328,7 +333,7 @@ function StatusScreen({
       style={{
         alignItems: 'center',
         background:
-          `linear-gradient(180deg, #f7faf7 0%, ${atlasDashboardPalette.bg} 100%)`,
+          `linear-gradient(180deg, #081117 0%, ${atlasDashboardPalette.bg} 100%)`,
         justifyContent: 'center',
         minHeight: '100vh',
         padding: 24
@@ -406,7 +411,7 @@ function LanguageSelect() {
           size="large"
           type="text"
           style={{
-            background: 'rgba(47, 95, 138, 0.10)',
+            background: 'rgba(91, 146, 200, 0.14)',
             color: atlasDashboardPalette.signal
           }}
         />
@@ -450,7 +455,7 @@ function HeroSection({
     <Card
       style={{
         ...surfaceCardStyle,
-        background: `linear-gradient(135deg, ${atlasDashboardPalette.coreDark} 0%, ${atlasDashboardPalette.core} 54%, ${atlasDashboardPalette.ai} 100%)`,
+        background: `linear-gradient(135deg, ${atlasDashboardPalette.hero} 0%, ${atlasDashboardPalette.heroAlt} 55%, rgba(214, 138, 72, 0.34) 100%)`,
         border: 'none',
         overflow: 'hidden'
       }}
@@ -509,8 +514,8 @@ function HeroSection({
         <Col xs={24} lg={9}>
           <Card
             style={{
-              background: 'rgba(14, 44, 50, 0.38)',
-              border: '1px solid rgba(247, 250, 248, 0.14)',
+              background: 'rgba(4, 10, 14, 0.46)',
+              border: '1px solid rgba(245, 251, 248, 0.12)',
               borderRadius: 28,
               height: '100%'
             }}
@@ -571,35 +576,44 @@ function StatsRail({
   const { t } = useTranslation();
 
   return (
-    <Card style={surfaceCardStyle} styles={cardBodyPadding}>
-      <Flex vertical gap={16}>
+    <Card style={{ ...surfaceCardStyle, height: '100%', width: '100%' }} styles={cardBodyPadding}>
+      <Flex vertical gap={16} style={{ height: '100%' }}>
         <Text style={overlineStyle}>{t('rails.liveFootprint')}</Text>
-        <Row gutter={[14, 14]}>
-          {metrics.map((metric) => (
-            <Col xs={12} md={6} xl={12} key={metric.label}>
-              <Card
-                size="small"
-                style={{
-                  background: atlasDashboardPalette.panelAlt,
-                  border: `1px solid ${atlasDashboardPalette.line}`,
-                  borderRadius: 20,
-                  height: '100%'
-                }}
-                styles={{ body: { padding: 16 } }}
+        <Flex align="center" flex={1}>
+          <Row gutter={[14, 14]} style={{ width: '100%' }}>
+            {metrics.map((metric) => (
+              <Col
+                key={metric.label}
+                style={{ display: 'flex' }}
+                xs={12}
+                md={6}
+                xl={12}
               >
-                <Flex vertical gap={8}>
-                  <Text style={overlineStyle}>{metric.label}</Text>
-                  <Title level={2} style={{ letterSpacing: '-0.05em', lineHeight: 1, margin: 0 }}>
-                    {metric.value}
-                  </Title>
-                  <Paragraph style={{ color: atlasDashboardPalette.muted, lineHeight: 1.6, margin: 0 }}>
-                    {metric.caption}
-                  </Paragraph>
-                </Flex>
-              </Card>
-            </Col>
-          ))}
-        </Row>
+                <Card
+                  size="small"
+                  style={{
+                    background: atlasDashboardPalette.panelAlt,
+                    border: `1px solid ${atlasDashboardPalette.line}`,
+                    borderRadius: 20,
+                    height: '100%',
+                    width: '100%'
+                  }}
+                  styles={{ body: { padding: 16 } }}
+                >
+                  <Flex justify="center" vertical gap={8} style={{ height: '100%' }}>
+                    <Text style={overlineStyle}>{metric.label}</Text>
+                    <Title level={2} style={{ letterSpacing: '-0.05em', lineHeight: 1, margin: 0 }}>
+                      {metric.value}
+                    </Title>
+                    <Paragraph style={{ color: atlasDashboardPalette.muted, lineHeight: 1.6, margin: 0 }}>
+                      {metric.caption}
+                    </Paragraph>
+                  </Flex>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </Flex>
       </Flex>
     </Card>
   );
@@ -615,10 +629,10 @@ function LayerRail({
   const { t } = useTranslation();
 
   return (
-    <Card style={surfaceCardStyle} styles={cardBodyPadding}>
-      <Flex vertical gap={16}>
+    <Card style={{ ...surfaceCardStyle, height: '100%', width: '100%' }} styles={cardBodyPadding}>
+      <Flex vertical gap={16} style={{ height: '100%' }}>
         <Text style={overlineStyle}>{t('rails.layerHeartbeat')}</Text>
-        <Flex vertical gap={12}>
+        <Flex flex={1} justify="center" vertical gap={12}>
           <LayerSummaryTile
             enabled
             summary={t('dashboard.coreLayerSummary')}
@@ -655,71 +669,73 @@ function QuickRail({
   const { t } = useTranslation();
 
   return (
-    <Card style={surfaceCardStyle} styles={cardBodyPadding}>
-      <Flex vertical gap={16}>
+    <Card style={{ ...surfaceCardStyle, height: '100%', width: '100%' }} styles={cardBodyPadding}>
+      <Flex vertical gap={16} style={{ height: '100%' }}>
         <Text style={overlineStyle}>{t('rails.briefingsAndLinks')}</Text>
-        <Flex vertical gap={12}>
-          {quickActions.map((action) => {
-            const IconGlyph = iconMap[action.icon];
+        <Flex flex={1} justify="center" vertical gap={16}>
+          <Flex vertical gap={12}>
+            {quickActions.map((action) => {
+              const IconGlyph = iconMap[action.icon];
 
-            return (
-              <Card
-                key={action.label}
-                size="small"
+              return (
+                <Card
+                  key={action.label}
+                  size="small"
+                  style={{
+                    background: atlasDashboardPalette.panelAlt,
+                    border: `1px solid ${atlasDashboardPalette.line}`,
+                    borderRadius: 20
+                  }}
+                  styles={{ body: { padding: 16 } }}
+                >
+                  <Flex align="center" gap={16}>
+                    <Button
+                      icon={<IconGlyph />}
+                      shape="circle"
+                      size="large"
+                      type="text"
+                      style={{
+                        background: 'rgba(91, 146, 200, 0.16)',
+                        color: atlasDashboardPalette.signal,
+                        flexShrink: 0
+                      }}
+                    />
+                    <Flex justify="center" vertical gap={4} style={{ minWidth: 0 }}>
+                      <Text strong>{action.label}</Text>
+                      {'href' in action ? (
+                        <Link href={action.href} rel="noreferrer" target="_blank">
+                          {action.description}
+                        </Link>
+                      ) : (
+                        <Link onClick={() => onOpenBriefing(action.briefing)}>
+                          {action.description}
+                        </Link>
+                      )}
+                    </Flex>
+                  </Flex>
+                </Card>
+              );
+            })}
+          </Flex>
+
+          <Divider style={{ margin: 0 }} />
+
+          <Flex vertical gap={12}>
+            {accessNotes.slice(0, 2).map((note) => (
+              <Alert
+                description={note}
+                key={note}
+                message={null}
+                showIcon={false}
                 style={{
                   background: atlasDashboardPalette.panelAlt,
                   border: `1px solid ${atlasDashboardPalette.line}`,
                   borderRadius: 20
                 }}
-                styles={{ body: { padding: 16 } }}
-              >
-                <Flex align="flex-start" gap={16}>
-                  <Button
-                    icon={<IconGlyph />}
-                    shape="circle"
-                    size="large"
-                    type="text"
-                    style={{
-                      background: 'rgba(47, 95, 138, 0.12)',
-                      color: atlasDashboardPalette.signal,
-                      flexShrink: 0
-                    }}
-                  />
-                  <Flex vertical gap={4} style={{ minWidth: 0 }}>
-                    <Text strong>{action.label}</Text>
-                    {'href' in action ? (
-                      <Link href={action.href} rel="noreferrer" target="_blank">
-                        {action.description}
-                      </Link>
-                    ) : (
-                      <Link onClick={() => onOpenBriefing(action.briefing)}>
-                        {action.description}
-                      </Link>
-                    )}
-                  </Flex>
-                </Flex>
-              </Card>
-            );
-          })}
-        </Flex>
-
-        <Divider style={{ margin: 0 }} />
-
-        <Flex vertical gap={12}>
-          {accessNotes.slice(0, 2).map((note) => (
-            <Alert
-              description={note}
-              key={note}
-              message={null}
-              showIcon={false}
-              style={{
-                background: atlasDashboardPalette.panelAlt,
-                border: `1px solid ${atlasDashboardPalette.line}`,
-                borderRadius: 20
-              }}
-              type="info"
-            />
-          ))}
+                type="info"
+              />
+            ))}
+          </Flex>
         </Flex>
       </Flex>
     </Card>
@@ -759,7 +775,7 @@ function LayerSummaryTile({
           size="large"
           type="text"
           style={{
-            background: `${palette.accent}22`,
+            background: `${palette.accent}20`,
             color: palette.accent,
             flexShrink: 0
           }}
@@ -772,7 +788,7 @@ function LayerSummaryTile({
             <Tag
               color={palette.accent}
               style={{
-                background: `${palette.accent}22`,
+                background: `${palette.accent}20`,
                 border: 'none',
                 fontWeight: 700,
                 marginInlineEnd: 0
@@ -920,7 +936,7 @@ function LayerStateCard({
                 size="large"
                 type="text"
                 style={{
-                  background: `${palette.accent}22`,
+                  background: `${palette.accent}20`,
                   color: palette.accent,
                   flexShrink: 0,
                   height: 56,
@@ -968,7 +984,7 @@ function LayerStateCard({
                 <Tag
                   color={palette.accent}
                   style={{
-                    background: `${palette.accent}22`,
+                    background: `${palette.accent}20`,
                     border: 'none',
                     fontWeight: 700,
                     marginInlineEnd: 0
@@ -1037,7 +1053,7 @@ function OperationalCard({
         gap={16}
         justify="space-between"
         style={{
-          background: `linear-gradient(135deg, ${palette.soft} 0%, rgba(247, 250, 248, 0) 100%)`,
+          background: `linear-gradient(135deg, ${palette.soft} 0%, rgba(13, 23, 29, 0) 100%)`,
           borderBottom: `1px solid ${palette.border}`,
           padding: 20
         }}
@@ -1050,7 +1066,7 @@ function OperationalCard({
             size="large"
             type="text"
             style={{
-              background: `${palette.accent}22`,
+              background: `${palette.accent}20`,
               color: palette.accent,
               flexShrink: 0,
               height: 52,
@@ -1067,7 +1083,7 @@ function OperationalCard({
         <Tag
           color={palette.accent}
           style={{
-            background: `${palette.accent}22`,
+            background: `${palette.accent}20`,
             border: 'none',
             fontWeight: 700,
             marginInlineEnd: 0
@@ -1183,7 +1199,7 @@ function InsightCard({
           size="large"
           type="text"
           style={{
-            background: 'rgba(47, 95, 138, 0.10)',
+            background: 'rgba(91, 146, 200, 0.14)',
             color: atlasDashboardPalette.signal,
             width: 48
           }}
@@ -1218,18 +1234,18 @@ function ActionButton({
       color: atlasDashboardPalette.white
     },
     ghost: {
-      background: 'rgba(249, 252, 250, 0.10)',
-      border: 'rgba(249, 252, 250, 0.16)',
+      background: 'rgba(245, 251, 248, 0.10)',
+      border: 'rgba(245, 251, 248, 0.18)',
       color: atlasDashboardPalette.white
     },
     outline: {
       background: atlasDashboardPalette.panelAlt,
-      border: atlasDashboardPalette.border,
+      border: atlasDashboardPalette.line,
       color: atlasDashboardPalette.ink
     },
     solid: {
-      background: 'rgba(249, 252, 250, 0.16)',
-      border: 'rgba(249, 252, 250, 0.16)',
+      background: 'rgba(245, 251, 248, 0.16)',
+      border: 'rgba(245, 251, 248, 0.18)',
       color: atlasDashboardPalette.white
     }
   }[tone];
@@ -1268,14 +1284,14 @@ function SignalPill({
   const palette = toneStyles[tone];
   const capsuleBg =
     tone === 'core'
-      ? 'rgba(18, 119, 109, 0.18)'
+      ? 'rgba(31, 159, 141, 0.18)'
       : tone === 'ai'
-        ? 'rgba(191, 113, 54, 0.18)'
+        ? 'rgba(214, 138, 72, 0.18)'
         : tone === 'workbench'
-          ? 'rgba(58, 111, 156, 0.18)'
-          : 'rgba(249, 252, 250, 0.14)';
+          ? 'rgba(90, 143, 201, 0.18)'
+          : 'rgba(245, 251, 248, 0.14)';
   const capsuleBorder =
-    tone === 'neutral' ? 'rgba(249, 252, 250, 0.16)' : palette.border;
+    tone === 'neutral' ? 'rgba(245, 251, 248, 0.18)' : palette.border;
 
   return (
     <Tag
