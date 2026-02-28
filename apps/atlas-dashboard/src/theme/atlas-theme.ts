@@ -1,21 +1,21 @@
 import { theme, type ThemeConfig } from 'antd';
 
 export const atlasDashboardPalette = {
-  ai: '#d68a48',
-  bg: '#071015',
-  border: '#2a3a42',
-  core: '#1f9f8d',
-  coreDark: '#07181d',
-  hero: '#091920',
-  heroAlt: '#0d242c',
-  ink: '#eff7f4',
-  line: '#22323a',
-  muted: '#96a8a4',
-  panel: '#0d171d',
-  panelAlt: '#132129',
-  signal: '#5b92c8',
-  white: '#f5fbf8',
-  workbench: '#5a8fc9'
+  ai: '#ff8a1f',
+  bg: '#06080c',
+  border: '#2b3440',
+  core: '#00d3a7',
+  coreDark: '#0b1017',
+  hero: '#0b1017',
+  heroAlt: '#111823',
+  ink: '#f3f7fb',
+  line: '#1e2732',
+  muted: '#90a0b4',
+  panel: '#0f141b',
+  panelAlt: '#151c25',
+  signal: '#4da3ff',
+  white: '#f3f7fb',
+  workbench: '#7c8cff'
 } as const;
 
 /**
@@ -49,7 +49,7 @@ export const atlasTheme: ThemeConfig = {
     },
     Card: {
       borderRadiusLG: 28,
-      boxShadowTertiary: '0 18px 36px rgba(0, 0, 0, 0.28)'
+      boxShadowTertiary: 'none'
     },
     Modal: {
       borderRadiusLG: 24,

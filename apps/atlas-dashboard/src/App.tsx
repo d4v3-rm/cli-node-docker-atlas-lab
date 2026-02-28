@@ -101,7 +101,7 @@ const surfaceCardStyle: CSSProperties = {
   background: atlasDashboardPalette.panel,
   border: `1px solid ${atlasDashboardPalette.line}`,
   borderRadius: 28,
-  boxShadow: '0 18px 36px rgba(0, 0, 0, 0.28)'
+  boxShadow: 'none'
 };
 
 const cardBodyPadding = {
@@ -151,8 +151,7 @@ export default function App() {
     <>
       <Layout
         style={{
-          background:
-            `radial-gradient(circle at top left, rgba(31, 159, 141, 0.24), transparent 28%), radial-gradient(circle at 88% 10%, rgba(214, 138, 72, 0.18), transparent 24%), linear-gradient(180deg, #081117 0%, ${atlasDashboardPalette.bg} 100%)`,
+          background: atlasDashboardPalette.bg,
           minHeight: '100vh'
         }}
       >
@@ -332,8 +331,7 @@ function StatusScreen({
     <Layout
       style={{
         alignItems: 'center',
-        background:
-          `linear-gradient(180deg, #081117 0%, ${atlasDashboardPalette.bg} 100%)`,
+        background: atlasDashboardPalette.bg,
         justifyContent: 'center',
         minHeight: '100vh',
         padding: 24
@@ -411,7 +409,8 @@ function LanguageSelect() {
           size="large"
           type="text"
           style={{
-            background: 'rgba(91, 146, 200, 0.14)',
+            background: atlasDashboardPalette.panelAlt,
+            border: `1px solid ${atlasDashboardPalette.line}`,
             color: atlasDashboardPalette.signal
           }}
         />
@@ -455,8 +454,8 @@ function HeroSection({
     <Card
       style={{
         ...surfaceCardStyle,
-        background: `linear-gradient(135deg, ${atlasDashboardPalette.hero} 0%, ${atlasDashboardPalette.heroAlt} 55%, rgba(214, 138, 72, 0.34) 100%)`,
-        border: 'none',
+        background: atlasDashboardPalette.hero,
+        border: `1px solid ${atlasDashboardPalette.line}`,
         overflow: 'hidden'
       }}
       styles={{ body: { padding: 32 } }}
@@ -514,8 +513,8 @@ function HeroSection({
         <Col xs={24} lg={9}>
           <Card
             style={{
-              background: 'rgba(4, 10, 14, 0.46)',
-              border: '1px solid rgba(245, 251, 248, 0.12)',
+              background: atlasDashboardPalette.panelAlt,
+              border: `1px solid ${atlasDashboardPalette.line}`,
               borderRadius: 28,
               height: '100%'
             }}
@@ -922,7 +921,7 @@ function LayerStateCard({
     <Card
       style={{
         ...surfaceCardStyle,
-        background: `linear-gradient(135deg, ${palette.soft} 0%, ${atlasDashboardPalette.panel} 100%)`
+        background: atlasDashboardPalette.panel
       }}
       styles={{ body: { padding: 24 } }}
     >
@@ -1053,7 +1052,7 @@ function OperationalCard({
         gap={16}
         justify="space-between"
         style={{
-          background: `linear-gradient(135deg, ${palette.soft} 0%, rgba(13, 23, 29, 0) 100%)`,
+          background: atlasDashboardPalette.panelAlt,
           borderBottom: `1px solid ${palette.border}`,
           padding: 20
         }}

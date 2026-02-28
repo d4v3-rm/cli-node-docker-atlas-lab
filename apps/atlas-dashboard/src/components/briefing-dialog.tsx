@@ -47,8 +47,7 @@ export function BriefingDialog({ briefing, onClose }: BriefingDialogProps) {
           padding: 0
         },
         mask: {
-          backdropFilter: 'blur(8px)',
-          background: 'rgba(16, 33, 39, 0.56)'
+          background: 'rgba(2, 5, 10, 0.88)'
         }
       }}
     >
