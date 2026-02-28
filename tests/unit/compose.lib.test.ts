@@ -7,7 +7,7 @@ const context: ProjectContext = {
     composeAiFile: 'infra/docker/compose.ai.yml',
     composeFile: 'infra/docker/compose.yml',
     composeWorkbenchFile: 'infra/docker/compose.workbench.yml',
-    envFile: 'config/env/lab.env',
+    envFile: 'env/lab.env',
     gatewayAiTemplateFile: 'config/gateway/templates/Caddyfile.ai.template',
     gatewayTemplateFile: 'config/gateway/templates/Caddyfile.template',
     gatewayWorkbenchTemplateFile: 'config/gateway/templates/Caddyfile.workbench.template'
@@ -40,7 +40,7 @@ describe('compose lib', () => {
       '--file',
       'infra/docker/compose.workbench.yml',
       '--env-file',
-      'config/env/lab.env',
+      'env/lab.env',
       'ps',
       '--all'
     ]);

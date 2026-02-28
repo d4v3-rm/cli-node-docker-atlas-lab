@@ -11,6 +11,7 @@ import {
   createArchiveWorkspace,
   ensureArchiveHelperImage,
   extractArchiveBundleToDirectory,
+  normalizeArchiveBundleOutputPath,
   packDirectoryToArchiveBundle
 } from './archive-bundle.service.js';
 import { runCommand } from '../utils/process.js';
@@ -170,7 +171,7 @@ function resolveImageArchiveOutputPath(workingDirectory: string, explicitOutput?
     return join(outputPath, defaultFileName);
   }
 
-  return hasArchiveBundleExtension(outputPath) ? outputPath : `${outputPath}.tar.gz`;
+  return normalizeArchiveBundleOutputPath(outputPath);
 }
 
 /**
@@ -199,14 +200,6 @@ function parseImageArchiveManifest(manifestPath: string, rawManifest: string): I
   }
 
   return manifest;
-}
-
-/**
- * Detects whether a path already ends with a supported archive extension.
- */
-function hasArchiveBundleExtension(filePath: string): boolean {
-  const normalizedPath = filePath.toLowerCase();
-  return normalizedPath.endsWith('.tar.gz') || normalizedPath.endsWith('.tgz');
 }
 
 /**

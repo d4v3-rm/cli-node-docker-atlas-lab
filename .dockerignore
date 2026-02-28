@@ -1,6 +1,7 @@
 .git
 .gitignore
 .lab-index-dist
+.atlas-dashboard-dist
 bin
 dist
 node_modules
@@ -13,12 +14,12 @@ package.json
 package-lock.json
 tsconfig.json
 tsup.config.ts
-!lab-index.vite.config.ts
+!atlas-dashboard.vite.config.ts
 !package.json
 !package-lock.json
-!tsconfig.lab-index.json
-!apps/lab-index/index.html
-!apps/lab-index/public/
-!apps/lab-index/public/**
-!apps/lab-index/src/
-!apps/lab-index/src/**
+!tsconfig.atlas-dashboard.json
+!apps/atlas-dashboard/index.html
+!apps/atlas-dashboard/public/
+!apps/atlas-dashboard/public/**
+!apps/atlas-dashboard/src/
+!apps/atlas-dashboard/src/**

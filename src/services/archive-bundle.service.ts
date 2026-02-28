@@ -125,6 +125,23 @@ export async function extractArchiveBundleToDirectory(
 }
 
 /**
+ * Appends the canonical bundle extension without duplicating `.tar`.
+ */
+export function normalizeArchiveBundleOutputPath(filePath: string): string {
+  const normalizedPath = filePath.toLowerCase();
+
+  if (normalizedPath.endsWith('.tar.gz') || normalizedPath.endsWith('.tgz')) {
+    return filePath;
+  }
+
+  if (normalizedPath.endsWith('.tar')) {
+    return `${filePath}.gz`;
+  }
+
+  return `${filePath}.tar.gz`;
+}
+
+/**
  * Escapes a single shell argument for the POSIX shell used inside BusyBox.
  */
 function quotePosixShellArgument(value: string): string {

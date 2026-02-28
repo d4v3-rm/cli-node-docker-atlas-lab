@@ -17,7 +17,7 @@ services:
         CADDY_VERSION: ${CADDY_VERSION}
     restart: unless-stopped
     env_file:
-      - ../../config/env/lab.env
+      - ../../env/lab.env
     environment:
       ATLAS_GATEWAY_TEMPLATE: Caddyfile.ai.template
       ATLAS_AI_ENABLED: "true"
