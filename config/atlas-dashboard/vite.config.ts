@@ -78,7 +78,10 @@ function atlasDashboardLocalRuntimePlugin(): Plugin {
         );
       } catch (error) {
         writeJson(response, 500, {
-          error: error instanceof Error ? error.message : 'Impossibile generare la config runtime locale.'
+          error:
+            error instanceof Error
+              ? error.message
+              : 'Unable to generate the local runtime configuration.'
         });
       }
 
@@ -91,8 +94,8 @@ function atlasDashboardLocalRuntimePlugin(): Plugin {
         200,
         [
           'Atlas Dashboard local mode',
-          'Questo e un placeholder servito da Vite.',
-          'Per il certificato reale avvia Atlas Lab tramite gateway.'
+          'This is a placeholder served by Vite.',
+          'Start Atlas Lab through the gateway to fetch the real certificate.'
         ].join('\n'),
         'application/x-x509-ca-cert'
       );
@@ -113,7 +116,7 @@ function atlasDashboardLocalRuntimePlugin(): Plugin {
         writeText(
           response,
           500,
-          error instanceof Error ? error.message : 'Impossibile generare il briefing locale.'
+          error instanceof Error ? error.message : 'Unable to generate the local briefing.'
         );
       }
 
