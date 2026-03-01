@@ -1,30 +1,30 @@
 # Node Forge
 
-## Cosa fa
+## What it does
 
-Ambiente `code-server` dedicato allo sviluppo JavaScript e TypeScript. Serve per frontend, CLI, tool interni, package management e sperimentazione rapida su stack Node.
+`code-server` environment dedicated to JavaScript and TypeScript development. It is suited for frontend work, CLI development, internal tools, package management, and fast experimentation on Node-based stacks.
 
-## Come si accede
+## How to access it
 
-- Profilo Compose: `workbench`
-- URL operativo: `${NODE_DEV_URL}`
-- Modalita di accesso: `password`
-- Password root: `${NODE_DEV_PASSWORD}`
-- Attivazione: `atlas-lab up --with-workbench`
+- Compose profile: `workbench`
+- Runtime URL: `${NODE_DEV_URL}`
+- Access mode: `password`
+- Root password: `${NODE_DEV_PASSWORD}`
+- Activation command: `atlas-lab up --with-workbench`
 
-## Cosa trovi dentro
+## What is included
 
-- Node.js, npm, pnpm e yarn
-- Git e toolchain base per pacchetti nativi
-- Workspace persistente su volume Docker
+- Node.js, npm, pnpm, and yarn
+- Git and a base native-package toolchain
+- Persistent workspace backed by a Docker volume
 
-## Quando usarlo
+## When to use it
 
-- sviluppo frontend
-- tooling TypeScript
-- CLI aziendali
-- prototipi backend Node
+- frontend development
+- TypeScript tooling
+- internal CLI work
+- Node backend prototypes
 
-## Nota operativa
+## Operational note
 
-L'ambiente non viene pubblicato come scorciatoia diretta sulla dashboard. Il deck espone il briefing, mentre l'accesso operativo reale passa da `localhost` sulla porta dedicata del workbench.
+The environment is not exposed as a direct shortcut on the dashboard. The deck surfaces the briefing first, while the actual operational entry point remains the dedicated localhost workbench port.

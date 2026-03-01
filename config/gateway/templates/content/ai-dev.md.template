@@ -1,30 +1,30 @@
 # AI Reactor
 
-## Cosa fa
+## What it does
 
-Ambiente `code-server` focalizzato su AI e data science. Integra un set di pacchetti Python utile per notebook, training leggero, prompt engineering e prototipi ML.
+`code-server` environment focused on AI and data science. It includes a Python package set suitable for notebooks, lightweight training, prompt engineering, and ML prototyping.
 
-## Come si accede
+## How to access it
 
-- Profilo Compose: `workbench`
-- URL operativo: `${AI_DEV_URL}`
-- Modalita di accesso: `password`
-- Password root: `${AI_DEV_PASSWORD}`
-- Attivazione: `atlas-lab up --with-workbench`
+- Compose profile: `workbench`
+- Runtime URL: `${AI_DEV_URL}`
+- Access mode: `password`
+- Root password: `${AI_DEV_PASSWORD}`
+- Activation command: `atlas-lab up --with-workbench`
 
-## Cosa trovi dentro
+## What is included
 
-- stack Python con librerie AI e data science
-- workspace persistente su volume Docker
-- contesto ideale per integrazione con `Open WebUI` e `Ollama`
+- Python stack with AI and data-science libraries
+- Persistent workspace backed by a Docker volume
+- A workflow that pairs well with `Open WebUI` and `Ollama`
 
-## Quando usarlo
+## When to use it
 
-- notebook e proof of concept
-- pipeline AI locali
-- valutazione prompt e modelli
+- notebooks and proofs of concept
+- local AI pipelines
+- prompt and model evaluation
 - data exploration
 
-## Nota operativa
+## Operational note
 
-Questo workbench e il punto corretto per sviluppo AI lato codice. `Open WebUI` resta invece la console di interazione browser del layer `ai`, raggiungibile solo quando abiliti anche `--with-ai`.
+This workbench is the right place for code-centric AI development. `Open WebUI` remains the browser interaction console of the `ai` layer and is only reachable when `--with-ai` is also enabled.

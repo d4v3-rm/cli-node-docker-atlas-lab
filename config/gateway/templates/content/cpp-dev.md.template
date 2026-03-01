@@ -1,30 +1,30 @@
 # C++ Foundry
 
-## Cosa fa
+## What it does
 
-Ambiente `code-server` per sviluppo C e C++. E pensato per compilazione nativa, debugging, toolchain moderne e lavoro su componenti performance-critical.
+`code-server` environment for C and C++ development. It is designed for native compilation, debugging, modern toolchains, and work on performance-critical components.
 
-## Come si accede
+## How to access it
 
-- Profilo Compose: `workbench`
-- URL operativo: `${CPP_DEV_URL}`
-- Modalita di accesso: `password`
-- Password root: `${CPP_DEV_PASSWORD}`
-- Attivazione: `atlas-lab up --with-workbench`
+- Compose profile: `workbench`
+- Runtime URL: `${CPP_DEV_URL}`
+- Access mode: `password`
+- Root password: `${CPP_DEV_PASSWORD}`
+- Activation command: `atlas-lab up --with-workbench`
 
-## Cosa trovi dentro
+## What is included
 
-- toolchain C/C++ con build-essential, cmake, ninja, clang e debugger
-- workspace persistente su volume Docker
-- contesto adatto a librerie, motori e componenti native
+- C/C++ toolchain with build-essential, cmake, ninja, clang, and debuggers
+- Persistent workspace backed by a Docker volume
+- A context suited for libraries, engines, and native components
 
-## Quando usarlo
+## When to use it
 
-- librerie native
-- moduli ad alte prestazioni
-- debugging low-level
-- build e test di componenti C++
+- native libraries
+- high-performance modules
+- low-level debugging
+- building and testing C++ components
 
-## Nota operativa
+## Operational note
 
-L'accesso e documentato qui in forma locale markdown, senza scorciatoia diretta in home. Il servizio resta raggiungibile su `localhost` tramite la porta dedicata del workbench.
+Access is documented here as local markdown rather than as a direct home shortcut. The service remains reachable on `localhost` through its dedicated workbench port.

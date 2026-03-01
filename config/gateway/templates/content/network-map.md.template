@@ -1,31 +1,31 @@
 # Network Map
 
-## Come funziona il rework
+## How the current layout works
 
-Il deck resta raggiungibile in locale su `${LAB_LOCAL_URL}`. Il lab ora e separato in tre layer:
+The deck remains available locally at `${LAB_LOCAL_URL}`. The lab is split into three layers:
 
-- `core`: deck, Gitea e n8n
-- `ai`: Open WebUI e Ollama
-- `workbench`: Postgres e ambienti code-server
+- `core`: deck, Gitea, and n8n
+- `ai`: Open WebUI and Ollama
+- `workbench`: Postgres and code-server environments
 
-Ogni layer pubblica i propri endpoint HTTPS su `localhost` tramite un gateway dedicato. In piu, il layer `workbench` espone anche `Postgres` su una porta TCP host dedicata.
+Each layer publishes its HTTPS endpoints on `localhost` through a dedicated gateway. In addition, the `workbench` layer also exposes `Postgres` on a dedicated host TCP port.
 
-## Endpoint pubblici del lab
+## Public lab endpoints
 
-- Deck locale: `${LAB_LOCAL_URL}`
+- Local deck: `${LAB_LOCAL_URL}`
 - Gitea: `${GITEA_URL}`
 - n8n: `${N8N_URL}`
-- Open WebUI: `${OPENWEBUI_URL}` solo se il layer `ai` e attivo
-- Ollama: `${OLLAMA_URL}` solo se il layer `ai` e attivo
-- Node workbench: `${NODE_DEV_URL}` solo se il layer `workbench` e attivo
-- Python workbench: `${PYTHON_DEV_URL}` solo se il layer `workbench` e attivo
-- AI workbench: `${AI_DEV_URL}` solo se il layer `workbench` e attivo
-- C++ workbench: `${CPP_DEV_URL}` solo se il layer `workbench` e attivo
-- Postgres host access: `localhost:${POSTGRES_DEV_HOST_PORT}` solo se il layer `workbench` e attivo
+- Open WebUI: `${OPENWEBUI_URL}` only when the `ai` layer is enabled
+- Ollama: `${OLLAMA_URL}` only when the `ai` layer is enabled
+- Node workbench: `${NODE_DEV_URL}` only when the `workbench` layer is enabled
+- Python workbench: `${PYTHON_DEV_URL}` only when the `workbench` layer is enabled
+- AI workbench: `${AI_DEV_URL}` only when the `workbench` layer is enabled
+- C++ workbench: `${CPP_DEV_URL}` only when the `workbench` layer is enabled
+- Postgres host access: `localhost:${POSTGRES_DEV_HOST_PORT}` only when the `workbench` layer is enabled
 
-## Routing localhost multi-porta
+## Localhost multi-port routing
 
-- `8443`: deck locale
+- `8443`: local deck
 - `8444`: Gitea
 - `8445`: n8n
 - `8446`: Open WebUI, layer `ai`
@@ -36,20 +36,20 @@ Ogni layer pubblica i propri endpoint HTTPS su `localhost` tramite un gateway de
 - `8453`: C++ workbench, layer `workbench`
 - `${POSTGRES_DEV_HOST_PORT}`: Postgres host access, layer `workbench`
 
-Nessuna modifica a DNS o file `hosts`: basta usare `https://localhost:<porta>/`.
+No DNS setup and no `hosts` file edits are required: just use `https://localhost:<port>/`.
 
-## Certificato
+## Certificate
 
-Il gateway genera un certificato self-signed SAN che copre `localhost` e `127.0.0.1`. Dal deck puoi scaricarlo da `/assets/lab.crt`.
+The gateway generates a self-signed SAN certificate that covers `localhost` and `127.0.0.1`. You can download it from `/assets/lab.crt`.
 
-## Segmentazione interna
+## Internal segmentation
 
 - `apps-net`: Gitea, n8n, Open WebUI
-- `ai-net`: Ollama e Open WebUI
-- `data-net`: database infrastrutturali
-- `workbench-net`: Postgres e ambienti code-server opzionali
-- `workbench-host-net`: bridge dedicato al bind TCP di Postgres verso `localhost`
-- `services-egress-net`: uscita internet selettiva per servizi core senza esposizione diretta
-- `workbench-egress-net`: uscita internet selettiva per gli ambienti di sviluppo
+- `ai-net`: Ollama and Open WebUI
+- `data-net`: infrastructure databases
+- `workbench-net`: Postgres and optional code-server environments
+- `workbench-host-net`: dedicated bridge for the host-side Postgres TCP bind
+- `services-egress-net`: selective outbound internet access for core services without direct exposure
+- `workbench-egress-net`: selective outbound internet access for development environments
 
-I container esposti verso il browser sono soltanto i gateway di layer.
+The only containers exposed to the browser are the layer gateways.
