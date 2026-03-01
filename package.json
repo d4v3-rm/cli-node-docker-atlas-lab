@@ -1,7 +1,9 @@
 {
   "name": "cli-node-docker-atlas-lab",
   "version": "0.27.12",
-  "description": "Node.js CLI for the Atlas Lab local stack",
+  "description": "Self-contained Node.js CLI and Docker stack for Atlas Lab, a localhost-first self-hosted platform with optional AI and workbench layers.",
+  "license": "MIT",
+  "author": "Atlas Lab contributors",
   "type": "module",
   "bin": {
     "atlas-lab": "./bin/atlas-lab"
@@ -21,6 +23,7 @@
   },
   "files": [
     ".dockerignore",
+    "LICENSE",
     "apps/atlas-dashboard",
     "bin",
     "CHANGELOG.md",
@@ -33,6 +36,20 @@
   "engines": {
     "node": ">=20"
   },
+  "keywords": [
+    "atlas-lab",
+    "self-hosted",
+    "docker-compose",
+    "localhost",
+    "caddy",
+    "gitea",
+    "n8n",
+    "ollama",
+    "open-webui",
+    "code-server",
+    "typescript-cli",
+    "developer-platform"
+  ],
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
     "antd": "^6.3.2",
