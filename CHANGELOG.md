@@ -10,7 +10,7 @@ The script does not create tags locally.
 - Range: `db847a69d23f4368a72f9e098f95616e98562302..HEAD`
 - Included commits: 122
 
-### Nuove funzionalita (27)
+### Features (27)
 
 - add gateway image and MarkText bootstrap (`b52a6a6`)
 - add compose stack and development environments (`e59677c`)
@@ -94,7 +94,7 @@ The script does not create tags locally.
 - [gateway] update references for the atlas dashboard rename (`183f1c2`)
 - [atlas-dashboard] rebuild the ui on ant design (`ee6682a`)
 
-### Documentazione (27)
+### Documentation (27)
 
 - add lab setup guide and environment template (`08de451`)
 - add a full operations guide for the lab (`ed495eb`)
@@ -128,7 +128,7 @@ The script does not create tags locally.
 
 - add jest coverage for runtime helpers (`611a630`)
 
-### CI / Manutenzione (15)
+### CI / Maintenance (15)
 
 - remove custom image build warnings (`9a03922`)
 - add host mapping helpers for local lab domains (`1ab49f0`)
@@ -146,7 +146,7 @@ The script does not create tags locally.
 - [release] add release automation and move env to the root (`ebafbff`)
 - remove generated repository metadata files (`2841aa8`)
 
-### Altri (4)
+### Other (4)
 
 - [atlas-dashboard] refine hero card spacing (`a82c730`)
 - [atlas-dashboard] refresh the color system (`55647e2`)

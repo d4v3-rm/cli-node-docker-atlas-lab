@@ -318,15 +318,15 @@ const buildChangelogSection = ({
   lines.push('');
 
   const sections = [
-    ['Nuove funzionalita', 'features'],
+    ['Features', 'features'],
     ['Fix', 'fixes'],
     ['Refactor', 'refactor'],
     ['Performance', 'performance'],
-    ['Documentazione', 'docs'],
+    ['Documentation', 'docs'],
     ['Test', 'tests'],
-    ['CI / Manutenzione', 'chore'],
+    ['CI / Maintenance', 'chore'],
     ['Revert', 'reverts'],
-    ['Altri', 'other']
+    ['Other', 'other']
   ];
 
   let wroteContent = false;
@@ -342,7 +342,7 @@ const buildChangelogSection = ({
   }
 
   if (!wroteContent) {
-    lines.push('Nessun commit rilevante per questa release.', '');
+    lines.push('No relevant commits were detected for this release.', '');
   }
 
   return `${lines.join('\n').trim()}\n`;
