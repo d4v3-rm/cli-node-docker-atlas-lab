@@ -30,6 +30,12 @@ export const labEnvSchema = z
     OPENWEBUI_ROOT_PASSWORD: optionalEnvValue,
     OLLAMA_EMBEDDING_MODEL: optionalEnvValue,
     OLLAMA_CHAT_MODEL: optionalEnvValue,
+    INVOKEAI_URL: optionalEnvValue,
+    INVOKEAI_GATEWAY_USER: optionalEnvValue,
+    INVOKEAI_GATEWAY_PASSWORD: optionalEnvValue,
+    INVOKEAI_MODEL_REPO: optionalEnvValue,
+    INVOKEAI_MODEL_REVISION: optionalEnvValue,
+    INVOKEAI_MODEL_TITLE: optionalEnvValue,
     POSTGRES_DEV_HOST_PORT: optionalEnvValue,
     LAB_URL: optionalEnvValue,
     GITEA_URL: optionalEnvValue,
@@ -88,6 +94,18 @@ export const aiSmokeEnvSchema = labEnvSchema.extend({
   OLLAMA_GATEWAY_PASSWORD: requiredEnvValue,
   OLLAMA_EMBEDDING_MODEL: requiredEnvValue,
   OLLAMA_CHAT_MODEL: requiredEnvValue
+});
+
+/**
+ * Schema for image-generation smoke checks against InvokeAI.
+ */
+export const imageSmokeEnvSchema = labEnvSchema.extend({
+  INVOKEAI_URL: requiredEnvValue,
+  INVOKEAI_GATEWAY_USER: requiredEnvValue,
+  INVOKEAI_GATEWAY_PASSWORD: requiredEnvValue,
+  INVOKEAI_MODEL_REPO: requiredEnvValue,
+  INVOKEAI_MODEL_REVISION: requiredEnvValue,
+  INVOKEAI_MODEL_TITLE: requiredEnvValue
 });
 
 /**

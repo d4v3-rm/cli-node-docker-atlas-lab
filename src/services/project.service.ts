@@ -10,6 +10,7 @@ import {
   aiSmokeEnvSchema,
   bootstrapEnvSchema,
   formatZodError,
+  imageSmokeEnvSchema,
   labEnvSchema,
   smokeEnvSchema
 } from '../config/lab-env.schema.js';
@@ -18,6 +19,7 @@ import { ensureDevelopmentFileLogging } from './runtime-log.service.js';
 import type { GlobalCliOptions } from '../types/cli.types.js';
 import type {
   AiBootstrapEnv,
+  ImageSmokeEnv,
   AiSmokeEnv,
   BootstrapEnv,
   LabEnv,
@@ -75,6 +77,13 @@ export function parseSmokeEnv(env: LabEnv): SmokeEnv {
  */
 export function parseAiSmokeEnv(env: LabEnv): AiSmokeEnv {
   return parseWithSchema(() => aiSmokeEnvSchema.parse(env));
+}
+
+/**
+ * Validates and narrows the env for image-generation smoke-check workflows.
+ */
+export function parseImageSmokeEnv(env: LabEnv): ImageSmokeEnv {
+  return parseWithSchema(() => imageSmokeEnvSchema.parse(env));
 }
 
 /**

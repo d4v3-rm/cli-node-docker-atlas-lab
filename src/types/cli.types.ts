@@ -11,6 +11,7 @@ export interface GlobalCliOptions {
 export interface UpCommandOptions extends GlobalCliOptions {
   build?: boolean;
   withAi?: boolean;
+  withImage?: boolean;
   withWorkbench?: boolean;
 }
 
@@ -29,6 +30,7 @@ export interface BootstrapCommandOptions extends GlobalCliOptions {
 export interface DoctorCommandOptions extends GlobalCliOptions {
   smoke?: boolean;
   withAi?: boolean;
+  withImage?: boolean;
   withWorkbench?: boolean;
 }
 
@@ -38,6 +40,7 @@ export interface DoctorCommandOptions extends GlobalCliOptions {
 export interface SaveImagesCommandOptions extends GlobalCliOptions {
   output?: string;
   withAi?: boolean;
+  withImage?: boolean;
   withWorkbench?: boolean;
 }
 
@@ -54,6 +57,7 @@ export interface RestoreImagesCommandOptions extends GlobalCliOptions {
 export interface SaveVolumesCommandOptions extends GlobalCliOptions {
   output?: string;
   withAi?: boolean;
+  withImage?: boolean;
   withWorkbench?: boolean;
 }
 

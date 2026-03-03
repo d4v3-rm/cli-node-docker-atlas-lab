@@ -3,6 +3,7 @@ import type { ProjectContext } from '../types/project.types.js';
 export interface ComposeLayerSelection {
   includeAi?: boolean;
   includeAll?: boolean;
+  includeImage?: boolean;
   includeWorkbench?: boolean;
 }
 
@@ -17,6 +18,7 @@ export function resolveComposeFiles(
     return [
       context.layout.composeFile,
       context.layout.composeAiFile,
+      context.layout.composeImageFile,
       context.layout.composeWorkbenchFile
     ];
   }
@@ -24,6 +26,7 @@ export function resolveComposeFiles(
   return [
     context.layout.composeFile,
     ...(selection.includeAi ? [context.layout.composeAiFile] : []),
+    ...(selection.includeImage ? [context.layout.composeImageFile] : []),
     ...(selection.includeWorkbench ? [context.layout.composeWorkbenchFile] : [])
   ];
 }

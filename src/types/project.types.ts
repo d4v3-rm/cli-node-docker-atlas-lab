@@ -18,6 +18,12 @@ export interface LabEnv {
   OPENWEBUI_ROOT_PASSWORD?: string;
   OLLAMA_EMBEDDING_MODEL?: string;
   OLLAMA_CHAT_MODEL?: string;
+  INVOKEAI_URL?: string;
+  INVOKEAI_GATEWAY_USER?: string;
+  INVOKEAI_GATEWAY_PASSWORD?: string;
+  INVOKEAI_MODEL_REPO?: string;
+  INVOKEAI_MODEL_REVISION?: string;
+  INVOKEAI_MODEL_TITLE?: string;
   POSTGRES_DEV_HOST_PORT?: string;
   LAB_URL?: string;
   GITEA_URL?: string;
@@ -94,4 +100,16 @@ export interface AiSmokeEnv extends LabEnv {
   OLLAMA_GATEWAY_PASSWORD: string;
   OLLAMA_EMBEDDING_MODEL: string;
   OLLAMA_CHAT_MODEL: string;
+}
+
+/**
+ * Env shape guaranteed after image-layer smoke-check validation.
+ */
+export interface ImageSmokeEnv extends LabEnv {
+  INVOKEAI_URL: string;
+  INVOKEAI_GATEWAY_USER: string;
+  INVOKEAI_GATEWAY_PASSWORD: string;
+  INVOKEAI_MODEL_REPO: string;
+  INVOKEAI_MODEL_REVISION: string;
+  INVOKEAI_MODEL_TITLE: string;
 }

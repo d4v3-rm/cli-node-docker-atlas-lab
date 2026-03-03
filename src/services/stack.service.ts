@@ -8,7 +8,7 @@ import { assertNvidiaGpuRuntime } from './gpu-preflight.service.js';
 import { printCommandHeader } from '../ui/banner.js';
 import { formatTaskTitle, printInfo, printSuccess } from '../ui/logger.js';
 import { runCommand } from '../utils/process.js';
-import { createBootstrapTasks } from './bootstrap.service.js';
+import { createBootstrapTasks, waitForService } from './bootstrap.service.js';
 
 const LEGACY_IMAGES = [
   'cli-node-lab-ollama-init:latest',
@@ -35,7 +35,7 @@ export async function runUpCommand(
   let composeStartedInThisRun = false;
   const tasks = new Listr(
     [
-      ...(options.withAi
+      ...((options.withAi || options.withImage)
         ? [
             {
               title: formatTaskTitle('host', 'Validate NVIDIA GPU runtime'),
@@ -50,6 +50,7 @@ export async function runUpCommand(
         task: async () => {
           await assertPublishedPortsAvailable(context, {
             includeAi: Boolean(options.withAi),
+            includeImage: Boolean(options.withImage),
             includeWorkbench: Boolean(options.withWorkbench)
           });
         }
@@ -82,6 +83,16 @@ export async function runUpCommand(
             }
           )
       },
+      ...(options.withImage
+        ? [
+            {
+              title: formatTaskTitle('stack', 'Wait for image generation runtime'),
+              task: async () => {
+                await waitForService(context, 'invokeai', 900, { includeImage: true });
+              }
+            }
+          ]
+        : []),
       {
         title: formatTaskTitle('stack', 'Remove legacy init images'),
         task: async () => {
@@ -109,11 +120,17 @@ export async function runUpCommand(
 /**
  * Formats the selected Compose layers for the startup log header.
  */
-function describeEnabledLayers(options: Pick<UpCommandOptions, 'withAi' | 'withWorkbench'>): string {
+function describeEnabledLayers(
+  options: Pick<UpCommandOptions, 'withAi' | 'withImage' | 'withWorkbench'>
+): string {
   const layers = ['core'];
 
   if (options.withAi) {
     layers.push('ai');
+  }
+
+  if (options.withImage) {
+    layers.push('image');
   }
 
   if (options.withWorkbench) {
@@ -181,6 +198,7 @@ function createComposeUpArgs(context: ProjectContext, options: UpCommandOptions)
 
   return createComposeCommandArgs(context, composeArgs, {
     includeAi: Boolean(options.withAi),
+    includeImage: Boolean(options.withImage),
     includeWorkbench: Boolean(options.withWorkbench)
   });
 }

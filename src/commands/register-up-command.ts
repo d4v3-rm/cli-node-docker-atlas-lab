@@ -13,6 +13,7 @@ export function registerUpCommand(program: Command): void {
     .option('--project-dir <path>', 'Explicit lab asset root instead of the packaged install')
     .option('--build', 'Rebuild images before starting the stack')
     .option('--with-ai', 'Include the optional AI layer (Open WebUI and Ollama)')
+    .option('--with-image', 'Include the optional image generation layer (InvokeAI and FLUX.2 klein 4B)')
     .option('--with-workbench', 'Include the optional workbench profile')
     .action(async (options: UpCommandOptions) => {
       const context = createProjectContext(options);

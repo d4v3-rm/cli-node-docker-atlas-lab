@@ -21,6 +21,8 @@ const AI_PORT_ENV_KEYS = [
   'OLLAMA_HTTPS_PORT'
 ] as const;
 
+const IMAGE_PORT_ENV_KEYS = ['INVOKEAI_HTTPS_PORT'] as const;
+
 const WORKBENCH_PORT_ENV_KEYS = [
   'POSTGRES_DEV_HOST_PORT',
   'NODE_DEV_HTTPS_PORT',
@@ -38,13 +40,15 @@ export async function assertPublishedPortsAvailable(
   context: ProjectContext,
   options: {
     includeAi: boolean;
+    includeImage: boolean;
     includeWorkbench: boolean;
   }
 ): Promise<void> {
   const definitions = getConfiguredHostPorts(
     context.env,
     options.includeWorkbench,
-    options.includeAi
+    options.includeAi,
+    options.includeImage
   );
   const currentProjectPorts = await getRunningComposePublishedPorts(context);
   const results = await Promise.all(
@@ -69,11 +73,13 @@ export async function assertPublishedPortsAvailable(
 function getConfiguredHostPorts(
   env: LabEnv,
   includeWorkbench: boolean,
-  includeAi: boolean
+  includeAi: boolean,
+  includeImage: boolean
 ): HostPortDefinition[] {
   const envKeys = [
     ...CORE_PORT_ENV_KEYS,
     ...(includeAi ? [...AI_PORT_ENV_KEYS] : []),
+    ...(includeImage ? [...IMAGE_PORT_ENV_KEYS] : []),
     ...(includeWorkbench ? [...WORKBENCH_PORT_ENV_KEYS] : [])
   ];
 

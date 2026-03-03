@@ -149,7 +149,7 @@ function collectRequiredOllamaModels(env: AiBootstrapEnv): string[] {
 /**
  * Polls Docker until the service reaches either `healthy` or `running`.
  */
-async function waitForService(
+export async function waitForService(
   context: ProjectContext,
   serviceName: string,
   timeoutSeconds = 180,

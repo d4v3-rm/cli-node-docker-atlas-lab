@@ -5,7 +5,7 @@ import { REQUIRED_REPOSITORY_FILES } from '../config/repository-layout.js';
 import { createComposeCommandArgs } from '../lib/compose.js';
 import type { DoctorCommandOptions } from '../types/cli.types.js';
 import type { HostCheckResult, SmokeCheckDefinition } from '../types/doctor.types.js';
-import type { AiSmokeEnv, ProjectContext, SmokeEnv } from '../types/project.types.js';
+import type { AiSmokeEnv, ImageSmokeEnv, ProjectContext, SmokeEnv } from '../types/project.types.js';
 import { printCommandHeader } from '../ui/banner.js';
 import { formatTaskTitle, printDoctorSummary } from '../ui/logger.js';
 import { requestHttps } from '../utils/http.js';
@@ -13,7 +13,7 @@ import { runCommand } from '../utils/process.js';
 import { readGatewayCertificate } from './gateway-certificate.service.js';
 import { checkNvidiaGpuRuntime } from './gpu-preflight.service.js';
 import { canLoginToN8n } from './n8n-owner.service.js';
-import { parseAiSmokeEnv, parseSmokeEnv } from './project.service.js';
+import { parseAiSmokeEnv, parseImageSmokeEnv, parseSmokeEnv } from './project.service.js';
 
 /**
  * Runs host checks and optional smoke checks with a styled summary.
@@ -40,7 +40,7 @@ export async function runDoctorCommand(
     createCheckTask(results, 'host', 'Docker daemon', () =>
       checkCommand('docker', ['info', '--format', '{{.ServerVersion}}'], 'Docker daemon')
     ),
-    ...(options.withAi
+    ...((options.withAi || options.withImage)
       ? [createCheckTask(results, 'host', 'NVIDIA GPU', () => checkNvidiaGpuRuntime())]
       : []),
     createCheckTask(results, 'host', 'Node.js', () => Promise.resolve(checkNodeVersion())),
@@ -58,8 +58,9 @@ export async function runDoctorCommand(
   if (options.smoke) {
     const env = parseSmokeEnv(context.env);
     const aiEnv = options.withAi ? parseAiSmokeEnv(context.env) : undefined;
+    const imageEnv = options.withImage ? parseImageSmokeEnv(context.env) : undefined;
     const gatewayCertificate = await readGatewayCertificate(context, 'smoke');
-    for (const smokeCheck of buildSmokeChecks(env, aiEnv)) {
+    for (const smokeCheck of buildSmokeChecks(env, aiEnv, imageEnv)) {
       tasks.push(createCheckTask(results, 'smoke', smokeCheck.name, () => smokeCheck.run(gatewayCertificate)));
     }
   }
@@ -179,12 +180,13 @@ function npmCheckCommand(): [string, string[], string] {
  */
 async function checkComposeConfiguration(
   context: ProjectContext,
-  options: Pick<DoctorCommandOptions, 'withAi' | 'withWorkbench'>
+  options: Pick<DoctorCommandOptions, 'withAi' | 'withImage' | 'withWorkbench'>
 ): Promise<HostCheckResult> {
   const result = await runCommand(
     'docker',
     createComposeCommandArgs(context, ['config', '-q'], {
       includeAi: Boolean(options.withAi),
+      includeImage: Boolean(options.withImage),
       includeWorkbench: Boolean(options.withWorkbench)
     }),
     {
@@ -221,7 +223,11 @@ function checkRequiredFile(projectRoot: string, relativePath: string): HostCheck
 /**
  * Builds the smoke-check definitions from the validated lab env values.
  */
-function buildSmokeChecks(env: SmokeEnv, aiEnv?: AiSmokeEnv): SmokeCheckDefinition[] {
+function buildSmokeChecks(
+  env: SmokeEnv,
+  aiEnv?: AiSmokeEnv,
+  imageEnv?: ImageSmokeEnv
+): SmokeCheckDefinition[] {
   const checks: SmokeCheckDefinition[] = [
     {
       name: 'Smoke deck',
@@ -245,6 +251,33 @@ function buildSmokeChecks(env: SmokeEnv, aiEnv?: AiSmokeEnv): SmokeCheckDefiniti
       }
     }
   ];
+
+  if (!aiEnv) {
+    if (!imageEnv) {
+      return checks;
+    }
+  }
+
+  if (imageEnv) {
+    checks.push({
+      name: 'Smoke InvokeAI',
+      run: async (caCertificate) => {
+        const response = await requestHttps(imageEnv.INVOKEAI_URL, {
+          auth: {
+            username: imageEnv.INVOKEAI_GATEWAY_USER,
+            password: imageEnv.INVOKEAI_GATEWAY_PASSWORD
+          },
+          caCertificate
+        });
+
+        return {
+          name: 'Smoke InvokeAI',
+          ok: response.statusCode >= 200 && response.statusCode < 400,
+          detail: `HTTP ${response.statusCode} with model ${imageEnv.INVOKEAI_MODEL_TITLE}`
+        };
+      }
+    });
+  }
 
   if (!aiEnv) {
     return checks;
