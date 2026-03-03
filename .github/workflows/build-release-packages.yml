@@ -12,18 +12,7 @@ permissions:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        include:
-          - os: windows-latest
-            verify_script: verify
-            bundle_script: build:win-bundle
-            artifact_name: atlas-lab-windows-bundle
-            artifact_glob: |
-              dist/*-win-x64.zip
-              dist/*-win-x64/*.tgz
-              dist/*-win-x64/SHA256SUMS.txt
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     env:
       HUSKY: '0'
       CI: 'true'
@@ -42,21 +31,32 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        shell: bash
 
       - name: Verify project
-        run: npm run ${{ matrix.verify_script }}
-        shell: bash
+        run: npm run verify
 
-      - name: Build Windows bundle
-        run: npm run ${{ matrix.bundle_script }}
-        shell: powershell
+      - name: Build npm package
+        run: npm run pack:local
+
+      - name: Prepare package artifact directory
+        shell: bash
+        run: |
+          mkdir -p dist/package
+          mv ./*.tgz dist/package/
+
+      - name: Generate package checksums
+        shell: bash
+        run: |
+          cd dist/package
+          sha256sum ./*.tgz > SHA256SUMS.txt
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact_name }}
-          path: ${{ matrix.artifact_glob }}
+          name: atlas-lab-package
+          path: |
+            dist/package/*.tgz
+            dist/package/SHA256SUMS.txt
           if-no-files-found: error
 
   publish:
@@ -77,10 +77,10 @@ jobs:
         with:
           node-version: 20
 
-      - name: Download Windows artifact
+      - name: Download package artifact
         uses: actions/download-artifact@v4
         with:
-          name: atlas-lab-windows-bundle
+          name: atlas-lab-package
           path: dist
 
       - name: Prepare source archive
@@ -229,8 +229,8 @@ jobs:
           fi
           RELEASE_BODY+="${CHANGELOG}"$'\n'
           RELEASE_BODY+="## Artifacts"$'\n'
-          RELEASE_BODY+="- Windows downloadable bundle (.zip)"$'\n'
           RELEASE_BODY+="- Self-contained npm package (.tgz)"$'\n'
+          RELEASE_BODY+="- SHA256 checksums"$'\n'
           RELEASE_BODY+="- Source zip"
           printf 'RELEASE_BODY<<EOF\n%s\nEOF\n' "$RELEASE_BODY" >> "$GITHUB_OUTPUT"
 
@@ -256,7 +256,6 @@ jobs:
           prerelease: ${{ steps.version.outputs.PRERELEASE == 'true' }}
           body: ${{ steps.notes.outputs.RELEASE_BODY }}
           files: |
-            dist/**/*.zip
             dist/**/*.tgz
             dist/**/SHA256SUMS.txt
             dist/source.zip

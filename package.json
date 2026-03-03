@@ -12,7 +12,6 @@
     "dev": "tsx ./src/bin/atlas-lab.ts",
     "build": "tsup",
     "verify": "npm run typecheck && npm run test && npm run build && npm run build:atlas-dashboard",
-    "build:win-bundle": "powershell -ExecutionPolicy Bypass -File ./scripts/build-windows-release-bundle.ps1",
     "set:version": "node ./scripts/set-version.mjs",
     "dev:atlas-dashboard": "vite --config ./config/atlas-dashboard/vite.config.ts",
     "build:atlas-dashboard": "tsc -p ./config/atlas-dashboard/tsconfig.json --noEmit && vite build --config ./config/atlas-dashboard/vite.config.ts",
