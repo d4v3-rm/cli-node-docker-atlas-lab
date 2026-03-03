@@ -1,5 +1,5 @@
 import { ExportOutlined, FileTextOutlined, LoadingOutlined } from '@ant-design/icons';
-import { Alert, Button, Card, Flex, Modal, Spin, Typography } from 'antd';
+import { Alert, Button, Flex, Modal, Spin, Typography } from 'antd';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useTranslation } from 'react-i18next';
@@ -13,12 +13,6 @@ interface BriefingDialogProps {
   briefing: BriefingReference | null;
   onClose: () => void;
 }
-
-const markdownCardStyle = {
-  background: atlasDashboardPalette.panelAlt,
-  border: `1px solid ${atlasDashboardPalette.line}`,
-  borderRadius: 24
-} as const;
 
 /**
  * Shows markdown briefings inside an Ant Design modal while preserving gateway-hosted content.
@@ -40,9 +34,14 @@ export function BriefingDialog({ briefing, onClose }: BriefingDialogProps) {
       width={980}
       styles={{
         body: {
+          background: 'transparent',
+          padding: 0
+        },
+        container: {
           background: atlasDashboardPalette.panel,
           border: `1px solid ${atlasDashboardPalette.line}`,
           borderRadius: 32,
+          boxShadow: 'none',
           overflow: 'hidden',
           padding: 0
         },
@@ -127,17 +126,15 @@ export function BriefingDialog({ briefing, onClose }: BriefingDialogProps) {
           ) : null}
 
           {!state.isLoading && !state.error ? (
-            <Card
-              style={markdownCardStyle}
-              styles={{
-                body: {
-                  padding: 28
-                }
+            <div
+              style={{
+                color: atlasDashboardPalette.ink,
+                minWidth: 0
               }}
             >
               <div
                 style={{
-                  color: atlasDashboardPalette.ink
+                  padding: 4
                 }}
               >
                 <ReactMarkdown
@@ -148,19 +145,13 @@ export function BriefingDialog({ briefing, onClose }: BriefingDialogProps) {
                       </Link>
                     ),
                     blockquote: ({ children }) => (
-                      <Card
-                        size="small"
+                      <div
                         style={{
-                          background: atlasDashboardPalette.bg,
-                          border: `1px solid ${atlasDashboardPalette.line}`,
                           borderLeft: `4px solid ${atlasDashboardPalette.core}`,
                           borderRadius: 20,
-                          marginBottom: 16
-                        }}
-                        styles={{
-                          body: {
-                            padding: 16
-                          }
+                          marginBottom: 16,
+                          padding: '16px 18px',
+                          background: atlasDashboardPalette.panelAlt
                         }}
                       >
                         <Paragraph
@@ -172,7 +163,7 @@ export function BriefingDialog({ briefing, onClose }: BriefingDialogProps) {
                         >
                           {children}
                         </Paragraph>
-                      </Card>
+                      </div>
                     ),
                     code: ({ children }) => (
                       <Text
@@ -239,19 +230,13 @@ export function BriefingDialog({ briefing, onClose }: BriefingDialogProps) {
                       </Paragraph>
                     ),
                     pre: ({ children }) => (
-                      <Card
-                        size="small"
+                      <div
                         style={{
                           background: atlasDashboardPalette.hero,
-                          border: 'none',
                           borderRadius: 20,
                           marginBottom: 16,
-                          overflow: 'auto'
-                        }}
-                        styles={{
-                          body: {
-                            padding: 18
-                          }
+                          overflow: 'auto',
+                          padding: 18
                         }}
                       >
                         <Text
@@ -265,7 +250,7 @@ export function BriefingDialog({ briefing, onClose }: BriefingDialogProps) {
                         >
                           {children}
                         </Text>
-                      </Card>
+                      </div>
                     ),
                     table: ({ children }) => (
                       <div style={{ marginBottom: 16, overflowX: 'auto' }}>
@@ -321,7 +306,7 @@ export function BriefingDialog({ briefing, onClose }: BriefingDialogProps) {
                   {state.content}
                 </ReactMarkdown>
               </div>
-            </Card>
+            </div>
           ) : null}
 
           {!state.isLoading && !state.error && briefing ? (
