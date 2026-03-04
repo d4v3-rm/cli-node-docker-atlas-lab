@@ -6,6 +6,7 @@ export type DashboardIconKey =
   | 'cpp'
   | 'forge'
   | 'host'
+  | 'image'
   | 'network'
   | 'node'
   | 'ollama'
@@ -17,7 +18,7 @@ export type DashboardIconKey =
   | 'terminal'
   | 'workflow';
 
-export type DashboardTone = 'ai' | 'core' | 'neutral' | 'workbench';
+export type DashboardTone = 'ai' | 'core' | 'image' | 'neutral' | 'workbench';
 
 export interface CredentialItem {
   label: string;
@@ -107,6 +108,8 @@ export interface DashboardViewModel {
   aiLayer: OptionalLayerViewModel;
   aiServices: ServiceCardViewModel[];
   footerCards: FooterCardViewModel[];
+  imageLayer: OptionalLayerViewModel;
+  imageServices: ServiceCardViewModel[];
   hero: {
     eyebrow: string;
     metrics: MetricItem[];

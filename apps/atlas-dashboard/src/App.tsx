@@ -4,6 +4,7 @@ import {
   ApiOutlined,
   ArrowRightOutlined,
   BranchesOutlined,
+  PictureOutlined,
   CloudServerOutlined,
   CodeOutlined,
   CompassOutlined,
@@ -59,6 +60,7 @@ const iconMap: Record<DashboardIconKey, DashboardIconComponent> = {
   cpp: CodeOutlined,
   forge: BranchesOutlined,
   host: GlobalOutlined,
+  image: PictureOutlined,
   network: NodeIndexOutlined,
   node: CodeOutlined,
   ollama: CloudServerOutlined,
@@ -84,6 +86,11 @@ const toneStyles: Record<
     accent: atlasDashboardPalette.core,
     border: 'rgba(31, 159, 141, 0.28)',
     soft: 'rgba(31, 159, 141, 0.14)'
+  },
+  image: {
+    accent: atlasDashboardPalette.image,
+    border: 'rgba(200, 92, 255, 0.28)',
+    soft: 'rgba(200, 92, 255, 0.14)'
   },
   neutral: {
     accent: atlasDashboardPalette.signal,
@@ -189,6 +196,7 @@ export default function App() {
               <Col xs={24} xl={8} style={{ display: 'flex' }}>
                 <LayerRail
                   aiLayer={dashboard.aiLayer}
+                  imageLayer={dashboard.imageLayer}
                   workbenchLayer={dashboard.workbenchLayer}
                 />
               </Col>
@@ -238,6 +246,35 @@ export default function App() {
                 </Col>
               ))}
             </Row>
+
+            <SectionBand
+              body={t(
+                dashboard.imageLayer.enabled
+                  ? 'sections.imageBodyEnabled'
+                  : 'sections.imageBodyDisabled'
+              )}
+              kicker={t('sections.imageKicker')}
+              title={t('sections.imageTitle')}
+            />
+            <LayerStateCard layer={dashboard.imageLayer} />
+            {dashboard.imageLayer.enabled ? (
+              <Row gutter={[24, 24]}>
+                {dashboard.imageServices.map((service) => (
+                  <Col xs={24} xl={12} key={service.id}>
+                    <OperationalCard
+                      briefing={{
+                        path: config.services.invokeAi.briefingPath,
+                        title: service.title
+                      }}
+                      item={service}
+                      onOpenBriefing={setActiveBriefing}
+                      primaryAction={service.action}
+                      tone={service.tone}
+                    />
+                  </Col>
+                ))}
+              </Row>
+            ) : null}
 
             <SectionBand
               body={t(
@@ -620,9 +657,11 @@ function StatsRail({
 
 function LayerRail({
   aiLayer,
+  imageLayer,
   workbenchLayer
 }: {
   aiLayer: { enabled: boolean; summary: string; tone: DashboardTone };
+  imageLayer: { enabled: boolean; summary: string; tone: DashboardTone };
   workbenchLayer: { enabled: boolean; summary: string; tone: DashboardTone };
 }) {
   const { t } = useTranslation();
@@ -643,6 +682,12 @@ function LayerRail({
             summary={aiLayer.summary}
             title={t('cards.tones.ai')}
             tone={aiLayer.tone}
+          />
+          <LayerSummaryTile
+            enabled={imageLayer.enabled}
+            summary={imageLayer.summary}
+            title={t('cards.tones.image')}
+            tone={imageLayer.tone}
           />
           <LayerSummaryTile
             enabled={workbenchLayer.enabled}
@@ -755,7 +800,13 @@ function LayerSummaryTile({
   const { t } = useTranslation();
   const palette = toneStyles[tone];
   const IconGlyph =
-    tone === 'ai' ? ApiOutlined : tone === 'workbench' ? CodeOutlined : ThunderboltOutlined;
+    tone === 'ai'
+      ? ApiOutlined
+      : tone === 'image'
+        ? PictureOutlined
+        : tone === 'workbench'
+          ? CodeOutlined
+          : ThunderboltOutlined;
 
   return (
     <Card
@@ -915,7 +966,12 @@ function LayerStateCard({
 }) {
   const { t } = useTranslation();
   const palette = toneStyles[layer.tone];
-  const IconGlyph = layer.tone === 'ai' ? ApiOutlined : CodeOutlined;
+  const IconGlyph =
+    layer.tone === 'ai'
+      ? ApiOutlined
+      : layer.tone === 'image'
+        ? PictureOutlined
+        : CodeOutlined;
 
   return (
     <Card
@@ -1286,6 +1342,8 @@ function SignalPill({
       ? 'rgba(31, 159, 141, 0.18)'
       : tone === 'ai'
         ? 'rgba(214, 138, 72, 0.18)'
+        : tone === 'image'
+          ? 'rgba(200, 92, 255, 0.18)'
         : tone === 'workbench'
           ? 'rgba(90, 143, 201, 0.18)'
           : 'rgba(245, 251, 248, 0.14)';

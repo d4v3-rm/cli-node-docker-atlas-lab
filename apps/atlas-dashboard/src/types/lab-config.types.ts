@@ -4,6 +4,7 @@
 export interface LabRuntimeConfig {
   features: {
     aiEnabled: boolean;
+    imageEnabled: boolean;
     workbenchEnabled: boolean;
   };
   assets: {
@@ -33,6 +34,15 @@ export interface LabRuntimeConfig {
     ollama: {
       gatewayPassword: string;
       gatewayUser: string;
+      url: string;
+    };
+    invokeAi: {
+      briefingPath: string;
+      gatewayPassword: string;
+      gatewayUser: string;
+      modelRepo: string;
+      modelRevision: string;
+      modelTitle: string;
       url: string;
     };
     openWebUi: {

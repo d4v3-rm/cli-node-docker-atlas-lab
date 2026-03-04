@@ -10,6 +10,7 @@ export function createDashboardViewModel(
   t: TFunction
 ): DashboardViewModel {
   const aiEnabled = config.features.aiEnabled;
+  const imageEnabled = config.features.imageEnabled;
   const workbenchEnabled = config.features.workbenchEnabled;
 
   const credentialLabels = {
@@ -24,6 +25,8 @@ export function createDashboardViewModel(
     endpoint: t('credentials.endpoint'),
     gatewayPassword: t('credentials.gatewayPassword'),
     gatewayUser: t('credentials.gatewayUser'),
+    model: t('credentials.model'),
+    modelRevision: t('credentials.modelRevision'),
     ownerBootstrap: t('credentials.ownerBootstrap'),
     ownerEmail: t('credentials.ownerEmail'),
     ownerPassword: t('credentials.ownerPassword'),
@@ -42,6 +45,11 @@ export function createDashboardViewModel(
       t('dashboard.accessNotes.https'),
       t('dashboard.accessNotes.n8n'),
       t(aiEnabled ? 'dashboard.accessNotes.aiEnabled' : 'dashboard.accessNotes.aiDisabled'),
+      t(
+        imageEnabled
+          ? 'dashboard.accessNotes.imageEnabled'
+          : 'dashboard.accessNotes.imageDisabled'
+      ),
       t(
         workbenchEnabled
           ? 'dashboard.accessNotes.workbenchEnabled'
@@ -136,6 +144,71 @@ export function createDashboardViewModel(
         tone: 'ai'
       }
     ],
+    imageLayer: {
+      activationCommand: 'atlas-lab up --with-image',
+      capabilities: [
+        {
+          icon: 'image',
+          label: t('dashboard.imageLayer.capabilities.invokeAi')
+        },
+        {
+          icon: 'spark',
+          label: t('dashboard.imageLayer.capabilities.model')
+        },
+        {
+          icon: 'secure',
+          label: t('dashboard.imageLayer.capabilities.gateway')
+        }
+      ],
+      description: t('dashboard.imageLayer.description'),
+      enabled: imageEnabled,
+      summary: t(
+        imageEnabled
+          ? 'dashboard.imageLayer.summaryEnabled'
+          : 'dashboard.imageLayer.summaryDisabled'
+      ),
+      title: t('dashboard.imageLayer.title'),
+      tone: 'image'
+    },
+    imageServices: [
+      {
+        action: {
+          href: config.services.invokeAi.url,
+          label: t('dashboard.imageServices.invokeAi.action')
+        },
+        credentials: [
+          {
+            label: credentialLabels.endpoint,
+            value: config.services.invokeAi.url
+          },
+          {
+            label: credentialLabels.gatewayUser,
+            value: config.services.invokeAi.gatewayUser
+          },
+          {
+            label: credentialLabels.gatewayPassword,
+            value: config.services.invokeAi.gatewayPassword
+          },
+          {
+            label: credentialLabels.model,
+            value: config.services.invokeAi.modelTitle
+          },
+          {
+            label: credentialLabels.modelRevision,
+            value: config.services.invokeAi.modelRevision
+          }
+        ],
+        description: t('dashboard.imageServices.invokeAi.description'),
+        icon: 'image',
+        id: 'invokeai',
+        note: t('dashboard.imageServices.invokeAi.note', {
+          modelRepo: config.services.invokeAi.modelRepo
+        }),
+        status: t('values.imageStudio'),
+        title: t('dashboard.imageServices.invokeAi.title'),
+        tone: 'image'
+      }
+    ],
     footerCards: [
       {
         body: t('dashboard.footerCards.routing.body', {
@@ -189,6 +262,19 @@ export function createDashboardViewModel(
         },
         {
           caption: t(
+            imageEnabled
+              ? 'dashboard.metrics.imageEnabled.caption'
+              : 'dashboard.metrics.imageDisabled.caption'
+          ),
+          label: t(
+            imageEnabled
+              ? 'dashboard.metrics.imageEnabled.label'
+              : 'dashboard.metrics.imageDisabled.label'
+          ),
+          value: imageEnabled ? 1 : 0
+        },
+        {
+          caption: t(
             workbenchEnabled
               ? 'dashboard.metrics.workbenchEnabled.caption'
               : 'dashboard.metrics.workbenchDisabled.caption'
@@ -203,7 +289,7 @@ export function createDashboardViewModel(
         {
           caption: t('dashboard.metrics.ingress.caption'),
           label: t('dashboard.metrics.ingress.label'),
-          value: 1 + (aiEnabled ? 1 : 0) + (workbenchEnabled ? 1 : 0)
+          value: 1 + (aiEnabled ? 1 : 0) + (imageEnabled ? 1 : 0) + (workbenchEnabled ? 1 : 0)
         }
       ],
       pills: [
@@ -239,6 +325,15 @@ export function createDashboardViewModel(
               : 'dashboard.hero.pills.aiOptional'
           ),
           tone: 'ai'
+        },
+        {
+          icon: imageEnabled ? 'image' : 'certificate',
+          label: t(
+            imageEnabled
+              ? 'dashboard.hero.pills.imageActive'
+              : 'dashboard.hero.pills.imageOptional'
+          ),
+          tone: 'image'
         },
         {
           icon: workbenchEnabled ? 'terminal' : 'certificate',
@@ -281,6 +376,7 @@ export function createDashboardViewModel(
       t('dashboard.operatingCharter.gitea'),
       t('dashboard.operatingCharter.n8n'),
       t('dashboard.operatingCharter.ai'),
+      t('dashboard.operatingCharter.image'),
       t('dashboard.operatingCharter.workbench')
     ],
     services: [

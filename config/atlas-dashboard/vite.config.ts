@@ -173,6 +173,7 @@ function createTemplateEnvironment(requestOrigin: string): Record<string, string
   return {
     ...environment,
     ATLAS_AI_ENABLED: resolveDevBooleanFlag('ATLAS_DASHBOARD_DEV_AI_ENABLED', true),
+    ATLAS_IMAGE_ENABLED: resolveDevBooleanFlag('ATLAS_DASHBOARD_DEV_IMAGE_ENABLED', true),
     ATLAS_WORKBENCH_ENABLED: resolveDevBooleanFlag(
       'ATLAS_DASHBOARD_DEV_WORKBENCH_ENABLED',
       true
