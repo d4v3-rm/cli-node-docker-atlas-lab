@@ -8,6 +8,7 @@ services:
   gateway:
     environment:
       ATLAS_AI_ENABLED: "true"
+      ATLAS_IMAGE_ENABLED: "false"
 
   gateway-ai:
     build:
@@ -21,6 +22,7 @@ services:
     environment:
       ATLAS_GATEWAY_TEMPLATE: Caddyfile.ai.template
       ATLAS_AI_ENABLED: "true"
+      ATLAS_IMAGE_ENABLED: "false"
       ATLAS_WORKBENCH_ENABLED: "false"
     ports:
       - "${OPENWEBUI_HTTPS_PORT}:${OPENWEBUI_HTTPS_PORT}"
