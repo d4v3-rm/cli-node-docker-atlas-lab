@@ -1,6 +1,6 @@
 {
   "name": "cli-node-docker-atlas-lab",
-  "version": "0.27.22",
+  "version": "0.30.2",
   "description": "Self-contained Node.js CLI and Docker stack for Atlas Lab, a localhost-first self-hosted platform with optional AI and workbench layers.",
   "license": "MIT",
   "author": "Atlas Lab contributors",
