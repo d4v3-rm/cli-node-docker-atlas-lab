@@ -45,6 +45,16 @@ export interface LabRuntimeConfig {
       modelTitle: string;
       url: string;
     };
+    swarmUi: {
+      briefingPath: string;
+      gatewayPassword: string;
+      gatewayUser: string;
+      modelFile: string;
+      modelRepo: string;
+      modelRevision: string;
+      modelTitle: string;
+      url: string;
+    };
     openWebUi: {
       rootEmail: string;
       rootName: string;

@@ -42,7 +42,7 @@
     "footerKicker": "atlas signals",
     "footerTitle": "Operational closeout",
     "imageBodyDisabled": "The image generation layer stays off until you explicitly request it. When inactive, the dashboard shows the exact activation command.",
-    "imageBodyEnabled": "The image generation layer is online: InvokeAI is exposed through its own gateway and paired with a pre-seeded FLUX.2 klein 4B model.",
+    "imageBodyEnabled": "The image generation layer is online: InvokeAI and SwarmUI are exposed through dedicated gateways and paired with pre-seeded FLUX.2 klein 4B and Qwen-Image-2512 models.",
     "imageKicker": "generation plane",
     "imageTitle": "Image Layer",
     "servicesBody": "The core plane is always available. Each card collects endpoints, operational credentials, and a direct entry point into the service.",
@@ -106,6 +106,7 @@
     "gatewayPassword": "gateway password",
     "gatewayUser": "gateway user",
     "model": "model",
+    "modelFile": "model file",
     "modelRevision": "model revision",
     "ownerBootstrap": "owner bootstrap",
     "ownerEmail": "owner email",
@@ -138,7 +139,7 @@
       "credentials": "Operational credentials are exposed here and remain aligned with the lab bootstrap.",
       "https": "All browser ingresses use localhost with dedicated HTTPS, without custom DNS or hosts-file edits.",
       "imageDisabled": "The image generation layer remains optional and no InvokeAI endpoint is exposed until you enable it.",
-      "imageEnabled": "InvokeAI is online behind its own gateway and starts with the FLUX.2 klein 4B model already staged in persistent storage.",
+      "imageEnabled": "InvokeAI and SwarmUI are online behind dedicated gateways and start with FLUX.2 klein 4B and Qwen-Image-2512 already staged in persistent storage.",
       "n8n": "n8n logs in directly with the bootstrapped owner account: there is no second gateway login.",
       "workbenchDisabled": "Workbench and Postgres stay separated from the core operating plane until you enable the dedicated layer.",
       "workbenchEnabled": "Workbench and Postgres are active: you can open browser-based environments or connect from the desktop to the host Postgres port."
@@ -170,11 +171,12 @@
       "capabilities": {
         "gateway": "Protected image gateway",
         "invokeAi": "Local InvokeAI",
-        "model": "Pre-seeded FLUX.2 klein 4B"
+        "models": "Pre-seeded local models",
+        "swarmUi": "Local SwarmUI"
       },
-      "description": "Optional image generation layer for local visual workflows. It exposes InvokeAI through a dedicated gateway and stages FLUX.2 klein 4B in persistent storage.",
-      "summaryDisabled": "Image layer is off. InvokeAI is not started or exposed until you enable the dedicated flag.",
-      "summaryEnabled": "InvokeAI is active and paired with the FLUX.2 klein 4B model through the image gateway.",
+      "description": "Optional image generation layer for local visual workflows. It exposes InvokeAI and SwarmUI through dedicated gateways and stages FLUX.2 klein 4B plus Qwen-Image-2512 in persistent storage.",
+      "summaryDisabled": "Image layer is off. InvokeAI and SwarmUI are not started or exposed until you enable the dedicated flag.",
+      "summaryEnabled": "InvokeAI and SwarmUI are active with FLUX.2 klein 4B and Qwen-Image-2512 behind the image gateways.",
       "title": "Image Layer"
     },
     "imageServices": {
@@ -183,6 +185,12 @@
         "description": "Browser-based image generation console served through the dedicated image gateway with a pre-seeded FLUX.2 klein 4B model.",
         "note": "Model source: {{modelRepo}}. The model is staged into persistent storage and scanned by InvokeAI at startup.",
         "title": "InvokeAI Studio"
+      },
+      "swarmUi": {
+        "action": "Open SwarmUI",
+        "description": "Browser-based image workflow console backed by a self-starting ComfyUI runtime and paired with the Qwen-Image-2512 FP8 model.",
+        "note": "Model source: {{modelRepo}}. SwarmUI prepares its self-starting ComfyUI backend and loads the staged Qwen model from persistent storage.",
+        "title": "SwarmUI Console"
       }
     },
     "footerCards": {
@@ -247,7 +255,7 @@
         "label": "image live"
       },
       "imageEnabled": {
-        "caption": "InvokeAI published on the dedicated image gateway",
+        "caption": "InvokeAI and SwarmUI published on dedicated image gateways",
         "label": "image live"
       },
       "ingress": {
@@ -269,7 +277,7 @@
     "operatingCharter": {
       "ai": "Open WebUI and Ollama live in an explicitly optional AI layer.",
       "gitea": "Gitea governs code, review, and Git governance for the project.",
-      "image": "InvokeAI and FLUX.2 klein 4B live in a dedicated image-generation layer.",
+      "image": "InvokeAI plus SwarmUI live in a dedicated image-generation layer with FLUX.2 klein 4B and Qwen-Image-2512.",
       "n8n": "n8n coordinates automations, webhooks, and operational jobs in the lab.",
       "workbench": "Code-server and Postgres stay in a workbench plane separated from the core."
     },

@@ -15,6 +15,7 @@ export type DashboardIconKey =
   | 'route'
   | 'secure'
   | 'spark'
+  | 'swarmUi'
   | 'terminal'
   | 'workflow';
 
