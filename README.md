@@ -23,7 +23,7 @@ Atlas Lab is built for a practical goal: run a repeatable local engineering plat
 
 - 🧱 An always-on **core layer** with Gitea, n8n, the gateway, and Atlas Dashboard
 - 🧠 An optional **AI layer** with Open WebUI and Ollama
-- 🖼️ An optional **image layer** with InvokeAI and a pre-seeded FLUX.2 klein 4B model
+- 🖼️ An optional **image layer** with InvokeAI, SwarmUI, and pre-seeded FLUX.2 klein 4B plus Qwen-Image-2512 models
 - 🛠️ An optional **workbench layer** with browser-based Node, Python, AI, and C++ environments plus shared PostgreSQL
 - 🔐 HTTPS-only ingress on `localhost`
 - 📦 A self-contained npm package that can run without a local repository checkout
@@ -69,7 +69,7 @@ Atlas Lab is split into **four explicit layers**:
 | --- | --- | --- | --- |
 | `core` | always on | gateway, Atlas Dashboard, Gitea, Gitea DB, n8n, n8n runners | baseline platform |
 | `ai` | optional | Open WebUI, Ollama, AI gateway | local AI workflows |
-| `image` | optional | InvokeAI, image gateway, FLUX.2 klein 4B staging | local image generation |
+| `image` | optional | InvokeAI, SwarmUI, image gateway, FLUX.2 klein 4B staging, Qwen-Image-2512 staging | local image generation |
 | `workbench` | optional | Node Forge, Python Grid, AI Reactor, C++ Foundry, shared PostgreSQL, workbench gateway | browser-based development |
 
 ### Why the current topology
@@ -116,6 +116,7 @@ The only host-level TCP service exposed directly is PostgreSQL from the workbenc
 | Open WebUI | `ai` | `https://localhost:8446/` | only with `--with-ai` |
 | Ollama | `ai` | `https://localhost:8447/` | HTTPS API |
 | InvokeAI | `image` | `https://localhost:8448/` | only with `--with-image` |
+| SwarmUI | `image` | `https://localhost:8449/` | only with `--with-image` |
 | Node Forge | `workbench` | `https://localhost:8450/` | Node / TypeScript workspace |
 | Python Grid | `workbench` | `https://localhost:8451/` | Python workspace |
 | AI Reactor | `workbench` | `https://localhost:8452/` | AI / notebook workspace |
@@ -137,7 +138,7 @@ The only host-level TCP service exposed directly is PostgreSQL from the workbenc
 | `edge-net` | exposed | published ingress ports |
 | `apps-net` | internal | core application services |
 | `ai-net` | internal | Open WebUI and Ollama |
-| `image-net` | internal | InvokeAI and image-generation runtime |
+| `image-net` | internal | InvokeAI, SwarmUI, and image-generation runtime |
 | `data-net` | internal | data services and infrastructure databases |
 | `workbench-net` | internal | workbenches and PostgreSQL |
 | `workbench-host-net` | bridge | host-side PostgreSQL bind |
@@ -166,6 +167,12 @@ Key volumes include:
 - `gitea-db`
 - `n8n-data`
 - `invokeai-data`
+- `swarmui-data`
+- `swarmui-backend`
+- `swarmui-dlnodes`
+- `swarmui-extensions`
+- `swarmui-models`
+- `swarmui-output`
 - `ollama-data`
 - `open-webui-data`
 - `postgres-dev-data`
@@ -206,6 +213,7 @@ The AI layer requires:
 - `8446`
 - `8447`
 - `8448`
+- `8449`
 - `8450`
 - `8451`
 - `8452`
@@ -246,11 +254,12 @@ Key variables include:
 - `APP_VERSION`
 - `LAB_HTTPS_PORT`, `GITEA_HTTPS_PORT`, `N8N_HTTPS_PORT`
 - `OPENWEBUI_HTTPS_PORT`, `OLLAMA_HTTPS_PORT`
-- `INVOKEAI_HTTPS_PORT`
+- `INVOKEAI_HTTPS_PORT`, `SWARMUI_HTTPS_PORT`
 - `NODE_DEV_HTTPS_PORT`, `PYTHON_DEV_HTTPS_PORT`, `AI_DEV_HTTPS_PORT`, `CPP_DEV_HTTPS_PORT`
 - `POSTGRES_DEV_HOST_PORT`
 - `OLLAMA_CHAT_MODEL`, `OLLAMA_EMBEDDING_MODEL`
 - `INVOKEAI_MODEL_REPO`, `INVOKEAI_MODEL_REVISION`, `INVOKEAI_MODEL_TITLE`
+- `SWARMUI_MODEL_REPO`, `SWARMUI_MODEL_REVISION`, `SWARMUI_MODEL_FILE`, `SWARMUI_MODEL_TITLE`
 - `GITEA_ROOT_USERNAME`, `GITEA_ROOT_PASSWORD`
 - `N8N_ROOT_EMAIL`, `N8N_ROOT_PASSWORD`
 - `OPENWEBUI_ROOT_EMAIL`, `OPENWEBUI_ROOT_PASSWORD`
@@ -382,7 +391,7 @@ This allows `atlas-lab` to run without a local repository checkout.
 
 ```powershell
 npm run pack:local
-npm install -g .\cli-node-docker-atlas-lab-0.27.12.tgz
+npm install -g .\cli-node-docker-atlas-lab-<version>.tgz
 atlas-lab status
 ```
 
@@ -416,6 +425,7 @@ npm run dev:atlas-dashboard
 Optional layers can be simulated with:
 
 - `ATLAS_DASHBOARD_DEV_AI_ENABLED`
+- `ATLAS_DASHBOARD_DEV_IMAGE_ENABLED`
 - `ATLAS_DASHBOARD_DEV_WORKBENCH_ENABLED`
 
 ---
@@ -458,6 +468,7 @@ Bootstrap is idempotent and reconciles Gitea, n8n, and optionally Ollama.
 | Open WebUI | `https://localhost:8446/` | `root@openwebui.local / RootOpenWebUI!2026` |
 | Ollama | `https://localhost:8447/` | gateway basic auth `root / RootOllama!2026` |
 | InvokeAI | `https://localhost:8448/` | gateway basic auth `root / RootInvokeAI!2026` |
+| SwarmUI | `https://localhost:8449/` | gateway basic auth `root / RootSwarmUI!2026` |
 | PostgreSQL host-side | `localhost:15432` | `postgres / RootPostgresDev!2026` |
 
 For DBeaver and other desktop PostgreSQL clients:
@@ -526,7 +537,7 @@ docker info
 
 ### `atlas-lab up --with-image` takes a long time on first start
 
-Expected behavior. The image layer seeds the FLUX.2 klein 4B model into persistent storage before InvokeAI becomes ready.
+Expected behavior. The image layer seeds the FLUX.2 klein 4B and Qwen-Image-2512 model assets into persistent storage and prepares the SwarmUI self-starting ComfyUI backend before InvokeAI and SwarmUI become ready.
 
 ### Workbenches do not start
 
@@ -617,6 +628,20 @@ This project is distributed under the **MIT** license.
 
 - FAQ: https://docs.ollama.com/faq
 - API reference: https://github.com/ollama/ollama/blob/main/docs/api.md
+
+### InvokeAI
+
+- Docker installation docs: https://invoke-ai.github.io/InvokeAI/installation/060_INSTALL_DOCKER/
+
+### SwarmUI
+
+- Official repository: https://github.com/mcmonkeyprojects/SwarmUI
+- Model support guide: https://github.com/mcmonkeyprojects/SwarmUI/blob/master/docs/Model%20Support.md
+
+### Hugging Face models
+
+- FLUX.2 klein 4B: https://huggingface.co/black-forest-labs/FLUX.2-klein-4B
+- Qwen Image ComfyUI packaging: https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI
 
 ### code-server
 
