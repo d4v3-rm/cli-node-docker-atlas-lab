@@ -24,6 +24,13 @@ export interface LabEnv {
   INVOKEAI_MODEL_REPO?: string;
   INVOKEAI_MODEL_REVISION?: string;
   INVOKEAI_MODEL_TITLE?: string;
+  SWARMUI_URL?: string;
+  SWARMUI_GATEWAY_USER?: string;
+  SWARMUI_GATEWAY_PASSWORD?: string;
+  SWARMUI_MODEL_REPO?: string;
+  SWARMUI_MODEL_REVISION?: string;
+  SWARMUI_MODEL_FILE?: string;
+  SWARMUI_MODEL_TITLE?: string;
   POSTGRES_DEV_HOST_PORT?: string;
   LAB_URL?: string;
   GITEA_URL?: string;
@@ -112,4 +119,11 @@ export interface ImageSmokeEnv extends LabEnv {
   INVOKEAI_MODEL_REPO: string;
   INVOKEAI_MODEL_REVISION: string;
   INVOKEAI_MODEL_TITLE: string;
+  SWARMUI_URL: string;
+  SWARMUI_GATEWAY_USER: string;
+  SWARMUI_GATEWAY_PASSWORD: string;
+  SWARMUI_MODEL_REPO: string;
+  SWARMUI_MODEL_REVISION: string;
+  SWARMUI_MODEL_FILE: string;
+  SWARMUI_MODEL_TITLE: string;
 }

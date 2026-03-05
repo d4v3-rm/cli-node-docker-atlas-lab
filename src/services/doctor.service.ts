@@ -277,6 +277,25 @@ function buildSmokeChecks(
         };
       }
     });
+
+    checks.push({
+      name: 'Smoke SwarmUI',
+      run: async (caCertificate) => {
+        const response = await requestHttps(imageEnv.SWARMUI_URL, {
+          auth: {
+            username: imageEnv.SWARMUI_GATEWAY_USER,
+            password: imageEnv.SWARMUI_GATEWAY_PASSWORD
+          },
+          caCertificate
+        });
+
+        return {
+          name: 'Smoke SwarmUI',
+          ok: response.statusCode >= 200 && response.statusCode < 400,
+          detail: `HTTP ${response.statusCode} with model ${imageEnv.SWARMUI_MODEL_TITLE}`
+        };
+      }
+    });
   }
 
   if (!aiEnv) {

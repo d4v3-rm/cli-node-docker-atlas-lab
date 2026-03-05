@@ -36,6 +36,13 @@ export const labEnvSchema = z
     INVOKEAI_MODEL_REPO: optionalEnvValue,
     INVOKEAI_MODEL_REVISION: optionalEnvValue,
     INVOKEAI_MODEL_TITLE: optionalEnvValue,
+    SWARMUI_URL: optionalEnvValue,
+    SWARMUI_GATEWAY_USER: optionalEnvValue,
+    SWARMUI_GATEWAY_PASSWORD: optionalEnvValue,
+    SWARMUI_MODEL_REPO: optionalEnvValue,
+    SWARMUI_MODEL_REVISION: optionalEnvValue,
+    SWARMUI_MODEL_FILE: optionalEnvValue,
+    SWARMUI_MODEL_TITLE: optionalEnvValue,
     POSTGRES_DEV_HOST_PORT: optionalEnvValue,
     LAB_URL: optionalEnvValue,
     GITEA_URL: optionalEnvValue,
@@ -105,7 +112,14 @@ export const imageSmokeEnvSchema = labEnvSchema.extend({
   INVOKEAI_GATEWAY_PASSWORD: requiredEnvValue,
   INVOKEAI_MODEL_REPO: requiredEnvValue,
   INVOKEAI_MODEL_REVISION: requiredEnvValue,
-  INVOKEAI_MODEL_TITLE: requiredEnvValue
+  INVOKEAI_MODEL_TITLE: requiredEnvValue,
+  SWARMUI_URL: requiredEnvValue,
+  SWARMUI_GATEWAY_USER: requiredEnvValue,
+  SWARMUI_GATEWAY_PASSWORD: requiredEnvValue,
+  SWARMUI_MODEL_REPO: requiredEnvValue,
+  SWARMUI_MODEL_REVISION: requiredEnvValue,
+  SWARMUI_MODEL_FILE: requiredEnvValue,
+  SWARMUI_MODEL_TITLE: requiredEnvValue
 });
 
 /**

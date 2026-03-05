@@ -86,9 +86,15 @@ export async function runUpCommand(
       ...(options.withImage
         ? [
             {
-              title: formatTaskTitle('stack', 'Wait for image generation runtime'),
+              title: formatTaskTitle('stack', 'Wait for InvokeAI runtime'),
               task: async () => {
                 await waitForService(context, 'invokeai', 900, { includeImage: true });
+              }
+            },
+            {
+              title: formatTaskTitle('stack', 'Wait for SwarmUI runtime'),
+              task: async () => {
+                await waitForService(context, 'swarmui', 900, { includeImage: true });
               }
             }
           ]
