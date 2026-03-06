@@ -157,6 +157,10 @@ export function createDashboardViewModel(
           label: t('dashboard.imageLayer.capabilities.swarmUi')
         },
         {
+          icon: 'fooocus',
+          label: t('dashboard.imageLayer.capabilities.fooocus')
+        },
+        {
           icon: 'spark',
           label: t('dashboard.imageLayer.capabilities.models')
         },
@@ -180,6 +184,10 @@ export function createDashboardViewModel(
         action: {
           href: config.services.invokeAi.url,
           label: t('dashboard.imageServices.invokeAi.action')
+        },
+        briefing: {
+          path: config.services.invokeAi.briefingPath,
+          title: t('dashboard.imageServices.invokeAi.title')
         },
         credentials: [
           {
@@ -218,6 +226,10 @@ export function createDashboardViewModel(
           href: config.services.swarmUi.url,
           label: t('dashboard.imageServices.swarmUi.action')
         },
+        briefing: {
+          path: config.services.swarmUi.briefingPath,
+          title: t('dashboard.imageServices.swarmUi.title')
+        },
         credentials: [
           {
             label: credentialLabels.endpoint,
@@ -252,6 +264,41 @@ export function createDashboardViewModel(
         }),
         status: t('values.imageStudio'),
         title: t('dashboard.imageServices.swarmUi.title'),
+        tone: 'image'
+      },
+      {
+        action: {
+          href: config.services.fooocus.url,
+          label: t('dashboard.imageServices.fooocus.action')
+        },
+        briefing: {
+          path: config.services.fooocus.briefingPath,
+          title: t('dashboard.imageServices.fooocus.title')
+        },
+        credentials: [
+          {
+            label: credentialLabels.endpoint,
+            value: config.services.fooocus.url
+          },
+          {
+            label: credentialLabels.gatewayUser,
+            value: config.services.fooocus.gatewayUser
+          },
+          {
+            label: credentialLabels.gatewayPassword,
+            value: config.services.fooocus.gatewayPassword
+          },
+          {
+            label: credentialLabels.usage,
+            value: t('values.imageStudio')
+          }
+        ],
+        description: t('dashboard.imageServices.fooocus.description'),
+        icon: 'fooocus',
+        id: 'fooocus',
+        note: t('dashboard.imageServices.fooocus.note'),
+        status: t('values.imageStudio'),
+        title: t('dashboard.imageServices.fooocus.title'),
         tone: 'image'
       }
     ],
@@ -317,7 +364,7 @@ export function createDashboardViewModel(
               ? 'dashboard.metrics.imageEnabled.label'
               : 'dashboard.metrics.imageDisabled.label'
           ),
-          value: imageEnabled ? 2 : 0
+          value: imageEnabled ? 3 : 0
         },
         {
           caption: t(

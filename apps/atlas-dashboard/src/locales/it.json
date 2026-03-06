@@ -42,7 +42,7 @@
     "footerKicker": "segnali atlas",
     "footerTitle": "Chiusura operativa",
     "imageBodyDisabled": "Il layer di generazione immagini resta spento finche non lo richiedi esplicitamente. Quando non e attivo, il dashboard mostra il comando esatto per abilitarlo.",
-    "imageBodyEnabled": "Il layer di generazione immagini e online: InvokeAI e SwarmUI vengono esposti tramite gateway dedicati e affiancati dai modelli FLUX.2 klein 4B e Qwen-Image-2512 gia predisposti.",
+    "imageBodyEnabled": "Il layer di generazione immagini e online: InvokeAI, SwarmUI e Fooocus vengono esposti tramite gateway dedicati, mentre FLUX.2 klein 4B e Qwen-Image-2512 restano gia predisposti per i runtime dedicati.",
     "imageKicker": "piano generativo",
     "imageTitle": "Image Layer",
     "servicesBody": "Il piano core resta sempre disponibile. Ogni card raccoglie endpoint, credenziali operative e un accesso diretto al servizio.",
@@ -138,8 +138,8 @@
       "aiEnabled": "Open WebUI e Ollama sono realmente online e raggiungibili sulle porte AI del gateway.",
       "credentials": "Le credenziali operative sono esposte qui e restano allineate al bootstrap del lab.",
       "https": "Tutti gli ingressi browser usano localhost con HTTPS dedicato, senza DNS custom o file hosts.",
-      "imageDisabled": "Il layer di generazione immagini resta opzionale e nessun endpoint InvokeAI viene esposto finche non lo abiliti.",
-      "imageEnabled": "InvokeAI e SwarmUI sono online dietro gateway dedicati e partono con FLUX.2 klein 4B e Qwen-Image-2512 gia predisposti nello storage persistente.",
+      "imageDisabled": "Il layer di generazione immagini resta opzionale e nessun endpoint immagini dedicato viene esposto finche non lo abiliti.",
+      "imageEnabled": "InvokeAI, SwarmUI e Fooocus sono online dietro gateway dedicati. FLUX.2 klein 4B e Qwen-Image-2512 sono gia predisposti, mentre Fooocus mantiene il proprio workspace persistente di dati e modelli.",
       "n8n": "n8n entra direttamente con owner bootstrap: non c e un secondo login al gateway.",
       "workbenchDisabled": "Workbench e Postgres restano separati dal core operativo finche non abiliti il layer dedicato.",
       "workbenchEnabled": "I workbench e Postgres sono attivi: puoi aprire ambienti browser-based o connetterti dal desktop alla porta host di Postgres."
@@ -169,17 +169,24 @@
     },
     "imageLayer": {
       "capabilities": {
+        "fooocus": "Fooocus locale",
         "gateway": "gateway immagini protetto",
         "invokeAi": "InvokeAI locale",
         "models": "modelli locali predisposti",
         "swarmUi": "SwarmUI locale"
       },
-      "description": "Layer opzionale per la generazione immagini locale. Espone InvokeAI e SwarmUI tramite gateway dedicati e predispone FLUX.2 klein 4B piu Qwen-Image-2512 nello storage persistente.",
-      "summaryDisabled": "Image layer spento. InvokeAI e SwarmUI non vengono avviati o esposti finche non abiliti il flag dedicato.",
-      "summaryEnabled": "InvokeAI e SwarmUI sono attivi con FLUX.2 klein 4B e Qwen-Image-2512 dietro i gateway immagini.",
+      "description": "Layer opzionale per la generazione immagini locale. Espone InvokeAI, SwarmUI e Fooocus tramite gateway dedicati e predispone FLUX.2 klein 4B piu Qwen-Image-2512 nello storage persistente per i runtime dedicati.",
+      "summaryDisabled": "Image layer spento. InvokeAI, SwarmUI e Fooocus non vengono avviati o esposti finche non abiliti il flag dedicato.",
+      "summaryEnabled": "InvokeAI, SwarmUI e Fooocus sono attivi dietro i gateway immagini, con modelli e output persistiti nei volumi Docker.",
       "title": "Image Layer"
     },
     "imageServices": {
+      "fooocus": {
+        "action": "Apri Fooocus",
+        "description": "Workspace prompt-first per immagini basato sul container ufficiale di Fooocus e servito tramite il gateway immagini dedicato.",
+        "note": "Fooocus conserva configurazione, modelli scaricati e output generati in un volume Docker persistente e puo recuperare altri asset durante l'uso.",
+        "title": "Fooocus Flow"
+      },
       "invokeAi": {
         "action": "Apri InvokeAI",
         "description": "Console browser-based per la generazione immagini servita dal gateway dedicato con un modello FLUX.2 klein 4B gia predisposto.",
@@ -255,7 +262,7 @@
         "label": "image live"
       },
       "imageEnabled": {
-        "caption": "InvokeAI e SwarmUI pubblicati su gateway immagini dedicati",
+        "caption": "InvokeAI, SwarmUI e Fooocus pubblicati su gateway immagini dedicati",
         "label": "image live"
       },
       "ingress": {
@@ -277,7 +284,7 @@
     "operatingCharter": {
       "ai": "Open WebUI e Ollama vivono in un layer AI esplicitamente opzionale.",
       "gitea": "Gitea governa codice, review e governance Git del progetto.",
-      "image": "InvokeAI e SwarmUI vivono in un layer dedicato alla generazione immagini con FLUX.2 klein 4B e Qwen-Image-2512.",
+      "image": "InvokeAI, SwarmUI e Fooocus vivono in un layer dedicato alla generazione immagini con supporto a FLUX.2 klein 4B e Qwen-Image-2512.",
       "n8n": "n8n coordina automazioni, webhook e job operativi del lab.",
       "workbench": "Code-server e Postgres restano in un piano workbench separato dal core."
     },

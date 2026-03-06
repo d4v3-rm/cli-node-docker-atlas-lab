@@ -4,6 +4,7 @@ import {
   ApiOutlined,
   ArrowRightOutlined,
   BranchesOutlined,
+  HighlightOutlined,
   PictureOutlined,
   CloudServerOutlined,
   CodeOutlined,
@@ -58,6 +59,7 @@ const iconMap: Record<DashboardIconKey, DashboardIconComponent> = {
   ai: ApiOutlined,
   certificate: SafetyCertificateOutlined,
   cpp: CodeOutlined,
+  fooocus: HighlightOutlined,
   forge: BranchesOutlined,
   host: GlobalOutlined,
   image: PictureOutlined,
@@ -263,10 +265,7 @@ export default function App() {
                 {dashboard.imageServices.map((service) => (
                   <Col xs={24} xl={12} key={service.id}>
                     <OperationalCard
-                      briefing={{
-                        path: config.services.invokeAi.briefingPath,
-                        title: service.title
-                      }}
+                      briefing={service.briefing}
                       item={service}
                       onOpenBriefing={setActiveBriefing}
                       primaryAction={service.action}

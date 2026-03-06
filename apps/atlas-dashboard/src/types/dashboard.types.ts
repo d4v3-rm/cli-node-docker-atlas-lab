@@ -4,6 +4,7 @@ export type DashboardIconKey =
   | 'ai'
   | 'certificate'
   | 'cpp'
+  | 'fooocus'
   | 'forge'
   | 'host'
   | 'image'
@@ -59,6 +60,7 @@ export interface MetricItem {
 
 export interface ServiceCardViewModel {
   action: LinkActionItem;
+  briefing?: BriefingReference;
   credentials: CredentialItem[];
   description: string;
   icon: DashboardIconKey;
