@@ -31,6 +31,9 @@ export interface LabEnv {
   SWARMUI_MODEL_REVISION?: string;
   SWARMUI_MODEL_FILE?: string;
   SWARMUI_MODEL_TITLE?: string;
+  FOOOCUS_URL?: string;
+  FOOOCUS_GATEWAY_USER?: string;
+  FOOOCUS_GATEWAY_PASSWORD?: string;
   POSTGRES_DEV_HOST_PORT?: string;
   LAB_URL?: string;
   GITEA_URL?: string;
@@ -126,4 +129,7 @@ export interface ImageSmokeEnv extends LabEnv {
   SWARMUI_MODEL_REVISION: string;
   SWARMUI_MODEL_FILE: string;
   SWARMUI_MODEL_TITLE: string;
+  FOOOCUS_URL: string;
+  FOOOCUS_GATEWAY_USER: string;
+  FOOOCUS_GATEWAY_PASSWORD: string;
 }

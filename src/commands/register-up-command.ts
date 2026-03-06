@@ -15,7 +15,7 @@ export function registerUpCommand(program: Command): void {
     .option('--with-ai', 'Include the optional AI layer (Open WebUI and Ollama)')
     .option(
       '--with-image',
-      'Include the optional image generation layer (InvokeAI, SwarmUI, and their paired models)'
+      'Include the optional image generation layer (InvokeAI, SwarmUI, Fooocus, and their paired runtimes)'
     )
     .option('--with-workbench', 'Include the optional workbench profile')
     .action(async (options: UpCommandOptions) => {

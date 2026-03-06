@@ -1,6 +1,6 @@
 name: cli-node-docker-atlas-lab
 
-# Optional image-generation layer for InvokeAI, SwarmUI, FLUX.2 klein 4B, and Qwen-Image-2512.
+# Optional image-generation layer for InvokeAI, SwarmUI, Fooocus, FLUX.2 klein 4B, and Qwen-Image-2512.
 services:
   gateway:
     environment:
@@ -23,6 +23,7 @@ services:
     ports:
       - "${INVOKEAI_HTTPS_PORT}:${INVOKEAI_HTTPS_PORT}"
       - "${SWARMUI_HTTPS_PORT}:${SWARMUI_HTTPS_PORT}"
+      - "${FOOOCUS_HTTPS_PORT}:${FOOOCUS_HTTPS_PORT}"
     volumes:
       - gateway-certs:/etc/caddy/certs
       - gateway-config:/etc/caddy/dynamic
@@ -33,6 +34,8 @@ services:
       invokeai:
         condition: service_healthy
       swarmui:
+        condition: service_healthy
+      fooocus:
         condition: service_healthy
     networks:
       - edge-net
@@ -160,6 +163,44 @@ services:
       services-egress-net:
         gw_priority: 1
 
+  fooocus:
+    image: ${FOOOCUS_IMAGE}
+    restart: unless-stopped
+    gpus: ${OLLAMA_GPU_REQUEST}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:7865/')\" || exit 1"
+        ]
+      interval: 20s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+    environment:
+      CMDARGS: ${FOOOCUS_CMDARGS}
+      DATADIR: /content/data
+      config_path: /content/data/config.txt
+      config_example_path: /content/data/config_modification_tutorial.txt
+      path_checkpoints: /content/data/models/checkpoints/
+      path_loras: /content/data/models/loras/
+      path_embeddings: /content/data/models/embeddings/
+      path_vae_approx: /content/data/models/vae_approx/
+      path_upscale_models: /content/data/models/upscale_models/
+      path_inpaint: /content/data/models/inpaint/
+      path_controlnet: /content/data/models/controlnet/
+      path_clip_vision: /content/data/models/clip_vision/
+      path_fooocus_expansion: /content/data/models/prompt_expansion/fooocus_expansion/
+      path_outputs: /content/app/outputs/
+      NVIDIA_VISIBLE_DEVICES: ${OLLAMA_NVIDIA_VISIBLE_DEVICES}
+      NVIDIA_DRIVER_CAPABILITIES: ${OLLAMA_NVIDIA_DRIVER_CAPABILITIES}
+    volumes:
+      - fooocus-data:/content/data
+    networks:
+      image-net:
+      services-egress-net:
+        gw_priority: 1
+
 networks:
   edge-net:
     name: cli-node-docker-atlas-lab_edge
@@ -180,3 +221,4 @@ volumes:
   swarmui-extensions:
   swarmui-models:
   swarmui-output:
+  fooocus-data:

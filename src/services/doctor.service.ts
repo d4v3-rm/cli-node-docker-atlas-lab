@@ -296,6 +296,25 @@ function buildSmokeChecks(
         };
       }
     });
+
+    checks.push({
+      name: 'Smoke Fooocus',
+      run: async (caCertificate) => {
+        const response = await requestHttps(imageEnv.FOOOCUS_URL, {
+          auth: {
+            username: imageEnv.FOOOCUS_GATEWAY_USER,
+            password: imageEnv.FOOOCUS_GATEWAY_PASSWORD
+          },
+          caCertificate
+        });
+
+        return {
+          name: 'Smoke Fooocus',
+          ok: response.statusCode >= 200 && response.statusCode < 400,
+          detail: `HTTP ${response.statusCode} on the Fooocus gateway`
+        };
+      }
+    });
   }
 
   if (!aiEnv) {

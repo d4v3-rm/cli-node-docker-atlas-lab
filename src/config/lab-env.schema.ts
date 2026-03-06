@@ -43,6 +43,9 @@ export const labEnvSchema = z
     SWARMUI_MODEL_REVISION: optionalEnvValue,
     SWARMUI_MODEL_FILE: optionalEnvValue,
     SWARMUI_MODEL_TITLE: optionalEnvValue,
+    FOOOCUS_URL: optionalEnvValue,
+    FOOOCUS_GATEWAY_USER: optionalEnvValue,
+    FOOOCUS_GATEWAY_PASSWORD: optionalEnvValue,
     POSTGRES_DEV_HOST_PORT: optionalEnvValue,
     LAB_URL: optionalEnvValue,
     GITEA_URL: optionalEnvValue,
@@ -104,7 +107,7 @@ export const aiSmokeEnvSchema = labEnvSchema.extend({
 });
 
 /**
- * Schema for image-generation smoke checks against InvokeAI.
+ * Schema for image-generation smoke checks.
  */
 export const imageSmokeEnvSchema = labEnvSchema.extend({
   INVOKEAI_URL: requiredEnvValue,
@@ -119,7 +122,10 @@ export const imageSmokeEnvSchema = labEnvSchema.extend({
   SWARMUI_MODEL_REPO: requiredEnvValue,
   SWARMUI_MODEL_REVISION: requiredEnvValue,
   SWARMUI_MODEL_FILE: requiredEnvValue,
-  SWARMUI_MODEL_TITLE: requiredEnvValue
+  SWARMUI_MODEL_TITLE: requiredEnvValue,
+  FOOOCUS_URL: requiredEnvValue,
+  FOOOCUS_GATEWAY_USER: requiredEnvValue,
+  FOOOCUS_GATEWAY_PASSWORD: requiredEnvValue
 });
 
 /**

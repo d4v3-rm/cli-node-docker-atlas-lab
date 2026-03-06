@@ -96,6 +96,12 @@ export async function runUpCommand(
               task: async () => {
                 await waitForService(context, 'swarmui', 900, { includeImage: true });
               }
+            },
+            {
+              title: formatTaskTitle('stack', 'Wait for Fooocus runtime'),
+              task: async () => {
+                await waitForService(context, 'fooocus', 900, { includeImage: true });
+              }
             }
           ]
         : []),
