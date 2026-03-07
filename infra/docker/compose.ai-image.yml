@@ -1,12 +1,12 @@
 name: cli-node-docker-atlas-lab
 
-# Optional image-generation layer for InvokeAI, SwarmUI, Fooocus, FLUX.2 klein 4B, and Qwen-Image-2512.
+# Optional AI image layer for InvokeAI, SwarmUI, Fooocus, FLUX.2 klein 4B, and Qwen-Image-2512.
 services:
   gateway:
     environment:
-      ATLAS_IMAGE_ENABLED: "true"
+      ATLAS_AI_IMAGE_ENABLED: "true"
 
-  gateway-image:
+  gateway-ai-image:
     build:
       context: ../..
       dockerfile: infra/docker/images/gateway/Dockerfile
@@ -16,9 +16,9 @@ services:
     env_file:
       - ../../env/lab.env
     environment:
-      ATLAS_GATEWAY_TEMPLATE: Caddyfile.image.template
-      ATLAS_AI_ENABLED: "false"
-      ATLAS_IMAGE_ENABLED: "true"
+      ATLAS_GATEWAY_TEMPLATE: Caddyfile.ai-image.template
+      ATLAS_AI_LLM_ENABLED: "false"
+      ATLAS_AI_IMAGE_ENABLED: "true"
       ATLAS_WORKBENCH_ENABLED: "false"
     ports:
       - "${INVOKEAI_HTTPS_PORT}:${INVOKEAI_HTTPS_PORT}"
@@ -39,7 +39,7 @@ services:
         condition: service_healthy
     networks:
       - edge-net
-      - image-net
+      - ai-image-net
 
   invokeai-model-seed:
     build:
@@ -125,7 +125,7 @@ services:
     volumes:
       - invokeai-data:/invokeai
     networks:
-      image-net:
+      ai-image-net:
       services-egress-net:
         gw_priority: 1
 
@@ -159,7 +159,7 @@ services:
       - swarmui-models:/SwarmUI/Models
       - swarmui-output:/SwarmUI/Output
     networks:
-      image-net:
+      ai-image-net:
       services-egress-net:
         gw_priority: 1
 
@@ -197,15 +197,15 @@ services:
     volumes:
       - fooocus-data:/content/data
     networks:
-      image-net:
+      ai-image-net:
       services-egress-net:
         gw_priority: 1
 
 networks:
   edge-net:
     name: cli-node-docker-atlas-lab_edge
-  image-net:
-    name: cli-node-docker-atlas-lab_image
+  ai-image-net:
+    name: cli-node-docker-atlas-lab_ai_image
     internal: true
   services-egress-net:
     name: cli-node-docker-atlas-lab_services_egress

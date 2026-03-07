@@ -4,13 +4,13 @@ import type { ProjectContext } from '../../src/types/project.types.js';
 const context: ProjectContext = {
   env: {},
   layout: {
-    composeAiFile: 'infra/docker/compose.ai.yml',
+    composeAiLlmFile: 'infra/docker/compose.ai-llm.yml',
+    composeAiImageFile: 'infra/docker/compose.ai-image.yml',
     composeFile: 'infra/docker/compose.yml',
-    composeImageFile: 'infra/docker/compose.image.yml',
     composeWorkbenchFile: 'infra/docker/compose.workbench.yml',
     envFile: 'env/lab.env',
-    gatewayAiTemplateFile: 'config/gateway/templates/Caddyfile.ai.template',
-    gatewayImageTemplateFile: 'config/gateway/templates/Caddyfile.image.template',
+    gatewayAiImageTemplateFile: 'config/gateway/templates/Caddyfile.ai-image.template',
+    gatewayAiLlmTemplateFile: 'config/gateway/templates/Caddyfile.ai-llm.template',
     gatewayTemplateFile: 'config/gateway/templates/Caddyfile.template',
     gatewayWorkbenchTemplateFile: 'config/gateway/templates/Caddyfile.workbench.template'
   },
@@ -24,17 +24,17 @@ describe('compose lib', () => {
     expect(resolveComposeFiles(context)).toEqual(['infra/docker/compose.yml']);
   });
 
-  it('includes the ai, image, and workbench compose files when requested', () => {
+  it('includes the ai-llm, ai-image, and workbench compose files when requested', () => {
     expect(
       resolveComposeFiles(context, {
-        includeAi: true,
-        includeImage: true,
+        includeAiImage: true,
+        includeAiLlm: true,
         includeWorkbench: true
       })
     ).toEqual([
       'infra/docker/compose.yml',
-      'infra/docker/compose.ai.yml',
-      'infra/docker/compose.image.yml',
+      'infra/docker/compose.ai-llm.yml',
+      'infra/docker/compose.ai-image.yml',
       'infra/docker/compose.workbench.yml'
     ]);
   });
@@ -45,9 +45,9 @@ describe('compose lib', () => {
       '--file',
       'infra/docker/compose.yml',
       '--file',
-      'infra/docker/compose.ai.yml',
+      'infra/docker/compose.ai-llm.yml',
       '--file',
-      'infra/docker/compose.image.yml',
+      'infra/docker/compose.ai-image.yml',
       '--file',
       'infra/docker/compose.workbench.yml',
       '--env-file',
