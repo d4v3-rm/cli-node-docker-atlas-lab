@@ -80,9 +80,9 @@ export interface BootstrapEnv extends LabEnv {
 }
 
 /**
- * Env shape guaranteed after AI bootstrap validation.
+ * Env shape guaranteed after AI LLM bootstrap validation.
  */
-export interface AiBootstrapEnv extends LabEnv {
+export interface AiLlmBootstrapEnv extends LabEnv {
   OLLAMA_EMBEDDING_MODEL: string;
   OLLAMA_CHAT_MODEL: string;
 }
@@ -99,9 +99,9 @@ export interface SmokeEnv extends LabEnv {
 }
 
 /**
- * Env shape guaranteed after AI smoke-check validation.
+ * Env shape guaranteed after AI LLM smoke-check validation.
  */
-export interface AiSmokeEnv extends LabEnv {
+export interface AiLlmSmokeEnv extends LabEnv {
   OPENWEBUI_URL: string;
   OPENWEBUI_ROOT_EMAIL: string;
   OPENWEBUI_ROOT_PASSWORD: string;
@@ -113,9 +113,9 @@ export interface AiSmokeEnv extends LabEnv {
 }
 
 /**
- * Env shape guaranteed after image-layer smoke-check validation.
+ * Env shape guaranteed after AI image smoke-check validation.
  */
-export interface ImageSmokeEnv extends LabEnv {
+export interface AiImageSmokeEnv extends LabEnv {
   INVOKEAI_URL: string;
   INVOKEAI_GATEWAY_USER: string;
   INVOKEAI_GATEWAY_PASSWORD: string;

@@ -11,8 +11,8 @@ export function registerDoctorCommand(program: Command): void {
     .command('doctor')
     .description('Check host requirements and optionally run smoke tests')
     .option('--project-dir <path>', 'Explicit lab asset root instead of the packaged install')
-    .option('--with-ai', 'Include the optional AI layer checks')
-    .option('--with-image', 'Include the optional image generation layer checks')
+    .option('--with-ai-llm, --with-ai', 'Include the optional AI LLM layer checks')
+    .option('--with-ai-image, --with-image', 'Include the optional AI image layer checks')
     .option('--with-workbench', 'Validate the optional workbench Compose layer')
     .option('--smoke', 'Run smoke checks against the local HTTPS endpoints')
     .action(async (options: DoctorCommandOptions) => {

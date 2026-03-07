@@ -3,8 +3,8 @@
  */
 export interface LabRuntimeConfig {
   features: {
-    aiEnabled: boolean;
-    imageEnabled: boolean;
+    aiLlmEnabled: boolean;
+    aiImageEnabled: boolean;
     workbenchEnabled: boolean;
   };
   assets: {

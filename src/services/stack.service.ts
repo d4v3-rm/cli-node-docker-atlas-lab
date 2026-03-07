@@ -35,7 +35,7 @@ export async function runUpCommand(
   let composeStartedInThisRun = false;
   const tasks = new Listr(
     [
-      ...((options.withAi || options.withImage)
+      ...((options.withAiLlm || options.withAiImage)
         ? [
             {
               title: formatTaskTitle('host', 'Validate NVIDIA GPU runtime'),
@@ -49,8 +49,8 @@ export async function runUpCommand(
         title: formatTaskTitle('host', 'Validate published host ports'),
         task: async () => {
           await assertPublishedPortsAvailable(context, {
-            includeAi: Boolean(options.withAi),
-            includeImage: Boolean(options.withImage),
+            includeAiLlm: Boolean(options.withAiLlm),
+            includeAiImage: Boolean(options.withAiImage),
             includeWorkbench: Boolean(options.withWorkbench)
           });
         }
@@ -73,8 +73,8 @@ export async function runUpCommand(
           new Listr(
             createBootstrapTasks(context, {
               skipGitea: false,
-              skipOllama: !options.withAi,
-              withAi: Boolean(options.withAi)
+              skipOllama: !options.withAiLlm,
+              withAiLlm: Boolean(options.withAiLlm)
             }),
             {
               concurrent: false,
@@ -83,24 +83,24 @@ export async function runUpCommand(
             }
           )
       },
-      ...(options.withImage
+      ...(options.withAiImage
         ? [
             {
               title: formatTaskTitle('stack', 'Wait for InvokeAI runtime'),
               task: async () => {
-                await waitForService(context, 'invokeai', 900, { includeImage: true });
+                await waitForService(context, 'invokeai', 900, { includeAiImage: true });
               }
             },
             {
               title: formatTaskTitle('stack', 'Wait for SwarmUI runtime'),
               task: async () => {
-                await waitForService(context, 'swarmui', 900, { includeImage: true });
+                await waitForService(context, 'swarmui', 900, { includeAiImage: true });
               }
             },
             {
               title: formatTaskTitle('stack', 'Wait for Fooocus runtime'),
               task: async () => {
-                await waitForService(context, 'fooocus', 900, { includeImage: true });
+                await waitForService(context, 'fooocus', 900, { includeAiImage: true });
               }
             }
           ]
@@ -133,16 +133,16 @@ export async function runUpCommand(
  * Formats the selected Compose layers for the startup log header.
  */
 function describeEnabledLayers(
-  options: Pick<UpCommandOptions, 'withAi' | 'withImage' | 'withWorkbench'>
+  options: Pick<UpCommandOptions, 'withAiLlm' | 'withAiImage' | 'withWorkbench'>
 ): string {
   const layers = ['core'];
 
-  if (options.withAi) {
-    layers.push('ai');
+  if (options.withAiLlm) {
+    layers.push('ai-llm');
   }
 
-  if (options.withImage) {
-    layers.push('image');
+  if (options.withAiImage) {
+    layers.push('ai-image');
   }
 
   if (options.withWorkbench) {
@@ -209,8 +209,8 @@ function createComposeUpArgs(context: ProjectContext, options: UpCommandOptions)
   }
 
   return createComposeCommandArgs(context, composeArgs, {
-    includeAi: Boolean(options.withAi),
-    includeImage: Boolean(options.withImage),
+    includeAiLlm: Boolean(options.withAiLlm),
+    includeAiImage: Boolean(options.withAiImage),
     includeWorkbench: Boolean(options.withWorkbench)
   });
 }

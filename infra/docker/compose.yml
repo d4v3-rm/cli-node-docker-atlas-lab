@@ -15,8 +15,8 @@ services:
     env_file:
       - ../../env/lab.env
     environment:
-      ATLAS_AI_ENABLED: "false"
-      ATLAS_IMAGE_ENABLED: "false"
+      ATLAS_AI_LLM_ENABLED: "false"
+      ATLAS_AI_IMAGE_ENABLED: "false"
       ATLAS_WORKBENCH_ENABLED: "false"
     healthcheck:
       test: ["CMD-SHELL", "nc -z 127.0.0.1 $$LAB_HTTPS_PORT || exit 1"]

@@ -34,17 +34,17 @@
     "operatingDoctrineTitle": "Come e stato pensato il lab"
   },
   "sections": {
-    "aiBodyDisabled": "Il layer AI resta opzionale. Quando e spento il dashboard mostra il comando esatto per abilitarlo.",
-    "aiBodyEnabled": "Il layer AI e online: il dashboard porta in Open WebUI o alle API Ollama con credenziali e contesto operativo sempre visibili.",
+    "aiBodyDisabled": "Il layer AI LLM resta opzionale. Quando e spento il dashboard mostra il comando esatto per abilitarlo.",
+    "aiBodyEnabled": "Il layer AI LLM e online: il dashboard porta in Open WebUI o alle API Ollama con credenziali e contesto operativo sempre visibili.",
     "aiKicker": "piano opzionale",
-    "aiTitle": "AI Layer",
+    "aiTitle": "AI LLM Layer",
     "footerBody": "Quattro segnali rapidi su routing, persistenza, uso consigliato e segmentazione dei layer.",
     "footerKicker": "segnali atlas",
     "footerTitle": "Chiusura operativa",
-    "imageBodyDisabled": "Il layer di generazione immagini resta spento finche non lo richiedi esplicitamente. Quando non e attivo, il dashboard mostra il comando esatto per abilitarlo.",
-    "imageBodyEnabled": "Il layer di generazione immagini e online: InvokeAI, SwarmUI e Fooocus vengono esposti tramite gateway dedicati, mentre FLUX.2 klein 4B e Qwen-Image-2512 restano gia predisposti per i runtime dedicati.",
+    "imageBodyDisabled": "Il layer AI image resta spento finche non lo richiedi esplicitamente. Quando non e attivo, il dashboard mostra il comando esatto per abilitarlo.",
+    "imageBodyEnabled": "Il layer AI image e online: InvokeAI, SwarmUI e Fooocus vengono esposti tramite gateway dedicati, mentre FLUX.2 klein 4B e Qwen-Image-2512 restano gia predisposti per i runtime dedicati.",
     "imageKicker": "piano generativo",
-    "imageTitle": "Image Layer",
+    "imageTitle": "AI Image Layer",
     "servicesBody": "Il piano core resta sempre disponibile. Ogni card raccoglie endpoint, credenziali operative e un accesso diretto al servizio.",
     "servicesKicker": "piano servizi",
     "servicesTitle": "Servizi Core",
@@ -66,9 +66,9 @@
   "cards": {
     "openBriefing": "Apri briefing",
     "tones": {
-      "ai": "AI",
+      "ai": "AI LLM",
       "core": "Core",
-      "image": "Image",
+      "image": "AI Image",
       "neutral": "Neutro",
       "workbench": "Workbench"
     }
@@ -134,11 +134,11 @@
   "dashboard": {
     "coreLayerSummary": "Gitea e n8n restano il piano sempre acceso del lab.",
     "accessNotes": {
-      "aiDisabled": "Il layer AI non viene piu acceso di default: il deck lo marca come opzionale invece di fingere che sia online.",
-      "aiEnabled": "Open WebUI e Ollama sono realmente online e raggiungibili sulle porte AI del gateway.",
+      "aiDisabled": "Il layer AI LLM non viene piu acceso di default: il deck lo marca come opzionale invece di fingere che sia online.",
+      "aiEnabled": "Open WebUI e Ollama sono realmente online e raggiungibili sulle porte AI LLM del gateway.",
       "credentials": "Le credenziali operative sono esposte qui e restano allineate al bootstrap del lab.",
       "https": "Tutti gli ingressi browser usano localhost con HTTPS dedicato, senza DNS custom o file hosts.",
-      "imageDisabled": "Il layer di generazione immagini resta opzionale e nessun endpoint immagini dedicato viene esposto finche non lo abiliti.",
+      "imageDisabled": "Il layer AI image resta opzionale e nessun endpoint immagini dedicato viene esposto finche non lo abiliti.",
       "imageEnabled": "InvokeAI, SwarmUI e Fooocus sono online dietro gateway dedicati. FLUX.2 klein 4B e Qwen-Image-2512 sono gia predisposti, mentre Fooocus mantiene il proprio workspace persistente di dati e modelli.",
       "n8n": "n8n entra direttamente con owner bootstrap: non c e un secondo login al gateway.",
       "workbenchDisabled": "Workbench e Postgres restano separati dal core operativo finche non abiliti il layer dedicato.",
@@ -146,14 +146,14 @@
     },
     "aiLayer": {
       "capabilities": {
-        "aiModels": "modelli GPU-backed",
+        "llmModels": "modelli LLM GPU-backed",
         "ollama": "API Ollama protetta",
         "openWebUi": "Open WebUI locale"
       },
-      "description": "Layer AI opzionale per console conversazionale locale e inference LLM GPU-backed. Il deck lo attiva solo quando lo chiedi esplicitamente.",
-      "summaryDisabled": "AI layer spento. Nessun servizio AI viene avviato o esposto finche non abiliti il flag dedicato.",
-      "summaryEnabled": "Open WebUI e Ollama sono attivi e serviti dal gateway AI.",
-      "title": "AI Layer"
+      "description": "Layer AI LLM opzionale per console conversazionale locale e inference LLM GPU-backed. Il deck lo attiva solo quando lo chiedi esplicitamente.",
+      "summaryDisabled": "AI LLM layer spento. Nessun servizio LLM viene avviato o esposto finche non abiliti il flag dedicato.",
+      "summaryEnabled": "Open WebUI e Ollama sono attivi e serviti dal gateway AI LLM.",
+      "title": "AI LLM Layer"
     },
     "aiServices": {
       "ollama": {
@@ -175,10 +175,10 @@
         "models": "modelli locali predisposti",
         "swarmUi": "SwarmUI locale"
       },
-      "description": "Layer opzionale per la generazione immagini locale. Espone InvokeAI, SwarmUI e Fooocus tramite gateway dedicati e predispone FLUX.2 klein 4B piu Qwen-Image-2512 nello storage persistente per i runtime dedicati.",
-      "summaryDisabled": "Image layer spento. InvokeAI, SwarmUI e Fooocus non vengono avviati o esposti finche non abiliti il flag dedicato.",
-      "summaryEnabled": "InvokeAI, SwarmUI e Fooocus sono attivi dietro i gateway immagini, con modelli e output persistiti nei volumi Docker.",
-      "title": "Image Layer"
+      "description": "Layer AI image opzionale per la generazione immagini locale. Espone InvokeAI, SwarmUI e Fooocus tramite gateway dedicati e predispone FLUX.2 klein 4B piu Qwen-Image-2512 nello storage persistente per i runtime dedicati.",
+      "summaryDisabled": "AI image layer spento. InvokeAI, SwarmUI e Fooocus non vengono avviati o esposti finche non abiliti il flag dedicato.",
+      "summaryEnabled": "InvokeAI, SwarmUI e Fooocus sono attivi dietro i gateway AI image, con modelli e output persistiti nei volumi Docker.",
+      "title": "AI Image Layer"
     },
     "imageServices": {
       "fooocus": {
@@ -214,20 +214,20 @@
         "label": "segmentazione"
       },
       "usage": {
-        "body": "Gitea e n8n sono il piano core sempre acceso; AI, generazione immagini e workbench vengono abilitati a layer solo quando servono davvero.",
+        "body": "Gitea e n8n sono il piano core sempre acceso; AI LLM, AI image e workbench vengono abilitati a layer solo quando servono davvero.",
         "label": "uso"
       }
     },
     "hero": {
       "eyebrow": "atlas command deck",
       "pills": {
-        "aiActive": "layer ai attivo",
-        "aiOptional": "layer ai opzionale",
+        "aiActive": "ai-llm attivo",
+        "aiOptional": "ai-llm opzionale",
         "deck": "deck {{localUrl}}",
         "host": "host {{publicUrl}}",
         "httpsOnly": "ingress solo https",
-        "imageActive": "layer immagini attivo",
-        "imageOptional": "layer immagini opzionale",
+        "imageActive": "ai-image attivo",
+        "imageOptional": "ai-image opzionale",
         "volumes": "persistenza su volumi",
         "workbenchActive": "workbench attivi",
         "workbenchOptional": "workbench opzionali"
@@ -238,7 +238,7 @@
         "networkMapDescription": "Leggi la topologia del lab e i piani di rete pubblicati.",
         "networkMapLabel": "Network map"
       },
-      "summary": "Control room unificata per repository, automazione, AI opzionale, generazione immagini e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.",
+      "summary": "Control room unificata per repository, automazione, servizi AI LLM opzionali, generazione AI image e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.",
       "titleLines": {
         "first": "LAB",
         "second": "ATLAS"
@@ -246,24 +246,24 @@
     },
     "metrics": {
       "aiDisabled": {
-        "caption": "layer AI non attivo",
-        "label": "ai live"
+        "caption": "layer AI LLM non attivo",
+        "label": "ai-llm live"
       },
       "aiEnabled": {
-        "caption": "layer AI pubblicato sul gateway dedicato",
-        "label": "ai live"
+        "caption": "layer AI LLM pubblicato sul gateway dedicato",
+        "label": "ai-llm live"
       },
       "core": {
         "caption": "servizi sempre accesi e bootstrap mandatory",
         "label": "core online"
       },
       "imageDisabled": {
-        "caption": "layer immagini non attivo",
-        "label": "image live"
+        "caption": "layer AI image non attivo",
+        "label": "ai-image live"
       },
       "imageEnabled": {
-        "caption": "InvokeAI, SwarmUI e Fooocus pubblicati su gateway immagini dedicati",
-        "label": "image live"
+        "caption": "InvokeAI, SwarmUI e Fooocus pubblicati su gateway AI image dedicati",
+        "label": "ai-image live"
       },
       "ingress": {
         "caption": "gateway pubblici serviti adesso",
@@ -282,9 +282,9 @@
       "title": "Network Map"
     },
     "operatingCharter": {
-      "ai": "Open WebUI e Ollama vivono in un layer AI esplicitamente opzionale.",
+      "ai": "Open WebUI e Ollama vivono in un layer AI LLM esplicitamente opzionale.",
       "gitea": "Gitea governa codice, review e governance Git del progetto.",
-      "image": "InvokeAI, SwarmUI e Fooocus vivono in un layer dedicato alla generazione immagini con supporto a FLUX.2 klein 4B e Qwen-Image-2512.",
+      "image": "InvokeAI, SwarmUI e Fooocus vivono in un layer AI image dedicato con supporto a FLUX.2 klein 4B e Qwen-Image-2512.",
       "n8n": "n8n coordina automazioni, webhook e job operativi del lab.",
       "workbench": "Code-server e Postgres restano in un piano workbench separato dal core."
     },

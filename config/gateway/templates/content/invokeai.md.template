@@ -2,7 +2,7 @@
 
 ## What this layer does
 
-`InvokeAI` provides a browser-based image generation workspace exposed through the dedicated `image` layer.
+`InvokeAI` provides a browser-based image generation workspace exposed through the dedicated `ai-image` layer.
 
 This layer is paired with the pre-seeded model `${INVOKEAI_MODEL_TITLE}` from `${INVOKEAI_MODEL_REPO}` at revision `${INVOKEAI_MODEL_REVISION}`.
 
@@ -14,13 +14,13 @@ This layer is paired with the pre-seeded model `${INVOKEAI_MODEL_TITLE}` from `$
 
 ## Runtime notes
 
-- The service is published only when the `image` layer is enabled.
+- The service is published only when the `ai-image` layer is enabled.
 - Model files are persisted inside a named Docker volume and scanned by InvokeAI on startup.
-- The image layer remains separate from the chat-oriented `ai` layer based on Open WebUI and Ollama.
+- The AI image layer remains separate from the chat-oriented `ai-llm` layer based on Open WebUI and Ollama.
 
 ## Typical workflow
 
-1. Start the lab with `atlas-lab up --with-image`
+1. Start the lab with `atlas-lab up --with-ai-image`
 2. Open `${INVOKEAI_URL}`
 3. Authenticate with the gateway credentials above
 4. Use `${INVOKEAI_MODEL_TITLE}` as the default local image generation model

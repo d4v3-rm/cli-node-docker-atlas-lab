@@ -12,8 +12,8 @@ export function registerSaveImagesCommand(program: Command): void {
     .description('Save Docker images for the selected lab layers into a single archive')
     .option('--project-dir <path>', 'Explicit lab asset root instead of the packaged install')
     .option('--output <path>', 'Output archive path (defaults under ./backups/images)')
-    .option('--with-ai', 'Include the optional AI layer images')
-    .option('--with-image', 'Include the optional image generation layer images')
+    .option('--with-ai-llm, --with-ai', 'Include the optional AI LLM layer images')
+    .option('--with-ai-image, --with-image', 'Include the optional AI image layer images')
     .option('--with-workbench', 'Include the optional workbench layer images')
     .action(async (options: SaveImagesCommandOptions) => {
       const context = createProjectContext(options);

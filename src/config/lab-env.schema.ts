@@ -85,17 +85,17 @@ export const smokeEnvSchema = labEnvSchema.extend({
 });
 
 /**
- * Schema for AI bootstrap workflows that reconcile the Ollama runtime.
+ * Schema for AI LLM bootstrap workflows that reconcile the Ollama runtime.
  */
-export const aiBootstrapEnvSchema = labEnvSchema.extend({
+export const aiLlmBootstrapEnvSchema = labEnvSchema.extend({
   OLLAMA_EMBEDDING_MODEL: requiredEnvValue,
   OLLAMA_CHAT_MODEL: requiredEnvValue
 });
 
 /**
- * Schema for AI smoke checks against Open WebUI and Ollama.
+ * Schema for AI LLM smoke checks against Open WebUI and Ollama.
  */
-export const aiSmokeEnvSchema = labEnvSchema.extend({
+export const aiLlmSmokeEnvSchema = labEnvSchema.extend({
   OPENWEBUI_URL: requiredEnvValue,
   OPENWEBUI_ROOT_EMAIL: requiredEnvValue,
   OPENWEBUI_ROOT_PASSWORD: requiredEnvValue,
@@ -107,9 +107,9 @@ export const aiSmokeEnvSchema = labEnvSchema.extend({
 });
 
 /**
- * Schema for image-generation smoke checks.
+ * Schema for AI image smoke checks.
  */
-export const imageSmokeEnvSchema = labEnvSchema.extend({
+export const aiImageSmokeEnvSchema = labEnvSchema.extend({
   INVOKEAI_URL: requiredEnvValue,
   INVOKEAI_GATEWAY_USER: requiredEnvValue,
   INVOKEAI_GATEWAY_PASSWORD: requiredEnvValue,

@@ -5,8 +5,8 @@
     "publicUrl": "${LAB_URL}"
   },
   "features": {
-    "aiEnabled": ${ATLAS_AI_ENABLED},
-    "imageEnabled": ${ATLAS_IMAGE_ENABLED},
+    "aiLlmEnabled": ${ATLAS_AI_LLM_ENABLED},
+    "aiImageEnabled": ${ATLAS_AI_IMAGE_ENABLED},
     "workbenchEnabled": ${ATLAS_WORKBENCH_ENABLED}
   },
   "assets": {

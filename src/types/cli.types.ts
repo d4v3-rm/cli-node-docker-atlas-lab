@@ -10,8 +10,8 @@ export interface GlobalCliOptions {
  */
 export interface UpCommandOptions extends GlobalCliOptions {
   build?: boolean;
-  withAi?: boolean;
-  withImage?: boolean;
+  withAiLlm?: boolean;
+  withAiImage?: boolean;
   withWorkbench?: boolean;
 }
 
@@ -21,7 +21,7 @@ export interface UpCommandOptions extends GlobalCliOptions {
 export interface BootstrapCommandOptions extends GlobalCliOptions {
   skipGitea?: boolean;
   skipOllama?: boolean;
-  withAi?: boolean;
+  withAiLlm?: boolean;
 }
 
 /**
@@ -29,8 +29,8 @@ export interface BootstrapCommandOptions extends GlobalCliOptions {
  */
 export interface DoctorCommandOptions extends GlobalCliOptions {
   smoke?: boolean;
-  withAi?: boolean;
-  withImage?: boolean;
+  withAiLlm?: boolean;
+  withAiImage?: boolean;
   withWorkbench?: boolean;
 }
 
@@ -39,8 +39,8 @@ export interface DoctorCommandOptions extends GlobalCliOptions {
  */
 export interface SaveImagesCommandOptions extends GlobalCliOptions {
   output?: string;
-  withAi?: boolean;
-  withImage?: boolean;
+  withAiLlm?: boolean;
+  withAiImage?: boolean;
   withWorkbench?: boolean;
 }
 
@@ -56,8 +56,8 @@ export interface RestoreImagesCommandOptions extends GlobalCliOptions {
  */
 export interface SaveVolumesCommandOptions extends GlobalCliOptions {
   output?: string;
-  withAi?: boolean;
-  withImage?: boolean;
+  withAiLlm?: boolean;
+  withAiImage?: boolean;
   withWorkbench?: boolean;
 }
 

@@ -5,8 +5,8 @@
 The deck remains available locally at `${LAB_LOCAL_URL}`. The lab is split into four layers:
 
 - `core`: deck, Gitea, and n8n
-- `ai`: Open WebUI and Ollama
-- `image`: InvokeAI, SwarmUI, Fooocus, and their paired local image-generation runtimes
+- `ai-llm`: Open WebUI and Ollama
+- `ai-image`: InvokeAI, SwarmUI, Fooocus, and their paired local image-generation runtimes
 - `workbench`: Postgres and code-server environments
 
 Each layer publishes its HTTPS endpoints on `localhost` through a dedicated gateway. In addition, the `workbench` layer also exposes `Postgres` on a dedicated host TCP port.
@@ -16,11 +16,11 @@ Each layer publishes its HTTPS endpoints on `localhost` through a dedicated gate
 - Local deck: `${LAB_LOCAL_URL}`
 - Gitea: `${GITEA_URL}`
 - n8n: `${N8N_URL}`
-- Open WebUI: `${OPENWEBUI_URL}` only when the `ai` layer is enabled
-- Ollama: `${OLLAMA_URL}` only when the `ai` layer is enabled
-- InvokeAI: `${INVOKEAI_URL}` only when the `image` layer is enabled
-- SwarmUI: `${SWARMUI_URL}` only when the `image` layer is enabled
-- Fooocus: `${FOOOCUS_URL}` only when the `image` layer is enabled
+- Open WebUI: `${OPENWEBUI_URL}` only when the `ai-llm` layer is enabled
+- Ollama: `${OLLAMA_URL}` only when the `ai-llm` layer is enabled
+- InvokeAI: `${INVOKEAI_URL}` only when the `ai-image` layer is enabled
+- SwarmUI: `${SWARMUI_URL}` only when the `ai-image` layer is enabled
+- Fooocus: `${FOOOCUS_URL}` only when the `ai-image` layer is enabled
 - Node workbench: `${NODE_DEV_URL}` only when the `workbench` layer is enabled
 - Python workbench: `${PYTHON_DEV_URL}` only when the `workbench` layer is enabled
 - AI workbench: `${AI_DEV_URL}` only when the `workbench` layer is enabled
@@ -32,15 +32,15 @@ Each layer publishes its HTTPS endpoints on `localhost` through a dedicated gate
 - `8443`: local deck
 - `8444`: Gitea
 - `8445`: n8n
-- `8446`: Open WebUI, layer `ai`
-- `8447`: Ollama, layer `ai`
-- `8448`: InvokeAI, layer `image`
-- `8449`: SwarmUI, layer `image`
+- `8446`: Open WebUI, layer `ai-llm`
+- `8447`: Ollama, layer `ai-llm`
+- `8448`: InvokeAI, layer `ai-image`
+- `8449`: SwarmUI, layer `ai-image`
 - `8450`: Node workbench, layer `workbench`
 - `8451`: Python workbench, layer `workbench`
 - `8452`: AI workbench, layer `workbench`
 - `8453`: C++ workbench, layer `workbench`
-- `8454`: Fooocus, layer `image`
+- `8454`: Fooocus, layer `ai-image`
 - `${POSTGRES_DEV_HOST_PORT}`: Postgres host access, layer `workbench`
 
 No DNS setup and no `hosts` file edits are required: just use `https://localhost:<port>/`.
@@ -52,8 +52,8 @@ The gateway generates a self-signed SAN certificate that covers `localhost` and 
 ## Internal segmentation
 
 - `apps-net`: Gitea, n8n, Open WebUI
-- `ai-net`: Ollama and Open WebUI
-- `image-net`: InvokeAI, SwarmUI, Fooocus, and the optional image-generation runtime
+- `ai-llm-net`: Ollama and Open WebUI
+- `ai-image-net`: InvokeAI, SwarmUI, Fooocus, and the optional image-generation runtime
 - `data-net`: infrastructure databases
 - `workbench-net`: Postgres and optional code-server environments
 - `workbench-host-net`: dedicated bridge for the host-side Postgres TCP bind

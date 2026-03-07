@@ -5,7 +5,12 @@ import { REQUIRED_REPOSITORY_FILES } from '../config/repository-layout.js';
 import { createComposeCommandArgs } from '../lib/compose.js';
 import type { DoctorCommandOptions } from '../types/cli.types.js';
 import type { HostCheckResult, SmokeCheckDefinition } from '../types/doctor.types.js';
-import type { AiSmokeEnv, ImageSmokeEnv, ProjectContext, SmokeEnv } from '../types/project.types.js';
+import type {
+  AiImageSmokeEnv,
+  AiLlmSmokeEnv,
+  ProjectContext,
+  SmokeEnv
+} from '../types/project.types.js';
 import { printCommandHeader } from '../ui/banner.js';
 import { formatTaskTitle, printDoctorSummary } from '../ui/logger.js';
 import { requestHttps } from '../utils/http.js';
@@ -13,7 +18,11 @@ import { runCommand } from '../utils/process.js';
 import { readGatewayCertificate } from './gateway-certificate.service.js';
 import { checkNvidiaGpuRuntime } from './gpu-preflight.service.js';
 import { canLoginToN8n } from './n8n-owner.service.js';
-import { parseAiSmokeEnv, parseImageSmokeEnv, parseSmokeEnv } from './project.service.js';
+import {
+  parseAiImageSmokeEnv,
+  parseAiLlmSmokeEnv,
+  parseSmokeEnv
+} from './project.service.js';
 
 /**
  * Runs host checks and optional smoke checks with a styled summary.
@@ -40,7 +49,7 @@ export async function runDoctorCommand(
     createCheckTask(results, 'host', 'Docker daemon', () =>
       checkCommand('docker', ['info', '--format', '{{.ServerVersion}}'], 'Docker daemon')
     ),
-    ...((options.withAi || options.withImage)
+    ...((options.withAiLlm || options.withAiImage)
       ? [createCheckTask(results, 'host', 'NVIDIA GPU', () => checkNvidiaGpuRuntime())]
       : []),
     createCheckTask(results, 'host', 'Node.js', () => Promise.resolve(checkNodeVersion())),
@@ -57,10 +66,10 @@ export async function runDoctorCommand(
 
   if (options.smoke) {
     const env = parseSmokeEnv(context.env);
-    const aiEnv = options.withAi ? parseAiSmokeEnv(context.env) : undefined;
-    const imageEnv = options.withImage ? parseImageSmokeEnv(context.env) : undefined;
+    const aiLlmEnv = options.withAiLlm ? parseAiLlmSmokeEnv(context.env) : undefined;
+    const aiImageEnv = options.withAiImage ? parseAiImageSmokeEnv(context.env) : undefined;
     const gatewayCertificate = await readGatewayCertificate(context, 'smoke');
-    for (const smokeCheck of buildSmokeChecks(env, aiEnv, imageEnv)) {
+    for (const smokeCheck of buildSmokeChecks(env, aiLlmEnv, aiImageEnv)) {
       tasks.push(createCheckTask(results, 'smoke', smokeCheck.name, () => smokeCheck.run(gatewayCertificate)));
     }
   }
@@ -180,13 +189,13 @@ function npmCheckCommand(): [string, string[], string] {
  */
 async function checkComposeConfiguration(
   context: ProjectContext,
-  options: Pick<DoctorCommandOptions, 'withAi' | 'withImage' | 'withWorkbench'>
+  options: Pick<DoctorCommandOptions, 'withAiLlm' | 'withAiImage' | 'withWorkbench'>
 ): Promise<HostCheckResult> {
   const result = await runCommand(
     'docker',
     createComposeCommandArgs(context, ['config', '-q'], {
-      includeAi: Boolean(options.withAi),
-      includeImage: Boolean(options.withImage),
+      includeAiLlm: Boolean(options.withAiLlm),
+      includeAiImage: Boolean(options.withAiImage),
       includeWorkbench: Boolean(options.withWorkbench)
     }),
     {
@@ -225,8 +234,8 @@ function checkRequiredFile(projectRoot: string, relativePath: string): HostCheck
  */
 function buildSmokeChecks(
   env: SmokeEnv,
-  aiEnv?: AiSmokeEnv,
-  imageEnv?: ImageSmokeEnv
+  aiLlmEnv?: AiLlmSmokeEnv,
+  aiImageEnv?: AiImageSmokeEnv
 ): SmokeCheckDefinition[] {
   const checks: SmokeCheckDefinition[] = [
     {
@@ -252,20 +261,20 @@ function buildSmokeChecks(
     }
   ];
 
-  if (!aiEnv) {
-    if (!imageEnv) {
+  if (!aiLlmEnv) {
+    if (!aiImageEnv) {
       return checks;
     }
   }
 
-  if (imageEnv) {
+  if (aiImageEnv) {
     checks.push({
       name: 'Smoke InvokeAI',
       run: async (caCertificate) => {
-        const response = await requestHttps(imageEnv.INVOKEAI_URL, {
+        const response = await requestHttps(aiImageEnv.INVOKEAI_URL, {
           auth: {
-            username: imageEnv.INVOKEAI_GATEWAY_USER,
-            password: imageEnv.INVOKEAI_GATEWAY_PASSWORD
+            username: aiImageEnv.INVOKEAI_GATEWAY_USER,
+            password: aiImageEnv.INVOKEAI_GATEWAY_PASSWORD
           },
           caCertificate
         });
@@ -273,7 +282,7 @@ function buildSmokeChecks(
         return {
           name: 'Smoke InvokeAI',
           ok: response.statusCode >= 200 && response.statusCode < 400,
-          detail: `HTTP ${response.statusCode} with model ${imageEnv.INVOKEAI_MODEL_TITLE}`
+          detail: `HTTP ${response.statusCode} with model ${aiImageEnv.INVOKEAI_MODEL_TITLE}`
         };
       }
     });
@@ -281,10 +290,10 @@ function buildSmokeChecks(
     checks.push({
       name: 'Smoke SwarmUI',
       run: async (caCertificate) => {
-        const response = await requestHttps(imageEnv.SWARMUI_URL, {
+        const response = await requestHttps(aiImageEnv.SWARMUI_URL, {
           auth: {
-            username: imageEnv.SWARMUI_GATEWAY_USER,
-            password: imageEnv.SWARMUI_GATEWAY_PASSWORD
+            username: aiImageEnv.SWARMUI_GATEWAY_USER,
+            password: aiImageEnv.SWARMUI_GATEWAY_PASSWORD
           },
           caCertificate
         });
@@ -292,7 +301,7 @@ function buildSmokeChecks(
         return {
           name: 'Smoke SwarmUI',
           ok: response.statusCode >= 200 && response.statusCode < 400,
-          detail: `HTTP ${response.statusCode} with model ${imageEnv.SWARMUI_MODEL_TITLE}`
+          detail: `HTTP ${response.statusCode} with model ${aiImageEnv.SWARMUI_MODEL_TITLE}`
         };
       }
     });
@@ -300,10 +309,10 @@ function buildSmokeChecks(
     checks.push({
       name: 'Smoke Fooocus',
       run: async (caCertificate) => {
-        const response = await requestHttps(imageEnv.FOOOCUS_URL, {
+        const response = await requestHttps(aiImageEnv.FOOOCUS_URL, {
           auth: {
-            username: imageEnv.FOOOCUS_GATEWAY_USER,
-            password: imageEnv.FOOOCUS_GATEWAY_PASSWORD
+            username: aiImageEnv.FOOOCUS_GATEWAY_USER,
+            password: aiImageEnv.FOOOCUS_GATEWAY_PASSWORD
           },
           caCertificate
         });
@@ -317,7 +326,7 @@ function buildSmokeChecks(
     });
   }
 
-  if (!aiEnv) {
+  if (!aiLlmEnv) {
     return checks;
   }
 
@@ -326,11 +335,11 @@ function buildSmokeChecks(
       name: 'Smoke Open WebUI',
       run: async (caCertificate) => {
         const signInResponse = await requestHttps(
-          new URL('/api/v1/auths/signin', aiEnv.OPENWEBUI_URL).toString(),
+          new URL('/api/v1/auths/signin', aiLlmEnv.OPENWEBUI_URL).toString(),
           {
             body: JSON.stringify({
-              email: aiEnv.OPENWEBUI_ROOT_EMAIL,
-              password: aiEnv.OPENWEBUI_ROOT_PASSWORD
+              email: aiLlmEnv.OPENWEBUI_ROOT_EMAIL,
+              password: aiLlmEnv.OPENWEBUI_ROOT_PASSWORD
             }),
             caCertificate,
             headers: {
@@ -358,7 +367,7 @@ function buildSmokeChecks(
         }
 
         const modelsResponse = await requestHttps(
-          new URL('/api/models', aiEnv.OPENWEBUI_URL).toString(),
+          new URL('/api/models', aiLlmEnv.OPENWEBUI_URL).toString(),
           {
             caCertificate,
             headers: {
@@ -368,7 +377,7 @@ function buildSmokeChecks(
         );
 
         const modelIds = collectModelIdentifiers(modelsResponse.body);
-        const missingModels = [aiEnv.OLLAMA_CHAT_MODEL, `${aiEnv.OLLAMA_EMBEDDING_MODEL}:latest`].filter(
+        const missingModels = [aiLlmEnv.OLLAMA_CHAT_MODEL, `${aiLlmEnv.OLLAMA_EMBEDDING_MODEL}:latest`].filter(
           (modelName) => !modelIds.includes(modelName)
         );
 
@@ -385,16 +394,16 @@ function buildSmokeChecks(
     {
       name: 'Smoke Ollama',
       run: async (caCertificate) => {
-        const response = await requestHttps(new URL('/api/tags', aiEnv.OLLAMA_URL).toString(), {
+        const response = await requestHttps(new URL('/api/tags', aiLlmEnv.OLLAMA_URL).toString(), {
           auth: {
-            username: aiEnv.OLLAMA_GATEWAY_USER,
-            password: aiEnv.OLLAMA_GATEWAY_PASSWORD
+            username: aiLlmEnv.OLLAMA_GATEWAY_USER,
+            password: aiLlmEnv.OLLAMA_GATEWAY_PASSWORD
           },
           caCertificate
         });
 
         const modelIds = collectOllamaModelIdentifiers(response.body);
-        const missingModels = [aiEnv.OLLAMA_CHAT_MODEL, `${aiEnv.OLLAMA_EMBEDDING_MODEL}:latest`].filter(
+        const missingModels = [aiLlmEnv.OLLAMA_CHAT_MODEL, `${aiLlmEnv.OLLAMA_EMBEDDING_MODEL}:latest`].filter(
           (modelName) => !modelIds.includes(modelName)
         );
 

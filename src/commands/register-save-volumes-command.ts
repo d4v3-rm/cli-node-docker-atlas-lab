@@ -12,8 +12,8 @@ export function registerSaveVolumesCommand(program: Command): void {
     .description('Save Docker volumes for the selected lab layers into a single archive')
     .option('--project-dir <path>', 'Explicit lab asset root instead of the packaged install')
     .option('--output <path>', 'Output archive path (defaults under ./backups/volumes)')
-    .option('--with-ai', 'Include the optional AI layer volumes')
-    .option('--with-image', 'Include the optional image generation layer volumes')
+    .option('--with-ai-llm, --with-ai', 'Include the optional AI LLM layer volumes')
+    .option('--with-ai-image, --with-image', 'Include the optional AI image layer volumes')
     .option('--with-workbench', 'Include the optional workbench layer volumes')
     .action(async (options: SaveVolumesCommandOptions) => {
       const context = createProjectContext(options);
