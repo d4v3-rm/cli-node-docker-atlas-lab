@@ -7,11 +7,11 @@
 ![CLI](https://img.shields.io/badge/CLI-Node.js%20%2B%20TypeScript-3C873A?logo=nodedotjs&logoColor=white)
 ![Dashboard](https://img.shields.io/badge/UI-Atlas%20Dashboard-0F172A?logo=antdesign&logoColor=white)
 ![Security](https://img.shields.io/badge/Ingress-HTTPS%20Only-0F766E)
-![Profiles](https://img.shields.io/badge/Layers-core%20%7C%20ai%20%7C%20image%20%7C%20workbench-7C3AED)
+![Profiles](https://img.shields.io/badge/Layers-core%20%7C%20ai--llm%20%7C%20ai--image%20%7C%20workbench-7C3AED)
 ![Persistence](https://img.shields.io/badge/Persistence-Docker%20Volumes-CA8A04)
 
 > 🧭 **Atlas Lab** is a localhost-first self-hosted platform made of a Node.js/TypeScript CLI, a layered Docker Compose stack, and an operational React dashboard served by the gateway.
-> It is designed to provide Git hosting, automation, optional local AI, optional image generation, browser-based development workbenches, and structured image/volume backup workflows on a single machine.
+> It is designed to provide Git hosting, automation, optional local AI LLM services, optional AI image generation, browser-based development workbenches, and structured image/volume backup workflows on a single machine.
 
 ---
 
@@ -22,8 +22,8 @@ Atlas Lab is built for a practical goal: run a repeatable local engineering plat
 ### What it gives you
 
 - 🧱 An always-on **core layer** with Gitea, n8n, the gateway, and Atlas Dashboard
-- 🧠 An optional **AI layer** with Open WebUI and Ollama
-- 🖼️ An optional **image layer** with InvokeAI, SwarmUI, Fooocus, and pre-seeded FLUX.2 klein 4B plus Qwen-Image-2512 models
+- 🧠 An optional **AI LLM layer** with Open WebUI and Ollama
+- 🖼️ An optional **AI image layer** with InvokeAI, SwarmUI, Fooocus, and pre-seeded FLUX.2 klein 4B plus Qwen-Image-2512 models
 - 🛠️ An optional **workbench layer** with browser-based Node, Python, AI, and C++ environments plus shared PostgreSQL
 - 🔐 HTTPS-only ingress on `localhost`
 - 📦 A self-contained npm package that can run without a local repository checkout
@@ -68,8 +68,8 @@ Atlas Lab is split into **four explicit layers**:
 | Layer | Status | Includes | Purpose |
 | --- | --- | --- | --- |
 | `core` | always on | gateway, Atlas Dashboard, Gitea, Gitea DB, n8n, n8n runners | baseline platform |
-| `ai` | optional | Open WebUI, Ollama, AI gateway | local AI workflows |
-| `image` | optional | InvokeAI, SwarmUI, Fooocus, image gateway, FLUX.2 klein 4B staging, Qwen-Image-2512 staging | local image generation |
+| `ai-llm` | optional | Open WebUI, Ollama, AI LLM gateway | local LLM workflows |
+| `ai-image` | optional | InvokeAI, SwarmUI, Fooocus, AI image gateway, FLUX.2 klein 4B staging, Qwen-Image-2512 staging | local image generation |
 | `workbench` | optional | Node Forge, Python Grid, AI Reactor, C++ Foundry, shared PostgreSQL, workbench gateway | browser-based development |
 
 ### Why the current topology
@@ -98,7 +98,7 @@ The CLI:
 - reconciles runtime state
 - bootstraps Gitea
 - bootstraps n8n
-- reconciles Ollama only when the AI layer is enabled
+- reconciles Ollama only when the AI LLM layer is enabled
 - cleans up legacy runtime artifacts
 
 ---
@@ -113,11 +113,11 @@ The only host-level TCP service exposed directly is PostgreSQL from the workbenc
 | Atlas Dashboard | `core` | `https://localhost:8443/` | operational dashboard |
 | Gitea | `core` | `https://localhost:8444/` | Git forge, issues, reviews |
 | n8n | `core` | `https://localhost:8445/` | workflow automation |
-| Open WebUI | `ai` | `https://localhost:8446/` | only with `--with-ai` |
-| Ollama | `ai` | `https://localhost:8447/` | HTTPS API |
-| InvokeAI | `image` | `https://localhost:8448/` | only with `--with-image` |
-| SwarmUI | `image` | `https://localhost:8449/` | only with `--with-image` |
-| Fooocus | `image` | `https://localhost:8454/` | only with `--with-image` |
+| Open WebUI | `ai-llm` | `https://localhost:8446/` | only with `--with-ai-llm` |
+| Ollama | `ai-llm` | `https://localhost:8447/` | HTTPS API |
+| InvokeAI | `ai-image` | `https://localhost:8448/` | only with `--with-ai-image` |
+| SwarmUI | `ai-image` | `https://localhost:8449/` | only with `--with-ai-image` |
+| Fooocus | `ai-image` | `https://localhost:8454/` | only with `--with-ai-image` |
 | Node Forge | `workbench` | `https://localhost:8450/` | Node / TypeScript workspace |
 | Python Grid | `workbench` | `https://localhost:8451/` | Python workspace |
 | AI Reactor | `workbench` | `https://localhost:8452/` | AI / notebook workspace |
@@ -138,8 +138,8 @@ The only host-level TCP service exposed directly is PostgreSQL from the workbenc
 | --- | --- | --- |
 | `edge-net` | exposed | published ingress ports |
 | `apps-net` | internal | core application services |
-| `ai-net` | internal | Open WebUI and Ollama |
-| `image-net` | internal | InvokeAI, SwarmUI, Fooocus, and image-generation runtime |
+| `ai-llm-net` | internal | Open WebUI and Ollama |
+| `ai-image-net` | internal | InvokeAI, SwarmUI, Fooocus, and image-generation runtime |
 | `data-net` | internal | data services and infrastructure databases |
 | `workbench-net` | internal | workbenches and PostgreSQL |
 | `workbench-host-net` | bridge | host-side PostgreSQL bind |
@@ -194,7 +194,7 @@ Recreating containers does not wipe state. Removing the volumes does.
 
 ### AI requirements
 
-The AI layer requires:
+The AI LLM and AI image layers require:
 
 - an `NVIDIA` GPU
 - a working `nvidia-smi` on the host
@@ -299,10 +299,10 @@ npm install
 npm run dev -- up
 ```
 
-### 4. Start core + AI
+### 4. Start core + AI LLM
 
 ```powershell
-npm run dev -- up --with-ai
+npm run dev -- up --with-ai-llm
 ```
 
 ### 5. Start core + workbench
@@ -311,16 +311,16 @@ npm run dev -- up --with-ai
 npm run dev -- up --with-workbench
 ```
 
-### 6. Start core + image generation
+### 6. Start core + AI image generation
 
 ```powershell
-npm run dev -- up --with-image
+npm run dev -- up --with-ai-image
 ```
 
 ### 7. Start the full lab
 
 ```powershell
-npm run dev -- up --with-ai --with-image --with-workbench
+npm run dev -- up --with-ai-llm --with-ai-image --with-workbench
 ```
 
 ### 8. Check status
@@ -333,7 +333,7 @@ npm run dev -- status
 
 ```powershell
 npm run dev -- doctor --smoke
-npm run dev -- doctor --with-ai --with-image --smoke
+npm run dev -- doctor --with-ai-llm --with-ai-image --smoke
 ```
 
 ### 10. Stop the lab
@@ -364,15 +364,15 @@ npm run dev -- down
 | Command | Role |
 | --- | --- |
 | `atlas-lab up` | starts `core` only |
-| `atlas-lab up --with-ai` | adds the AI layer |
-| `atlas-lab up --with-image` | adds the image generation layer |
+| `atlas-lab up --with-ai-llm` | adds the AI LLM layer |
+| `atlas-lab up --with-ai-image` | adds the AI image layer |
 | `atlas-lab up --with-workbench` | adds the workbench layer |
-| `atlas-lab up --with-ai --with-image --with-workbench` | starts the full lab |
+| `atlas-lab up --with-ai-llm --with-ai-image --with-workbench` | starts the full lab |
 | `atlas-lab bootstrap` | reruns core bootstrap |
-| `atlas-lab bootstrap --with-ai` | reruns bootstrap and Ollama reconciliation |
+| `atlas-lab bootstrap --with-ai-llm` | reruns bootstrap and Ollama reconciliation |
 | `atlas-lab doctor` | runs host and configuration checks |
 | `atlas-lab doctor --smoke` | adds smoke tests for the core layer |
-| `atlas-lab doctor --with-ai --with-image --smoke` | adds smoke tests for the AI and image layers |
+| `atlas-lab doctor --with-ai-llm --with-ai-image --smoke` | adds smoke tests for the AI LLM and AI image layers |
 | `atlas-lab status` | shows Compose/runtime status |
 | `atlas-lab down` | stops the stack |
 | `atlas-lab save-images` | exports Docker images to a single archive |
@@ -428,8 +428,8 @@ npm run dev:atlas-dashboard
 
 Optional layers can be simulated with:
 
-- `ATLAS_DASHBOARD_DEV_AI_ENABLED`
-- `ATLAS_DASHBOARD_DEV_IMAGE_ENABLED`
+- `ATLAS_DASHBOARD_DEV_AI_LLM_ENABLED`
+- `ATLAS_DASHBOARD_DEV_AI_IMAGE_ENABLED`
 - `ATLAS_DASHBOARD_DEV_WORKBENCH_ENABLED`
 
 ---
@@ -444,15 +444,15 @@ Atlas Lab supports backup and restore for both **Docker images** and **Docker vo
 - one `.tar.gz` archive for selected volumes
 - embedded manifest metadata
 - realtime progress logs during export and restore
-- support for `core`, `ai`, `image`, and `workbench` layer selection
+- support for `core`, `ai-llm`, `ai-image`, and `workbench` layer selection
 
 ### Examples
 
 ```powershell
-npm run dev -- save-images --with-ai --with-image --with-workbench
+npm run dev -- save-images --with-ai-llm --with-ai-image --with-workbench
 npm run dev -- restore-images --input .\backups\images\atlas-lab-images.tar.gz
 npm run dev -- down
-npm run dev -- save-volumes --with-ai --with-image --with-workbench
+npm run dev -- save-volumes --with-ai-llm --with-ai-image --with-workbench
 npm run dev -- restore-volumes --input .\backups\volumes\atlas-lab-volumes.tar.gz
 ```
 
@@ -504,8 +504,8 @@ Key files:
 - [`LICENSE`](./LICENSE)
 - [`env/lab.env`](./env/lab.env)
 - [`infra/docker/compose.yml`](./infra/docker/compose.yml)
-- [`infra/docker/compose.ai.yml`](./infra/docker/compose.ai.yml)
-- [`infra/docker/compose.image.yml`](./infra/docker/compose.image.yml)
+- [`infra/docker/compose.ai-llm.yml`](./infra/docker/compose.ai-llm.yml)
+- [`infra/docker/compose.ai-image.yml`](./infra/docker/compose.ai-image.yml)
 - [`infra/docker/compose.workbench.yml`](./infra/docker/compose.workbench.yml)
 - [`src/bin/atlas-lab.ts`](./src/bin/atlas-lab.ts)
 - [`src/app/create-cli-app.ts`](./src/app/create-cli-app.ts)
@@ -531,7 +531,7 @@ atlas-lab status
 docker ps --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}"
 ```
 
-### `atlas-lab up --with-ai` fails during GPU preflight
+### `atlas-lab up --with-ai-llm` fails during GPU preflight
 
 This is usually a Docker daemon GPU pass-through issue, not an Ollama issue.
 
@@ -540,9 +540,9 @@ nvidia-smi -L
 docker info
 ```
 
-### `atlas-lab up --with-image` takes a long time on first start
+### `atlas-lab up --with-ai-image` takes a long time on first start
 
-Expected behavior. The image layer seeds the FLUX.2 klein 4B and Qwen-Image-2512 model assets into persistent storage, prepares the SwarmUI self-starting ComfyUI backend, and may let Fooocus initialize its own persistent data workspace before all image services become ready.
+Expected behavior. The AI image layer seeds the FLUX.2 klein 4B and Qwen-Image-2512 model assets into persistent storage, prepares the SwarmUI self-starting ComfyUI backend, and may let Fooocus initialize its own persistent data workspace before all image services become ready.
 
 ### Workbenches do not start
 
@@ -556,10 +556,10 @@ npm run dev -- up --with-workbench
 
 Verify:
 
-- the AI layer is enabled
+- the AI LLM layer is enabled
 - `OLLAMA_CHAT_MODEL` and `OLLAMA_EMBEDDING_MODEL` are set
 - `https://localhost:8447/api/tags` responds
-- the AI bootstrap has run
+- the AI LLM bootstrap has run
 
 ### n8n does not show the initial setup wizard
 
@@ -671,7 +671,7 @@ This project is distributed under the **MIT** license.
 Atlas Lab is a **complete local platform** with:
 
 - an always-on core plane
-- optional AI, image, and workbench layers
+- optional AI LLM, AI image, and workbench layers
 - a dark-first React dashboard
 - a globally installable TypeScript CLI
 - self-contained npm packaging
