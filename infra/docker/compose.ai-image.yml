@@ -41,68 +41,14 @@ services:
       - edge-net
       - ai-image-net
 
-  invokeai-model-seed:
-    build:
-      context: ../..
-      dockerfile: infra/docker/images/model-sync/Dockerfile
-    restart: "no"
-    environment:
-      MODEL_REPO: ${INVOKEAI_MODEL_REPO}
-      MODEL_REVISION: ${INVOKEAI_MODEL_REVISION}
-      MODEL_TARGET_DIR: /invokeai/models/external/flux2-klein-4b
-      MODEL_TITLE: ${INVOKEAI_MODEL_TITLE}
-    volumes:
-      - invokeai-data:/invokeai
-    networks:
-      services-egress-net:
-        gw_priority: 1
-
-  swarmui-init:
-    build:
-      context: ../..
-      dockerfile: infra/docker/images/swarmui/Dockerfile
-      args:
-        SWARMUI_GIT_REF: ${SWARMUI_GIT_REF}
-    restart: "no"
-    environment:
-      SWARMUI_INSTANCE_TITLE: AtlasSwarmUI
-    volumes:
-      - swarmui-data:/SwarmUI/Data
-      - swarmui-backend:/SwarmUI/dlbackend
-      - swarmui-dlnodes:/SwarmUI/src/BuiltinExtensions/ComfyUIBackend/DLNodes
-      - swarmui-extensions:/SwarmUI/src/Extensions
-      - swarmui-models:/SwarmUI/Models
-      - swarmui-output:/SwarmUI/Output
-    entrypoint: ["/usr/local/bin/setup-swarmui.sh"]
-    networks:
-      services-egress-net:
-        gw_priority: 1
-
-  swarmui-model-seed:
-    build:
-      context: ../..
-      dockerfile: infra/docker/images/model-sync/Dockerfile
-    restart: "no"
-    environment:
-      MODEL_FILENAME: ${SWARMUI_MODEL_FILE}
-      MODEL_MODE: single_file
-      MODEL_REPO: ${SWARMUI_MODEL_REPO}
-      MODEL_REVISION: ${SWARMUI_MODEL_REVISION}
-      MODEL_TARGET_FILE: /models/diffusion_models/${SWARMUI_MODEL_FILE}
-      MODEL_TITLE: ${SWARMUI_MODEL_TITLE}
-    volumes:
-      - swarmui-models:/models
-    networks:
-      services-egress-net:
-        gw_priority: 1
-
   invokeai:
-    image: ${INVOKEAI_IMAGE}
+    build:
+      context: ../..
+      dockerfile: infra/docker/images/invokeai/Dockerfile
+      args:
+        BASE_IMAGE: ${INVOKEAI_IMAGE}
     restart: unless-stopped
     gpus: ${OLLAMA_GPU_REQUEST}
-    depends_on:
-      invokeai-model-seed:
-        condition: service_completed_successfully
     healthcheck:
       test:
         [
@@ -112,8 +58,12 @@ services:
       interval: 15s
       timeout: 10s
       retries: 20
-      start_period: 30s
+      start_period: 300s
     environment:
+      MODEL_REPO: ${INVOKEAI_MODEL_REPO}
+      MODEL_REVISION: ${INVOKEAI_MODEL_REVISION}
+      MODEL_TARGET_DIR: /invokeai/models/external/flux2-klein-4b
+      MODEL_TITLE: ${INVOKEAI_MODEL_TITLE}
       TZ: ${TZ}
       INVOKEAI_HOST: 0.0.0.0
       INVOKEAI_PORT: "9090"
@@ -137,20 +87,20 @@ services:
         SWARMUI_GIT_REF: ${SWARMUI_GIT_REF}
     restart: unless-stopped
     gpus: ${OLLAMA_GPU_REQUEST}
-    depends_on:
-      swarmui-init:
-        condition: service_completed_successfully
-      swarmui-model-seed:
-        condition: service_completed_successfully
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:7801/ >/dev/null 2>&1 || exit 1"]
       interval: 20s
       timeout: 10s
       retries: 20
-      start_period: 60s
+      start_period: 300s
     environment:
       NVIDIA_VISIBLE_DEVICES: ${OLLAMA_NVIDIA_VISIBLE_DEVICES}
       NVIDIA_DRIVER_CAPABILITIES: ${OLLAMA_NVIDIA_DRIVER_CAPABILITIES}
+      SWARMUI_INSTANCE_TITLE: AtlasSwarmUI
+      SWARMUI_MODEL_REPO: ${SWARMUI_MODEL_REPO}
+      SWARMUI_MODEL_REVISION: ${SWARMUI_MODEL_REVISION}
+      SWARMUI_MODEL_FILE: ${SWARMUI_MODEL_FILE}
+      SWARMUI_MODEL_TITLE: ${SWARMUI_MODEL_TITLE}
     volumes:
       - swarmui-data:/SwarmUI/Data
       - swarmui-backend:/SwarmUI/dlbackend

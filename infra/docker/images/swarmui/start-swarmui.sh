@@ -1,6 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+: "${SWARMUI_MODEL_REPO:?Missing SWARMUI_MODEL_REPO}"
+: "${SWARMUI_MODEL_REVISION:?Missing SWARMUI_MODEL_REVISION}"
+: "${SWARMUI_MODEL_FILE:?Missing SWARMUI_MODEL_FILE}"
+: "${SWARMUI_MODEL_TITLE:?Missing SWARMUI_MODEL_TITLE}"
+
+bash /usr/local/bin/setup-swarmui.sh
+
+MODEL_MODE=single_file \
+MODEL_REPO="${SWARMUI_MODEL_REPO}" \
+MODEL_REVISION="${SWARMUI_MODEL_REVISION}" \
+MODEL_FILENAME="${SWARMUI_MODEL_FILE}" \
+MODEL_TARGET_FILE="/SwarmUI/Models/diffusion_models/${SWARMUI_MODEL_FILE}" \
+MODEL_TITLE="${SWARMUI_MODEL_TITLE}" \
+python3 /usr/local/bin/download-model.py
+
 cd /SwarmUI
 
 if [ ! -f Data/Settings.fds ] || [ ! -f Data/Backends.fds ] || [ ! -f dlbackend/ComfyUI/main.py ]; then

@@ -18,6 +18,8 @@ RUN apt-get update \
       wget \
     && rm -rf /var/lib/apt/lists/*
 
+RUN python3 -m pip install --no-cache-dir "huggingface_hub[hf_transfer]==0.34.6"
+
 WORKDIR /opt
 
 RUN git clone https://github.com/mcmonkeyprojects/SwarmUI.git /SwarmUI \
@@ -30,6 +32,7 @@ RUN git clone https://github.com/mcmonkeyprojects/SwarmUI.git /SwarmUI \
 
 COPY infra/docker/images/swarmui/setup-swarmui.sh /usr/local/bin/setup-swarmui.sh
 COPY infra/docker/images/swarmui/start-swarmui.sh /usr/local/bin/start-swarmui.sh
+COPY infra/docker/images/model-sync/download-model.py /usr/local/bin/download-model.py
 
 RUN chmod +x /usr/local/bin/setup-swarmui.sh /usr/local/bin/start-swarmui.sh
 
