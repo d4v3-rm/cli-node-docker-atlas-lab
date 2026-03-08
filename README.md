@@ -23,7 +23,7 @@ Atlas Lab is built for a practical goal: run a repeatable local engineering plat
 
 - 🧱 An always-on **core layer** with Gitea, n8n, the gateway, and Atlas Dashboard
 - 🧠 An optional **AI LLM layer** with Open WebUI and Ollama
-- 🖼️ An optional **AI image layer** with InvokeAI, SwarmUI, Fooocus, and pre-seeded FLUX.2 klein 4B plus Qwen-Image-2512 models
+- 🖼️ An optional **AI image layer** with InvokeAI, SwarmUI, Fooocus, and self-bootstrapped FLUX.2 klein 4B plus Qwen-Image-2512 models
 - 🛠️ An optional **workbench layer** with browser-based Node, Python, AI, and C++ environments plus shared PostgreSQL
 - 🔐 HTTPS-only ingress on `localhost`
 - 📦 A self-contained npm package that can run without a local repository checkout
@@ -542,7 +542,7 @@ docker info
 
 ### `atlas-lab up --with-ai-image` takes a long time on first start
 
-Expected behavior. The AI image layer seeds the FLUX.2 klein 4B and Qwen-Image-2512 model assets into persistent storage, prepares the SwarmUI self-starting ComfyUI backend, and may let Fooocus initialize its own persistent data workspace before all image services become ready.
+Expected behavior. The AI image layer prepares the FLUX.2 klein 4B and Qwen-Image-2512 model assets inside persistent storage during service startup, initializes the SwarmUI self-starting ComfyUI backend, and may let Fooocus initialize its own persistent data workspace before all image services become ready.
 
 ### Workbenches do not start
 

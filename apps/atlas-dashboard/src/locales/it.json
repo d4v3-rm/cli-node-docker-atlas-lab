@@ -42,7 +42,7 @@
     "footerKicker": "segnali atlas",
     "footerTitle": "Chiusura operativa",
     "imageBodyDisabled": "Il layer AI image resta spento finche non lo richiedi esplicitamente. Quando non e attivo, il dashboard mostra il comando esatto per abilitarlo.",
-    "imageBodyEnabled": "Il layer AI image e online: InvokeAI, SwarmUI e Fooocus vengono esposti tramite gateway dedicati, mentre FLUX.2 klein 4B e Qwen-Image-2512 restano gia predisposti per i runtime dedicati.",
+    "imageBodyEnabled": "Il layer AI image e online: InvokeAI, SwarmUI e Fooocus vengono esposti tramite gateway dedicati, mentre FLUX.2 klein 4B e Qwen-Image-2512 vengono preparati automaticamente dentro i runtime dedicati.",
     "imageKicker": "piano generativo",
     "imageTitle": "AI Image Layer",
     "servicesBody": "Il piano core resta sempre disponibile. Ogni card raccoglie endpoint, credenziali operative e un accesso diretto al servizio.",
@@ -139,7 +139,7 @@
       "credentials": "Le credenziali operative sono esposte qui e restano allineate al bootstrap del lab.",
       "https": "Tutti gli ingressi browser usano localhost con HTTPS dedicato, senza DNS custom o file hosts.",
       "imageDisabled": "Il layer AI image resta opzionale e nessun endpoint immagini dedicato viene esposto finche non lo abiliti.",
-      "imageEnabled": "InvokeAI, SwarmUI e Fooocus sono online dietro gateway dedicati. FLUX.2 klein 4B e Qwen-Image-2512 sono gia predisposti, mentre Fooocus mantiene il proprio workspace persistente di dati e modelli.",
+      "imageEnabled": "InvokeAI, SwarmUI e Fooocus sono online dietro gateway dedicati. FLUX.2 klein 4B e Qwen-Image-2512 vengono preparati automaticamente, mentre Fooocus mantiene il proprio workspace persistente di dati e modelli.",
       "n8n": "n8n entra direttamente con owner bootstrap: non c e un secondo login al gateway.",
       "workbenchDisabled": "Workbench e Postgres restano separati dal core operativo finche non abiliti il layer dedicato.",
       "workbenchEnabled": "I workbench e Postgres sono attivi: puoi aprire ambienti browser-based o connetterti dal desktop alla porta host di Postgres."
@@ -172,7 +172,7 @@
         "fooocus": "Fooocus locale",
         "gateway": "gateway immagini protetto",
         "invokeAi": "InvokeAI locale",
-        "models": "modelli locali predisposti",
+        "models": "modelli locali bootstrapati",
         "swarmUi": "SwarmUI locale"
       },
       "description": "Layer AI image opzionale per la generazione immagini locale. Espone InvokeAI, SwarmUI e Fooocus tramite gateway dedicati e predispone FLUX.2 klein 4B piu Qwen-Image-2512 nello storage persistente per i runtime dedicati.",

@@ -42,7 +42,7 @@
     "footerKicker": "atlas signals",
     "footerTitle": "Operational closeout",
     "imageBodyDisabled": "The AI image layer stays off until you explicitly request it. When inactive, the dashboard shows the exact activation command.",
-    "imageBodyEnabled": "The AI image layer is online: InvokeAI, SwarmUI, and Fooocus are exposed through dedicated gateways, while FLUX.2 klein 4B and Qwen-Image-2512 stay pre-seeded for the paired runtimes.",
+    "imageBodyEnabled": "The AI image layer is online: InvokeAI, SwarmUI, and Fooocus are exposed through dedicated gateways, while FLUX.2 klein 4B and Qwen-Image-2512 are prepared automatically inside the paired runtimes.",
     "imageKicker": "generation plane",
     "imageTitle": "AI Image Layer",
     "servicesBody": "The core plane is always available. Each card collects endpoints, operational credentials, and a direct entry point into the service.",
@@ -172,7 +172,7 @@
         "fooocus": "Local Fooocus",
         "gateway": "Protected image gateway",
         "invokeAi": "Local InvokeAI",
-        "models": "Pre-seeded local models",
+        "models": "Bootstrapped local models",
         "swarmUi": "Local SwarmUI"
       },
       "description": "Optional AI image layer for local visual workflows. It exposes InvokeAI, SwarmUI, and Fooocus through dedicated gateways and stages FLUX.2 klein 4B plus Qwen-Image-2512 in persistent storage for the paired runtimes.",
@@ -189,7 +189,7 @@
       },
       "invokeAi": {
         "action": "Open InvokeAI",
-        "description": "Browser-based image generation console served through the dedicated image gateway with a pre-seeded FLUX.2 klein 4B model.",
+        "description": "Browser-based image generation console served through the dedicated image gateway with a self-bootstrapped FLUX.2 klein 4B model.",
         "note": "Model source: {{modelRepo}}. The model is staged into persistent storage and scanned by InvokeAI at startup.",
         "title": "InvokeAI Studio"
       },

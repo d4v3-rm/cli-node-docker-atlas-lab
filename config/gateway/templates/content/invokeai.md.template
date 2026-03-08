@@ -4,7 +4,7 @@
 
 `InvokeAI` provides a browser-based image generation workspace exposed through the dedicated `ai-image` layer.
 
-This layer is paired with the pre-seeded model `${INVOKEAI_MODEL_TITLE}` from `${INVOKEAI_MODEL_REPO}` at revision `${INVOKEAI_MODEL_REVISION}`.
+This layer is paired with the self-bootstrapped model `${INVOKEAI_MODEL_TITLE}` from `${INVOKEAI_MODEL_REPO}` at revision `${INVOKEAI_MODEL_REVISION}`.
 
 ## How to access it
 
