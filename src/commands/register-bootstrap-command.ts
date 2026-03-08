@@ -2,6 +2,7 @@ import type { Command } from 'commander';
 import type { BootstrapCommandOptions } from '../types/cli.types.js';
 import { runBootstrapCommand } from '../services/bootstrap.service.js';
 import { createProjectContext } from '../services/project.service.js';
+import { normalizeAiAliasOptions } from '../utils/cli-options.js';
 
 /**
  * Registers the `bootstrap` command.
@@ -15,7 +16,8 @@ export function registerBootstrapCommand(program: Command): void {
     .option('--skip-gitea', 'Skip the Gitea admin reconciliation step')
     .option('--skip-ollama', 'Skip the Ollama model reconciliation step')
     .action(async (options: BootstrapCommandOptions) => {
-      const context = createProjectContext(options);
-      await runBootstrapCommand(context, options);
+      const normalizedOptions = normalizeAiAliasOptions(options);
+      const context = createProjectContext(normalizedOptions);
+      await runBootstrapCommand(context, normalizedOptions);
     });
 }

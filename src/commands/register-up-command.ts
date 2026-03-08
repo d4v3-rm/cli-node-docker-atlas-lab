@@ -2,6 +2,7 @@ import type { Command } from 'commander';
 import type { UpCommandOptions } from '../types/cli.types.js';
 import { createProjectContext } from '../services/project.service.js';
 import { runUpCommand } from '../services/stack.service.js';
+import { normalizeAiAliasOptions } from '../utils/cli-options.js';
 
 /**
  * Registers the `up` command.
@@ -19,7 +20,8 @@ export function registerUpCommand(program: Command): void {
     )
     .option('--with-workbench', 'Include the optional workbench profile')
     .action(async (options: UpCommandOptions) => {
-      const context = createProjectContext(options);
-      await runUpCommand(context, options);
+      const normalizedOptions = normalizeAiAliasOptions(options);
+      const context = createProjectContext(normalizedOptions);
+      await runUpCommand(context, normalizedOptions);
     });
 }
