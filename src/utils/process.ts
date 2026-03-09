@@ -135,15 +135,67 @@ function formatCommandFailure(
 /**
  * Extracts the most actionable line from a subprocess failure.
  */
-function summarizeFailureDetail(error: CommandFailureShape): string {
-  const detailSource = error.stderr || error.shortMessage || error.message;
-  const normalizedLines = detailSource
+export function summarizeFailureDetail(error: CommandFailureShape): string {
+  const detailCandidates = [error.stderr, error.stdout, error.shortMessage, error.message].filter(
+    (value): value is string => typeof value === 'string' && value.trim().length > 0
+  );
+
+  for (const candidate of detailCandidates) {
+    const normalizedDetail = normalizeFailureCandidate(candidate);
+
+    if (normalizedDetail !== null) {
+      return normalizedDetail;
+    }
+  }
+
+  return 'Unknown subprocess failure';
+}
+
+/**
+ * Keeps only the actionable part of a subprocess error source.
+ */
+function normalizeFailureCandidate(candidate: string): string | null {
+  const normalizedLines = candidate
     .replace(/\r\n/gu, '\n')
     .split('\n')
     .map((line) => line.trim())
     .filter((line) => line.length > 0);
 
-  return normalizedLines.at(-1) ?? 'Unknown subprocess failure';
+  for (let index = normalizedLines.length - 1; index >= 0; index -= 1) {
+    const line = unwrapNestedCommandFailure(normalizedLines[index] ?? '');
+
+    if (line.length === 0 || isNestedCommandFailureLine(line)) {
+      continue;
+    }
+
+    return line;
+  }
+
+  return null;
+}
+
+/**
+ * Removes the wrapper added when a command failure is rethrown by this utility.
+ */
+function unwrapNestedCommandFailure(line: string): string {
+  if (!isNestedCommandFailureLine(line)) {
+    return line;
+  }
+
+  const separatorIndex = line.indexOf(' | ');
+
+  if (separatorIndex === -1) {
+    return line;
+  }
+
+  return line.slice(separatorIndex + 3).trim();
+}
+
+/**
+ * Detects the standardized subprocess failure prefix emitted by this utility.
+ */
+function isNestedCommandFailureLine(line: string): boolean {
+  return /^Command failed with exit code \d+: /u.test(line);
 }
 
 /**
