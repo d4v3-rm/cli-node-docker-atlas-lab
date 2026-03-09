@@ -1,4 +1,4 @@
-ARG BASE_IMAGE
+ARG BASE_IMAGE=ghcr.io/invoke-ai/invokeai:latest
 FROM ${BASE_IMAGE}
 
 RUN /opt/venv/bin/pip install --no-cache-dir "huggingface_hub[hf_transfer]==0.34.6"
