@@ -1,6 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0-bookworm-slim
 
 ARG SWARMUI_GIT_REF
+ENV SWARMUI_PYTHON=/opt/swarmui-venv/bin/python
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -18,7 +19,9 @@ RUN apt-get update \
       wget \
     && rm -rf /var/lib/apt/lists/*
 
-RUN python3 -m pip install --no-cache-dir "huggingface_hub[hf_transfer]==0.34.6"
+RUN python3 -m venv /opt/swarmui-venv \
+    && /opt/swarmui-venv/bin/pip install --no-cache-dir --upgrade pip \
+    && /opt/swarmui-venv/bin/pip install --no-cache-dir "huggingface_hub[hf_transfer]==0.34.6"
 
 WORKDIR /opt
 
