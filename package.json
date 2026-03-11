@@ -19,7 +19,7 @@
     "preview:atlas-dashboard": "vite preview --config ./config/atlas-dashboard/vite.config.ts",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "prepack": "npm run build",
+    "prepack": "node ./scripts/clean-package-artifacts.mjs && npm run build",
     "pack:local": "npm pack"
   },
   "files": [
