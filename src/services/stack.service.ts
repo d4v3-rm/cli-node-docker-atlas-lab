@@ -100,7 +100,11 @@ export async function runUpCommand(
             {
               title: formatTaskTitle('stack', 'Wait for Fooocus runtime'),
               task: async () => {
-                await waitForService(context, 'fooocus', 900, { includeAiImage: true });
+                printInfo(
+                  'Fooocus may take several minutes on the first start while it downloads its default model.',
+                  'stack'
+                );
+                await waitForService(context, 'fooocus', 2700, { includeAiImage: true });
               }
             }
           ]

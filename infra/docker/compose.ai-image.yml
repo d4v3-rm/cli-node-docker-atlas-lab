@@ -36,7 +36,7 @@ services:
       swarmui:
         condition: service_healthy
       fooocus:
-        condition: service_healthy
+        condition: service_started
     networks:
       - edge-net
       - ai-image-net
@@ -126,7 +126,7 @@ services:
       interval: 20s
       timeout: 10s
       retries: 20
-      start_period: 60s
+      start_period: 1800s
     environment:
       CMDARGS: ${FOOOCUS_CMDARGS}
       DATADIR: /content/data
