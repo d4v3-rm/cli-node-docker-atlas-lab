@@ -8,11 +8,13 @@ set -euo pipefail
 
 bash /usr/local/bin/setup-swarmui.sh
 
+model_basename="${SWARMUI_MODEL_FILE##*/}"
+
 MODEL_MODE=single_file \
 MODEL_REPO="${SWARMUI_MODEL_REPO}" \
 MODEL_REVISION="${SWARMUI_MODEL_REVISION}" \
 MODEL_FILENAME="${SWARMUI_MODEL_FILE}" \
-MODEL_TARGET_FILE="/SwarmUI/Models/diffusion_models/${SWARMUI_MODEL_FILE}" \
+MODEL_TARGET_FILE="/SwarmUI/Models/diffusion_models/${model_basename}" \
 MODEL_TITLE="${SWARMUI_MODEL_TITLE}" \
 "${SWARMUI_PYTHON:-python3}" /usr/local/bin/download-model.py
 
