@@ -71,7 +71,6 @@ const iconMap: Record<DashboardIconKey, DashboardIconComponent> = {
   route: CompassOutlined,
   secure: LockOutlined,
   spark: ThunderboltOutlined,
-  swarmUi: CloudServerOutlined,
   terminal: CodeOutlined,
   workflow: BranchesOutlined
 };

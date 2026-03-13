@@ -26,7 +26,6 @@ export function createDashboardViewModel(
     gatewayPassword: t('credentials.gatewayPassword'),
     gatewayUser: t('credentials.gatewayUser'),
     model: t('credentials.model'),
-    modelFile: t('credentials.modelFile'),
     modelRevision: t('credentials.modelRevision'),
     ownerBootstrap: t('credentials.ownerBootstrap'),
     ownerEmail: t('credentials.ownerEmail'),
@@ -153,10 +152,6 @@ export function createDashboardViewModel(
           label: t('dashboard.imageLayer.capabilities.invokeAi')
         },
         {
-          icon: 'swarmUi',
-          label: t('dashboard.imageLayer.capabilities.swarmUi')
-        },
-        {
           icon: 'fooocus',
           label: t('dashboard.imageLayer.capabilities.fooocus')
         },
@@ -219,51 +214,6 @@ export function createDashboardViewModel(
         }),
         status: t('values.imageStudio'),
         title: t('dashboard.imageServices.invokeAi.title'),
-        tone: 'image'
-      },
-      {
-        action: {
-          href: config.services.swarmUi.url,
-          label: t('dashboard.imageServices.swarmUi.action')
-        },
-        briefing: {
-          path: config.services.swarmUi.briefingPath,
-          title: t('dashboard.imageServices.swarmUi.title')
-        },
-        credentials: [
-          {
-            label: credentialLabels.endpoint,
-            value: config.services.swarmUi.url
-          },
-          {
-            label: credentialLabels.gatewayUser,
-            value: config.services.swarmUi.gatewayUser
-          },
-          {
-            label: credentialLabels.gatewayPassword,
-            value: config.services.swarmUi.gatewayPassword
-          },
-          {
-            label: credentialLabels.model,
-            value: config.services.swarmUi.modelTitle
-          },
-          {
-            label: credentialLabels.modelRevision,
-            value: config.services.swarmUi.modelRevision
-          },
-          {
-            label: credentialLabels.modelFile,
-            value: config.services.swarmUi.modelFile
-          }
-        ],
-        description: t('dashboard.imageServices.swarmUi.description'),
-        icon: 'swarmUi',
-        id: 'swarmui',
-        note: t('dashboard.imageServices.swarmUi.note', {
-          modelRepo: config.services.swarmUi.modelRepo
-        }),
-        status: t('values.imageStudio'),
-        title: t('dashboard.imageServices.swarmUi.title'),
         tone: 'image'
       },
       {
@@ -364,7 +314,7 @@ export function createDashboardViewModel(
               ? 'dashboard.metrics.imageEnabled.label'
               : 'dashboard.metrics.imageDisabled.label'
           ),
-          value: aiImageEnabled ? 3 : 0
+          value: aiImageEnabled ? 2 : 0
         },
         {
           caption: t(
