@@ -288,25 +288,6 @@ function buildSmokeChecks(
     });
 
     checks.push({
-      name: 'Smoke SwarmUI',
-      run: async (caCertificate) => {
-        const response = await requestHttps(aiImageEnv.SWARMUI_URL, {
-          auth: {
-            username: aiImageEnv.SWARMUI_GATEWAY_USER,
-            password: aiImageEnv.SWARMUI_GATEWAY_PASSWORD
-          },
-          caCertificate
-        });
-
-        return {
-          name: 'Smoke SwarmUI',
-          ok: response.statusCode >= 200 && response.statusCode < 400,
-          detail: `HTTP ${response.statusCode} with model ${aiImageEnv.SWARMUI_MODEL_TITLE}`
-        };
-      }
-    });
-
-    checks.push({
       name: 'Smoke Fooocus',
       run: async (caCertificate) => {
         const response = await requestHttps(aiImageEnv.FOOOCUS_URL, {

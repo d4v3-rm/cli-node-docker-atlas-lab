@@ -24,13 +24,6 @@ export interface LabEnv {
   INVOKEAI_MODEL_REPO?: string;
   INVOKEAI_MODEL_REVISION?: string;
   INVOKEAI_MODEL_TITLE?: string;
-  SWARMUI_URL?: string;
-  SWARMUI_GATEWAY_USER?: string;
-  SWARMUI_GATEWAY_PASSWORD?: string;
-  SWARMUI_MODEL_REPO?: string;
-  SWARMUI_MODEL_REVISION?: string;
-  SWARMUI_MODEL_FILE?: string;
-  SWARMUI_MODEL_TITLE?: string;
   FOOOCUS_URL?: string;
   FOOOCUS_GATEWAY_USER?: string;
   FOOOCUS_GATEWAY_PASSWORD?: string;
@@ -122,13 +115,6 @@ export interface AiImageSmokeEnv extends LabEnv {
   INVOKEAI_MODEL_REPO: string;
   INVOKEAI_MODEL_REVISION: string;
   INVOKEAI_MODEL_TITLE: string;
-  SWARMUI_URL: string;
-  SWARMUI_GATEWAY_USER: string;
-  SWARMUI_GATEWAY_PASSWORD: string;
-  SWARMUI_MODEL_REPO: string;
-  SWARMUI_MODEL_REVISION: string;
-  SWARMUI_MODEL_FILE: string;
-  SWARMUI_MODEL_TITLE: string;
   FOOOCUS_URL: string;
   FOOOCUS_GATEWAY_USER: string;
   FOOOCUS_GATEWAY_PASSWORD: string;

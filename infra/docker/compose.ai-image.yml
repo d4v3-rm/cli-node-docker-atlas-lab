@@ -1,6 +1,6 @@
 name: cli-node-docker-atlas-lab
 
-# Optional AI image layer for InvokeAI, SwarmUI, Fooocus, FLUX.2 klein 4B, and Qwen-Image-2512.
+# Optional AI image layer for InvokeAI, Fooocus, and the self-bootstrapped FLUX.2 klein 4B runtime.
 services:
   gateway:
     environment:
@@ -22,7 +22,6 @@ services:
       ATLAS_WORKBENCH_ENABLED: "false"
     ports:
       - "${INVOKEAI_HTTPS_PORT}:${INVOKEAI_HTTPS_PORT}"
-      - "${SWARMUI_HTTPS_PORT}:${SWARMUI_HTTPS_PORT}"
       - "${FOOOCUS_HTTPS_PORT}:${FOOOCUS_HTTPS_PORT}"
     volumes:
       - gateway-certs:/etc/caddy/certs
@@ -32,8 +31,6 @@ services:
       gateway:
         condition: service_started
       invokeai:
-        condition: service_healthy
-      swarmui:
         condition: service_healthy
       fooocus:
         condition: service_started
@@ -74,40 +71,6 @@ services:
       NVIDIA_DRIVER_CAPABILITIES: ${OLLAMA_NVIDIA_DRIVER_CAPABILITIES}
     volumes:
       - invokeai-data:/invokeai
-    networks:
-      ai-image-net:
-      services-egress-net:
-        gw_priority: 1
-
-  swarmui:
-    build:
-      context: ../..
-      dockerfile: infra/docker/images/swarmui/Dockerfile
-      args:
-        SWARMUI_GIT_REF: ${SWARMUI_GIT_REF}
-    restart: unless-stopped
-    gpus: ${OLLAMA_GPU_REQUEST}
-    healthcheck:
-      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:7801/ >/dev/null 2>&1 || exit 1"]
-      interval: 20s
-      timeout: 10s
-      retries: 20
-      start_period: 300s
-    environment:
-      NVIDIA_VISIBLE_DEVICES: ${OLLAMA_NVIDIA_VISIBLE_DEVICES}
-      NVIDIA_DRIVER_CAPABILITIES: ${OLLAMA_NVIDIA_DRIVER_CAPABILITIES}
-      SWARMUI_INSTANCE_TITLE: AtlasSwarmUI
-      SWARMUI_MODEL_REPO: ${SWARMUI_MODEL_REPO}
-      SWARMUI_MODEL_REVISION: ${SWARMUI_MODEL_REVISION}
-      SWARMUI_MODEL_FILE: ${SWARMUI_MODEL_FILE}
-      SWARMUI_MODEL_TITLE: ${SWARMUI_MODEL_TITLE}
-    volumes:
-      - swarmui-data:/SwarmUI/Data
-      - swarmui-backend:/SwarmUI/dlbackend
-      - swarmui-dlnodes:/SwarmUI/src/BuiltinExtensions/ComfyUIBackend/DLNodes
-      - swarmui-extensions:/SwarmUI/src/Extensions
-      - swarmui-models:/SwarmUI/Models
-      - swarmui-output:/SwarmUI/Output
     networks:
       ai-image-net:
       services-egress-net:
@@ -165,10 +128,4 @@ volumes:
   gateway-config:
   gateway-data:
   invokeai-data:
-  swarmui-data:
-  swarmui-backend:
-  swarmui-dlnodes:
-  swarmui-extensions:
-  swarmui-models:
-  swarmui-output:
   fooocus-data:

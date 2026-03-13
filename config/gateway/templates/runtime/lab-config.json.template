@@ -48,16 +48,6 @@
       "modelTitle": "${INVOKEAI_MODEL_TITLE}",
       "briefingPath": "/content/invokeai.md"
     },
-    "swarmUi": {
-      "url": "${SWARMUI_URL}",
-      "gatewayUser": "${SWARMUI_GATEWAY_USER}",
-      "gatewayPassword": "${SWARMUI_GATEWAY_PASSWORD}",
-      "modelRepo": "${SWARMUI_MODEL_REPO}",
-      "modelRevision": "${SWARMUI_MODEL_REVISION}",
-      "modelFile": "${SWARMUI_MODEL_FILE}",
-      "modelTitle": "${SWARMUI_MODEL_TITLE}",
-      "briefingPath": "/content/swarmui.md"
-    },
     "fooocus": {
       "url": "${FOOOCUS_URL}",
       "gatewayUser": "${FOOOCUS_GATEWAY_USER}",

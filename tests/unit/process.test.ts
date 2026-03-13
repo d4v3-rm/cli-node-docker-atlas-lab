@@ -34,7 +34,7 @@ describe('process failure formatting', () => {
         stdout: '',
         stderr: '',
         all: [
-          'target swarmui: failed to solve: process "/bin/sh -c python3 -m pip install --no-cache-dir \\"huggingface_hub[hf_transfer]==0.34.6\\"" did not complete successfully: exit code: 1',
+          'target image-runtime: failed to solve: process "/bin/sh -c python3 -m pip install --no-cache-dir \\"huggingface_hub[hf_transfer]==0.34.6\\"" did not complete successfully: exit code: 1',
           '',
           'View build details: docker-desktop://dashboard/build/default/default/example'
         ].join('\n'),
@@ -42,7 +42,7 @@ describe('process failure formatting', () => {
         message: 'Command failed with exit code 1: docker compose up -d'
       })
     ).toBe(
-      'target swarmui: failed to solve: process "/bin/sh -c python3 -m pip install --no-cache-dir \\"huggingface_hub[hf_transfer]==0.34.6\\"" did not complete successfully: exit code: 1'
+      'target image-runtime: failed to solve: process "/bin/sh -c python3 -m pip install --no-cache-dir \\"huggingface_hub[hf_transfer]==0.34.6\\"" did not complete successfully: exit code: 1'
     );
   });
 

@@ -92,12 +92,6 @@ export async function runUpCommand(
               }
             },
             {
-              title: formatTaskTitle('stack', 'Wait for SwarmUI runtime'),
-              task: async () => {
-                await waitForService(context, 'swarmui', 900, { includeAiImage: true });
-              }
-            },
-            {
               title: formatTaskTitle('stack', 'Wait for Fooocus runtime'),
               task: async () => {
                 printInfo(
