@@ -90,16 +90,6 @@ export async function runUpCommand(
               task: async () => {
                 await waitForService(context, 'invokeai', 900, { includeAiImage: true });
               }
-            },
-            {
-              title: formatTaskTitle('stack', 'Wait for Fooocus runtime'),
-              task: async () => {
-                printInfo(
-                  'Fooocus may take several minutes on the first start while it downloads its default model.',
-                  'stack'
-                );
-                await waitForService(context, 'fooocus', 2700, { includeAiImage: true });
-              }
             }
           ]
         : []),

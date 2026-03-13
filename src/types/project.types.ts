@@ -24,9 +24,6 @@ export interface LabEnv {
   INVOKEAI_MODEL_REPO?: string;
   INVOKEAI_MODEL_REVISION?: string;
   INVOKEAI_MODEL_TITLE?: string;
-  FOOOCUS_URL?: string;
-  FOOOCUS_GATEWAY_USER?: string;
-  FOOOCUS_GATEWAY_PASSWORD?: string;
   POSTGRES_DEV_HOST_PORT?: string;
   LAB_URL?: string;
   GITEA_URL?: string;
@@ -115,7 +112,4 @@ export interface AiImageSmokeEnv extends LabEnv {
   INVOKEAI_MODEL_REPO: string;
   INVOKEAI_MODEL_REVISION: string;
   INVOKEAI_MODEL_TITLE: string;
-  FOOOCUS_URL: string;
-  FOOOCUS_GATEWAY_USER: string;
-  FOOOCUS_GATEWAY_PASSWORD: string;
 }

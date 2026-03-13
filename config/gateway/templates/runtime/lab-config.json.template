@@ -47,12 +47,6 @@
       "modelRevision": "${INVOKEAI_MODEL_REVISION}",
       "modelTitle": "${INVOKEAI_MODEL_TITLE}",
       "briefingPath": "/content/invokeai.md"
-    },
-    "fooocus": {
-      "url": "${FOOOCUS_URL}",
-      "gatewayUser": "${FOOOCUS_GATEWAY_USER}",
-      "gatewayPassword": "${FOOOCUS_GATEWAY_PASSWORD}",
-      "briefingPath": "/content/fooocus.md"
     }
   },
   "workbenches": {

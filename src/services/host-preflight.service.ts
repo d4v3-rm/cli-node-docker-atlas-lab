@@ -22,8 +22,7 @@ const AI_LLM_PORT_ENV_KEYS = [
 ] as const;
 
 const AI_IMAGE_PORT_ENV_KEYS = [
-  'INVOKEAI_HTTPS_PORT',
-  'FOOOCUS_HTTPS_PORT'
+  'INVOKEAI_HTTPS_PORT'
 ] as const;
 
 const WORKBENCH_PORT_ENV_KEYS = [
