@@ -1,15 +1,16 @@
 name: cli-node-docker-atlas-lab
 
-# Optional AI layer for Open WebUI and Ollama.
+# Optional AI LLM layer for Open WebUI and Ollama.
 x-lab-env: &lab-env
   TZ: ${TZ}
 
 services:
   gateway:
     environment:
-      ATLAS_AI_ENABLED: "true"
+      ATLAS_AI_LLM_ENABLED: "true"
+      ATLAS_AI_IMAGE_ENABLED: "false"
 
-  gateway-ai:
+  gateway-ai-llm:
     build:
       context: ../..
       dockerfile: infra/docker/images/gateway/Dockerfile
@@ -19,8 +20,9 @@ services:
     env_file:
       - ../../env/lab.env
     environment:
-      ATLAS_GATEWAY_TEMPLATE: Caddyfile.ai.template
-      ATLAS_AI_ENABLED: "true"
+      ATLAS_GATEWAY_TEMPLATE: Caddyfile.ai-llm.template
+      ATLAS_AI_LLM_ENABLED: "true"
+      ATLAS_AI_IMAGE_ENABLED: "false"
       ATLAS_WORKBENCH_ENABLED: "false"
     ports:
       - "${OPENWEBUI_HTTPS_PORT}:${OPENWEBUI_HTTPS_PORT}"
@@ -39,7 +41,7 @@ services:
     networks:
       - edge-net
       - apps-net
-      - ai-net
+      - ai-llm-net
 
   ollama:
     build:
@@ -64,7 +66,7 @@ services:
     volumes:
       - ollama-data:/root/.ollama
     networks:
-      ai-net:
+      ai-llm-net:
       services-egress-net:
         gw_priority: 1
 
@@ -98,7 +100,7 @@ services:
       - open-webui-data:/app/backend/data
     networks:
       apps-net:
-      ai-net:
+      ai-llm-net:
       services-egress-net:
         gw_priority: 1
 
@@ -110,8 +112,8 @@ networks:
   apps-net:
     name: cli-node-docker-atlas-lab_apps
     internal: true
-  ai-net:
-    name: cli-node-docker-atlas-lab_ai
+  ai-llm-net:
+    name: cli-node-docker-atlas-lab_ai_llm
     internal: true
 
 volumes:

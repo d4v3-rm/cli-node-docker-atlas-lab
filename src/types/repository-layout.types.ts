@@ -3,11 +3,13 @@
  */
 export interface RepositoryPathDefinitions {
   composeFile: string;
-  composeAiFile: string;
+  composeAiLlmFile: string;
+  composeAiImageFile: string;
   composeWorkbenchFile: string;
   envFile: string;
   gatewayTemplateFile: string;
-  gatewayAiTemplateFile: string;
+  gatewayAiLlmTemplateFile: string;
+  gatewayAiImageTemplateFile: string;
   gatewayWorkbenchTemplateFile: string;
 }
 
@@ -16,10 +18,12 @@ export interface RepositoryPathDefinitions {
  */
 export interface RepositoryLayout {
   composeFile: string;
-  composeAiFile: string;
+  composeAiLlmFile: string;
+  composeAiImageFile: string;
   composeWorkbenchFile: string;
   envFile: string;
   gatewayTemplateFile: string;
-  gatewayAiTemplateFile: string;
+  gatewayAiLlmTemplateFile: string;
+  gatewayAiImageTemplateFile: string;
   gatewayWorkbenchTemplateFile: string;
 }

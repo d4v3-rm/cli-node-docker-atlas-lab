@@ -34,13 +34,17 @@
     "operatingDoctrineTitle": "How the lab is designed"
   },
   "sections": {
-    "aiBodyDisabled": "The AI layer remains optional. When it is off, the dashboard shows the exact command required to enable it.",
-    "aiBodyEnabled": "The AI layer is online: the dashboard takes you into Open WebUI or the Ollama APIs with credentials and operating context always visible.",
+    "aiBodyDisabled": "The AI LLM layer remains optional. When it is off, the dashboard shows the exact command required to enable it.",
+    "aiBodyEnabled": "The AI LLM layer is online: the dashboard takes you into Open WebUI or the Ollama APIs with credentials and operating context always visible.",
     "aiKicker": "optional plane",
-    "aiTitle": "AI Layer",
+    "aiTitle": "AI LLM Layer",
     "footerBody": "Four quick signals on routing, persistence, recommended usage, and layer segmentation.",
     "footerKicker": "atlas signals",
     "footerTitle": "Operational closeout",
+    "imageBodyDisabled": "The AI image layer stays off until you explicitly request it. When inactive, the dashboard shows the exact activation command.",
+    "imageBodyEnabled": "The AI image layer is online: InvokeAI is exposed through a dedicated gateway, while FLUX.2 klein 4B is prepared automatically for the paired runtime.",
+    "imageKicker": "generation plane",
+    "imageTitle": "AI Image Layer",
     "servicesBody": "The core plane is always available. Each card collects endpoints, operational credentials, and a direct entry point into the service.",
     "servicesKicker": "service plane",
     "servicesTitle": "Core Services",
@@ -62,8 +66,9 @@
   "cards": {
     "openBriefing": "Open briefing",
     "tones": {
-      "ai": "AI",
+      "ai": "AI LLM",
       "core": "Core",
+      "image": "AI Image",
       "neutral": "Neutral",
       "workbench": "Workbench"
     }
@@ -100,6 +105,8 @@
     "endpoint": "endpoint",
     "gatewayPassword": "gateway password",
     "gatewayUser": "gateway user",
+    "model": "model",
+    "modelRevision": "model revision",
     "ownerBootstrap": "owner bootstrap",
     "ownerEmail": "owner email",
     "ownerPassword": "owner password",
@@ -115,6 +122,7 @@
     "browserConsole": "browser console",
     "browserWorkspace": "browser workspace",
     "directAppLogin": "direct app login",
+    "imageStudio": "image studio",
     "localInferenceApi": "local inference API",
     "password": "password",
     "protectedApi": "protected API",
@@ -125,24 +133,26 @@
   "dashboard": {
     "coreLayerSummary": "Gitea and n8n remain the always-on plane of the lab.",
     "accessNotes": {
-      "aiDisabled": "The AI layer no longer starts by default: the deck marks it as optional instead of pretending that it is online.",
-      "aiEnabled": "Open WebUI and Ollama are really online and reachable on the AI gateway ports.",
+      "aiDisabled": "The AI LLM layer no longer starts by default: the deck marks it as optional instead of pretending that it is online.",
+      "aiEnabled": "Open WebUI and Ollama are really online and reachable on the AI LLM gateway ports.",
       "credentials": "Operational credentials are exposed here and remain aligned with the lab bootstrap.",
       "https": "All browser ingresses use localhost with dedicated HTTPS, without custom DNS or hosts-file edits.",
+      "imageDisabled": "The AI image layer remains optional and no dedicated image endpoint is exposed until you enable it.",
+      "imageEnabled": "InvokeAI is online behind the dedicated AI image gateway, and FLUX.2 klein 4B is already staged for the runtime.",
       "n8n": "n8n logs in directly with the bootstrapped owner account: there is no second gateway login.",
       "workbenchDisabled": "Workbench and Postgres stay separated from the core operating plane until you enable the dedicated layer.",
       "workbenchEnabled": "Workbench and Postgres are active: you can open browser-based environments or connect from the desktop to the host Postgres port."
     },
     "aiLayer": {
       "capabilities": {
-        "aiModels": "GPU-backed models",
+        "llmModels": "GPU-backed LLM models",
         "ollama": "Protected Ollama API",
         "openWebUi": "Local Open WebUI"
       },
-      "description": "Optional AI layer for local conversational workflows and GPU-backed LLM inference. The deck enables it only when you explicitly request it.",
-      "summaryDisabled": "AI layer is off. No AI service is started or exposed until you enable the dedicated flag.",
-      "summaryEnabled": "Open WebUI and Ollama are active and served through the AI gateway.",
-      "title": "AI Layer"
+      "description": "Optional AI LLM layer for local conversational workflows and GPU-backed LLM inference. The deck enables it only when you explicitly request it.",
+      "summaryDisabled": "AI LLM layer is off. No LLM service is started or exposed until you enable the dedicated flag.",
+      "summaryEnabled": "Open WebUI and Ollama are active and served through the AI LLM gateway.",
+      "title": "AI LLM Layer"
     },
     "aiServices": {
       "ollama": {
@@ -154,6 +164,25 @@
         "action": "Open Open WebUI",
         "description": "Conversational interface for working with local lab models in the browser, with explicit credentials and immediate access from the gateway.",
         "title": "Open WebUI"
+      }
+    },
+    "imageLayer": {
+      "capabilities": {
+        "gateway": "Protected image gateway",
+        "invokeAi": "Local InvokeAI",
+        "models": "Bootstrapped local models"
+      },
+      "description": "Optional AI image layer for local visual workflows. It exposes InvokeAI through a dedicated gateway and stages FLUX.2 klein 4B in persistent storage for the paired runtime.",
+      "summaryDisabled": "AI image layer is off. InvokeAI is not started or exposed until you enable the dedicated flag.",
+      "summaryEnabled": "InvokeAI is active behind the AI image gateway, with persistent model storage kept inside Docker volumes.",
+      "title": "AI Image Layer"
+    },
+    "imageServices": {
+      "invokeAi": {
+        "action": "Open InvokeAI",
+        "description": "Browser-based image generation console served through the dedicated image gateway with a self-bootstrapped FLUX.2 klein 4B model.",
+        "note": "Model source: {{modelRepo}}. The model is staged into persistent storage and scanned by InvokeAI at startup.",
+        "title": "InvokeAI Studio"
       }
     },
     "footerCards": {
@@ -170,18 +199,20 @@
         "label": "segmentation"
       },
       "usage": {
-        "body": "Gitea and n8n are the always-on core plane; AI and workbench layers are enabled only when they are actually needed.",
+        "body": "Gitea and n8n are the always-on core plane; the AI LLM, AI image, and workbench layers are enabled only when they are actually needed.",
         "label": "usage"
       }
     },
     "hero": {
       "eyebrow": "atlas command deck",
       "pills": {
-        "aiActive": "ai layer active",
-        "aiOptional": "ai layer optional",
+        "aiActive": "ai-llm active",
+        "aiOptional": "ai-llm optional",
         "deck": "deck {{localUrl}}",
         "host": "host {{publicUrl}}",
         "httpsOnly": "https ingress only",
+        "imageActive": "ai-image active",
+        "imageOptional": "ai-image optional",
         "volumes": "volume persistence",
         "workbenchActive": "workbenches active",
         "workbenchOptional": "workbenches optional"
@@ -192,7 +223,7 @@
         "networkMapDescription": "Read the lab topology and the published network planes.",
         "networkMapLabel": "Network map"
       },
-      "summary": "Unified control room for repository work, automation, optional AI, and development environments. Browser ports stay on HTTPS over localhost, while Postgres from the workbench layer also exposes a host-side TCP port.",
+      "summary": "Unified control room for repository work, automation, optional AI LLM services, AI image generation, and development environments. Browser ports stay on HTTPS over localhost, while Postgres from the workbench layer also exposes a host-side TCP port.",
       "titleLines": {
         "first": "LAB",
         "second": "ATLAS"
@@ -200,16 +231,24 @@
     },
     "metrics": {
       "aiDisabled": {
-        "caption": "AI layer not active",
-        "label": "ai live"
+        "caption": "AI LLM layer not active",
+        "label": "ai-llm live"
       },
       "aiEnabled": {
-        "caption": "AI layer published on the dedicated gateway",
-        "label": "ai live"
+        "caption": "AI LLM layer published on the dedicated gateway",
+        "label": "ai-llm live"
       },
       "core": {
         "caption": "always-on services with mandatory bootstrap",
         "label": "core online"
+      },
+      "imageDisabled": {
+        "caption": "AI image layer not active",
+        "label": "ai-image live"
+      },
+      "imageEnabled": {
+        "caption": "InvokeAI published on the dedicated AI image gateway",
+        "label": "ai-image live"
       },
       "ingress": {
         "caption": "public gateways currently served",
@@ -228,8 +267,9 @@
       "title": "Network Map"
     },
     "operatingCharter": {
-      "ai": "Open WebUI and Ollama live in an explicitly optional AI layer.",
+      "ai": "Open WebUI and Ollama live in an explicitly optional AI LLM layer.",
       "gitea": "Gitea governs code, review, and Git governance for the project.",
+      "image": "InvokeAI lives in a dedicated AI image layer with FLUX.2 klein 4B support.",
       "n8n": "n8n coordinates automations, webhooks, and operational jobs in the lab.",
       "workbench": "Code-server and Postgres stay in a workbench plane separated from the core."
     },

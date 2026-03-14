@@ -1,0 +1,35 @@
+{
+  auto_https disable_redirects
+  log {
+    output stdout
+    format console
+    level INFO
+  }
+  servers {
+    protocols h1 h2
+  }
+}
+
+(lab_tls) {
+  tls /etc/caddy/certs/lab.crt /etc/caddy/certs/lab.key
+  encode zstd gzip
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    X-Content-Type-Options "nosniff"
+    Referrer-Policy "strict-origin-when-cross-origin"
+  }
+}
+
+(guarded_proxy) {
+  import lab_tls
+  basic_auth {
+    {args[0]} {args[1]}
+  }
+  reverse_proxy {args[2]} {
+    header_up -Authorization
+  }
+}
+
+https://${LAB_PUBLIC_HOST}:${INVOKEAI_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${INVOKEAI_HTTPS_PORT} {
+  import guarded_proxy ${INVOKEAI_GATEWAY_USER} ${INVOKEAI_GATEWAY_PASSWORD_HASH} invokeai:9090
+}

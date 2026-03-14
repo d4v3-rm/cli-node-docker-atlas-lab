@@ -8,7 +8,7 @@ import { assertNvidiaGpuRuntime } from './gpu-preflight.service.js';
 import { printCommandHeader } from '../ui/banner.js';
 import { formatTaskTitle, printInfo, printSuccess } from '../ui/logger.js';
 import { runCommand } from '../utils/process.js';
-import { createBootstrapTasks } from './bootstrap.service.js';
+import { createBootstrapTasks, waitForService } from './bootstrap.service.js';
 
 const LEGACY_IMAGES = [
   'cli-node-lab-ollama-init:latest',
@@ -35,7 +35,7 @@ export async function runUpCommand(
   let composeStartedInThisRun = false;
   const tasks = new Listr(
     [
-      ...(options.withAi
+      ...((options.withAiLlm || options.withAiImage)
         ? [
             {
               title: formatTaskTitle('host', 'Validate NVIDIA GPU runtime'),
@@ -49,7 +49,8 @@ export async function runUpCommand(
         title: formatTaskTitle('host', 'Validate published host ports'),
         task: async () => {
           await assertPublishedPortsAvailable(context, {
-            includeAi: Boolean(options.withAi),
+            includeAiLlm: Boolean(options.withAiLlm),
+            includeAiImage: Boolean(options.withAiImage),
             includeWorkbench: Boolean(options.withWorkbench)
           });
         }
@@ -72,8 +73,8 @@ export async function runUpCommand(
           new Listr(
             createBootstrapTasks(context, {
               skipGitea: false,
-              skipOllama: !options.withAi,
-              withAi: Boolean(options.withAi)
+              skipOllama: !options.withAiLlm,
+              withAiLlm: Boolean(options.withAiLlm)
             }),
             {
               concurrent: false,
@@ -82,6 +83,16 @@ export async function runUpCommand(
             }
           )
       },
+      ...(options.withAiImage
+        ? [
+            {
+              title: formatTaskTitle('stack', 'Wait for InvokeAI runtime'),
+              task: async () => {
+                await waitForService(context, 'invokeai', 900, { includeAiImage: true });
+              }
+            }
+          ]
+        : []),
       {
         title: formatTaskTitle('stack', 'Remove legacy init images'),
         task: async () => {
@@ -109,11 +120,17 @@ export async function runUpCommand(
 /**
  * Formats the selected Compose layers for the startup log header.
  */
-function describeEnabledLayers(options: Pick<UpCommandOptions, 'withAi' | 'withWorkbench'>): string {
+function describeEnabledLayers(
+  options: Pick<UpCommandOptions, 'withAiLlm' | 'withAiImage' | 'withWorkbench'>
+): string {
   const layers = ['core'];
 
-  if (options.withAi) {
-    layers.push('ai');
+  if (options.withAiLlm) {
+    layers.push('ai-llm');
+  }
+
+  if (options.withAiImage) {
+    layers.push('ai-image');
   }
 
   if (options.withWorkbench) {
@@ -180,7 +197,8 @@ function createComposeUpArgs(context: ProjectContext, options: UpCommandOptions)
   }
 
   return createComposeCommandArgs(context, composeArgs, {
-    includeAi: Boolean(options.withAi),
+    includeAiLlm: Boolean(options.withAiLlm),
+    includeAiImage: Boolean(options.withAiImage),
     includeWorkbench: Boolean(options.withWorkbench)
   });
 }

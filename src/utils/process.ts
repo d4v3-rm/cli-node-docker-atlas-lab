@@ -26,6 +26,7 @@ export async function runCommand(
     const result = await execa(command, args, {
       cwd,
       reject: !allowFailure,
+      all: mirrorOutputToFile,
       ...(mirrorOutputToFile
         ? {
             stdin: 'inherit' as const,
@@ -49,7 +50,11 @@ export async function runCommand(
     };
   } catch (error) {
     if (allowFailure && isCommandFailure(error)) {
-      persistBufferedOutput(scope, error.stdout ?? '', error.stderr ?? error.shortMessage ?? error.message);
+      persistBufferedOutput(
+        scope,
+        error.stdout ?? '',
+        error.stderr ?? error.all ?? error.originalMessage ?? error.shortMessage ?? error.message
+      );
 
       writeRuntimeLog(
         'warn',
@@ -60,12 +65,16 @@ export async function runCommand(
       return {
         exitCode: error.exitCode ?? 1,
         stdout: error.stdout ?? '',
-        stderr: error.stderr ?? error.shortMessage ?? error.message
+        stderr: error.stderr ?? error.all ?? error.originalMessage ?? error.shortMessage ?? error.message
       };
     }
 
     if (isCommandFailure(error)) {
-      persistBufferedOutput(scope, error.stdout ?? '', error.stderr ?? error.shortMessage ?? error.message);
+      persistBufferedOutput(
+        scope,
+        error.stdout ?? '',
+        error.stderr ?? error.all ?? error.originalMessage ?? error.shortMessage ?? error.message
+      );
     }
 
     if (isCommandFailure(error)) {
@@ -88,7 +97,10 @@ interface CommandFailureShape {
   exitCode?: number;
   stdout?: string;
   stderr?: string;
+  all?: string;
   shortMessage?: string;
+  originalMessage?: string;
+  cause?: unknown;
   message: string;
 }
 
@@ -135,15 +147,103 @@ function formatCommandFailure(
 /**
  * Extracts the most actionable line from a subprocess failure.
  */
-function summarizeFailureDetail(error: CommandFailureShape): string {
-  const detailSource = error.stderr || error.shortMessage || error.message;
-  const normalizedLines = detailSource
+export function summarizeFailureDetail(error: CommandFailureShape): string {
+  const detailCandidates = collectFailureDetailCandidates(error);
+
+  for (const candidate of detailCandidates) {
+    const normalizedDetail = normalizeFailureCandidate(candidate);
+
+    if (normalizedDetail !== null) {
+      return normalizedDetail;
+    }
+  }
+
+  return 'Unknown subprocess failure';
+}
+
+/**
+ * Keeps only the actionable part of a subprocess error source.
+ */
+function normalizeFailureCandidate(candidate: string): string | null {
+  const normalizedLines = candidate
     .replace(/\r\n/gu, '\n')
     .split('\n')
     .map((line) => line.trim())
     .filter((line) => line.length > 0);
 
-  return normalizedLines.at(-1) ?? 'Unknown subprocess failure';
+  for (let index = normalizedLines.length - 1; index >= 0; index -= 1) {
+    const line = unwrapNestedCommandFailure(normalizedLines[index] ?? '');
+
+    if (line.length === 0 || isNestedCommandFailureLine(line) || shouldIgnoreFailureLine(line)) {
+      continue;
+    }
+
+    return line;
+  }
+
+  return null;
+}
+
+/**
+ * Removes the wrapper added when a command failure is rethrown by this utility.
+ */
+function unwrapNestedCommandFailure(line: string): string {
+  if (!isNestedCommandFailureLine(line)) {
+    return line;
+  }
+
+  const separatorIndex = line.indexOf(' | ');
+
+  if (separatorIndex === -1) {
+    return line;
+  }
+
+  return line.slice(separatorIndex + 3).trim();
+}
+
+/**
+ * Detects the standardized subprocess failure prefix emitted by this utility.
+ */
+function isNestedCommandFailureLine(line: string): boolean {
+  return /^Command failed with exit code \d+: /u.test(line);
+}
+
+/**
+ * Orders the potential error sources from most to least actionable.
+ */
+function collectFailureDetailCandidates(error: CommandFailureShape): string[] {
+  const causeMessage = extractCauseMessage(error.cause);
+
+  return [error.stderr, error.stdout, error.all, error.originalMessage, causeMessage, error.shortMessage, error.message]
+    .filter((value): value is string => typeof value === 'string' && value.trim().length > 0);
+}
+
+/**
+ * Extracts a readable message from nested error causes.
+ */
+function extractCauseMessage(cause: unknown): string | null {
+  if (cause instanceof Error) {
+    return cause.message;
+  }
+
+  if (typeof cause === 'object' && cause !== null && 'message' in cause && typeof cause.message === 'string') {
+    return cause.message;
+  }
+
+  return null;
+}
+
+/**
+ * Skips cosmetic trailing lines that often appear after the real BuildKit/Compose failure.
+ */
+function shouldIgnoreFailureLine(line: string): boolean {
+  return (
+    /^View build details:/u.test(line) ||
+    /^\[\+\] up /u.test(line) ||
+    /^Dockerfile:\d+/u.test(line) ||
+    /^[-]{2,}$/u.test(line) ||
+    /^[-!✔✘]/u.test(line)
+  );
 }
 
 /**

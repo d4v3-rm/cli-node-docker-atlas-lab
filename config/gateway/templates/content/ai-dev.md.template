@@ -27,4 +27,4 @@
 
 ## Operational note
 
-This workbench is the right place for code-centric AI development. `Open WebUI` remains the browser interaction console of the `ai` layer and is only reachable when `--with-ai` is also enabled.
+This workbench is the right place for code-centric AI development. `Open WebUI` remains the browser interaction console of the `ai-llm` layer and is only reachable when `--with-ai-llm` is also enabled.

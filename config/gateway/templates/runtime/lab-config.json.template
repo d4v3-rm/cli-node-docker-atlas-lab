@@ -5,7 +5,8 @@
     "publicUrl": "${LAB_URL}"
   },
   "features": {
-    "aiEnabled": ${ATLAS_AI_ENABLED},
+    "aiLlmEnabled": ${ATLAS_AI_LLM_ENABLED},
+    "aiImageEnabled": ${ATLAS_AI_IMAGE_ENABLED},
     "workbenchEnabled": ${ATLAS_WORKBENCH_ENABLED}
   },
   "assets": {
@@ -37,6 +38,15 @@
       "url": "${OLLAMA_URL}",
       "gatewayUser": "${OLLAMA_GATEWAY_USER}",
       "gatewayPassword": "${OLLAMA_GATEWAY_PASSWORD}"
+    },
+    "invokeAi": {
+      "url": "${INVOKEAI_URL}",
+      "gatewayUser": "${INVOKEAI_GATEWAY_USER}",
+      "gatewayPassword": "${INVOKEAI_GATEWAY_PASSWORD}",
+      "modelRepo": "${INVOKEAI_MODEL_REPO}",
+      "modelRevision": "${INVOKEAI_MODEL_REVISION}",
+      "modelTitle": "${INVOKEAI_MODEL_TITLE}",
+      "briefingPath": "/content/invokeai.md"
     }
   },
   "workbenches": {

@@ -6,8 +6,9 @@ import dotenv from 'dotenv';
 import { findUpSync } from 'find-up';
 import { ZodError } from 'zod';
 import {
-  aiBootstrapEnvSchema,
-  aiSmokeEnvSchema,
+  aiImageSmokeEnvSchema,
+  aiLlmBootstrapEnvSchema,
+  aiLlmSmokeEnvSchema,
   bootstrapEnvSchema,
   formatZodError,
   labEnvSchema,
@@ -17,8 +18,9 @@ import { PROJECT_MARKERS, REPOSITORY_PATHS, resolveRepositoryLayout } from '../c
 import { ensureDevelopmentFileLogging } from './runtime-log.service.js';
 import type { GlobalCliOptions } from '../types/cli.types.js';
 import type {
-  AiBootstrapEnv,
-  AiSmokeEnv,
+  AiImageSmokeEnv,
+  AiLlmBootstrapEnv,
+  AiLlmSmokeEnv,
   BootstrapEnv,
   LabEnv,
   ProjectContext,
@@ -57,10 +59,10 @@ export function parseBootstrapEnv(env: LabEnv): BootstrapEnv {
 }
 
 /**
- * Validates and narrows the env for AI bootstrap workflows.
+ * Validates and narrows the env for AI LLM bootstrap workflows.
  */
-export function parseAiBootstrapEnv(env: LabEnv): AiBootstrapEnv {
-  return parseWithSchema(() => aiBootstrapEnvSchema.parse(env));
+export function parseAiLlmBootstrapEnv(env: LabEnv): AiLlmBootstrapEnv {
+  return parseWithSchema(() => aiLlmBootstrapEnvSchema.parse(env));
 }
 
 /**
@@ -71,10 +73,17 @@ export function parseSmokeEnv(env: LabEnv): SmokeEnv {
 }
 
 /**
- * Validates and narrows the env for AI smoke-check workflows.
+ * Validates and narrows the env for AI LLM smoke-check workflows.
  */
-export function parseAiSmokeEnv(env: LabEnv): AiSmokeEnv {
-  return parseWithSchema(() => aiSmokeEnvSchema.parse(env));
+export function parseAiLlmSmokeEnv(env: LabEnv): AiLlmSmokeEnv {
+  return parseWithSchema(() => aiLlmSmokeEnvSchema.parse(env));
+}
+
+/**
+ * Validates and narrows the env for AI image smoke-check workflows.
+ */
+export function parseAiImageSmokeEnv(env: LabEnv): AiImageSmokeEnv {
+  return parseWithSchema(() => aiImageSmokeEnvSchema.parse(env));
 }
 
 /**

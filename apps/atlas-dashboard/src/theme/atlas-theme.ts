@@ -8,6 +8,7 @@ export const atlasDashboardPalette = {
   coreDark: '#0b1017',
   hero: '#0b1017',
   heroAlt: '#111823',
+  image: '#c85cff',
   ink: '#f3f7fb',
   line: '#1e2732',
   muted: '#90a0b4',

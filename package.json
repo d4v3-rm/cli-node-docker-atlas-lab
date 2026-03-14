@@ -1,6 +1,6 @@
 {
   "name": "cli-node-docker-atlas-lab",
-  "version": "0.27.22",
+  "version": "0.34.29",
   "description": "Self-contained Node.js CLI and Docker stack for Atlas Lab, a localhost-first self-hosted platform with optional AI and workbench layers.",
   "license": "MIT",
   "author": "Atlas Lab contributors",
@@ -19,7 +19,7 @@
     "preview:atlas-dashboard": "vite preview --config ./config/atlas-dashboard/vite.config.ts",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "prepack": "npm run build",
+    "prepack": "node ./scripts/clean-package-artifacts.mjs && npm run build",
     "pack:local": "npm pack"
   },
   "files": [
