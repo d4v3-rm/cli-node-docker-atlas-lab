@@ -211,7 +211,6 @@ export function createDashboardViewModel(
         status: t('values.imageStudio'),
         title: t('dashboard.imageServices.invokeAi.title'),
         tone: 'image'
-      },
       }
     ],
     footerCards: [
