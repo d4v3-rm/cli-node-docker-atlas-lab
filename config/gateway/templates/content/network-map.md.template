@@ -6,7 +6,7 @@ The deck remains available locally at `${LAB_LOCAL_URL}`. The lab is split into 
 
 - `core`: deck, Gitea, and n8n
 - `ai-llm`: Open WebUI and Ollama
-- `ai-image`: InvokeAI, Fooocus, and their paired local image-generation runtimes
+- `ai-image`: InvokeAI and its paired local image-generation runtime
 - `workbench`: Postgres and code-server environments
 
 Each layer publishes its HTTPS endpoints on `localhost` through a dedicated gateway. In addition, the `workbench` layer also exposes `Postgres` on a dedicated host TCP port.
@@ -19,7 +19,6 @@ Each layer publishes its HTTPS endpoints on `localhost` through a dedicated gate
 - Open WebUI: `${OPENWEBUI_URL}` only when the `ai-llm` layer is enabled
 - Ollama: `${OLLAMA_URL}` only when the `ai-llm` layer is enabled
 - InvokeAI: `${INVOKEAI_URL}` only when the `ai-image` layer is enabled
-- Fooocus: `${FOOOCUS_URL}` only when the `ai-image` layer is enabled
 - Node workbench: `${NODE_DEV_URL}` only when the `workbench` layer is enabled
 - Python workbench: `${PYTHON_DEV_URL}` only when the `workbench` layer is enabled
 - AI workbench: `${AI_DEV_URL}` only when the `workbench` layer is enabled
@@ -38,7 +37,6 @@ Each layer publishes its HTTPS endpoints on `localhost` through a dedicated gate
 - `8451`: Python workbench, layer `workbench`
 - `8452`: AI workbench, layer `workbench`
 - `8453`: C++ workbench, layer `workbench`
-- `8454`: Fooocus, layer `ai-image`
 - `${POSTGRES_DEV_HOST_PORT}`: Postgres host access, layer `workbench`
 
 No DNS setup and no `hosts` file edits are required: just use `https://localhost:<port>/`.
@@ -51,7 +49,7 @@ The gateway generates a self-signed SAN certificate that covers `localhost` and 
 
 - `apps-net`: Gitea, n8n, Open WebUI
 - `ai-llm-net`: Ollama and Open WebUI
-- `ai-image-net`: InvokeAI, Fooocus, and the optional image-generation runtime
+- `ai-image-net`: InvokeAI and the optional image-generation runtime
 - `data-net`: infrastructure databases
 - `workbench-net`: Postgres and optional code-server environments
 - `workbench-host-net`: dedicated bridge for the host-side Postgres TCP bind

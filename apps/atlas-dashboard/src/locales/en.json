@@ -42,7 +42,7 @@
     "footerKicker": "atlas signals",
     "footerTitle": "Operational closeout",
     "imageBodyDisabled": "The AI image layer stays off until you explicitly request it. When inactive, the dashboard shows the exact activation command.",
-    "imageBodyEnabled": "The AI image layer is online: InvokeAI and Fooocus are exposed through dedicated gateways, while FLUX.2 klein 4B is prepared automatically for the paired runtime.",
+    "imageBodyEnabled": "The AI image layer is online: InvokeAI is exposed through a dedicated gateway, while FLUX.2 klein 4B is prepared automatically for the paired runtime.",
     "imageKicker": "generation plane",
     "imageTitle": "AI Image Layer",
     "servicesBody": "The core plane is always available. Each card collects endpoints, operational credentials, and a direct entry point into the service.",
@@ -138,7 +138,7 @@
       "credentials": "Operational credentials are exposed here and remain aligned with the lab bootstrap.",
       "https": "All browser ingresses use localhost with dedicated HTTPS, without custom DNS or hosts-file edits.",
       "imageDisabled": "The AI image layer remains optional and no dedicated image endpoint is exposed until you enable it.",
-      "imageEnabled": "InvokeAI and Fooocus are online behind dedicated gateways. FLUX.2 klein 4B is already staged, while Fooocus keeps its own persistent data workspace.",
+      "imageEnabled": "InvokeAI is online behind the dedicated AI image gateway, and FLUX.2 klein 4B is already staged for the runtime.",
       "n8n": "n8n logs in directly with the bootstrapped owner account: there is no second gateway login.",
       "workbenchDisabled": "Workbench and Postgres stay separated from the core operating plane until you enable the dedicated layer.",
       "workbenchEnabled": "Workbench and Postgres are active: you can open browser-based environments or connect from the desktop to the host Postgres port."
@@ -168,23 +168,16 @@
     },
     "imageLayer": {
       "capabilities": {
-        "fooocus": "Local Fooocus",
         "gateway": "Protected image gateway",
         "invokeAi": "Local InvokeAI",
         "models": "Bootstrapped local models"
       },
-      "description": "Optional AI image layer for local visual workflows. It exposes InvokeAI and Fooocus through dedicated gateways and stages FLUX.2 klein 4B in persistent storage for the paired runtime.",
-      "summaryDisabled": "AI image layer is off. InvokeAI and Fooocus are not started or exposed until you enable the dedicated flag.",
-      "summaryEnabled": "InvokeAI and Fooocus are active behind the AI image gateways, with persistent model and output storage kept inside Docker volumes.",
+      "description": "Optional AI image layer for local visual workflows. It exposes InvokeAI through a dedicated gateway and stages FLUX.2 klein 4B in persistent storage for the paired runtime.",
+      "summaryDisabled": "AI image layer is off. InvokeAI is not started or exposed until you enable the dedicated flag.",
+      "summaryEnabled": "InvokeAI is active behind the AI image gateway, with persistent model storage kept inside Docker volumes.",
       "title": "AI Image Layer"
     },
     "imageServices": {
-      "fooocus": {
-        "action": "Open Fooocus",
-        "description": "Prompt-first image workspace based on the official Fooocus container, served through the dedicated image gateway.",
-        "note": "Fooocus keeps its config, downloaded models, and generated outputs in a persistent Docker volume and may fetch additional assets during use.",
-        "title": "Fooocus Flow"
-      },
       "invokeAi": {
         "action": "Open InvokeAI",
         "description": "Browser-based image generation console served through the dedicated image gateway with a self-bootstrapped FLUX.2 klein 4B model.",
@@ -254,7 +247,7 @@
         "label": "ai-image live"
       },
       "imageEnabled": {
-        "caption": "InvokeAI and Fooocus published on dedicated AI image gateways",
+        "caption": "InvokeAI published on the dedicated AI image gateway",
         "label": "ai-image live"
       },
       "ingress": {
@@ -276,7 +269,7 @@
     "operatingCharter": {
       "ai": "Open WebUI and Ollama live in an explicitly optional AI LLM layer.",
       "gitea": "Gitea governs code, review, and Git governance for the project.",
-      "image": "InvokeAI and Fooocus live in a dedicated AI image layer with FLUX.2 klein 4B support.",
+      "image": "InvokeAI lives in a dedicated AI image layer with FLUX.2 klein 4B support.",
       "n8n": "n8n coordinates automations, webhooks, and operational jobs in the lab.",
       "workbench": "Code-server and Postgres stay in a workbench plane separated from the core."
     },

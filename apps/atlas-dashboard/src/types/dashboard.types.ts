@@ -4,7 +4,6 @@ export type DashboardIconKey =
   | 'ai'
   | 'certificate'
   | 'cpp'
-  | 'fooocus'
   | 'forge'
   | 'host'
   | 'image'

@@ -45,12 +45,6 @@ export interface LabRuntimeConfig {
       modelTitle: string;
       url: string;
     };
-    fooocus: {
-      briefingPath: string;
-      gatewayPassword: string;
-      gatewayUser: string;
-      url: string;
-    };
     openWebUi: {
       rootEmail: string;
       rootName: string;

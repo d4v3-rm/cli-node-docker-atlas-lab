@@ -23,7 +23,7 @@ Atlas Lab is built for a practical goal: run a repeatable local engineering plat
 
 - 🧱 An always-on **core layer** with Gitea, n8n, the gateway, and Atlas Dashboard
 - 🧠 An optional **AI LLM layer** with Open WebUI and Ollama
-- 🖼️ An optional **AI image layer** with InvokeAI, Fooocus, and a self-bootstrapped FLUX.2 klein 4B model
+- 🖼️ An optional **AI image layer** with InvokeAI and a self-bootstrapped FLUX.2 klein 4B model
 - 🛠️ An optional **workbench layer** with browser-based Node, Python, AI, and C++ environments plus shared PostgreSQL
 - 🔐 HTTPS-only ingress on `localhost`
 - 📦 A self-contained npm package that can run without a local repository checkout
@@ -69,7 +69,7 @@ Atlas Lab is split into **four explicit layers**:
 | --- | --- | --- | --- |
 | `core` | always on | gateway, Atlas Dashboard, Gitea, Gitea DB, n8n, n8n runners | baseline platform |
 | `ai-llm` | optional | Open WebUI, Ollama, AI LLM gateway | local LLM workflows |
-| `ai-image` | optional | InvokeAI, Fooocus, AI image gateway, FLUX.2 klein 4B staging | local image generation |
+| `ai-image` | optional | InvokeAI, AI image gateway, FLUX.2 klein 4B staging | local image generation |
 | `workbench` | optional | Node Forge, Python Grid, AI Reactor, C++ Foundry, shared PostgreSQL, workbench gateway | browser-based development |
 
 ### Why the current topology
@@ -116,7 +116,6 @@ The only host-level TCP service exposed directly is PostgreSQL from the workbenc
 | Open WebUI | `ai-llm` | `https://localhost:8446/` | only with `--with-ai-llm` |
 | Ollama | `ai-llm` | `https://localhost:8447/` | HTTPS API |
 | InvokeAI | `ai-image` | `https://localhost:8448/` | only with `--with-ai-image` |
-| Fooocus | `ai-image` | `https://localhost:8454/` | only with `--with-ai-image` |
 | Node Forge | `workbench` | `https://localhost:8450/` | Node / TypeScript workspace |
 | Python Grid | `workbench` | `https://localhost:8451/` | Python workspace |
 | AI Reactor | `workbench` | `https://localhost:8452/` | AI / notebook workspace |
@@ -138,7 +137,7 @@ The only host-level TCP service exposed directly is PostgreSQL from the workbenc
 | `edge-net` | exposed | published ingress ports |
 | `apps-net` | internal | core application services |
 | `ai-llm-net` | internal | Open WebUI and Ollama |
-| `ai-image-net` | internal | InvokeAI, Fooocus, and image-generation runtime |
+| `ai-image-net` | internal | InvokeAI and image-generation runtime |
 | `data-net` | internal | data services and infrastructure databases |
 | `workbench-net` | internal | workbenches and PostgreSQL |
 | `workbench-host-net` | bridge | host-side PostgreSQL bind |
@@ -167,7 +166,6 @@ Key volumes include:
 - `gitea-db`
 - `n8n-data`
 - `invokeai-data`
-- `fooocus-data`
 - `ollama-data`
 - `open-webui-data`
 - `postgres-dev-data`
@@ -212,7 +210,6 @@ The AI LLM and AI image layers require:
 - `8451`
 - `8452`
 - `8453`
-- `8454`
 - `15432` when `workbench` is enabled
 
 ### Windows PowerShell note
@@ -249,12 +246,11 @@ Key variables include:
 - `APP_VERSION`
 - `LAB_HTTPS_PORT`, `GITEA_HTTPS_PORT`, `N8N_HTTPS_PORT`
 - `OPENWEBUI_HTTPS_PORT`, `OLLAMA_HTTPS_PORT`
-- `INVOKEAI_HTTPS_PORT`, `FOOOCUS_HTTPS_PORT`
+- `INVOKEAI_HTTPS_PORT`
 - `NODE_DEV_HTTPS_PORT`, `PYTHON_DEV_HTTPS_PORT`, `AI_DEV_HTTPS_PORT`, `CPP_DEV_HTTPS_PORT`
 - `POSTGRES_DEV_HOST_PORT`
 - `OLLAMA_CHAT_MODEL`, `OLLAMA_EMBEDDING_MODEL`
 - `INVOKEAI_MODEL_REPO`, `INVOKEAI_MODEL_REVISION`, `INVOKEAI_MODEL_TITLE`
-- `FOOOCUS_IMAGE`, `FOOOCUS_GATEWAY_USER`, `FOOOCUS_GATEWAY_PASSWORD`, `FOOOCUS_CMDARGS`
 - `GITEA_ROOT_USERNAME`, `GITEA_ROOT_PASSWORD`
 - `N8N_ROOT_EMAIL`, `N8N_ROOT_PASSWORD`
 - `OPENWEBUI_ROOT_EMAIL`, `OPENWEBUI_ROOT_PASSWORD`
@@ -463,7 +459,6 @@ Bootstrap is idempotent and reconciles Gitea, n8n, and optionally Ollama.
 | Open WebUI | `https://localhost:8446/` | `root@openwebui.local / RootOpenWebUI!2026` |
 | Ollama | `https://localhost:8447/` | gateway basic auth `root / RootOllama!2026` |
 | InvokeAI | `https://localhost:8448/` | gateway basic auth `root / RootInvokeAI!2026` |
-| Fooocus | `https://localhost:8454/` | gateway basic auth `root / RootFooocus!2026` |
 | PostgreSQL host-side | `localhost:15432` | `postgres / RootPostgresDev!2026` |
 
 For DBeaver and other desktop PostgreSQL clients:
@@ -514,7 +509,7 @@ Expected behavior. The lab uses a self-signed certificate.
 
 ### `atlas-lab up` fails during port preflight
 
-One of the configured lab ports (`8443-8448`, `8450-8454`, or `15432`) is occupied or excluded by the system.
+One of the configured lab ports (`8443-8448`, `8450-8453`, or `15432`) is occupied or excluded by the system.
 
 ```powershell
 atlas-lab status
@@ -532,7 +527,7 @@ docker info
 
 ### `atlas-lab up --with-ai-image` takes a long time on first start
 
-Expected behavior. The AI image layer prepares the FLUX.2 klein 4B model asset inside persistent storage during service startup, and Fooocus may also initialize its own persistent data workspace before all image services become ready.
+Expected behavior. The AI image layer prepares the FLUX.2 klein 4B model asset inside persistent storage during service startup before InvokeAI becomes fully ready.
 
 ### Workbenches do not start
 
@@ -627,11 +622,6 @@ This project is distributed under the **MIT** license.
 ### InvokeAI
 
 - Docker installation docs: https://invoke-ai.github.io/InvokeAI/installation/060_INSTALL_DOCKER/
-
-### Fooocus
-
-- Official repository: https://github.com/lllyasviel/Fooocus
-- Docker guide: https://github.com/lllyasviel/Fooocus/blob/main/docker.md
 
 ### Hugging Face models
 

@@ -152,10 +152,6 @@ export function createDashboardViewModel(
           label: t('dashboard.imageLayer.capabilities.invokeAi')
         },
         {
-          icon: 'fooocus',
-          label: t('dashboard.imageLayer.capabilities.fooocus')
-        },
-        {
           icon: 'spark',
           label: t('dashboard.imageLayer.capabilities.models')
         },
@@ -216,40 +212,6 @@ export function createDashboardViewModel(
         title: t('dashboard.imageServices.invokeAi.title'),
         tone: 'image'
       },
-      {
-        action: {
-          href: config.services.fooocus.url,
-          label: t('dashboard.imageServices.fooocus.action')
-        },
-        briefing: {
-          path: config.services.fooocus.briefingPath,
-          title: t('dashboard.imageServices.fooocus.title')
-        },
-        credentials: [
-          {
-            label: credentialLabels.endpoint,
-            value: config.services.fooocus.url
-          },
-          {
-            label: credentialLabels.gatewayUser,
-            value: config.services.fooocus.gatewayUser
-          },
-          {
-            label: credentialLabels.gatewayPassword,
-            value: config.services.fooocus.gatewayPassword
-          },
-          {
-            label: credentialLabels.usage,
-            value: t('values.imageStudio')
-          }
-        ],
-        description: t('dashboard.imageServices.fooocus.description'),
-        icon: 'fooocus',
-        id: 'fooocus',
-        note: t('dashboard.imageServices.fooocus.note'),
-        status: t('values.imageStudio'),
-        title: t('dashboard.imageServices.fooocus.title'),
-        tone: 'image'
       }
     ],
     footerCards: [
@@ -314,7 +276,7 @@ export function createDashboardViewModel(
               ? 'dashboard.metrics.imageEnabled.label'
               : 'dashboard.metrics.imageDisabled.label'
           ),
-          value: aiImageEnabled ? 2 : 0
+          value: aiImageEnabled ? 1 : 0
         },
         {
           caption: t(
