@@ -69,6 +69,7 @@ services:
       NVIDIA_DRIVER_CAPABILITIES: ${OLLAMA_NVIDIA_DRIVER_CAPABILITIES}
     volumes:
       - invokeai-data:/invokeai
+      - ../../infra/docker/images/model-sync/download-model.py:/usr/local/bin/download-model.py:ro
       - ../../config/models/invokeai-models.json:/opt/atlas-lab/model-sync/invokeai-models.json:ro
     networks:
       ai-image-net:
