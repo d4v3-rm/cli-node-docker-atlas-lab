@@ -30,6 +30,7 @@ export const labEnvSchema = z
     OPENWEBUI_ROOT_PASSWORD: optionalEnvValue,
     OLLAMA_EMBEDDING_MODEL: optionalEnvValue,
     OLLAMA_CHAT_MODEL: optionalEnvValue,
+    OLLAMA_RUNTIME_MODELS: optionalEnvValue,
     INVOKEAI_URL: optionalEnvValue,
     INVOKEAI_GATEWAY_USER: optionalEnvValue,
     INVOKEAI_GATEWAY_PASSWORD: optionalEnvValue,

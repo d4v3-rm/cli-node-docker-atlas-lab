@@ -4,7 +4,7 @@
 
 `InvokeAI` provides a browser-based image generation workspace exposed through the dedicated `ai-image` layer.
 
-This layer is paired with the self-bootstrapped model `${INVOKEAI_MODEL_TITLE}` from `${INVOKEAI_MODEL_REPO}` at revision `${INVOKEAI_MODEL_REVISION}`.
+This layer stages a managed local model set through repository-backed sync scripts and defaults to `${INVOKEAI_MODEL_TITLE}` from `${INVOKEAI_MODEL_REPO}` at revision `${INVOKEAI_MODEL_REVISION}`.
 
 ## How to access it
 
@@ -16,6 +16,7 @@ This layer is paired with the self-bootstrapped model `${INVOKEAI_MODEL_TITLE}` 
 
 - The service is published only when the `ai-image` layer is enabled.
 - Model files are persisted inside a named Docker volume and scanned by InvokeAI on startup.
+- The managed image model set is defined in `config/models/invokeai-models.json`.
 - The AI image layer remains separate from the chat-oriented `ai-llm` layer based on Open WebUI and Ollama.
 
 ## Typical workflow

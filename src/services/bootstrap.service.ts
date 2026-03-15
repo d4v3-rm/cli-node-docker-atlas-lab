@@ -2,7 +2,7 @@ import { Listr } from 'listr2';
 import pWaitFor from 'p-wait-for';
 import { createComposeCommandArgs, type ComposeLayerSelection } from '../lib/compose.js';
 import type { BootstrapCommandOptions } from '../types/cli.types.js';
-import type { AiLlmBootstrapEnv, BootstrapEnv, ProjectContext } from '../types/project.types.js';
+import type { BootstrapEnv, ProjectContext } from '../types/project.types.js';
 import { ensureGiteaAdmin } from './gitea-admin.service.js';
 import { ensureN8nOwner } from './n8n-owner.service.js';
 import { printCommandHeader } from '../ui/banner.js';
@@ -71,7 +71,7 @@ export function createBootstrapTasks(
     tasks.push({
       title: formatTaskTitle('bootstrap', 'Align Ollama runtime models'),
       task: async () => {
-        const result = await ensureOllamaModels(context, aiLlmEnv);
+        const result = await ensureOllamaModels(context);
         printInfo(`Ollama runtime models ${result}.`, 'bootstrap');
       }
     });
@@ -83,67 +83,39 @@ export function createBootstrapTasks(
  * Waits for Ollama and ensures the configured runtime models are present locally.
  */
 async function ensureOllamaModels(
-  context: ProjectContext,
-  env: AiLlmBootstrapEnv
+  context: ProjectContext
 ): Promise<'present' | 'pulled'> {
   await waitForService(context, 'ollama', 180, { includeAiLlm: true });
 
-  let pulledModel = false;
-
-  for (const modelName of collectRequiredOllamaModels(env)) {
-    printInfo(`Checking Ollama model '${modelName}'.`, 'bootstrap');
-    const modelCheck = await runCommand(
-      'docker',
-      createComposeCommandArgs(context, [
-        'exec',
-        '-T',
-        'ollama',
-        'ollama',
-        'show',
-        modelName
-      ], { includeAiLlm: true }),
-      {
-        cwd: context.projectRoot,
-        captureOutput: true,
-        allowFailure: true,
-        scope: 'bootstrap'
-      }
-    );
-
-    if (modelCheck.exitCode === 0) {
-      printInfo(`Ollama model '${modelName}' is already available locally.`, 'bootstrap');
-      continue;
+  const syncResult = await runCommand(
+    'docker',
+    createComposeCommandArgs(context, [
+      'exec',
+      '-T',
+      'ollama',
+      'sh',
+      '/opt/atlas-lab/model-sync/sync-ollama-models.sh'
+    ], { includeAiLlm: true }),
+    {
+      cwd: context.projectRoot,
+      captureOutput: true,
+      scope: 'bootstrap'
     }
+  );
 
-    printInfo(`Pulling missing Ollama model '${modelName}'.`, 'bootstrap');
-    await runCommand(
-      'docker',
-      createComposeCommandArgs(context, [
-        'exec',
-        '-T',
-        'ollama',
-        'ollama',
-        'pull',
-        modelName
-      ], { includeAiLlm: true }),
-      {
-        cwd: context.projectRoot,
-        scope: 'bootstrap'
-      }
-    );
-    printInfo(`Finished pulling Ollama model '${modelName}'.`, 'bootstrap');
+  const lines = syncResult.stdout
+    .split(/\r?\n/u)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
 
-    pulledModel = true;
+  for (const line of lines) {
+    if (!line.startsWith('ATLAS_OLLAMA_MODEL_SYNC_RESULT=')) {
+      printInfo(line, 'bootstrap');
+    }
   }
 
-  return pulledModel ? 'pulled' : 'present';
-}
-
-/**
- * Collects the distinct Ollama models required by the lab bootstrap.
- */
-function collectRequiredOllamaModels(env: AiLlmBootstrapEnv): string[] {
-  return [...new Set([env.OLLAMA_EMBEDDING_MODEL, env.OLLAMA_CHAT_MODEL])];
+  const resultLine = lines.find((line) => line.startsWith('ATLAS_OLLAMA_MODEL_SYNC_RESULT='));
+  return resultLine?.endsWith('pulled') ? 'pulled' : 'present';
 }
 
 /**

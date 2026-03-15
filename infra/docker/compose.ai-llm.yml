@@ -61,10 +61,12 @@ services:
       <<: *lab-env
       OLLAMA_HOST: 0.0.0.0:11434
       OLLAMA_ORIGINS: ${OPENWEBUI_URL}
+      OLLAMA_RUNTIME_MODELS: ${OLLAMA_RUNTIME_MODELS}
       NVIDIA_VISIBLE_DEVICES: ${OLLAMA_NVIDIA_VISIBLE_DEVICES}
       NVIDIA_DRIVER_CAPABILITIES: ${OLLAMA_NVIDIA_DRIVER_CAPABILITIES}
     volumes:
       - ollama-data:/root/.ollama
+      - ../../infra/docker/images/model-sync/sync-ollama-models.sh:/opt/atlas-lab/model-sync/sync-ollama-models.sh:ro
     networks:
       ai-llm-net:
       services-egress-net:

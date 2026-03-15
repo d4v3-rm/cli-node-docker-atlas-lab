@@ -42,7 +42,7 @@
     "footerKicker": "segnali atlas",
     "footerTitle": "Chiusura operativa",
     "imageBodyDisabled": "Il layer AI image resta spento finche non lo richiedi esplicitamente. Quando non e attivo, il dashboard mostra il comando esatto per abilitarlo.",
-    "imageBodyEnabled": "Il layer AI image e online: InvokeAI viene esposto tramite gateway dedicato, mentre FLUX.2 klein 4B viene preparato automaticamente per il runtime dedicato.",
+    "imageBodyEnabled": "Il layer AI image e online: InvokeAI viene esposto tramite gateway dedicato, mentre il set di modelli configurato viene preparato automaticamente per il runtime dedicato.",
     "imageKicker": "piano generativo",
     "imageTitle": "AI Image Layer",
     "servicesBody": "Il piano core resta sempre disponibile. Ogni card raccoglie endpoint, credenziali operative e un accesso diretto al servizio.",
@@ -138,7 +138,7 @@
       "credentials": "Le credenziali operative sono esposte qui e restano allineate al bootstrap del lab.",
       "https": "Tutti gli ingressi browser usano localhost con HTTPS dedicato, senza DNS custom o file hosts.",
       "imageDisabled": "Il layer AI image resta opzionale e nessun endpoint immagini dedicato viene esposto finche non lo abiliti.",
-      "imageEnabled": "InvokeAI e online dietro il gateway AI image dedicato, e FLUX.2 klein 4B viene preparato automaticamente per il runtime.",
+      "imageEnabled": "InvokeAI e online dietro il gateway AI image dedicato, e il set di modelli configurato viene predisposto automaticamente per il runtime.",
       "n8n": "n8n entra direttamente con owner bootstrap: non c e un secondo login al gateway.",
       "workbenchDisabled": "Workbench e Postgres restano separati dal core operativo finche non abiliti il layer dedicato.",
       "workbenchEnabled": "I workbench e Postgres sono attivi: puoi aprire ambienti browser-based o connetterti dal desktop alla porta host di Postgres."
@@ -172,7 +172,7 @@
         "invokeAi": "InvokeAI locale",
         "models": "modelli locali bootstrapati"
       },
-      "description": "Layer AI image opzionale per la generazione immagini locale. Espone InvokeAI tramite gateway dedicato e predispone FLUX.2 klein 4B nello storage persistente per il runtime dedicato.",
+      "description": "Layer AI image opzionale per la generazione immagini locale. Espone InvokeAI tramite gateway dedicato e predispone il set di modelli configurato nello storage persistente del runtime.",
       "summaryDisabled": "AI image layer spento. InvokeAI non viene avviato o esposto finche non abiliti il flag dedicato.",
       "summaryEnabled": "InvokeAI e attivo dietro il gateway AI image, con il modello persistito nei volumi Docker.",
       "title": "AI Image Layer"
@@ -180,7 +180,7 @@
     "imageServices": {
       "invokeAi": {
         "action": "Apri InvokeAI",
-        "description": "Console browser-based per la generazione immagini servita dal gateway dedicato con un modello FLUX.2 klein 4B gia predisposto.",
+        "description": "Console browser-based per la generazione immagini servita dal gateway dedicato con un modello principale gia predisposto e modelli aggiuntivi allineati via script.",
         "note": "Sorgente modello: {{modelRepo}}. Il modello viene predisposto nello storage persistente e scansionato da InvokeAI all avvio.",
         "title": "InvokeAI Studio"
       }
@@ -269,7 +269,7 @@
     "operatingCharter": {
       "ai": "Open WebUI e Ollama vivono in un layer AI LLM esplicitamente opzionale.",
       "gitea": "Gitea governa codice, review e governance Git del progetto.",
-      "image": "InvokeAI vive in un layer AI image dedicato con supporto a FLUX.2 klein 4B.",
+      "image": "InvokeAI vive in un layer AI image dedicato con un set di modelli gestito via script.",
       "n8n": "n8n coordina automazioni, webhook e job operativi del lab.",
       "workbench": "Code-server e Postgres restano in un piano workbench separato dal core."
     },

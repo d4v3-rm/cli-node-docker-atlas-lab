@@ -14,6 +14,7 @@ import type {
 import { printCommandHeader } from '../ui/banner.js';
 import { formatTaskTitle, printDoctorSummary } from '../ui/logger.js';
 import { requestHttps } from '../utils/http.js';
+import { collectExpectedOllamaModelIdentifiers } from '../utils/model-lists.js';
 import { runCommand } from '../utils/process.js';
 import { readGatewayCertificate } from './gateway-certificate.service.js';
 import { checkNvidiaGpuRuntime } from './gpu-preflight.service.js';
@@ -340,8 +341,8 @@ function buildSmokeChecks(
         );
 
         const modelIds = collectModelIdentifiers(modelsResponse.body);
-        const missingModels = [aiLlmEnv.OLLAMA_CHAT_MODEL, `${aiLlmEnv.OLLAMA_EMBEDDING_MODEL}:latest`].filter(
-          (modelName) => !modelIds.includes(modelName)
+        const missingModels = collectExpectedOllamaModelIdentifiers(aiLlmEnv).filter((modelName) =>
+          !modelIds.includes(modelName)
         );
 
         return {
@@ -366,8 +367,8 @@ function buildSmokeChecks(
         });
 
         const modelIds = collectOllamaModelIdentifiers(response.body);
-        const missingModels = [aiLlmEnv.OLLAMA_CHAT_MODEL, `${aiLlmEnv.OLLAMA_EMBEDDING_MODEL}:latest`].filter(
-          (modelName) => !modelIds.includes(modelName)
+        const missingModels = collectExpectedOllamaModelIdentifiers(aiLlmEnv).filter((modelName) =>
+          !modelIds.includes(modelName)
         );
 
         return {

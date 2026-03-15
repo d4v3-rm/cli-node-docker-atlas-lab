@@ -15,10 +15,12 @@ export const REQUIRED_REPOSITORY_FILES = [
   'infra/docker/compose.ai-image.yml',
   'infra/docker/compose.workbench.yml',
   'env/lab.env',
+  'config/models/invokeai-models.json',
   'config/gateway/templates/Caddyfile.template',
   'config/gateway/templates/Caddyfile.ai-llm.template',
   'config/gateway/templates/Caddyfile.ai-image.template',
-  'config/gateway/templates/Caddyfile.workbench.template'
+  'config/gateway/templates/Caddyfile.workbench.template',
+  'infra/docker/images/model-sync/sync-ollama-models.sh'
 ] as const;
 
 /**

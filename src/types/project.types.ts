@@ -18,6 +18,7 @@ export interface LabEnv {
   OPENWEBUI_ROOT_PASSWORD?: string;
   OLLAMA_EMBEDDING_MODEL?: string;
   OLLAMA_CHAT_MODEL?: string;
+  OLLAMA_RUNTIME_MODELS?: string;
   INVOKEAI_URL?: string;
   INVOKEAI_GATEWAY_USER?: string;
   INVOKEAI_GATEWAY_PASSWORD?: string;

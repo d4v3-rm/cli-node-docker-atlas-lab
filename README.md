@@ -23,7 +23,7 @@ Atlas Lab is built for a practical goal: run a repeatable local engineering plat
 
 - 🧱 An always-on **core layer** with Gitea, n8n, the gateway, and Atlas Dashboard
 - 🧠 An optional **AI LLM layer** with Open WebUI and Ollama
-- 🖼️ An optional **AI image layer** with InvokeAI and a self-bootstrapped FLUX.2 klein 4B model
+- 🖼️ An optional **AI image layer** with InvokeAI and a script-managed local model set
 - 🛠️ An optional **workbench layer** with browser-based Node, Python, AI, and C++ environments plus shared PostgreSQL
 - 🔐 HTTPS-only ingress on `localhost`
 - 📦 A self-contained npm package that can run without a local repository checkout
@@ -69,7 +69,7 @@ Atlas Lab is split into **four explicit layers**:
 | --- | --- | --- | --- |
 | `core` | always on | gateway, Atlas Dashboard, Gitea, Gitea DB, n8n, n8n runners | baseline platform |
 | `ai-llm` | optional | Open WebUI, Ollama, AI LLM gateway | local LLM workflows |
-| `ai-image` | optional | InvokeAI, AI image gateway, FLUX.2 klein 4B staging | local image generation |
+| `ai-image` | optional | InvokeAI, AI image gateway, managed model staging | local image generation |
 | `workbench` | optional | Node Forge, Python Grid, AI Reactor, C++ Foundry, shared PostgreSQL, workbench gateway | browser-based development |
 
 ### Why the current topology
@@ -249,8 +249,9 @@ Key variables include:
 - `INVOKEAI_HTTPS_PORT`
 - `NODE_DEV_HTTPS_PORT`, `PYTHON_DEV_HTTPS_PORT`, `AI_DEV_HTTPS_PORT`, `CPP_DEV_HTTPS_PORT`
 - `POSTGRES_DEV_HOST_PORT`
-- `OLLAMA_CHAT_MODEL`, `OLLAMA_EMBEDDING_MODEL`
+- `OLLAMA_CHAT_MODEL`, `OLLAMA_EMBEDDING_MODEL`, `OLLAMA_RUNTIME_MODELS`
 - `INVOKEAI_MODEL_REPO`, `INVOKEAI_MODEL_REVISION`, `INVOKEAI_MODEL_TITLE`
+- `config/models/invokeai-models.json`
 - `GITEA_ROOT_USERNAME`, `GITEA_ROOT_PASSWORD`
 - `N8N_ROOT_EMAIL`, `N8N_ROOT_PASSWORD`
 - `OPENWEBUI_ROOT_EMAIL`, `OPENWEBUI_ROOT_PASSWORD`
@@ -527,7 +528,7 @@ docker info
 
 ### `atlas-lab up --with-ai-image` takes a long time on first start
 
-Expected behavior. The AI image layer prepares the FLUX.2 klein 4B model asset inside persistent storage during service startup before InvokeAI becomes fully ready.
+Expected behavior. The AI image layer prepares the configured image model set inside persistent storage during service startup before InvokeAI becomes fully ready.
 
 ### Workbenches do not start
 
@@ -542,7 +543,7 @@ npm run dev -- up --with-workbench
 Verify:
 
 - the AI LLM layer is enabled
-- `OLLAMA_CHAT_MODEL` and `OLLAMA_EMBEDDING_MODEL` are set
+- `OLLAMA_CHAT_MODEL`, `OLLAMA_EMBEDDING_MODEL`, and `OLLAMA_RUNTIME_MODELS` are set
 - `https://localhost:8447/api/tags` responds
 - the AI LLM bootstrap has run
 
@@ -625,7 +626,8 @@ This project is distributed under the **MIT** license.
 
 ### Hugging Face models
 
-- FLUX.2 klein 4B: https://huggingface.co/black-forest-labs/FLUX.2-klein-4B
+- FLUX.2-klein-4b-fp8: https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8
+- Z-Image GGUF: https://huggingface.co/gguf-org/z-image-gguf
 
 ### code-server
 
