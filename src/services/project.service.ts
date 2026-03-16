@@ -7,6 +7,7 @@ import { findUpSync } from 'find-up';
 import { ZodError } from 'zod';
 import {
   aiImageSmokeEnvSchema,
+  aiVideoSmokeEnvSchema,
   aiLlmBootstrapEnvSchema,
   aiLlmSmokeEnvSchema,
   bootstrapEnvSchema,
@@ -19,6 +20,7 @@ import { ensureDevelopmentFileLogging } from './runtime-log.service.js';
 import type { GlobalCliOptions } from '../types/cli.types.js';
 import type {
   AiImageSmokeEnv,
+  AiVideoSmokeEnv,
   AiLlmBootstrapEnv,
   AiLlmSmokeEnv,
   BootstrapEnv,
@@ -84,6 +86,13 @@ export function parseAiLlmSmokeEnv(env: LabEnv): AiLlmSmokeEnv {
  */
 export function parseAiImageSmokeEnv(env: LabEnv): AiImageSmokeEnv {
   return parseWithSchema(() => aiImageSmokeEnvSchema.parse(env));
+}
+
+/**
+ * Validates and narrows the env for AI video smoke-check workflows.
+ */
+export function parseAiVideoSmokeEnv(env: LabEnv): AiVideoSmokeEnv {
+  return parseWithSchema(() => aiVideoSmokeEnvSchema.parse(env));
 }
 
 /**

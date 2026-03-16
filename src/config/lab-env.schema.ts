@@ -37,6 +37,11 @@ export const labEnvSchema = z
     INVOKEAI_MODEL_REPO: optionalEnvValue,
     INVOKEAI_MODEL_REVISION: optionalEnvValue,
     INVOKEAI_MODEL_TITLE: optionalEnvValue,
+    COMFYUI_URL: optionalEnvValue,
+    COMFYUI_GATEWAY_USER: optionalEnvValue,
+    COMFYUI_GATEWAY_PASSWORD: optionalEnvValue,
+    COMFYUI_LTX_MODEL_TITLE: optionalEnvValue,
+    COMFYUI_WAN_MODEL_TITLE: optionalEnvValue,
     POSTGRES_DEV_HOST_PORT: optionalEnvValue,
     LAB_URL: optionalEnvValue,
     GITEA_URL: optionalEnvValue,
@@ -107,6 +112,17 @@ export const aiImageSmokeEnvSchema = labEnvSchema.extend({
   INVOKEAI_MODEL_REPO: requiredEnvValue,
   INVOKEAI_MODEL_REVISION: requiredEnvValue,
   INVOKEAI_MODEL_TITLE: requiredEnvValue
+});
+
+/**
+ * Schema for AI video smoke checks.
+ */
+export const aiVideoSmokeEnvSchema = labEnvSchema.extend({
+  COMFYUI_URL: requiredEnvValue,
+  COMFYUI_GATEWAY_USER: requiredEnvValue,
+  COMFYUI_GATEWAY_PASSWORD: requiredEnvValue,
+  COMFYUI_LTX_MODEL_TITLE: requiredEnvValue,
+  COMFYUI_WAN_MODEL_TITLE: requiredEnvValue
 });
 
 /**

@@ -15,6 +15,7 @@ export function registerSaveImagesCommand(program: Command): void {
     .option('--output <path>', 'Output archive path (defaults under ./backups/images)')
     .option('--with-ai-llm, --with-ai', 'Include the optional AI LLM layer images')
     .option('--with-ai-image, --with-image', 'Include the optional AI image layer images')
+    .option('--with-ai-video', 'Include the optional AI video layer images')
     .option('--with-workbench', 'Include the optional workbench layer images')
     .action(async (options: SaveImagesCommandOptions) => {
       const normalizedOptions = normalizeAiAliasOptions(options);

@@ -18,6 +18,7 @@ export function registerUpCommand(program: Command): void {
       '--with-ai-image, --with-image',
       'Include the optional AI image layer (InvokeAI and its paired runtime)'
     )
+    .option('--with-ai-video', 'Include the optional AI video layer (ComfyUI with managed video models)')
     .option('--with-workbench', 'Include the optional workbench profile')
     .action(async (options: UpCommandOptions) => {
       const normalizedOptions = normalizeAiAliasOptions(options);

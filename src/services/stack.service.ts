@@ -35,7 +35,7 @@ export async function runUpCommand(
   let composeStartedInThisRun = false;
   const tasks = new Listr(
     [
-      ...((options.withAiLlm || options.withAiImage)
+      ...((options.withAiLlm || options.withAiImage || options.withAiVideo)
         ? [
             {
               title: formatTaskTitle('host', 'Validate NVIDIA GPU runtime'),
@@ -51,6 +51,7 @@ export async function runUpCommand(
           await assertPublishedPortsAvailable(context, {
             includeAiLlm: Boolean(options.withAiLlm),
             includeAiImage: Boolean(options.withAiImage),
+            includeAiVideo: Boolean(options.withAiVideo),
             includeWorkbench: Boolean(options.withWorkbench)
           });
         }
@@ -93,6 +94,16 @@ export async function runUpCommand(
             }
           ]
         : []),
+      ...(options.withAiVideo
+        ? [
+            {
+              title: formatTaskTitle('stack', 'Wait for ComfyUI runtime'),
+              task: async () => {
+                await waitForService(context, 'comfyui', 1200, { includeAiVideo: true });
+              }
+            }
+          ]
+        : []),
       {
         title: formatTaskTitle('stack', 'Remove legacy init images'),
         task: async () => {
@@ -121,7 +132,7 @@ export async function runUpCommand(
  * Formats the selected Compose layers for the startup log header.
  */
 function describeEnabledLayers(
-  options: Pick<UpCommandOptions, 'withAiLlm' | 'withAiImage' | 'withWorkbench'>
+  options: Pick<UpCommandOptions, 'withAiLlm' | 'withAiImage' | 'withAiVideo' | 'withWorkbench'>
 ): string {
   const layers = ['core'];
 
@@ -131,6 +142,10 @@ function describeEnabledLayers(
 
   if (options.withAiImage) {
     layers.push('ai-image');
+  }
+
+  if (options.withAiVideo) {
+    layers.push('ai-video');
   }
 
   if (options.withWorkbench) {
@@ -199,6 +214,7 @@ function createComposeUpArgs(context: ProjectContext, options: UpCommandOptions)
   return createComposeCommandArgs(context, composeArgs, {
     includeAiLlm: Boolean(options.withAiLlm),
     includeAiImage: Boolean(options.withAiImage),
+    includeAiVideo: Boolean(options.withAiVideo),
     includeWorkbench: Boolean(options.withWorkbench)
   });
 }

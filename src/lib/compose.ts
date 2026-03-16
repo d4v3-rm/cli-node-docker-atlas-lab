@@ -4,6 +4,7 @@ export interface ComposeLayerSelection {
   includeAiLlm?: boolean;
   includeAll?: boolean;
   includeAiImage?: boolean;
+  includeAiVideo?: boolean;
   includeWorkbench?: boolean;
 }
 
@@ -19,6 +20,7 @@ export function resolveComposeFiles(
       context.layout.composeFile,
       context.layout.composeAiLlmFile,
       context.layout.composeAiImageFile,
+      context.layout.composeAiVideoFile,
       context.layout.composeWorkbenchFile
     ];
   }
@@ -27,6 +29,7 @@ export function resolveComposeFiles(
     context.layout.composeFile,
     ...(selection.includeAiLlm ? [context.layout.composeAiLlmFile] : []),
     ...(selection.includeAiImage ? [context.layout.composeAiImageFile] : []),
+    ...(selection.includeAiVideo ? [context.layout.composeAiVideoFile] : []),
     ...(selection.includeWorkbench ? [context.layout.composeWorkbenchFile] : [])
   ];
 }

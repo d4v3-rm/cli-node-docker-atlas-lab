@@ -15,6 +15,7 @@ export function registerSaveVolumesCommand(program: Command): void {
     .option('--output <path>', 'Output archive path (defaults under ./backups/volumes)')
     .option('--with-ai-llm, --with-ai', 'Include the optional AI LLM layer volumes')
     .option('--with-ai-image, --with-image', 'Include the optional AI image layer volumes')
+    .option('--with-ai-video', 'Include the optional AI video layer volumes')
     .option('--with-workbench', 'Include the optional workbench layer volumes')
     .action(async (options: SaveVolumesCommandOptions) => {
       const normalizedOptions = normalizeAiAliasOptions(options);

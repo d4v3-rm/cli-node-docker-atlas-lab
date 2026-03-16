@@ -25,6 +25,10 @@ const AI_IMAGE_PORT_ENV_KEYS = [
   'INVOKEAI_HTTPS_PORT'
 ] as const;
 
+const AI_VIDEO_PORT_ENV_KEYS = [
+  'COMFYUI_HTTPS_PORT'
+] as const;
+
 const WORKBENCH_PORT_ENV_KEYS = [
   'POSTGRES_DEV_HOST_PORT',
   'NODE_DEV_HTTPS_PORT',
@@ -43,6 +47,7 @@ export async function assertPublishedPortsAvailable(
   options: {
     includeAiLlm: boolean;
     includeAiImage: boolean;
+    includeAiVideo: boolean;
     includeWorkbench: boolean;
   }
 ): Promise<void> {
@@ -50,7 +55,8 @@ export async function assertPublishedPortsAvailable(
     context.env,
     options.includeWorkbench,
     options.includeAiLlm,
-    options.includeAiImage
+    options.includeAiImage,
+    options.includeAiVideo
   );
   const currentProjectPorts = await getRunningComposePublishedPorts(context);
   const results = await Promise.all(
@@ -76,12 +82,14 @@ function getConfiguredHostPorts(
   env: LabEnv,
   includeWorkbench: boolean,
   includeAiLlm: boolean,
-  includeAiImage: boolean
+  includeAiImage: boolean,
+  includeAiVideo: boolean
 ): HostPortDefinition[] {
   const envKeys = [
     ...CORE_PORT_ENV_KEYS,
     ...(includeAiLlm ? [...AI_LLM_PORT_ENV_KEYS] : []),
     ...(includeAiImage ? [...AI_IMAGE_PORT_ENV_KEYS] : []),
+    ...(includeAiVideo ? [...AI_VIDEO_PORT_ENV_KEYS] : []),
     ...(includeWorkbench ? [...WORKBENCH_PORT_ENV_KEYS] : [])
   ];
 

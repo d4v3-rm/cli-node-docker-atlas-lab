@@ -5,11 +5,13 @@ export interface RepositoryPathDefinitions {
   composeFile: string;
   composeAiLlmFile: string;
   composeAiImageFile: string;
+  composeAiVideoFile: string;
   composeWorkbenchFile: string;
   envFile: string;
   gatewayTemplateFile: string;
   gatewayAiLlmTemplateFile: string;
   gatewayAiImageTemplateFile: string;
+  gatewayAiVideoTemplateFile: string;
   gatewayWorkbenchTemplateFile: string;
 }
 
@@ -20,10 +22,12 @@ export interface RepositoryLayout {
   composeFile: string;
   composeAiLlmFile: string;
   composeAiImageFile: string;
+  composeAiVideoFile: string;
   composeWorkbenchFile: string;
   envFile: string;
   gatewayTemplateFile: string;
   gatewayAiLlmTemplateFile: string;
   gatewayAiImageTemplateFile: string;
+  gatewayAiVideoTemplateFile: string;
   gatewayWorkbenchTemplateFile: string;
 }

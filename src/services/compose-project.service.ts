@@ -54,13 +54,14 @@ export async function getRunningComposePublishedPorts(
  */
 export async function listConfiguredComposeImages(
   context: ProjectContext,
-  options: Pick<SaveImagesCommandOptions, 'withAiLlm' | 'withAiImage' | 'withWorkbench'>
+  options: Pick<SaveImagesCommandOptions, 'withAiLlm' | 'withAiImage' | 'withAiVideo' | 'withWorkbench'>
 ): Promise<string[]> {
   const result = await runCommand(
     'docker',
     createComposeCommandArgs(context, ['config', '--images'], {
       includeAiLlm: Boolean(options.withAiLlm),
       includeAiImage: Boolean(options.withAiImage),
+      includeAiVideo: Boolean(options.withAiVideo),
       includeWorkbench: Boolean(options.withWorkbench)
     }),
     {
@@ -81,6 +82,7 @@ export async function listConfiguredDockerVolumes(
   options: Pick<GlobalCliOptions, never> & {
     withAiLlm?: boolean;
     withAiImage?: boolean;
+    withAiVideo?: boolean;
     withWorkbench?: boolean;
   }
 ): Promise<Array<{ dockerName: string; logicalName: string }>> {
@@ -89,6 +91,7 @@ export async function listConfiguredDockerVolumes(
     createComposeCommandArgs(context, ['config', '--volumes'], {
       includeAiLlm: Boolean(options.withAiLlm),
       includeAiImage: Boolean(options.withAiImage),
+      includeAiVideo: Boolean(options.withAiVideo),
       includeWorkbench: Boolean(options.withWorkbench)
     }),
     {

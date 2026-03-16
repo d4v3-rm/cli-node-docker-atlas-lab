@@ -25,6 +25,11 @@ export interface LabEnv {
   INVOKEAI_MODEL_REPO?: string;
   INVOKEAI_MODEL_REVISION?: string;
   INVOKEAI_MODEL_TITLE?: string;
+  COMFYUI_URL?: string;
+  COMFYUI_GATEWAY_USER?: string;
+  COMFYUI_GATEWAY_PASSWORD?: string;
+  COMFYUI_LTX_MODEL_TITLE?: string;
+  COMFYUI_WAN_MODEL_TITLE?: string;
   POSTGRES_DEV_HOST_PORT?: string;
   LAB_URL?: string;
   GITEA_URL?: string;
@@ -113,4 +118,15 @@ export interface AiImageSmokeEnv extends LabEnv {
   INVOKEAI_MODEL_REPO: string;
   INVOKEAI_MODEL_REVISION: string;
   INVOKEAI_MODEL_TITLE: string;
+}
+
+/**
+ * Env shape guaranteed after AI video smoke-check validation.
+ */
+export interface AiVideoSmokeEnv extends LabEnv {
+  COMFYUI_URL: string;
+  COMFYUI_GATEWAY_USER: string;
+  COMFYUI_GATEWAY_PASSWORD: string;
+  COMFYUI_LTX_MODEL_TITLE: string;
+  COMFYUI_WAN_MODEL_TITLE: string;
 }

@@ -20,6 +20,7 @@ export interface UpCommandOptions extends GlobalCliOptions, LegacyAiAliasOptions
   build?: boolean;
   withAiLlm?: boolean;
   withAiImage?: boolean;
+  withAiVideo?: boolean;
   withWorkbench?: boolean;
 }
 
@@ -39,6 +40,7 @@ export interface DoctorCommandOptions extends GlobalCliOptions, LegacyAiAliasOpt
   smoke?: boolean;
   withAiLlm?: boolean;
   withAiImage?: boolean;
+  withAiVideo?: boolean;
   withWorkbench?: boolean;
 }
 
@@ -49,6 +51,7 @@ export interface SaveImagesCommandOptions extends GlobalCliOptions, LegacyAiAlia
   output?: string;
   withAiLlm?: boolean;
   withAiImage?: boolean;
+  withAiVideo?: boolean;
   withWorkbench?: boolean;
 }
 
@@ -66,6 +69,7 @@ export interface SaveVolumesCommandOptions extends GlobalCliOptions, LegacyAiAli
   output?: string;
   withAiLlm?: boolean;
   withAiImage?: boolean;
+  withAiVideo?: boolean;
   withWorkbench?: boolean;
 }
 
