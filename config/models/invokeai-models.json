@@ -48,12 +48,15 @@
       "target_file": "/invokeai/models/external/z-image-qwen3-encoder/Qwen_3_4b-Q6_K.gguf"
     },
     {
-      "title": "FLUX.1-schnell_ae",
-      "repo": "black-forest-labs/FLUX.1-schnell",
+      "title": "Z-Image Turbo VAE",
+      "repo": "Comfy-Org/z_image_turbo",
       "revision": "main",
       "mode": "single_file",
-      "filename": "ae.safetensors",
-      "target_file": "/invokeai/models/external/flux-vae/ae.safetensors"
+      "cleanup_paths": [
+        "/invokeai/models/external/flux-vae"
+      ],
+      "filename": "split_files/vae/ae.safetensors",
+      "target_file": "/invokeai/models/external/z-image-vae/ae.safetensors"
     }
   ]
 }

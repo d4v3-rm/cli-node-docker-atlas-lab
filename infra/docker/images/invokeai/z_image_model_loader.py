@@ -90,9 +90,9 @@ class ZImageModelLoaderInvocation(BaseInvocation):
 
         vae_source = self.vae_model
         if vae_source is None and self.qwen3_source_model is None:
-            vae_source = self._find_default_flux_vae(context)
+            vae_source = self._find_default_vae(context)
             if vae_source is not None:
-                context.logger.info(f"Auto-selected FLUX VAE '{vae_source.name}' for Z-Image model '{self.model.name}'")
+                context.logger.info(f"Auto-selected VAE '{vae_source.name}' for Z-Image model '{self.model.name}'")
 
         if vae_source is not None:
             vae = vae_source.model_copy(update={"submodel_type": SubModelType.VAE})
@@ -132,15 +132,16 @@ class ZImageModelLoaderInvocation(BaseInvocation):
             vae=VAEField(vae=vae),
         )
 
-    def _find_default_flux_vae(self, context: InvocationContext) -> Optional[ModelIdentifierField]:
-        candidates = context.models.search_by_attrs(base=BaseModelType.Flux, type=ModelType.VAE)
+    def _find_default_vae(self, context: InvocationContext) -> Optional[ModelIdentifierField]:
+        candidates = context.models.search_by_attrs(type=ModelType.VAE)
         if not candidates:
             return None
 
         preferred = sorted(
             candidates,
             key=lambda config: (
-                0 if "flux.1-schnell_ae" in config.name.lower() else 1,
+                0 if "z-image" in config.name.lower() else 1,
+                0 if "ae" in config.name.lower() else 1,
                 0 if "flux" in config.name.lower() else 1,
                 config.name.lower(),
             ),
