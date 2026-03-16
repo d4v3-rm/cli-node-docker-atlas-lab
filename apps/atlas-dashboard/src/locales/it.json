@@ -48,6 +48,10 @@
     "servicesBody": "Il piano core resta sempre disponibile. Ogni card raccoglie endpoint, credenziali operative e un accesso diretto al servizio.",
     "servicesKicker": "piano servizi",
     "servicesTitle": "Servizi Core",
+    "videoBodyDisabled": "Il layer AI video resta spento finche non lo richiedi esplicitamente. Quando non e attivo, il dashboard mostra il comando esatto per abilitarlo.",
+    "videoBodyEnabled": "Il layer AI video e online: ComfyUI viene esposto tramite gateway dedicato e il set di modelli video richiesto viene precaricato nello storage persistente.",
+    "videoKicker": "piano motion",
+    "videoTitle": "AI Video Layer",
     "workbenchBodyDisabled": "Gli ambienti restano staccati dal core. Li abiliti solo quando ti servono code-server o Postgres condiviso.",
     "workbenchBodyEnabled": "Gli ambienti sono attivi: puoi entrare direttamente nel workspace o aprire prima il briefing dedicato per capire rete, credenziali e strumenti.",
     "workbenchKicker": "piano workspace",
@@ -70,6 +74,7 @@
       "core": "Core",
       "image": "AI Image",
       "neutral": "Neutro",
+      "video": "AI Video",
       "workbench": "Workbench"
     }
   },
@@ -105,6 +110,7 @@
     "endpoint": "endpoint",
     "gatewayPassword": "password gateway",
     "gatewayUser": "utente gateway",
+    "ltxModel": "modello ltx",
     "model": "modello",
     "modelRevision": "revisione modello",
     "ownerBootstrap": "owner bootstrap",
@@ -116,6 +122,7 @@
     "rootPassword": "password root",
     "rootUser": "utente root",
     "superuser": "superuser",
+    "wanModel": "modello wan",
     "usage": "uso"
   },
   "values": {
@@ -127,6 +134,7 @@
     "password": "password",
     "protectedApi": "API protetta",
     "sharedDatabase": "database condiviso",
+    "videoStudio": "studio video",
     "workflowControl": "controllo workflow",
     "alwaysOnForge": "forge sempre accesa"
   },
@@ -140,6 +148,8 @@
       "imageDisabled": "Il layer AI image resta opzionale e nessun endpoint immagini dedicato viene esposto finche non lo abiliti.",
       "imageEnabled": "InvokeAI e online dietro il gateway AI image dedicato, e il set di modelli configurato viene predisposto automaticamente per il runtime.",
       "n8n": "n8n entra direttamente con owner bootstrap: non c e un secondo login al gateway.",
+      "videoDisabled": "Il layer AI video resta opzionale e nessun endpoint video dedicato viene esposto finche non lo abiliti.",
+      "videoEnabled": "ComfyUI e online dietro il gateway AI video dedicato con i modelli video richiesti gia predisposti localmente.",
       "workbenchDisabled": "Workbench e Postgres restano separati dal core operativo finche non abiliti il layer dedicato.",
       "workbenchEnabled": "I workbench e Postgres sono attivi: puoi aprire ambienti browser-based o connetterti dal desktop alla porta host di Postgres."
     },
@@ -185,6 +195,25 @@
         "title": "InvokeAI Studio"
       }
     },
+    "videoLayer": {
+      "capabilities": {
+        "comfyUi": "ComfyUI locale",
+        "ltxVideo": "preload LTX-Video",
+        "wanVideo": "preload Wan 2.1"
+      },
+      "description": "Layer AI video opzionale per workflow text-to-video locali. Espone ComfyUI tramite gateway dedicato e predispone il set di modelli video richiesto nello storage persistente.",
+      "summaryDisabled": "AI video layer spento. ComfyUI non viene avviato o esposto finche non abiliti il flag dedicato.",
+      "summaryEnabled": "ComfyUI e attivo dietro il gateway AI video con entrambe le famiglie di modelli video gia predisposte localmente.",
+      "title": "AI Video Layer"
+    },
+    "videoServices": {
+      "comfyUi": {
+        "action": "Apri ComfyUI",
+        "description": "Studio browser-based a nodi per generazione video locale con le famiglie di modelli LTX-Video e Wan 2.1 gia precaricate.",
+        "note": "Il set di modelli video gestito viene predisposto tramite script della repository nello storage persistente Docker prima dell avvio di ComfyUI.",
+        "title": "ComfyUI Studio"
+      }
+    },
     "footerCards": {
       "persistence": {
         "body": "Database, workspace, modelli, certificati e configurazione runtime restano persistiti solo in volumi Docker nominati.",
@@ -199,7 +228,7 @@
         "label": "segmentazione"
       },
       "usage": {
-        "body": "Gitea e n8n sono il piano core sempre acceso; AI LLM, AI image e workbench vengono abilitati a layer solo quando servono davvero.",
+        "body": "Gitea e n8n sono il piano core sempre acceso; AI LLM, AI image, AI video e workbench vengono abilitati a layer solo quando servono davvero.",
         "label": "uso"
       }
     },
@@ -213,6 +242,8 @@
         "httpsOnly": "ingress solo https",
         "imageActive": "ai-image attivo",
         "imageOptional": "ai-image opzionale",
+        "videoActive": "ai-video attivo",
+        "videoOptional": "ai-video opzionale",
         "volumes": "persistenza su volumi",
         "workbenchActive": "workbench attivi",
         "workbenchOptional": "workbench opzionali"
@@ -223,7 +254,7 @@
         "networkMapDescription": "Leggi la topologia del lab e i piani di rete pubblicati.",
         "networkMapLabel": "Network map"
       },
-      "summary": "Control room unificata per repository, automazione, servizi AI LLM opzionali, generazione AI image e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.",
+      "summary": "Control room unificata per repository, automazione, servizi AI LLM opzionali, generazione AI image, generazione AI video e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.",
       "titleLines": {
         "first": "LAB",
         "second": "ATLAS"
@@ -254,6 +285,14 @@
         "caption": "gateway pubblici serviti adesso",
         "label": "ingress planes"
       },
+      "videoDisabled": {
+        "caption": "layer AI video non attivo",
+        "label": "ai-video live"
+      },
+      "videoEnabled": {
+        "caption": "ComfyUI pubblicato sul gateway AI video dedicato",
+        "label": "ai-video live"
+      },
       "workbenchDisabled": {
         "caption": "layer workbench non attivo",
         "label": "workbench live"
@@ -271,6 +310,7 @@
       "gitea": "Gitea governa codice, review e governance Git del progetto.",
       "image": "InvokeAI vive in un layer AI image dedicato con un set di modelli gestito via script.",
       "n8n": "n8n coordina automazioni, webhook e job operativi del lab.",
+      "video": "ComfyUI vive in un layer AI video dedicato con asset LTX-Video e Wan 2.1 gia predisposti.",
       "workbench": "Code-server e Postgres restano in un piano workbench separato dal core."
     },
     "services": {

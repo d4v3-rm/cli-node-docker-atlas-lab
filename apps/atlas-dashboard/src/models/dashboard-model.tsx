@@ -11,6 +11,7 @@ export function createDashboardViewModel(
 ): DashboardViewModel {
   const aiLlmEnabled = config.features.aiLlmEnabled;
   const aiImageEnabled = config.features.aiImageEnabled;
+  const aiVideoEnabled = config.features.aiVideoEnabled;
   const workbenchEnabled = config.features.workbenchEnabled;
 
   const credentialLabels = {
@@ -25,6 +26,7 @@ export function createDashboardViewModel(
     endpoint: t('credentials.endpoint'),
     gatewayPassword: t('credentials.gatewayPassword'),
     gatewayUser: t('credentials.gatewayUser'),
+    ltxModel: t('credentials.ltxModel'),
     model: t('credentials.model'),
     modelRevision: t('credentials.modelRevision'),
     ownerBootstrap: t('credentials.ownerBootstrap'),
@@ -36,6 +38,7 @@ export function createDashboardViewModel(
     rootPassword: t('credentials.rootPassword'),
     rootUser: t('credentials.rootUser'),
     superuser: t('credentials.superuser'),
+    wanModel: t('credentials.wanModel'),
     usage: t('credentials.usage')
   };
 
@@ -49,6 +52,11 @@ export function createDashboardViewModel(
         aiImageEnabled
           ? 'dashboard.accessNotes.imageEnabled'
           : 'dashboard.accessNotes.imageDisabled'
+      ),
+      t(
+        aiVideoEnabled
+          ? 'dashboard.accessNotes.videoEnabled'
+          : 'dashboard.accessNotes.videoDisabled'
       ),
       t(
         workbenchEnabled
@@ -213,6 +221,73 @@ export function createDashboardViewModel(
         tone: 'image'
       }
     ],
+    videoLayer: {
+      activationCommand: 'atlas-lab up --with-ai-video',
+      capabilities: [
+        {
+          icon: 'video',
+          label: t('dashboard.videoLayer.capabilities.comfyUi')
+        },
+        {
+          icon: 'spark',
+          label: t('dashboard.videoLayer.capabilities.ltxVideo')
+        },
+        {
+          icon: 'workflow',
+          label: t('dashboard.videoLayer.capabilities.wanVideo')
+        }
+      ],
+      description: t('dashboard.videoLayer.description'),
+      enabled: aiVideoEnabled,
+      summary: t(
+        aiVideoEnabled
+          ? 'dashboard.videoLayer.summaryEnabled'
+          : 'dashboard.videoLayer.summaryDisabled'
+      ),
+      title: t('dashboard.videoLayer.title'),
+      tone: 'video'
+    },
+    videoServices: [
+      {
+        action: {
+          href: config.services.comfyUi.url,
+          label: t('dashboard.videoServices.comfyUi.action')
+        },
+        briefing: {
+          path: config.services.comfyUi.briefingPath,
+          title: t('dashboard.videoServices.comfyUi.title')
+        },
+        credentials: [
+          {
+            label: credentialLabels.endpoint,
+            value: config.services.comfyUi.url
+          },
+          {
+            label: credentialLabels.gatewayUser,
+            value: config.services.comfyUi.gatewayUser
+          },
+          {
+            label: credentialLabels.gatewayPassword,
+            value: config.services.comfyUi.gatewayPassword
+          },
+          {
+            label: credentialLabels.ltxModel,
+            value: config.services.comfyUi.ltxModelTitle
+          },
+          {
+            label: credentialLabels.wanModel,
+            value: config.services.comfyUi.wanModelTitle
+          }
+        ],
+        description: t('dashboard.videoServices.comfyUi.description'),
+        icon: 'video',
+        id: 'comfyui',
+        note: t('dashboard.videoServices.comfyUi.note'),
+        status: t('values.videoStudio'),
+        title: t('dashboard.videoServices.comfyUi.title'),
+        tone: 'video'
+      }
+    ],
     footerCards: [
       {
         body: t('dashboard.footerCards.routing.body', {
@@ -279,6 +354,19 @@ export function createDashboardViewModel(
         },
         {
           caption: t(
+            aiVideoEnabled
+              ? 'dashboard.metrics.videoEnabled.caption'
+              : 'dashboard.metrics.videoDisabled.caption'
+          ),
+          label: t(
+            aiVideoEnabled
+              ? 'dashboard.metrics.videoEnabled.label'
+              : 'dashboard.metrics.videoDisabled.label'
+          ),
+          value: aiVideoEnabled ? 1 : 0
+        },
+        {
+          caption: t(
             workbenchEnabled
               ? 'dashboard.metrics.workbenchEnabled.caption'
               : 'dashboard.metrics.workbenchDisabled.caption'
@@ -293,7 +381,12 @@ export function createDashboardViewModel(
         {
           caption: t('dashboard.metrics.ingress.caption'),
           label: t('dashboard.metrics.ingress.label'),
-          value: 1 + (aiLlmEnabled ? 1 : 0) + (aiImageEnabled ? 1 : 0) + (workbenchEnabled ? 1 : 0)
+          value:
+            1 +
+            (aiLlmEnabled ? 1 : 0) +
+            (aiImageEnabled ? 1 : 0) +
+            (aiVideoEnabled ? 1 : 0) +
+            (workbenchEnabled ? 1 : 0)
         }
       ],
       pills: [
@@ -340,6 +433,15 @@ export function createDashboardViewModel(
           tone: 'image'
         },
         {
+          icon: aiVideoEnabled ? 'video' : 'certificate',
+          label: t(
+            aiVideoEnabled
+              ? 'dashboard.hero.pills.videoActive'
+              : 'dashboard.hero.pills.videoOptional'
+          ),
+          tone: 'video'
+        },
+        {
           icon: workbenchEnabled ? 'terminal' : 'certificate',
           label: t(
             workbenchEnabled
@@ -381,6 +483,7 @@ export function createDashboardViewModel(
       t('dashboard.operatingCharter.n8n'),
       t('dashboard.operatingCharter.ai'),
       t('dashboard.operatingCharter.image'),
+      t('dashboard.operatingCharter.video'),
       t('dashboard.operatingCharter.workbench')
     ],
     services: [

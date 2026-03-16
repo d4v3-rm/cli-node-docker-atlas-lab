@@ -16,9 +16,10 @@ export type DashboardIconKey =
   | 'secure'
   | 'spark'
   | 'terminal'
+  | 'video'
   | 'workflow';
 
-export type DashboardTone = 'ai' | 'core' | 'image' | 'neutral' | 'workbench';
+export type DashboardTone = 'ai' | 'core' | 'image' | 'neutral' | 'video' | 'workbench';
 
 export interface CredentialItem {
   label: string;
@@ -111,6 +112,8 @@ export interface DashboardViewModel {
   footerCards: FooterCardViewModel[];
   imageLayer: OptionalLayerViewModel;
   imageServices: ServiceCardViewModel[];
+  videoLayer: OptionalLayerViewModel;
+  videoServices: ServiceCardViewModel[];
   hero: {
     eyebrow: string;
     metrics: MetricItem[];

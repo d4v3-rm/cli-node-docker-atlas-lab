@@ -15,7 +15,8 @@ import {
   NodeIndexOutlined,
   RobotOutlined,
   SafetyCertificateOutlined,
-  ThunderboltOutlined
+  ThunderboltOutlined,
+  VideoCameraOutlined
 } from '@ant-design/icons';
 import {
   Alert,
@@ -70,6 +71,7 @@ const iconMap: Record<DashboardIconKey, DashboardIconComponent> = {
   secure: LockOutlined,
   spark: ThunderboltOutlined,
   terminal: CodeOutlined,
+  video: VideoCameraOutlined,
   workflow: BranchesOutlined
 };
 
@@ -88,6 +90,11 @@ const toneStyles: Record<
     soft: 'rgba(31, 159, 141, 0.14)'
   },
   image: {
+    accent: atlasDashboardPalette.image,
+    border: 'rgba(200, 92, 255, 0.28)',
+    soft: 'rgba(200, 92, 255, 0.14)'
+  },
+  video: {
     accent: atlasDashboardPalette.image,
     border: 'rgba(200, 92, 255, 0.28)',
     soft: 'rgba(200, 92, 255, 0.14)'
@@ -197,6 +204,7 @@ export default function App() {
                 <LayerRail
                   aiLayer={dashboard.aiLayer}
                   imageLayer={dashboard.imageLayer}
+                  videoLayer={dashboard.videoLayer}
                   workbenchLayer={dashboard.workbenchLayer}
                 />
               </Col>
@@ -289,6 +297,32 @@ export default function App() {
                   <Col xs={24} xl={12} key={service.id}>
                     <OperationalCard
                       item={service}
+                      primaryAction={service.action}
+                      tone={service.tone}
+                    />
+                  </Col>
+                ))}
+              </Row>
+            ) : null}
+
+            <SectionBand
+              body={t(
+                dashboard.videoLayer.enabled
+                  ? 'sections.videoBodyEnabled'
+                  : 'sections.videoBodyDisabled'
+              )}
+              kicker={t('sections.videoKicker')}
+              title={t('sections.videoTitle')}
+            />
+            <LayerStateCard layer={dashboard.videoLayer} />
+            {dashboard.videoLayer.enabled ? (
+              <Row gutter={[24, 24]}>
+                {dashboard.videoServices.map((service) => (
+                  <Col xs={24} xl={12} key={service.id}>
+                    <OperationalCard
+                      briefing={service.briefing}
+                      item={service}
+                      onOpenBriefing={setActiveBriefing}
                       primaryAction={service.action}
                       tone={service.tone}
                     />
@@ -655,10 +689,12 @@ function StatsRail({
 function LayerRail({
   aiLayer,
   imageLayer,
+  videoLayer,
   workbenchLayer
 }: {
   aiLayer: { enabled: boolean; summary: string; tone: DashboardTone };
   imageLayer: { enabled: boolean; summary: string; tone: DashboardTone };
+  videoLayer: { enabled: boolean; summary: string; tone: DashboardTone };
   workbenchLayer: { enabled: boolean; summary: string; tone: DashboardTone };
 }) {
   const { t } = useTranslation();
@@ -685,6 +721,12 @@ function LayerRail({
             summary={imageLayer.summary}
             title={t('cards.tones.image')}
             tone={imageLayer.tone}
+          />
+          <LayerSummaryTile
+            enabled={videoLayer.enabled}
+            summary={videoLayer.summary}
+            title={t('cards.tones.video')}
+            tone={videoLayer.tone}
           />
           <LayerSummaryTile
             enabled={workbenchLayer.enabled}
@@ -799,6 +841,8 @@ function LayerSummaryTile({
   const IconGlyph =
     tone === 'ai'
       ? ApiOutlined
+      : tone === 'video'
+        ? VideoCameraOutlined
       : tone === 'image'
         ? PictureOutlined
         : tone === 'workbench'
@@ -966,6 +1010,8 @@ function LayerStateCard({
   const IconGlyph =
     layer.tone === 'ai'
       ? ApiOutlined
+      : layer.tone === 'video'
+        ? VideoCameraOutlined
       : layer.tone === 'image'
         ? PictureOutlined
         : CodeOutlined;
@@ -1339,7 +1385,9 @@ function SignalPill({
       ? 'rgba(31, 159, 141, 0.18)'
       : tone === 'ai'
         ? 'rgba(214, 138, 72, 0.18)'
-        : tone === 'image'
+      : tone === 'image'
+          ? 'rgba(200, 92, 255, 0.18)'
+        : tone === 'video'
           ? 'rgba(200, 92, 255, 0.18)'
         : tone === 'workbench'
           ? 'rgba(90, 143, 201, 0.18)'
