@@ -21,6 +21,20 @@ def require_mapping_value(mapping: dict, key: str) -> str:
     return value
 
 
+def cleanup_paths(paths: list[str]) -> None:
+    for raw_path in paths:
+        path = Path(str(raw_path).strip())
+        if not str(path):
+            continue
+
+        if path.is_dir():
+            shutil.rmtree(path, ignore_errors=True)
+            print(f"Removed stale directory '{path}'")
+        elif path.is_file():
+            path.unlink(missing_ok=True)
+            print(f"Removed stale file '{path}'")
+
+
 def sync_single_file_model(
     model_repo: str,
     model_revision: str,
@@ -108,6 +122,88 @@ def sync_snapshot_model(
     print(f"Model '{model_title}' staged at {model_target_dir}")
 
 
+def sync_snapshot_subdirs_model(
+    model_repo: str,
+    model_revision: str,
+    model_title: str,
+    model_target_dir: Path,
+    source_subdirs: list[str],
+    flatten_single_subdir: bool = False,
+) -> None:
+    marker_path = model_target_dir / ".atlas-lab-model-ready.json"
+    normalized_subdirs = [subdir.strip() for subdir in source_subdirs if subdir.strip()]
+    if not normalized_subdirs:
+        raise RuntimeError("snapshot_subdirs mode requires at least one source_subdir")
+
+    if marker_path.exists():
+        marker = json.loads(marker_path.read_text(encoding="utf-8"))
+        if (
+            marker.get("repo") == model_repo
+            and marker.get("revision") == model_revision
+            and marker.get("source_subdirs") == normalized_subdirs
+            and marker.get("flatten_single_subdir") == flatten_single_subdir
+        ):
+            print(f"Model '{model_title}' already present at {model_target_dir}")
+            return
+
+    if model_target_dir.exists():
+        shutil.rmtree(model_target_dir)
+
+    model_target_dir.mkdir(parents=True, exist_ok=True)
+
+    with tempfile.TemporaryDirectory(prefix="atlas-lab-model-") as tmp_dir:
+        source_path = Path(tmp_dir)
+        print(f"Downloading model '{model_title}' components from {model_repo}@{model_revision}")
+        allow_patterns = []
+        for subdir in normalized_subdirs:
+            allow_patterns.append(subdir)
+            allow_patterns.append(f"{subdir}/**")
+
+        snapshot_download(
+            repo_id=model_repo,
+            revision=model_revision,
+            local_dir=str(source_path),
+            local_dir_use_symlinks=False,
+            allow_patterns=allow_patterns,
+        )
+
+        for subdir in normalized_subdirs:
+            component_path = source_path / subdir
+            if not component_path.exists():
+                raise RuntimeError(f"Missing source path '{subdir}' in {model_repo}@{model_revision}")
+
+            if flatten_single_subdir and len(normalized_subdirs) == 1 and component_path.is_dir():
+                for child in component_path.iterdir():
+                    destination = model_target_dir / child.name
+                    if child.is_dir():
+                        shutil.copytree(child, destination)
+                    else:
+                        shutil.copy2(child, destination)
+                continue
+
+            destination = model_target_dir / component_path.name
+            if component_path.is_dir():
+                shutil.copytree(component_path, destination)
+            else:
+                shutil.copy2(component_path, destination)
+
+    marker_path.write_text(
+        json.dumps(
+            {
+                "repo": model_repo,
+                "revision": model_revision,
+                "source_subdirs": normalized_subdirs,
+                "flatten_single_subdir": flatten_single_subdir,
+                "title": model_title,
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    print(f"Model '{model_title}' staged at {model_target_dir}")
+
+
 def sync_vae_into_model_dir(
     source_repo: str,
     source_revision: str,
@@ -165,6 +261,27 @@ def sync_model_definition(definition: dict) -> None:
     model_repo = require_mapping_value(definition, "repo")
     model_revision = require_mapping_value(definition, "revision")
     model_title = require_mapping_value(definition, "title")
+    raw_cleanup_paths = definition.get("cleanup_paths", [])
+
+    if raw_cleanup_paths:
+        if not isinstance(raw_cleanup_paths, list):
+            raise RuntimeError("'cleanup_paths' must be a list when provided")
+        cleanup_paths([str(item) for item in raw_cleanup_paths])
+
+    if model_mode == "snapshot_subdirs":
+        raw_subdirs = definition.get("source_subdirs")
+        if not isinstance(raw_subdirs, list):
+            raise RuntimeError("snapshot_subdirs mode requires a 'source_subdirs' list")
+
+        sync_snapshot_subdirs_model(
+            model_repo=model_repo,
+            model_revision=model_revision,
+            model_title=model_title,
+            model_target_dir=Path(require_mapping_value(definition, "target_dir")),
+            source_subdirs=[str(item) for item in raw_subdirs],
+            flatten_single_subdir=bool(definition.get("flatten_single_subdir", False)),
+        )
+        return
 
     if model_mode == "snapshot_with_vae":
         sync_snapshot_model(

@@ -4,19 +4,56 @@
       "title": "FLUX.2-klein-4b-fp8",
       "repo": "black-forest-labs/FLUX.2-klein-4b-fp8",
       "revision": "main",
-      "mode": "snapshot_with_vae",
-      "target_dir": "/invokeai/models/external/flux2-klein-4b-fp8",
-      "vae_repo": "black-forest-labs/FLUX.2-klein-4b",
-      "vae_revision": "main",
-      "vae_source_subdir": "vae"
+      "mode": "snapshot",
+      "cleanup_paths": [
+        "/invokeai/models/external/flux2-klein-4b-fp8/vae"
+      ],
+      "target_dir": "/invokeai/models/external/flux2-klein-4b-fp8"
     },
     {
-      "title": "Z-Image-Turbo GGUF Q4_K_M",
-      "repo": "gguf-org/z-image-gguf",
+      "title": "FLUX.2 VAE",
+      "repo": "black-forest-labs/FLUX.2-klein-4B",
+      "revision": "main",
+      "mode": "snapshot_subdirs",
+      "source_subdirs": ["vae"],
+      "flatten_single_subdir": true,
+      "target_dir": "/invokeai/models/external/flux2-vae"
+    },
+    {
+      "title": "FLUX.2 Klein Qwen3 4B Encoder",
+      "repo": "black-forest-labs/FLUX.2-klein-4B",
+      "revision": "main",
+      "mode": "snapshot_subdirs",
+      "source_subdirs": ["text_encoder", "tokenizer"],
+      "target_dir": "/invokeai/models/external/flux2-klein-qwen3-4b-encoder"
+    },
+    {
+      "title": "Z-Image-Turbo GGUF Q4_K",
+      "repo": "leejet/Z-Image-Turbo-GGUF",
       "revision": "main",
       "mode": "single_file",
-      "filename": "z-image-turbo-q4_k_m.gguf",
-      "target_file": "/invokeai/models/external/z-image-turbo/z-image-turbo-q4_k_m.gguf"
+      "cleanup_paths": [
+        "/invokeai/models/external/z-image-turbo/z-image-turbo-q4_k_m.gguf",
+        "/invokeai/models/external/z-image-turbo/.z-image-turbo-q4_k_m.gguf.atlas-lab-model-ready.json"
+      ],
+      "filename": "z_image_turbo-Q4_K.gguf",
+      "target_file": "/invokeai/models/external/z-image-turbo/z_image_turbo-Q4_K.gguf"
+    },
+    {
+      "title": "Z-Image Qwen3 Text Encoder (quantized)",
+      "repo": "worstplayer/Z-Image_Qwen_3_4b_text_encoder_GGUF",
+      "revision": "main",
+      "mode": "single_file",
+      "filename": "Qwen_3_4b-Q6_K.gguf",
+      "target_file": "/invokeai/models/external/z-image-qwen3-encoder/Qwen_3_4b-Q6_K.gguf"
+    },
+    {
+      "title": "FLUX.1-schnell_ae",
+      "repo": "black-forest-labs/FLUX.1-schnell",
+      "revision": "main",
+      "mode": "single_file",
+      "filename": "ae.safetensors",
+      "target_file": "/invokeai/models/external/flux-vae/ae.safetensors"
     }
   ]
 }

@@ -8,6 +8,8 @@ RUN ${INVOKEAI_PYTHON} -m ensurepip --upgrade \
 
 COPY infra/docker/images/model-sync/download-model.py /usr/local/bin/download-model.py
 COPY infra/docker/images/invokeai/start-invokeai.sh /usr/local/bin/start-invokeai.sh
+COPY infra/docker/images/invokeai/flux2_klein_model_loader.py /opt/invokeai/invokeai/app/invocations/flux2_klein_model_loader.py
+COPY infra/docker/images/invokeai/z_image_model_loader.py /opt/invokeai/invokeai/app/invocations/z_image_model_loader.py
 
 RUN chmod +x /usr/local/bin/start-invokeai.sh
 
