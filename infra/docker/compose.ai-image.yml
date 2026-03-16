@@ -5,6 +5,7 @@ services:
   gateway:
     environment:
       ATLAS_AI_IMAGE_ENABLED: "true"
+      ATLAS_AI_VIDEO_ENABLED: "false"
 
   gateway-ai-image:
     build:
@@ -19,6 +20,7 @@ services:
       ATLAS_GATEWAY_TEMPLATE: Caddyfile.ai-image.template
       ATLAS_AI_LLM_ENABLED: "false"
       ATLAS_AI_IMAGE_ENABLED: "true"
+      ATLAS_AI_VIDEO_ENABLED: "false"
       ATLAS_WORKBENCH_ENABLED: "false"
     ports:
       - "${INVOKEAI_HTTPS_PORT}:${INVOKEAI_HTTPS_PORT}"

@@ -1,0 +1,33 @@
+# ComfyUI
+
+## What this layer does
+
+`ComfyUI` provides a browser-based video workflow surface exposed through the dedicated `ai-video` layer.
+
+This layer preinstalls two local video generation families:
+
+- `${COMFYUI_LTX_MODEL_TITLE}`
+- `${COMFYUI_WAN_MODEL_TITLE}`
+
+The runtime itself is pinned to `${COMFYUI_REPO}` at revision `${COMFYUI_REVISION}`.
+
+## How to access it
+
+- Browser URL: `${COMFYUI_URL}`
+- Gateway username: `${COMFYUI_GATEWAY_USER}`
+- Gateway password: `${COMFYUI_GATEWAY_PASSWORD}`
+
+## Runtime notes
+
+- The service is published only when the `ai-video` layer is enabled.
+- Model files are stored inside a persistent Docker volume mounted at `ComfyUI/models`.
+- The managed video model set is defined in `config/models/comfyui-models.json`.
+- `LTX-Video` is staged with its `T5 XXL` text encoder.
+- `Wan 2.1 1.3B` is staged with its `UMT5` text encoder and `VAE`.
+
+## Typical workflow
+
+1. Start the lab with `atlas-lab up --with-ai-video`
+2. Open `${COMFYUI_URL}`
+3. Authenticate with the gateway credentials above
+4. Load the preinstalled `LTX-Video` or `Wan 2.1` workflow inside ComfyUI

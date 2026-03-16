@@ -14,6 +14,7 @@ services:
   gateway:
     environment:
       ATLAS_WORKBENCH_ENABLED: "true"
+      ATLAS_AI_VIDEO_ENABLED: "false"
 
   gateway-workbench:
     build:
@@ -28,6 +29,7 @@ services:
       ATLAS_GATEWAY_TEMPLATE: Caddyfile.workbench.template
       ATLAS_AI_LLM_ENABLED: "false"
       ATLAS_AI_IMAGE_ENABLED: "false"
+      ATLAS_AI_VIDEO_ENABLED: "false"
       ATLAS_WORKBENCH_ENABLED: "true"
     ports:
       - "${NODE_DEV_HTTPS_PORT}:${NODE_DEV_HTTPS_PORT}"
