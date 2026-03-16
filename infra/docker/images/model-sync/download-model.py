@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+import tempfile
 from pathlib import Path
 
 from huggingface_hub import hf_hub_download, snapshot_download
@@ -107,11 +108,79 @@ def sync_snapshot_model(
     print(f"Model '{model_title}' staged at {model_target_dir}")
 
 
+def sync_vae_into_model_dir(
+    source_repo: str,
+    source_revision: str,
+    model_title: str,
+    model_target_dir: Path,
+    source_subdir: str = "vae",
+) -> None:
+    marker_path = model_target_dir / ".atlas-lab-model-ready.json"
+    marker = {}
+    if marker_path.exists():
+        marker = json.loads(marker_path.read_text(encoding="utf-8"))
+
+    if (
+        marker.get("vae_repo") == source_repo
+        and marker.get("vae_revision") == source_revision
+        and marker.get("vae_source_subdir") == source_subdir
+        and marker.get("vae_added")
+    ):
+        print(f"VAE for model '{model_title}' already present at {model_target_dir / 'vae'}")
+        return
+
+    with tempfile.TemporaryDirectory(prefix="atlas-lab-vae-") as tmp_dir:
+        source_path = Path(tmp_dir)
+        print(f"Downloading VAE source '{source_subdir}' from {source_repo}@{source_revision}")
+        snapshot_download(
+            repo_id=source_repo,
+            revision=source_revision,
+            local_dir=str(source_path),
+            local_dir_use_symlinks=False,
+        )
+
+        source_vae_dir = source_path / source_subdir
+        if not source_vae_dir.exists():
+            raise RuntimeError(f"Missing VAE source directory '{source_subdir}' in {source_repo}@{source_revision}")
+
+        target_vae_dir = model_target_dir / "vae"
+        if target_vae_dir.exists():
+            shutil.rmtree(target_vae_dir)
+
+        shutil.copytree(source_vae_dir, target_vae_dir)
+
+    marker["vae_repo"] = source_repo
+    marker["vae_revision"] = source_revision
+    marker["vae_source_subdir"] = source_subdir
+    marker["vae_added"] = True
+    marker_path.write_text(
+        json.dumps(marker, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print(f"VAE for model '{model_title}' staged at {model_target_dir / 'vae'}")
+
+
 def sync_model_definition(definition: dict) -> None:
     model_mode = str(definition.get("mode", "snapshot")).strip() or "snapshot"
     model_repo = require_mapping_value(definition, "repo")
     model_revision = require_mapping_value(definition, "revision")
     model_title = require_mapping_value(definition, "title")
+
+    if model_mode == "snapshot_with_vae":
+        sync_snapshot_model(
+            model_repo=model_repo,
+            model_revision=model_revision,
+            model_title=model_title,
+            model_target_dir=Path(require_mapping_value(definition, "target_dir")),
+        )
+        sync_vae_into_model_dir(
+            source_repo=require_mapping_value(definition, "vae_repo"),
+            source_revision=definition.get("vae_revision", model_revision).strip() or model_revision,
+            model_title=model_title,
+            model_target_dir=Path(require_mapping_value(definition, "target_dir")),
+            source_subdir=definition.get("vae_source_subdir", "vae").strip() or "vae",
+        )
+        return
 
     if model_mode == "single_file":
         sync_single_file_model(

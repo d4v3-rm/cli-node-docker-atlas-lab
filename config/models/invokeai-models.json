@@ -4,8 +4,11 @@
       "title": "FLUX.2-klein-4b-fp8",
       "repo": "black-forest-labs/FLUX.2-klein-4b-fp8",
       "revision": "main",
-      "mode": "snapshot",
-      "target_dir": "/invokeai/models/external/flux2-klein-4b-fp8"
+      "mode": "snapshot_with_vae",
+      "target_dir": "/invokeai/models/external/flux2-klein-4b-fp8",
+      "vae_repo": "black-forest-labs/FLUX.2-klein-4b",
+      "vae_revision": "main",
+      "vae_source_subdir": "vae"
     },
     {
       "title": "Z-Image-Turbo GGUF Q4_K_M",
