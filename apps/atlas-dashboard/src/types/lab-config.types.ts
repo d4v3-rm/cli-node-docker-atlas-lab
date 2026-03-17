@@ -4,6 +4,7 @@
 export interface LabRuntimeConfig {
   features: {
     aiLlmEnabled: boolean;
+    aiAgentsEnabled: boolean;
     aiImageEnabled: boolean;
     aiVideoEnabled: boolean;
     workbenchEnabled: boolean;

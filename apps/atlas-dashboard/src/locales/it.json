@@ -38,6 +38,10 @@
     "aiBodyEnabled": "Il layer AI LLM e online: il dashboard porta in Open WebUI o alle API Ollama con credenziali e contesto operativo sempre visibili.",
     "aiKicker": "piano opzionale",
     "aiTitle": "AI LLM Layer",
+    "agentsBodyDisabled": "Il layer AI agents resta spento finche non lo richiedi esplicitamente. Quando non e attivo, il dashboard mostra il comando esatto per abilitarlo.",
+    "agentsBodyEnabled": "Il layer AI agents e online: n8n viene esposto sul suo gateway dedicato e l owner bootstrap resta allineato dalla CLI.",
+    "agentsKicker": "piano automazione",
+    "agentsTitle": "AI Agents Layer",
     "footerBody": "Quattro segnali rapidi su routing, persistenza, uso consigliato e segmentazione dei layer.",
     "footerKicker": "segnali atlas",
     "footerTitle": "Chiusura operativa",
@@ -70,6 +74,7 @@
   "cards": {
     "openBriefing": "Apri briefing",
     "tones": {
+      "agents": "AI Agents",
       "ai": "AI LLM",
       "core": "Core",
       "image": "AI Image",
@@ -139,19 +144,39 @@
     "alwaysOnForge": "forge sempre accesa"
   },
   "dashboard": {
-    "coreLayerSummary": "Gitea e n8n restano il piano sempre acceso del lab.",
+    "coreLayerSummary": "Gitea resta il piano core sempre acceso del lab.",
     "accessNotes": {
+      "agentsDisabled": "Il layer AI agents resta opzionale e n8n rimane spento finche non abiliti il piano automazione dedicato.",
+      "agentsEnabled": "n8n e online nel layer AI agents con l owner bootstrap gia allineato.",
       "aiDisabled": "Il layer AI LLM non viene piu acceso di default: il deck lo marca come opzionale invece di fingere che sia online.",
       "aiEnabled": "Open WebUI e Ollama sono realmente online e raggiungibili sulle porte AI LLM del gateway.",
       "credentials": "Le credenziali operative sono esposte qui e restano allineate al bootstrap del lab.",
       "https": "Tutti gli ingressi browser usano localhost con HTTPS dedicato, senza DNS custom o file hosts.",
       "imageDisabled": "Il layer AI image resta opzionale e nessun endpoint immagini dedicato viene esposto finche non lo abiliti.",
       "imageEnabled": "InvokeAI e online dietro il gateway AI image dedicato, e il set di modelli configurato viene predisposto automaticamente per il runtime.",
-      "n8n": "n8n entra direttamente con owner bootstrap: non c e un secondo login al gateway.",
       "videoDisabled": "Il layer AI video resta opzionale e nessun endpoint video dedicato viene esposto finche non lo abiliti.",
       "videoEnabled": "ComfyUI e online dietro il gateway AI video dedicato con i modelli video richiesti gia predisposti localmente.",
       "workbenchDisabled": "Workbench e Postgres restano separati dal core operativo finche non abiliti il layer dedicato.",
       "workbenchEnabled": "I workbench e Postgres sono attivi: puoi aprire ambienti browser-based o connetterti dal desktop alla porta host di Postgres."
+    },
+    "agentsLayer": {
+      "capabilities": {
+        "n8n": "n8n locale",
+        "runners": "runner esterni",
+        "webhooks": "automazione webhook"
+      },
+      "description": "Layer AI agents opzionale per automazione workflow, integrazioni e pipeline operative di agenti. Il lab lo abilita solo quando lo richiedi esplicitamente.",
+      "summaryDisabled": "AI agents layer spento. n8n e i runner esterni non vengono avviati o esposti finche non abiliti il flag dedicato.",
+      "summaryEnabled": "n8n e i runner esterni sono attivi dietro il gateway AI agents.",
+      "title": "AI Agents Layer"
+    },
+    "agentServices": {
+      "n8n": {
+        "action": "Apri n8n",
+        "description": "Motore di orchestrazione per webhook, integrazioni e flussi di automazione agentica, gia bootstrapato con owner applicativo.",
+        "note": "Il primo accesso salta il setup wizard ma non nasconde i template ufficiali disponibili dentro l applicazione.",
+        "title": "n8n Automation"
+      }
     },
     "aiLayer": {
       "capabilities": {
@@ -228,7 +253,7 @@
         "label": "segmentazione"
       },
       "usage": {
-        "body": "Gitea e n8n sono il piano core sempre acceso; AI LLM, AI image, AI video e workbench vengono abilitati a layer solo quando servono davvero.",
+        "body": "Gitea e il piano core sempre acceso; AI agents, AI LLM, AI image, AI video e workbench vengono abilitati a layer solo quando servono davvero.",
         "label": "uso"
       }
     },
@@ -237,6 +262,8 @@
       "pills": {
         "aiActive": "ai-llm attivo",
         "aiOptional": "ai-llm opzionale",
+        "agentsActive": "ai-agents attivo",
+        "agentsOptional": "ai-agents opzionale",
         "deck": "deck {{localUrl}}",
         "host": "host {{publicUrl}}",
         "httpsOnly": "ingress solo https",
@@ -254,13 +281,21 @@
         "networkMapDescription": "Leggi la topologia del lab e i piani di rete pubblicati.",
         "networkMapLabel": "Network map"
       },
-      "summary": "Control room unificata per repository, automazione, servizi AI LLM opzionali, generazione AI image, generazione AI video e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.",
+      "summary": "Control room unificata per repository, automazione AI agents opzionale, servizi AI LLM opzionali, generazione AI image, generazione AI video e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.",
       "titleLines": {
         "first": "LAB",
         "second": "ATLAS"
       }
     },
     "metrics": {
+      "agentsDisabled": {
+        "caption": "layer AI agents non attivo",
+        "label": "ai-agents live"
+      },
+      "agentsEnabled": {
+        "caption": "n8n pubblicato sul gateway AI agents dedicato",
+        "label": "ai-agents live"
+      },
       "aiDisabled": {
         "caption": "layer AI LLM non attivo",
         "label": "ai-llm live"
@@ -306,10 +341,10 @@
       "title": "Network Map"
     },
     "operatingCharter": {
+      "agents": "n8n e la flotta di runner vivono in un layer AI agents esplicitamente opzionale.",
       "ai": "Open WebUI e Ollama vivono in un layer AI LLM esplicitamente opzionale.",
       "gitea": "Gitea governa codice, review e governance Git del progetto.",
       "image": "InvokeAI vive in un layer AI image dedicato con un set di modelli gestito via script.",
-      "n8n": "n8n coordina automazioni, webhook e job operativi del lab.",
       "video": "ComfyUI vive in un layer AI video dedicato con asset LTX-Video e Wan 2.1 gia predisposti.",
       "workbench": "Code-server e Postgres restano in un piano workbench separato dal core."
     },

@@ -19,7 +19,7 @@ export type DashboardIconKey =
   | 'video'
   | 'workflow';
 
-export type DashboardTone = 'ai' | 'core' | 'image' | 'neutral' | 'video' | 'workbench';
+export type DashboardTone = 'agents' | 'ai' | 'core' | 'image' | 'neutral' | 'video' | 'workbench';
 
 export interface CredentialItem {
   label: string;
@@ -107,6 +107,8 @@ export interface OptionalLayerViewModel {
 
 export interface DashboardViewModel {
   accessNotes: string[];
+  agentsLayer: OptionalLayerViewModel;
+  agentServices: ServiceCardViewModel[];
   aiLayer: OptionalLayerViewModel;
   aiServices: ServiceCardViewModel[];
   footerCards: FooterCardViewModel[];

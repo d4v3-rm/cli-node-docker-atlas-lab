@@ -10,6 +10,7 @@ export function createDashboardViewModel(
   t: TFunction
 ): DashboardViewModel {
   const aiLlmEnabled = config.features.aiLlmEnabled;
+  const aiAgentsEnabled = config.features.aiAgentsEnabled;
   const aiImageEnabled = config.features.aiImageEnabled;
   const aiVideoEnabled = config.features.aiVideoEnabled;
   const workbenchEnabled = config.features.workbenchEnabled;
@@ -46,7 +47,11 @@ export function createDashboardViewModel(
     accessNotes: [
       t('dashboard.accessNotes.credentials'),
       t('dashboard.accessNotes.https'),
-      t('dashboard.accessNotes.n8n'),
+      t(
+        aiAgentsEnabled
+          ? 'dashboard.accessNotes.agentsEnabled'
+          : 'dashboard.accessNotes.agentsDisabled'
+      ),
       t(aiLlmEnabled ? 'dashboard.accessNotes.aiEnabled' : 'dashboard.accessNotes.aiDisabled'),
       t(
         aiImageEnabled
@@ -63,6 +68,69 @@ export function createDashboardViewModel(
           ? 'dashboard.accessNotes.workbenchEnabled'
           : 'dashboard.accessNotes.workbenchDisabled'
       )
+    ],
+    agentsLayer: {
+      activationCommand: 'atlas-lab up --with-ai-agents',
+      capabilities: [
+        {
+          icon: 'workflow',
+          label: t('dashboard.agentsLayer.capabilities.n8n')
+        },
+        {
+          icon: 'route',
+          label: t('dashboard.agentsLayer.capabilities.webhooks')
+        },
+        {
+          icon: 'spark',
+          label: t('dashboard.agentsLayer.capabilities.runners')
+        }
+      ],
+      description: t('dashboard.agentsLayer.description'),
+      enabled: aiAgentsEnabled,
+      summary: t(
+        aiAgentsEnabled
+          ? 'dashboard.agentsLayer.summaryEnabled'
+          : 'dashboard.agentsLayer.summaryDisabled'
+      ),
+      title: t('dashboard.agentsLayer.title'),
+      tone: 'agents'
+    },
+    agentServices: [
+      {
+        action: {
+          href: config.services.n8n.url,
+          label: t('dashboard.agentServices.n8n.action')
+        },
+        credentials: [
+          {
+            label: credentialLabels.endpoint,
+            value: config.services.n8n.url
+          },
+          {
+            label: credentialLabels.accessMode,
+            value: t('values.directAppLogin')
+          },
+          {
+            label: credentialLabels.ownerBootstrap,
+            value: config.services.n8n.ownerName
+          },
+          {
+            label: credentialLabels.ownerEmail,
+            value: config.services.n8n.ownerEmail
+          },
+          {
+            label: credentialLabels.ownerPassword,
+            value: config.services.n8n.ownerPassword
+          }
+        ],
+        description: t('dashboard.agentServices.n8n.description'),
+        icon: 'workflow',
+        id: 'n8n',
+        note: t('dashboard.agentServices.n8n.note'),
+        status: t('values.workflowControl'),
+        title: t('dashboard.agentServices.n8n.title'),
+        tone: 'agents'
+      }
     ],
     aiLayer: {
       activationCommand: 'atlas-lab up --with-ai-llm',
@@ -324,7 +392,20 @@ export function createDashboardViewModel(
         {
           caption: t('dashboard.metrics.core.caption'),
           label: t('dashboard.metrics.core.label'),
-          value: 2
+          value: 1
+        },
+        {
+          caption: t(
+            aiAgentsEnabled
+              ? 'dashboard.metrics.agentsEnabled.caption'
+              : 'dashboard.metrics.agentsDisabled.caption'
+          ),
+          label: t(
+            aiAgentsEnabled
+              ? 'dashboard.metrics.agentsEnabled.label'
+              : 'dashboard.metrics.agentsDisabled.label'
+          ),
+          value: aiAgentsEnabled ? 1 : 0
         },
         {
           caption: t(
@@ -383,6 +464,7 @@ export function createDashboardViewModel(
           label: t('dashboard.metrics.ingress.label'),
           value:
             1 +
+            (aiAgentsEnabled ? 1 : 0) +
             (aiLlmEnabled ? 1 : 0) +
             (aiImageEnabled ? 1 : 0) +
             (aiVideoEnabled ? 1 : 0) +
@@ -413,6 +495,15 @@ export function createDashboardViewModel(
           icon: 'postgres',
           label: t('dashboard.hero.pills.volumes'),
           tone: 'core'
+        },
+        {
+          icon: aiAgentsEnabled ? 'workflow' : 'certificate',
+          label: t(
+            aiAgentsEnabled
+              ? 'dashboard.hero.pills.agentsActive'
+              : 'dashboard.hero.pills.agentsOptional'
+          ),
+          tone: 'agents'
         },
         {
           icon: aiLlmEnabled ? 'spark' : 'certificate',
@@ -480,7 +571,7 @@ export function createDashboardViewModel(
     },
     operatingCharter: [
       t('dashboard.operatingCharter.gitea'),
-      t('dashboard.operatingCharter.n8n'),
+      t('dashboard.operatingCharter.agents'),
       t('dashboard.operatingCharter.ai'),
       t('dashboard.operatingCharter.image'),
       t('dashboard.operatingCharter.video'),
@@ -515,41 +606,6 @@ export function createDashboardViewModel(
         id: 'gitea',
         status: t('values.alwaysOnForge'),
         title: t('dashboard.services.gitea.title'),
-        tone: 'core'
-      },
-      {
-        action: {
-          href: config.services.n8n.url,
-          label: t('dashboard.services.n8n.action')
-        },
-        credentials: [
-          {
-            label: credentialLabels.endpoint,
-            value: config.services.n8n.url
-          },
-          {
-            label: credentialLabels.accessMode,
-            value: t('values.directAppLogin')
-          },
-          {
-            label: credentialLabels.ownerBootstrap,
-            value: config.services.n8n.ownerName
-          },
-          {
-            label: credentialLabels.ownerEmail,
-            value: config.services.n8n.ownerEmail
-          },
-          {
-            label: credentialLabels.ownerPassword,
-            value: config.services.n8n.ownerPassword
-          }
-        ],
-        description: t('dashboard.services.n8n.description'),
-        icon: 'workflow',
-        id: 'n8n',
-        note: t('dashboard.services.n8n.note'),
-        status: t('values.workflowControl'),
-        title: t('dashboard.services.n8n.title'),
         tone: 'core'
       }
     ],

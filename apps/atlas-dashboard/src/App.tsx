@@ -79,6 +79,11 @@ const toneStyles: Record<
   DashboardTone,
   { accent: string; border: string; soft: string }
 > = {
+  agents: {
+    accent: atlasDashboardPalette.signal,
+    border: 'rgba(77, 163, 255, 0.28)',
+    soft: 'rgba(77, 163, 255, 0.14)'
+  },
   ai: {
     accent: atlasDashboardPalette.ai,
     border: 'rgba(214, 138, 72, 0.28)',
@@ -202,6 +207,7 @@ export default function App() {
               </Col>
               <Col xs={24} xl={8} style={{ display: 'flex' }}>
                 <LayerRail
+                  agentsLayer={dashboard.agentsLayer}
                   aiLayer={dashboard.aiLayer}
                   imageLayer={dashboard.imageLayer}
                   videoLayer={dashboard.videoLayer}
@@ -254,6 +260,30 @@ export default function App() {
                 </Col>
               ))}
             </Row>
+
+            <SectionBand
+              body={t(
+                dashboard.agentsLayer.enabled
+                  ? 'sections.agentsBodyEnabled'
+                  : 'sections.agentsBodyDisabled'
+              )}
+              kicker={t('sections.agentsKicker')}
+              title={t('sections.agentsTitle')}
+            />
+            <LayerStateCard layer={dashboard.agentsLayer} />
+            {dashboard.agentsLayer.enabled ? (
+              <Row gutter={[24, 24]}>
+                {dashboard.agentServices.map((service) => (
+                  <Col xs={24} xl={12} key={service.id}>
+                    <OperationalCard
+                      item={service}
+                      primaryAction={service.action}
+                      tone={service.tone}
+                    />
+                  </Col>
+                ))}
+              </Row>
+            ) : null}
 
             <SectionBand
               body={t(
@@ -687,11 +717,13 @@ function StatsRail({
 }
 
 function LayerRail({
+  agentsLayer,
   aiLayer,
   imageLayer,
   videoLayer,
   workbenchLayer
 }: {
+  agentsLayer: { enabled: boolean; summary: string; tone: DashboardTone };
   aiLayer: { enabled: boolean; summary: string; tone: DashboardTone };
   imageLayer: { enabled: boolean; summary: string; tone: DashboardTone };
   videoLayer: { enabled: boolean; summary: string; tone: DashboardTone };
@@ -709,6 +741,12 @@ function LayerRail({
             summary={t('dashboard.coreLayerSummary')}
             title={t('cards.tones.core')}
             tone="core"
+          />
+          <LayerSummaryTile
+            enabled={agentsLayer.enabled}
+            summary={agentsLayer.summary}
+            title={t('cards.tones.agents')}
+            tone={agentsLayer.tone}
           />
           <LayerSummaryTile
             enabled={aiLayer.enabled}
@@ -839,7 +877,9 @@ function LayerSummaryTile({
   const { t } = useTranslation();
   const palette = toneStyles[tone];
   const IconGlyph =
-    tone === 'ai'
+    tone === 'agents'
+      ? BranchesOutlined
+      : tone === 'ai'
       ? ApiOutlined
       : tone === 'video'
         ? VideoCameraOutlined
@@ -1008,7 +1048,9 @@ function LayerStateCard({
   const { t } = useTranslation();
   const palette = toneStyles[layer.tone];
   const IconGlyph =
-    layer.tone === 'ai'
+    layer.tone === 'agents'
+      ? BranchesOutlined
+      : layer.tone === 'ai'
       ? ApiOutlined
       : layer.tone === 'video'
         ? VideoCameraOutlined
@@ -1383,6 +1425,8 @@ function SignalPill({
   const capsuleBg =
     tone === 'core'
       ? 'rgba(31, 159, 141, 0.18)'
+      : tone === 'agents'
+        ? 'rgba(77, 163, 255, 0.18)'
       : tone === 'ai'
         ? 'rgba(214, 138, 72, 0.18)'
       : tone === 'image'
