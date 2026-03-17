@@ -5,7 +5,6 @@ services:
   gateway:
     environment:
       ATLAS_AI_IMAGE_ENABLED: "true"
-      ATLAS_AI_VIDEO_ENABLED: "false"
 
   gateway-ai-image:
     build:

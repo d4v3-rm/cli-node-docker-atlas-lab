@@ -14,7 +14,6 @@ services:
   gateway:
     environment:
       ATLAS_WORKBENCH_ENABLED: "true"
-      ATLAS_AI_VIDEO_ENABLED: "false"
 
   gateway-workbench:
     build:
