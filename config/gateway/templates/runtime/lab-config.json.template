@@ -6,6 +6,7 @@
   },
   "features": {
     "aiLlmEnabled": ${ATLAS_AI_LLM_ENABLED},
+    "aiAgentsEnabled": ${ATLAS_AI_AGENTS_ENABLED},
     "aiImageEnabled": ${ATLAS_AI_IMAGE_ENABLED},
     "aiVideoEnabled": ${ATLAS_AI_VIDEO_ENABLED},
     "workbenchEnabled": ${ATLAS_WORKBENCH_ENABLED}

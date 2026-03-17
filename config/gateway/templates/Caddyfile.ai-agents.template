@@ -25,23 +25,6 @@
   reverse_proxy {args[0]}
 }
 
-(guarded_proxy) {
-  import lab_tls
-  basic_auth {
-    {args[0]} {args[1]}
-  }
-  reverse_proxy {args[2]} {
-    header_up -Authorization
-  }
-}
-
-https://${LAB_PUBLIC_HOST}:${LAB_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${LAB_HTTPS_PORT} {
-  import lab_tls
-  root * /srv
-  try_files {path} /index.html
-  file_server
-}
-
-https://${LAB_PUBLIC_HOST}:${GITEA_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${GITEA_HTTPS_PORT} {
-  import service_proxy gitea:3000
+https://${LAB_PUBLIC_HOST}:${N8N_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${N8N_HTTPS_PORT} {
+  import service_proxy n8n:5678
 }

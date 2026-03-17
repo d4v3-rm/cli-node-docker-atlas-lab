@@ -18,6 +18,7 @@ services:
     environment:
       ATLAS_GATEWAY_TEMPLATE: Caddyfile.ai-video.template
       ATLAS_AI_LLM_ENABLED: "false"
+      ATLAS_AI_AGENTS_ENABLED: "false"
       ATLAS_AI_IMAGE_ENABLED: "false"
       ATLAS_AI_VIDEO_ENABLED: "true"
       ATLAS_WORKBENCH_ENABLED: "false"
