@@ -20,11 +20,6 @@
   }
 }
 
-(service_proxy) {
-  import lab_tls
-  reverse_proxy {args[0]}
-}
-
 (guarded_proxy) {
   import lab_tls
   basic_auth {
@@ -35,13 +30,6 @@
   }
 }
 
-https://${LAB_PUBLIC_HOST}:${LAB_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${LAB_HTTPS_PORT} {
-  import lab_tls
-  root * /srv
-  try_files {path} /index.html
-  file_server
-}
-
-https://${LAB_PUBLIC_HOST}:${GITEA_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${GITEA_HTTPS_PORT} {
-  import service_proxy gitea:3000
+https://${LAB_PUBLIC_HOST}:${COMFYUI_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${COMFYUI_HTTPS_PORT} {
+  import guarded_proxy ${COMFYUI_GATEWAY_USER} ${COMFYUI_GATEWAY_PASSWORD_HASH} comfyui:8188
 }

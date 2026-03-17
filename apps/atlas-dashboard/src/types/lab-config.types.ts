@@ -4,7 +4,9 @@
 export interface LabRuntimeConfig {
   features: {
     aiLlmEnabled: boolean;
+    aiAgentsEnabled: boolean;
     aiImageEnabled: boolean;
+    aiVideoEnabled: boolean;
     workbenchEnabled: boolean;
   };
   assets: {
@@ -43,6 +45,14 @@ export interface LabRuntimeConfig {
       modelRepo: string;
       modelRevision: string;
       modelTitle: string;
+      url: string;
+    };
+    comfyUi: {
+      briefingPath: string;
+      gatewayPassword: string;
+      gatewayUser: string;
+      ltxModelTitle: string;
+      wanModelTitle: string;
       url: string;
     };
     openWebUi: {

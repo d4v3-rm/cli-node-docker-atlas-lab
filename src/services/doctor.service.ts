@@ -6,7 +6,9 @@ import { createComposeCommandArgs } from '../lib/compose.js';
 import type { DoctorCommandOptions } from '../types/cli.types.js';
 import type { HostCheckResult, SmokeCheckDefinition } from '../types/doctor.types.js';
 import type {
+  AiAgentsSmokeEnv,
   AiImageSmokeEnv,
+  AiVideoSmokeEnv,
   AiLlmSmokeEnv,
   ProjectContext,
   SmokeEnv
@@ -20,7 +22,9 @@ import { readGatewayCertificate } from './gateway-certificate.service.js';
 import { checkNvidiaGpuRuntime } from './gpu-preflight.service.js';
 import { canLoginToN8n } from './n8n-owner.service.js';
 import {
+  parseAiAgentsSmokeEnv,
   parseAiImageSmokeEnv,
+  parseAiVideoSmokeEnv,
   parseAiLlmSmokeEnv,
   parseSmokeEnv
 } from './project.service.js';
@@ -50,7 +54,7 @@ export async function runDoctorCommand(
     createCheckTask(results, 'host', 'Docker daemon', () =>
       checkCommand('docker', ['info', '--format', '{{.ServerVersion}}'], 'Docker daemon')
     ),
-    ...((options.withAiLlm || options.withAiImage)
+    ...((options.withAiLlm || options.withAiImage || options.withAiVideo)
       ? [createCheckTask(results, 'host', 'NVIDIA GPU', () => checkNvidiaGpuRuntime())]
       : []),
     createCheckTask(results, 'host', 'Node.js', () => Promise.resolve(checkNodeVersion())),
@@ -67,10 +71,12 @@ export async function runDoctorCommand(
 
   if (options.smoke) {
     const env = parseSmokeEnv(context.env);
+    const aiAgentsEnv = options.withAiAgents ? parseAiAgentsSmokeEnv(context.env) : undefined;
     const aiLlmEnv = options.withAiLlm ? parseAiLlmSmokeEnv(context.env) : undefined;
     const aiImageEnv = options.withAiImage ? parseAiImageSmokeEnv(context.env) : undefined;
+    const aiVideoEnv = options.withAiVideo ? parseAiVideoSmokeEnv(context.env) : undefined;
     const gatewayCertificate = await readGatewayCertificate(context, 'smoke');
-    for (const smokeCheck of buildSmokeChecks(env, aiLlmEnv, aiImageEnv)) {
+    for (const smokeCheck of buildSmokeChecks(env, aiAgentsEnv, aiLlmEnv, aiImageEnv, aiVideoEnv)) {
       tasks.push(createCheckTask(results, 'smoke', smokeCheck.name, () => smokeCheck.run(gatewayCertificate)));
     }
   }
@@ -190,13 +196,15 @@ function npmCheckCommand(): [string, string[], string] {
  */
 async function checkComposeConfiguration(
   context: ProjectContext,
-  options: Pick<DoctorCommandOptions, 'withAiLlm' | 'withAiImage' | 'withWorkbench'>
+  options: Pick<DoctorCommandOptions, 'withAiLlm' | 'withAiAgents' | 'withAiImage' | 'withAiVideo' | 'withWorkbench'>
 ): Promise<HostCheckResult> {
   const result = await runCommand(
     'docker',
     createComposeCommandArgs(context, ['config', '-q'], {
       includeAiLlm: Boolean(options.withAiLlm),
+      includeAiAgents: Boolean(options.withAiAgents),
       includeAiImage: Boolean(options.withAiImage),
+      includeAiVideo: Boolean(options.withAiVideo),
       includeWorkbench: Boolean(options.withWorkbench)
     }),
     {
@@ -235,8 +243,10 @@ function checkRequiredFile(projectRoot: string, relativePath: string): HostCheck
  */
 function buildSmokeChecks(
   env: SmokeEnv,
+  aiAgentsEnv?: AiAgentsSmokeEnv,
   aiLlmEnv?: AiLlmSmokeEnv,
-  aiImageEnv?: AiImageSmokeEnv
+  aiImageEnv?: AiImageSmokeEnv,
+  aiVideoEnv?: AiVideoSmokeEnv
 ): SmokeCheckDefinition[] {
   const checks: SmokeCheckDefinition[] = [
     {
@@ -247,11 +257,18 @@ function buildSmokeChecks(
       name: 'Smoke Gitea',
       run: (caCertificate) =>
         runStatusCheck('Smoke Gitea', new URL('/api/healthz', env.GITEA_URL).toString(), caCertificate)
-    },
-    {
+    }
+  ];
+
+  if (!aiAgentsEnv && !aiLlmEnv && !aiImageEnv && !aiVideoEnv) {
+    return checks;
+  }
+
+  if (aiAgentsEnv) {
+    checks.push({
       name: 'Smoke n8n',
       run: async (caCertificate) => {
-        const ok = await canLoginToN8n(env, caCertificate);
+        const ok = await canLoginToN8n(aiAgentsEnv, caCertificate);
 
         return {
           name: 'Smoke n8n',
@@ -259,13 +276,7 @@ function buildSmokeChecks(
           detail: ok ? 'Owner login verified' : 'Could not authenticate with the configured owner account'
         };
       }
-    }
-  ];
-
-  if (!aiLlmEnv) {
-    if (!aiImageEnv) {
-      return checks;
-    }
+    });
   }
 
   if (aiImageEnv) {
@@ -287,7 +298,27 @@ function buildSmokeChecks(
         };
       }
     });
+  }
 
+  if (aiVideoEnv) {
+    checks.push({
+      name: 'Smoke ComfyUI',
+      run: async (caCertificate) => {
+        const response = await requestHttps(aiVideoEnv.COMFYUI_URL, {
+          auth: {
+            username: aiVideoEnv.COMFYUI_GATEWAY_USER,
+            password: aiVideoEnv.COMFYUI_GATEWAY_PASSWORD
+          },
+          caCertificate
+        });
+
+        return {
+          name: 'Smoke ComfyUI',
+          ok: response.statusCode >= 200 && response.statusCode < 400,
+          detail: `HTTP ${response.statusCode} with models ${aiVideoEnv.COMFYUI_LTX_MODEL_TITLE} and ${aiVideoEnv.COMFYUI_WAN_MODEL_TITLE}`
+        };
+      }
+    });
   }
 
   if (!aiLlmEnv) {

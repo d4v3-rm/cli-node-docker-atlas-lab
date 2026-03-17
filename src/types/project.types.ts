@@ -25,6 +25,11 @@ export interface LabEnv {
   INVOKEAI_MODEL_REPO?: string;
   INVOKEAI_MODEL_REVISION?: string;
   INVOKEAI_MODEL_TITLE?: string;
+  COMFYUI_URL?: string;
+  COMFYUI_GATEWAY_USER?: string;
+  COMFYUI_GATEWAY_PASSWORD?: string;
+  COMFYUI_LTX_MODEL_TITLE?: string;
+  COMFYUI_WAN_MODEL_TITLE?: string;
   POSTGRES_DEV_HOST_PORT?: string;
   LAB_URL?: string;
   GITEA_URL?: string;
@@ -63,6 +68,12 @@ export interface BootstrapEnv extends LabEnv {
   GITEA_ROOT_USERNAME: string;
   GITEA_ROOT_PASSWORD: string;
   GITEA_ROOT_EMAIL: string;
+}
+
+/**
+ * Env shape guaranteed after AI agents bootstrap validation.
+ */
+export interface AiAgentsBootstrapEnv extends LabEnv {
   N8N_URL: string;
   N8N_ROOT_FIRST_NAME: string;
   N8N_ROOT_LAST_NAME: string;
@@ -84,6 +95,12 @@ export interface AiLlmBootstrapEnv extends LabEnv {
 export interface SmokeEnv extends LabEnv {
   LAB_URL: string;
   GITEA_URL: string;
+}
+
+/**
+ * Env shape guaranteed after AI agents smoke-check validation.
+ */
+export interface AiAgentsSmokeEnv extends LabEnv {
   N8N_URL: string;
   N8N_ROOT_EMAIL: string;
   N8N_ROOT_PASSWORD: string;
@@ -113,4 +130,15 @@ export interface AiImageSmokeEnv extends LabEnv {
   INVOKEAI_MODEL_REPO: string;
   INVOKEAI_MODEL_REVISION: string;
   INVOKEAI_MODEL_TITLE: string;
+}
+
+/**
+ * Env shape guaranteed after AI video smoke-check validation.
+ */
+export interface AiVideoSmokeEnv extends LabEnv {
+  COMFYUI_URL: string;
+  COMFYUI_GATEWAY_USER: string;
+  COMFYUI_GATEWAY_PASSWORD: string;
+  COMFYUI_LTX_MODEL_TITLE: string;
+  COMFYUI_WAN_MODEL_TITLE: string;
 }

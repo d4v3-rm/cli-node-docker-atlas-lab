@@ -15,7 +15,8 @@ import {
   NodeIndexOutlined,
   RobotOutlined,
   SafetyCertificateOutlined,
-  ThunderboltOutlined
+  ThunderboltOutlined,
+  VideoCameraOutlined
 } from '@ant-design/icons';
 import {
   Alert,
@@ -70,6 +71,7 @@ const iconMap: Record<DashboardIconKey, DashboardIconComponent> = {
   secure: LockOutlined,
   spark: ThunderboltOutlined,
   terminal: CodeOutlined,
+  video: VideoCameraOutlined,
   workflow: BranchesOutlined
 };
 
@@ -77,6 +79,11 @@ const toneStyles: Record<
   DashboardTone,
   { accent: string; border: string; soft: string }
 > = {
+  agents: {
+    accent: atlasDashboardPalette.signal,
+    border: 'rgba(77, 163, 255, 0.28)',
+    soft: 'rgba(77, 163, 255, 0.14)'
+  },
   ai: {
     accent: atlasDashboardPalette.ai,
     border: 'rgba(214, 138, 72, 0.28)',
@@ -88,6 +95,11 @@ const toneStyles: Record<
     soft: 'rgba(31, 159, 141, 0.14)'
   },
   image: {
+    accent: atlasDashboardPalette.image,
+    border: 'rgba(200, 92, 255, 0.28)',
+    soft: 'rgba(200, 92, 255, 0.14)'
+  },
+  video: {
     accent: atlasDashboardPalette.image,
     border: 'rgba(200, 92, 255, 0.28)',
     soft: 'rgba(200, 92, 255, 0.14)'
@@ -195,8 +207,10 @@ export default function App() {
               </Col>
               <Col xs={24} xl={8} style={{ display: 'flex' }}>
                 <LayerRail
+                  agentsLayer={dashboard.agentsLayer}
                   aiLayer={dashboard.aiLayer}
                   imageLayer={dashboard.imageLayer}
+                  videoLayer={dashboard.videoLayer}
                   workbenchLayer={dashboard.workbenchLayer}
                 />
               </Col>
@@ -249,6 +263,30 @@ export default function App() {
 
             <SectionBand
               body={t(
+                dashboard.agentsLayer.enabled
+                  ? 'sections.agentsBodyEnabled'
+                  : 'sections.agentsBodyDisabled'
+              )}
+              kicker={t('sections.agentsKicker')}
+              title={t('sections.agentsTitle')}
+            />
+            <LayerStateCard layer={dashboard.agentsLayer} />
+            {dashboard.agentsLayer.enabled ? (
+              <Row gutter={[24, 24]}>
+                {dashboard.agentServices.map((service) => (
+                  <Col xs={24} xl={12} key={service.id}>
+                    <OperationalCard
+                      item={service}
+                      primaryAction={service.action}
+                      tone={service.tone}
+                    />
+                  </Col>
+                ))}
+              </Row>
+            ) : null}
+
+            <SectionBand
+              body={t(
                 dashboard.imageLayer.enabled
                   ? 'sections.imageBodyEnabled'
                   : 'sections.imageBodyDisabled'
@@ -289,6 +327,32 @@ export default function App() {
                   <Col xs={24} xl={12} key={service.id}>
                     <OperationalCard
                       item={service}
+                      primaryAction={service.action}
+                      tone={service.tone}
+                    />
+                  </Col>
+                ))}
+              </Row>
+            ) : null}
+
+            <SectionBand
+              body={t(
+                dashboard.videoLayer.enabled
+                  ? 'sections.videoBodyEnabled'
+                  : 'sections.videoBodyDisabled'
+              )}
+              kicker={t('sections.videoKicker')}
+              title={t('sections.videoTitle')}
+            />
+            <LayerStateCard layer={dashboard.videoLayer} />
+            {dashboard.videoLayer.enabled ? (
+              <Row gutter={[24, 24]}>
+                {dashboard.videoServices.map((service) => (
+                  <Col xs={24} xl={12} key={service.id}>
+                    <OperationalCard
+                      briefing={service.briefing}
+                      item={service}
+                      onOpenBriefing={setActiveBriefing}
                       primaryAction={service.action}
                       tone={service.tone}
                     />
@@ -653,12 +717,16 @@ function StatsRail({
 }
 
 function LayerRail({
+  agentsLayer,
   aiLayer,
   imageLayer,
+  videoLayer,
   workbenchLayer
 }: {
+  agentsLayer: { enabled: boolean; summary: string; tone: DashboardTone };
   aiLayer: { enabled: boolean; summary: string; tone: DashboardTone };
   imageLayer: { enabled: boolean; summary: string; tone: DashboardTone };
+  videoLayer: { enabled: boolean; summary: string; tone: DashboardTone };
   workbenchLayer: { enabled: boolean; summary: string; tone: DashboardTone };
 }) {
   const { t } = useTranslation();
@@ -675,6 +743,12 @@ function LayerRail({
             tone="core"
           />
           <LayerSummaryTile
+            enabled={agentsLayer.enabled}
+            summary={agentsLayer.summary}
+            title={t('cards.tones.agents')}
+            tone={agentsLayer.tone}
+          />
+          <LayerSummaryTile
             enabled={aiLayer.enabled}
             summary={aiLayer.summary}
             title={t('cards.tones.ai')}
@@ -685,6 +759,12 @@ function LayerRail({
             summary={imageLayer.summary}
             title={t('cards.tones.image')}
             tone={imageLayer.tone}
+          />
+          <LayerSummaryTile
+            enabled={videoLayer.enabled}
+            summary={videoLayer.summary}
+            title={t('cards.tones.video')}
+            tone={videoLayer.tone}
           />
           <LayerSummaryTile
             enabled={workbenchLayer.enabled}
@@ -797,8 +877,12 @@ function LayerSummaryTile({
   const { t } = useTranslation();
   const palette = toneStyles[tone];
   const IconGlyph =
-    tone === 'ai'
+    tone === 'agents'
+      ? BranchesOutlined
+      : tone === 'ai'
       ? ApiOutlined
+      : tone === 'video'
+        ? VideoCameraOutlined
       : tone === 'image'
         ? PictureOutlined
         : tone === 'workbench'
@@ -964,8 +1048,12 @@ function LayerStateCard({
   const { t } = useTranslation();
   const palette = toneStyles[layer.tone];
   const IconGlyph =
-    layer.tone === 'ai'
+    layer.tone === 'agents'
+      ? BranchesOutlined
+      : layer.tone === 'ai'
       ? ApiOutlined
+      : layer.tone === 'video'
+        ? VideoCameraOutlined
       : layer.tone === 'image'
         ? PictureOutlined
         : CodeOutlined;
@@ -1337,9 +1425,13 @@ function SignalPill({
   const capsuleBg =
     tone === 'core'
       ? 'rgba(31, 159, 141, 0.18)'
+      : tone === 'agents'
+        ? 'rgba(77, 163, 255, 0.18)'
       : tone === 'ai'
         ? 'rgba(214, 138, 72, 0.18)'
-        : tone === 'image'
+      : tone === 'image'
+          ? 'rgba(200, 92, 255, 0.18)'
+        : tone === 'video'
           ? 'rgba(200, 92, 255, 0.18)'
         : tone === 'workbench'
           ? 'rgba(90, 143, 201, 0.18)'

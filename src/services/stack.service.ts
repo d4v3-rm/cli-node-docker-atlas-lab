@@ -35,7 +35,7 @@ export async function runUpCommand(
   let composeStartedInThisRun = false;
   const tasks = new Listr(
     [
-      ...((options.withAiLlm || options.withAiImage)
+      ...((options.withAiLlm || options.withAiImage || options.withAiVideo)
         ? [
             {
               title: formatTaskTitle('host', 'Validate NVIDIA GPU runtime'),
@@ -50,7 +50,9 @@ export async function runUpCommand(
         task: async () => {
           await assertPublishedPortsAvailable(context, {
             includeAiLlm: Boolean(options.withAiLlm),
+            includeAiAgents: Boolean(options.withAiAgents),
             includeAiImage: Boolean(options.withAiImage),
+            includeAiVideo: Boolean(options.withAiVideo),
             includeWorkbench: Boolean(options.withWorkbench)
           });
         }
@@ -73,7 +75,9 @@ export async function runUpCommand(
           new Listr(
             createBootstrapTasks(context, {
               skipGitea: false,
+              skipN8n: !options.withAiAgents,
               skipOllama: !options.withAiLlm,
+              withAiAgents: Boolean(options.withAiAgents),
               withAiLlm: Boolean(options.withAiLlm)
             }),
             {
@@ -89,6 +93,26 @@ export async function runUpCommand(
               title: formatTaskTitle('stack', 'Wait for InvokeAI runtime'),
               task: async () => {
                 await waitForService(context, 'invokeai', 900, { includeAiImage: true });
+              }
+            }
+          ]
+        : []),
+      ...(options.withAiVideo
+        ? [
+            {
+              title: formatTaskTitle('stack', 'Wait for ComfyUI runtime'),
+              task: async () => {
+                await waitForService(context, 'comfyui', 1200, { includeAiVideo: true });
+              }
+            }
+          ]
+        : []),
+      ...(options.withAiAgents
+        ? [
+            {
+              title: formatTaskTitle('stack', 'Wait for n8n runtime'),
+              task: async () => {
+                await waitForService(context, 'n8n', 180, { includeAiAgents: true });
               }
             }
           ]
@@ -121,9 +145,13 @@ export async function runUpCommand(
  * Formats the selected Compose layers for the startup log header.
  */
 function describeEnabledLayers(
-  options: Pick<UpCommandOptions, 'withAiLlm' | 'withAiImage' | 'withWorkbench'>
+  options: Pick<UpCommandOptions, 'withAiLlm' | 'withAiAgents' | 'withAiImage' | 'withAiVideo' | 'withWorkbench'>
 ): string {
   const layers = ['core'];
+
+  if (options.withAiAgents) {
+    layers.push('ai-agents');
+  }
 
   if (options.withAiLlm) {
     layers.push('ai-llm');
@@ -131,6 +159,10 @@ function describeEnabledLayers(
 
   if (options.withAiImage) {
     layers.push('ai-image');
+  }
+
+  if (options.withAiVideo) {
+    layers.push('ai-video');
   }
 
   if (options.withWorkbench) {
@@ -198,7 +230,9 @@ function createComposeUpArgs(context: ProjectContext, options: UpCommandOptions)
 
   return createComposeCommandArgs(context, composeArgs, {
     includeAiLlm: Boolean(options.withAiLlm),
+    includeAiAgents: Boolean(options.withAiAgents),
     includeAiImage: Boolean(options.withAiImage),
+    includeAiVideo: Boolean(options.withAiVideo),
     includeWorkbench: Boolean(options.withWorkbench)
   });
 }

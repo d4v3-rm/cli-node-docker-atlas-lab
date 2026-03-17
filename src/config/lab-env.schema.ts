@@ -37,6 +37,11 @@ export const labEnvSchema = z
     INVOKEAI_MODEL_REPO: optionalEnvValue,
     INVOKEAI_MODEL_REVISION: optionalEnvValue,
     INVOKEAI_MODEL_TITLE: optionalEnvValue,
+    COMFYUI_URL: optionalEnvValue,
+    COMFYUI_GATEWAY_USER: optionalEnvValue,
+    COMFYUI_GATEWAY_PASSWORD: optionalEnvValue,
+    COMFYUI_LTX_MODEL_TITLE: optionalEnvValue,
+    COMFYUI_WAN_MODEL_TITLE: optionalEnvValue,
     POSTGRES_DEV_HOST_PORT: optionalEnvValue,
     LAB_URL: optionalEnvValue,
     GITEA_URL: optionalEnvValue,
@@ -56,7 +61,13 @@ export const bootstrapEnvSchema = labEnvSchema.extend({
   GITEA_GID: requiredEnvValue,
   GITEA_ROOT_USERNAME: requiredEnvValue,
   GITEA_ROOT_PASSWORD: requiredEnvValue,
-  GITEA_ROOT_EMAIL: requiredEnvValue,
+  GITEA_ROOT_EMAIL: requiredEnvValue
+});
+
+/**
+ * Schema for workflows that require AI agents bootstrap env values.
+ */
+export const aiAgentsBootstrapEnvSchema = labEnvSchema.extend({
   N8N_URL: requiredEnvValue,
   N8N_ROOT_FIRST_NAME: requiredEnvValue,
   N8N_ROOT_LAST_NAME: requiredEnvValue,
@@ -69,7 +80,13 @@ export const bootstrapEnvSchema = labEnvSchema.extend({
  */
 export const smokeEnvSchema = labEnvSchema.extend({
   LAB_URL: requiredEnvValue,
-  GITEA_URL: requiredEnvValue,
+  GITEA_URL: requiredEnvValue
+});
+
+/**
+ * Schema for AI agents smoke checks.
+ */
+export const aiAgentsSmokeEnvSchema = labEnvSchema.extend({
   N8N_URL: requiredEnvValue,
   N8N_ROOT_EMAIL: requiredEnvValue,
   N8N_ROOT_PASSWORD: requiredEnvValue
@@ -107,6 +124,17 @@ export const aiImageSmokeEnvSchema = labEnvSchema.extend({
   INVOKEAI_MODEL_REPO: requiredEnvValue,
   INVOKEAI_MODEL_REVISION: requiredEnvValue,
   INVOKEAI_MODEL_TITLE: requiredEnvValue
+});
+
+/**
+ * Schema for AI video smoke checks.
+ */
+export const aiVideoSmokeEnvSchema = labEnvSchema.extend({
+  COMFYUI_URL: requiredEnvValue,
+  COMFYUI_GATEWAY_USER: requiredEnvValue,
+  COMFYUI_GATEWAY_PASSWORD: requiredEnvValue,
+  COMFYUI_LTX_MODEL_TITLE: requiredEnvValue,
+  COMFYUI_WAN_MODEL_TITLE: requiredEnvValue
 });
 
 /**

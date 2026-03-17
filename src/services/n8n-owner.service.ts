@@ -1,7 +1,7 @@
 import pWaitFor from 'p-wait-for';
 import { createComposeCommandArgs } from '../lib/compose.js';
 import { readGatewayCertificate } from './gateway-certificate.service.js';
-import type { BootstrapEnv, SmokeEnv, ProjectContext } from '../types/project.types.js';
+import type { AiAgentsBootstrapEnv, AiAgentsSmokeEnv, ProjectContext } from '../types/project.types.js';
 import type { HttpsResponse } from '../types/http.types.js';
 import type {
   N8nOwnerBootstrapResult,
@@ -17,7 +17,7 @@ import { runCommand } from '../utils/process.js';
  */
 export async function ensureN8nOwner(
   context: ProjectContext,
-  env: BootstrapEnv
+  env: AiAgentsBootstrapEnv
 ): Promise<N8nOwnerBootstrapResult> {
   const caCertificate = await readGatewayCertificate(context, 'bootstrap');
   await waitForN8nIngress(env.N8N_URL, caCertificate);
@@ -40,7 +40,9 @@ export async function ensureN8nOwner(
     printInfo('n8n reports an existing owner. Resetting owner management to reconcile credentials.', 'bootstrap');
     await runCommand(
       'docker',
-      createComposeCommandArgs(context, ['exec', '-T', 'n8n', 'n8n', 'user-management:reset']),
+      createComposeCommandArgs(context, ['exec', '-T', 'n8n', 'n8n', 'user-management:reset'], {
+        includeAiAgents: true
+      }),
       {
         cwd: context.projectRoot,
         scope: 'bootstrap'
@@ -110,7 +112,7 @@ function reportN8nIngressWait(n8nUrl: string, attempts: number): void {
  * Performs an authenticated n8n login suitable for smoke checks.
  */
 export async function canLoginToN8n(
-  env: Pick<SmokeEnv, 'N8N_ROOT_EMAIL' | 'N8N_ROOT_PASSWORD' | 'N8N_URL'>,
+  env: Pick<AiAgentsSmokeEnv, 'N8N_ROOT_EMAIL' | 'N8N_ROOT_PASSWORD' | 'N8N_URL'>,
   caCertificate: string
 ): Promise<boolean> {
   const response = await requestHttps(new URL('/rest/login', env.N8N_URL).toString(), {
@@ -152,7 +154,7 @@ export function classifyN8nOwnerSetupResponse(response: HttpsResponse): N8nOwner
  */
 async function setupN8nOwner(
   env: Pick<
-    BootstrapEnv,
+    AiAgentsBootstrapEnv,
     'N8N_ROOT_EMAIL' | 'N8N_ROOT_FIRST_NAME' | 'N8N_ROOT_LAST_NAME' | 'N8N_ROOT_PASSWORD' | 'N8N_URL'
   >,
   caCertificate: string

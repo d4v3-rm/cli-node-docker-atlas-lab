@@ -2,11 +2,13 @@
 
 ## How the current layout works
 
-The deck remains available locally at `${LAB_LOCAL_URL}`. The lab is split into four layers:
+The deck remains available locally at `${LAB_LOCAL_URL}`. The lab is split into six layers:
 
-- `core`: deck, Gitea, and n8n
+- `core`: deck, Gitea, and the base gateway
+- `ai-agents`: n8n and its external runners
 - `ai-llm`: Open WebUI and Ollama
 - `ai-image`: InvokeAI and its paired local image-generation runtime
+- `ai-video`: ComfyUI with preloaded local video-generation models
 - `workbench`: Postgres and code-server environments
 
 Each layer publishes its HTTPS endpoints on `localhost` through a dedicated gateway. In addition, the `workbench` layer also exposes `Postgres` on a dedicated host TCP port.
@@ -15,10 +17,11 @@ Each layer publishes its HTTPS endpoints on `localhost` through a dedicated gate
 
 - Local deck: `${LAB_LOCAL_URL}`
 - Gitea: `${GITEA_URL}`
-- n8n: `${N8N_URL}`
+- n8n: `${N8N_URL}` only when the `ai-agents` layer is enabled
 - Open WebUI: `${OPENWEBUI_URL}` only when the `ai-llm` layer is enabled
 - Ollama: `${OLLAMA_URL}` only when the `ai-llm` layer is enabled
 - InvokeAI: `${INVOKEAI_URL}` only when the `ai-image` layer is enabled
+- ComfyUI: `${COMFYUI_URL}` only when the `ai-video` layer is enabled
 - Node workbench: `${NODE_DEV_URL}` only when the `workbench` layer is enabled
 - Python workbench: `${PYTHON_DEV_URL}` only when the `workbench` layer is enabled
 - AI workbench: `${AI_DEV_URL}` only when the `workbench` layer is enabled
@@ -29,10 +32,11 @@ Each layer publishes its HTTPS endpoints on `localhost` through a dedicated gate
 
 - `8443`: local deck
 - `8444`: Gitea
-- `8445`: n8n
+- `8445`: n8n, layer `ai-agents`
 - `8446`: Open WebUI, layer `ai-llm`
 - `8447`: Ollama, layer `ai-llm`
 - `8448`: InvokeAI, layer `ai-image`
+- `8449`: ComfyUI, layer `ai-video`
 - `8450`: Node workbench, layer `workbench`
 - `8451`: Python workbench, layer `workbench`
 - `8452`: AI workbench, layer `workbench`
@@ -47,9 +51,11 @@ The gateway generates a self-signed SAN certificate that covers `localhost` and 
 
 ## Internal segmentation
 
-- `apps-net`: Gitea, n8n, Open WebUI
+- `apps-net`: Gitea and Open WebUI
+- `ai-agents-net`: n8n and n8n runners
 - `ai-llm-net`: Ollama and Open WebUI
 - `ai-image-net`: InvokeAI and the optional image-generation runtime
+- `ai-video-net`: ComfyUI and the optional video-generation runtime
 - `data-net`: infrastructure databases
 - `workbench-net`: Postgres and optional code-server environments
 - `workbench-host-net`: dedicated bridge for the host-side Postgres TCP bind

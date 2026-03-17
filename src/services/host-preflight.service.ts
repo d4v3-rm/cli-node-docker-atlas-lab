@@ -12,7 +12,10 @@ import { runCommand } from '../utils/process.js';
 
 const CORE_PORT_ENV_KEYS = [
   'LAB_HTTPS_PORT',
-  'GITEA_HTTPS_PORT',
+  'GITEA_HTTPS_PORT'
+] as const;
+
+const AI_AGENTS_PORT_ENV_KEYS = [
   'N8N_HTTPS_PORT'
 ] as const;
 
@@ -23,6 +26,10 @@ const AI_LLM_PORT_ENV_KEYS = [
 
 const AI_IMAGE_PORT_ENV_KEYS = [
   'INVOKEAI_HTTPS_PORT'
+] as const;
+
+const AI_VIDEO_PORT_ENV_KEYS = [
+  'COMFYUI_HTTPS_PORT'
 ] as const;
 
 const WORKBENCH_PORT_ENV_KEYS = [
@@ -42,7 +49,9 @@ export async function assertPublishedPortsAvailable(
   context: ProjectContext,
   options: {
     includeAiLlm: boolean;
+    includeAiAgents: boolean;
     includeAiImage: boolean;
+    includeAiVideo: boolean;
     includeWorkbench: boolean;
   }
 ): Promise<void> {
@@ -50,7 +59,9 @@ export async function assertPublishedPortsAvailable(
     context.env,
     options.includeWorkbench,
     options.includeAiLlm,
-    options.includeAiImage
+    options.includeAiAgents,
+    options.includeAiImage,
+    options.includeAiVideo
   );
   const currentProjectPorts = await getRunningComposePublishedPorts(context);
   const results = await Promise.all(
@@ -76,12 +87,16 @@ function getConfiguredHostPorts(
   env: LabEnv,
   includeWorkbench: boolean,
   includeAiLlm: boolean,
-  includeAiImage: boolean
+  includeAiAgents: boolean,
+  includeAiImage: boolean,
+  includeAiVideo: boolean
 ): HostPortDefinition[] {
   const envKeys = [
     ...CORE_PORT_ENV_KEYS,
     ...(includeAiLlm ? [...AI_LLM_PORT_ENV_KEYS] : []),
+    ...(includeAiAgents ? [...AI_AGENTS_PORT_ENV_KEYS] : []),
     ...(includeAiImage ? [...AI_IMAGE_PORT_ENV_KEYS] : []),
+    ...(includeAiVideo ? [...AI_VIDEO_PORT_ENV_KEYS] : []),
     ...(includeWorkbench ? [...WORKBENCH_PORT_ENV_KEYS] : [])
   ];
 
