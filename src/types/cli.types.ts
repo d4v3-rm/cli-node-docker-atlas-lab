@@ -19,6 +19,7 @@ export interface LegacyAiAliasOptions {
 export interface UpCommandOptions extends GlobalCliOptions, LegacyAiAliasOptions {
   build?: boolean;
   withAiLlm?: boolean;
+  withAiAgents?: boolean;
   withAiImage?: boolean;
   withAiVideo?: boolean;
   withWorkbench?: boolean;
@@ -29,8 +30,10 @@ export interface UpCommandOptions extends GlobalCliOptions, LegacyAiAliasOptions
  */
 export interface BootstrapCommandOptions extends GlobalCliOptions, LegacyAiAliasOptions {
   skipGitea?: boolean;
+  skipN8n?: boolean;
   skipOllama?: boolean;
   withAiLlm?: boolean;
+  withAiAgents?: boolean;
 }
 
 /**
@@ -39,6 +42,7 @@ export interface BootstrapCommandOptions extends GlobalCliOptions, LegacyAiAlias
 export interface DoctorCommandOptions extends GlobalCliOptions, LegacyAiAliasOptions {
   smoke?: boolean;
   withAiLlm?: boolean;
+  withAiAgents?: boolean;
   withAiImage?: boolean;
   withAiVideo?: boolean;
   withWorkbench?: boolean;
@@ -50,6 +54,7 @@ export interface DoctorCommandOptions extends GlobalCliOptions, LegacyAiAliasOpt
 export interface SaveImagesCommandOptions extends GlobalCliOptions, LegacyAiAliasOptions {
   output?: string;
   withAiLlm?: boolean;
+  withAiAgents?: boolean;
   withAiImage?: boolean;
   withAiVideo?: boolean;
   withWorkbench?: boolean;
@@ -68,6 +73,7 @@ export interface RestoreImagesCommandOptions extends GlobalCliOptions {
 export interface SaveVolumesCommandOptions extends GlobalCliOptions, LegacyAiAliasOptions {
   output?: string;
   withAiLlm?: boolean;
+  withAiAgents?: boolean;
   withAiImage?: boolean;
   withAiVideo?: boolean;
   withWorkbench?: boolean;

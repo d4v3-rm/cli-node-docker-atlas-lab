@@ -12,7 +12,10 @@ import { runCommand } from '../utils/process.js';
 
 const CORE_PORT_ENV_KEYS = [
   'LAB_HTTPS_PORT',
-  'GITEA_HTTPS_PORT',
+  'GITEA_HTTPS_PORT'
+] as const;
+
+const AI_AGENTS_PORT_ENV_KEYS = [
   'N8N_HTTPS_PORT'
 ] as const;
 
@@ -46,6 +49,7 @@ export async function assertPublishedPortsAvailable(
   context: ProjectContext,
   options: {
     includeAiLlm: boolean;
+    includeAiAgents: boolean;
     includeAiImage: boolean;
     includeAiVideo: boolean;
     includeWorkbench: boolean;
@@ -55,6 +59,7 @@ export async function assertPublishedPortsAvailable(
     context.env,
     options.includeWorkbench,
     options.includeAiLlm,
+    options.includeAiAgents,
     options.includeAiImage,
     options.includeAiVideo
   );
@@ -82,12 +87,14 @@ function getConfiguredHostPorts(
   env: LabEnv,
   includeWorkbench: boolean,
   includeAiLlm: boolean,
+  includeAiAgents: boolean,
   includeAiImage: boolean,
   includeAiVideo: boolean
 ): HostPortDefinition[] {
   const envKeys = [
     ...CORE_PORT_ENV_KEYS,
     ...(includeAiLlm ? [...AI_LLM_PORT_ENV_KEYS] : []),
+    ...(includeAiAgents ? [...AI_AGENTS_PORT_ENV_KEYS] : []),
     ...(includeAiImage ? [...AI_IMAGE_PORT_ENV_KEYS] : []),
     ...(includeAiVideo ? [...AI_VIDEO_PORT_ENV_KEYS] : []),
     ...(includeWorkbench ? [...WORKBENCH_PORT_ENV_KEYS] : [])

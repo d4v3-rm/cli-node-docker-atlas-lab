@@ -68,6 +68,12 @@ export interface BootstrapEnv extends LabEnv {
   GITEA_ROOT_USERNAME: string;
   GITEA_ROOT_PASSWORD: string;
   GITEA_ROOT_EMAIL: string;
+}
+
+/**
+ * Env shape guaranteed after AI agents bootstrap validation.
+ */
+export interface AiAgentsBootstrapEnv extends LabEnv {
   N8N_URL: string;
   N8N_ROOT_FIRST_NAME: string;
   N8N_ROOT_LAST_NAME: string;
@@ -89,6 +95,12 @@ export interface AiLlmBootstrapEnv extends LabEnv {
 export interface SmokeEnv extends LabEnv {
   LAB_URL: string;
   GITEA_URL: string;
+}
+
+/**
+ * Env shape guaranteed after AI agents smoke-check validation.
+ */
+export interface AiAgentsSmokeEnv extends LabEnv {
   N8N_URL: string;
   N8N_ROOT_EMAIL: string;
   N8N_ROOT_PASSWORD: string;

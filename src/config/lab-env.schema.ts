@@ -61,7 +61,13 @@ export const bootstrapEnvSchema = labEnvSchema.extend({
   GITEA_GID: requiredEnvValue,
   GITEA_ROOT_USERNAME: requiredEnvValue,
   GITEA_ROOT_PASSWORD: requiredEnvValue,
-  GITEA_ROOT_EMAIL: requiredEnvValue,
+  GITEA_ROOT_EMAIL: requiredEnvValue
+});
+
+/**
+ * Schema for workflows that require AI agents bootstrap env values.
+ */
+export const aiAgentsBootstrapEnvSchema = labEnvSchema.extend({
   N8N_URL: requiredEnvValue,
   N8N_ROOT_FIRST_NAME: requiredEnvValue,
   N8N_ROOT_LAST_NAME: requiredEnvValue,
@@ -74,7 +80,13 @@ export const bootstrapEnvSchema = labEnvSchema.extend({
  */
 export const smokeEnvSchema = labEnvSchema.extend({
   LAB_URL: requiredEnvValue,
-  GITEA_URL: requiredEnvValue,
+  GITEA_URL: requiredEnvValue
+});
+
+/**
+ * Schema for AI agents smoke checks.
+ */
+export const aiAgentsSmokeEnvSchema = labEnvSchema.extend({
   N8N_URL: requiredEnvValue,
   N8N_ROOT_EMAIL: requiredEnvValue,
   N8N_ROOT_PASSWORD: requiredEnvValue
