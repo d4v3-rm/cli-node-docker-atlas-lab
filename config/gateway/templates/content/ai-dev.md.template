@@ -1,0 +1,30 @@
+# AI Reactor
+
+## What it does
+
+`code-server` environment focused on AI and data science. It includes a Python package set suitable for notebooks, lightweight training, prompt engineering, and ML prototyping.
+
+## How to access it
+
+- Compose profile: `workbench`
+- Runtime URL: `${AI_DEV_URL}`
+- Access mode: `password`
+- Root password: `${AI_DEV_PASSWORD}`
+- Activation command: `atlas-lab up --with-workbench`
+
+## What is included
+
+- Python stack with AI and data-science libraries
+- Persistent workspace backed by a Docker volume
+- A workflow that pairs well with `Open WebUI` and `Ollama`
+
+## When to use it
+
+- notebooks and proofs of concept
+- local AI pipelines
+- prompt and model evaluation
+- data exploration
+
+## Operational note
+
+This workbench is the right place for code-centric AI development. `Open WebUI` remains the browser interaction console of the `ai-llm` layer and is only reachable when `--with-ai-llm` is also enabled.

@@ -1,0 +1,30 @@
+# Python Grid
+
+## What it does
+
+`code-server` environment for Python backends, automation, operational scripting, and project tooling. It is intended as a general workspace for application development and integrations.
+
+## How to access it
+
+- Compose profile: `workbench`
+- Runtime URL: `${PYTHON_DEV_URL}`
+- Access mode: `password`
+- Root password: `${PYTHON_DEV_PASSWORD}`
+- Activation command: `atlas-lab up --with-workbench`
+
+## What is included
+
+- Python installed through `pyenv`
+- Persistent workspace backed by a Docker volume
+- Space suited for scripts, backend services, and tooling
+
+## When to use it
+
+- Python backends
+- internal utilities
+- deployment scripts
+- fast prototypes
+
+## Operational note
+
+The operational entry point remains available through `localhost` on the dedicated port, while the deck surfaces this local briefing first.

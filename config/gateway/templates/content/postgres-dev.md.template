@@ -1,0 +1,40 @@
+# Postgres Vault
+
+## What it does
+
+PostgreSQL server dedicated to the lab workbenches. It is meant for relational development, migrations, seed data, application testing, and shared local persistence across the `Node`, `Python`, `AI`, and `C++` environments.
+
+## How to access it
+
+- No public web UI
+- Compose profile: `workbench`
+- Activation command: `atlas-lab up --with-workbench`
+- External host for desktop clients: `localhost`
+- External port for desktop clients: `${POSTGRES_DEV_HOST_PORT}`
+- Internal Docker host: `postgres-dev`
+- Internal Docker port: `5432`
+- Database: `${POSTGRES_DEV_DATABASE}`
+- Root superuser: `${POSTGRES_DEV_SUPERUSER}`
+- Root password: `${POSTGRES_DEV_PASSWORD}`
+
+## What is already prepared in the workbenches
+
+Inside every `code-server` environment, these variables are already exported:
+
+- `PGHOST=postgres-dev`
+- `PGPORT=5432`
+- `PGDATABASE=${POSTGRES_DEV_DATABASE}`
+- `PGUSER=${POSTGRES_DEV_SUPERUSER}`
+- `PGPASSWORD=${POSTGRES_DEV_PASSWORD}`
+- `DATABASE_URL=postgresql://${POSTGRES_DEV_SUPERUSER}:${POSTGRES_DEV_PASSWORD}@postgres-dev:5432/${POSTGRES_DEV_DATABASE}`
+
+## When to use it
+
+- backend development with relational storage
+- SQL migrations
+- local testing with ORMs or raw queries
+- shared development datasets across workbenches
+
+## Operational note
+
+From host-side tools such as DBeaver or local `psql`, use `localhost:${POSTGRES_DEV_HOST_PORT}`. Inside the workbenches and other containers connected to `workbench-net`, continue using `postgres-dev:5432`.

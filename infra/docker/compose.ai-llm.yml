@@ -1,0 +1,127 @@
+name: cli-node-docker-atlas-lab
+
+# Optional AI LLM layer for Open WebUI and Ollama.
+x-lab-env: &lab-env
+  TZ: ${TZ}
+
+services:
+  gateway:
+    environment:
+      ATLAS_AI_LLM_ENABLED: "true"
+
+  gateway-ai-llm:
+    build:
+      context: ../..
+      dockerfile: infra/docker/images/gateway/Dockerfile
+      args:
+        CADDY_VERSION: ${CADDY_VERSION}
+    restart: unless-stopped
+    env_file:
+      - ../../env/lab.env
+    environment:
+      ATLAS_GATEWAY_TEMPLATE: Caddyfile.ai-llm.template
+      ATLAS_AI_LLM_ENABLED: "true"
+      ATLAS_AI_AGENTS_ENABLED: "false"
+      ATLAS_AI_IMAGE_ENABLED: "false"
+      ATLAS_AI_VIDEO_ENABLED: "false"
+      ATLAS_WORKBENCH_ENABLED: "false"
+    ports:
+      - "${OPENWEBUI_HTTPS_PORT}:${OPENWEBUI_HTTPS_PORT}"
+      - "${OLLAMA_HTTPS_PORT}:${OLLAMA_HTTPS_PORT}"
+    volumes:
+      - gateway-certs:/etc/caddy/certs
+      - gateway-config:/etc/caddy/dynamic
+      - gateway-data:/data
+    depends_on:
+      gateway:
+        condition: service_started
+      open-webui:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    networks:
+      - edge-net
+      - apps-net
+      - ai-llm-net
+
+  ollama:
+    build:
+      context: ../..
+      dockerfile: infra/docker/images/ollama/Dockerfile
+      args:
+        OLLAMA_VERSION: ${OLLAMA_VERSION}
+    restart: unless-stopped
+    gpus: ${OLLAMA_GPU_REQUEST}
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 11434 || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+    environment:
+      <<: *lab-env
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_ORIGINS: ${OPENWEBUI_URL}
+      OLLAMA_RUNTIME_MODELS: ${OLLAMA_RUNTIME_MODELS}
+      NVIDIA_VISIBLE_DEVICES: ${OLLAMA_NVIDIA_VISIBLE_DEVICES}
+      NVIDIA_DRIVER_CAPABILITIES: ${OLLAMA_NVIDIA_DRIVER_CAPABILITIES}
+    volumes:
+      - ollama-data:/root/.ollama
+      - ../../infra/docker/images/model-sync/sync-ollama-models.sh:/opt/atlas-lab/model-sync/sync-ollama-models.sh:ro
+    networks:
+      ai-llm-net:
+      services-egress-net:
+        gw_priority: 1
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:${OPENWEBUI_VERSION}
+    restart: unless-stopped
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      <<: *lab-env
+      WEBUI_URL: ${OPENWEBUI_URL}
+      WEBUI_SECRET_KEY: ${OPENWEBUI_SECRET_KEY}
+      CORS_ALLOW_ORIGIN: ${OPENWEBUI_CORS_ALLOW_ORIGIN}
+      USER_AGENT: AtlasLab-OpenWebUI/1.0
+      ENABLE_OPENAI_API: "false"
+      ENABLE_OLLAMA_API: "true"
+      OLLAMA_BASE_URL: http://ollama:11434
+      RAG_OLLAMA_BASE_URL: http://ollama:11434
+      RAG_EMBEDDING_ENGINE: ollama
+      RAG_EMBEDDING_MODEL: ${OLLAMA_EMBEDDING_MODEL}
+      USE_EMBEDDING_MODEL_DOCKER: ""
+      USE_AUXILIARY_EMBEDDING_MODEL_DOCKER: ""
+      AUXILIARY_EMBEDDING_MODEL: ""
+      WEBUI_ADMIN_NAME: ${OPENWEBUI_ROOT_NAME}
+      WEBUI_ADMIN_EMAIL: ${OPENWEBUI_ROOT_EMAIL}
+      WEBUI_ADMIN_PASSWORD: ${OPENWEBUI_ROOT_PASSWORD}
+      ENABLE_SIGNUP: "false"
+      WEBUI_AUTH: "true"
+    volumes:
+      - open-webui-data:/app/backend/data
+    networks:
+      apps-net:
+      ai-llm-net:
+      services-egress-net:
+        gw_priority: 1
+
+networks:
+  edge-net:
+    name: cli-node-docker-atlas-lab_edge
+  services-egress-net:
+    name: cli-node-docker-atlas-lab_services_egress
+  apps-net:
+    name: cli-node-docker-atlas-lab_apps
+    internal: true
+  ai-llm-net:
+    name: cli-node-docker-atlas-lab_ai_llm
+    internal: true
+
+volumes:
+  gateway-certs:
+  gateway-config:
+  gateway-data:
+  ollama-data:
+  open-webui-data:

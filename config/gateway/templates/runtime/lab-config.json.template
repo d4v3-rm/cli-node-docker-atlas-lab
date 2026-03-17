@@ -1,0 +1,94 @@
+{
+  "lab": {
+    "name": "Atlas Lab",
+    "localUrl": "${LAB_LOCAL_URL}",
+    "publicUrl": "${LAB_URL}"
+  },
+  "features": {
+    "aiLlmEnabled": ${ATLAS_AI_LLM_ENABLED},
+    "aiAgentsEnabled": ${ATLAS_AI_AGENTS_ENABLED},
+    "aiImageEnabled": ${ATLAS_AI_IMAGE_ENABLED},
+    "aiVideoEnabled": ${ATLAS_AI_VIDEO_ENABLED},
+    "workbenchEnabled": ${ATLAS_WORKBENCH_ENABLED}
+  },
+  "assets": {
+    "certificateUrl": "/assets/lab.crt"
+  },
+  "content": {
+    "networkMapPath": "/content/network-map.md"
+  },
+  "services": {
+    "gitea": {
+      "url": "${GITEA_URL}",
+      "rootUsername": "${GITEA_ROOT_USERNAME}",
+      "rootPassword": "${GITEA_ROOT_PASSWORD}",
+      "rootEmail": "${GITEA_ROOT_EMAIL}"
+    },
+    "n8n": {
+      "url": "${N8N_URL}",
+      "ownerName": "${N8N_ROOT_FIRST_NAME} ${N8N_ROOT_LAST_NAME}",
+      "ownerEmail": "${N8N_ROOT_EMAIL}",
+      "ownerPassword": "${N8N_ROOT_PASSWORD}"
+    },
+    "openWebUi": {
+      "url": "${OPENWEBUI_URL}",
+      "rootName": "${OPENWEBUI_ROOT_NAME}",
+      "rootEmail": "${OPENWEBUI_ROOT_EMAIL}",
+      "rootPassword": "${OPENWEBUI_ROOT_PASSWORD}"
+    },
+    "ollama": {
+      "url": "${OLLAMA_URL}",
+      "gatewayUser": "${OLLAMA_GATEWAY_USER}",
+      "gatewayPassword": "${OLLAMA_GATEWAY_PASSWORD}"
+    },
+    "invokeAi": {
+      "url": "${INVOKEAI_URL}",
+      "gatewayUser": "${INVOKEAI_GATEWAY_USER}",
+      "gatewayPassword": "${INVOKEAI_GATEWAY_PASSWORD}",
+      "modelRepo": "${INVOKEAI_MODEL_REPO}",
+      "modelRevision": "${INVOKEAI_MODEL_REVISION}",
+      "modelTitle": "${INVOKEAI_MODEL_TITLE}",
+      "briefingPath": "/content/invokeai.md"
+    },
+    "comfyUi": {
+      "url": "${COMFYUI_URL}",
+      "gatewayUser": "${COMFYUI_GATEWAY_USER}",
+      "gatewayPassword": "${COMFYUI_GATEWAY_PASSWORD}",
+      "ltxModelTitle": "${COMFYUI_LTX_MODEL_TITLE}",
+      "wanModelTitle": "${COMFYUI_WAN_MODEL_TITLE}",
+      "briefingPath": "/content/comfyui.md"
+    }
+  },
+  "workbenches": {
+    "node": {
+      "url": "${NODE_DEV_URL}",
+      "password": "${NODE_DEV_PASSWORD}",
+      "briefingPath": "/content/node-dev.md"
+    },
+    "python": {
+      "url": "${PYTHON_DEV_URL}",
+      "password": "${PYTHON_DEV_PASSWORD}",
+      "briefingPath": "/content/python-dev.md"
+    },
+    "ai": {
+      "url": "${AI_DEV_URL}",
+      "password": "${AI_DEV_PASSWORD}",
+      "briefingPath": "/content/ai-dev.md"
+    },
+    "cpp": {
+      "url": "${CPP_DEV_URL}",
+      "password": "${CPP_DEV_PASSWORD}",
+      "briefingPath": "/content/cpp-dev.md"
+    },
+    "postgres": {
+      "host": "localhost",
+      "port": "${POSTGRES_DEV_HOST_PORT}",
+      "internalHost": "postgres-dev",
+      "internalPort": "5432",
+      "database": "${POSTGRES_DEV_DATABASE}",
+      "superuser": "${POSTGRES_DEV_SUPERUSER}",
+      "password": "${POSTGRES_DEV_PASSWORD}",
+      "briefingPath": "/content/postgres-dev.md"
+    }
+  }
+}

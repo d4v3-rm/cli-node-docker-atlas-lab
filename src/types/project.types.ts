@@ -1,0 +1,144 @@
+import type { RepositoryLayout } from './repository-layout.types.js';
+
+/**
+ * Typed view of the `env/lab.env` values consumed by the CLI.
+ */
+export interface LabEnv {
+  [key: string]: string | undefined;
+  GITEA_UID?: string;
+  GITEA_GID?: string;
+  GITEA_ROOT_USERNAME?: string;
+  GITEA_ROOT_PASSWORD?: string;
+  GITEA_ROOT_EMAIL?: string;
+  N8N_ROOT_FIRST_NAME?: string;
+  N8N_ROOT_LAST_NAME?: string;
+  N8N_ROOT_EMAIL?: string;
+  N8N_ROOT_PASSWORD?: string;
+  OPENWEBUI_ROOT_EMAIL?: string;
+  OPENWEBUI_ROOT_PASSWORD?: string;
+  OLLAMA_EMBEDDING_MODEL?: string;
+  OLLAMA_CHAT_MODEL?: string;
+  OLLAMA_RUNTIME_MODELS?: string;
+  INVOKEAI_URL?: string;
+  INVOKEAI_GATEWAY_USER?: string;
+  INVOKEAI_GATEWAY_PASSWORD?: string;
+  INVOKEAI_MODEL_REPO?: string;
+  INVOKEAI_MODEL_REVISION?: string;
+  INVOKEAI_MODEL_TITLE?: string;
+  COMFYUI_URL?: string;
+  COMFYUI_GATEWAY_USER?: string;
+  COMFYUI_GATEWAY_PASSWORD?: string;
+  COMFYUI_LTX_MODEL_TITLE?: string;
+  COMFYUI_WAN_MODEL_TITLE?: string;
+  POSTGRES_DEV_HOST_PORT?: string;
+  LAB_URL?: string;
+  GITEA_URL?: string;
+  N8N_URL?: string;
+  OPENWEBUI_URL?: string;
+  OLLAMA_URL?: string;
+  OLLAMA_GATEWAY_USER?: string;
+  OLLAMA_GATEWAY_PASSWORD?: string;
+}
+
+/**
+ * Resolved runtime context for commands that act on a project checkout.
+ */
+export interface ProjectContext {
+  projectRoot: string;
+  runtimeSource: 'checkout' | 'explicit-path' | 'packaged-install';
+  workingDirectory: string;
+  layout: RepositoryLayout;
+  env: LabEnv;
+}
+
+/**
+ * Basic auth credentials used by smoke checks.
+ */
+export interface BasicAuthCredentials {
+  username: string;
+  password: string;
+}
+
+/**
+ * Env shape guaranteed after bootstrap validation.
+ */
+export interface BootstrapEnv extends LabEnv {
+  GITEA_UID: string;
+  GITEA_GID: string;
+  GITEA_ROOT_USERNAME: string;
+  GITEA_ROOT_PASSWORD: string;
+  GITEA_ROOT_EMAIL: string;
+}
+
+/**
+ * Env shape guaranteed after AI agents bootstrap validation.
+ */
+export interface AiAgentsBootstrapEnv extends LabEnv {
+  N8N_URL: string;
+  N8N_ROOT_FIRST_NAME: string;
+  N8N_ROOT_LAST_NAME: string;
+  N8N_ROOT_EMAIL: string;
+  N8N_ROOT_PASSWORD: string;
+}
+
+/**
+ * Env shape guaranteed after AI LLM bootstrap validation.
+ */
+export interface AiLlmBootstrapEnv extends LabEnv {
+  OLLAMA_EMBEDDING_MODEL: string;
+  OLLAMA_CHAT_MODEL: string;
+}
+
+/**
+ * Env shape guaranteed after smoke-check validation.
+ */
+export interface SmokeEnv extends LabEnv {
+  LAB_URL: string;
+  GITEA_URL: string;
+}
+
+/**
+ * Env shape guaranteed after AI agents smoke-check validation.
+ */
+export interface AiAgentsSmokeEnv extends LabEnv {
+  N8N_URL: string;
+  N8N_ROOT_EMAIL: string;
+  N8N_ROOT_PASSWORD: string;
+}
+
+/**
+ * Env shape guaranteed after AI LLM smoke-check validation.
+ */
+export interface AiLlmSmokeEnv extends LabEnv {
+  OPENWEBUI_URL: string;
+  OPENWEBUI_ROOT_EMAIL: string;
+  OPENWEBUI_ROOT_PASSWORD: string;
+  OLLAMA_URL: string;
+  OLLAMA_GATEWAY_USER: string;
+  OLLAMA_GATEWAY_PASSWORD: string;
+  OLLAMA_EMBEDDING_MODEL: string;
+  OLLAMA_CHAT_MODEL: string;
+}
+
+/**
+ * Env shape guaranteed after AI image smoke-check validation.
+ */
+export interface AiImageSmokeEnv extends LabEnv {
+  INVOKEAI_URL: string;
+  INVOKEAI_GATEWAY_USER: string;
+  INVOKEAI_GATEWAY_PASSWORD: string;
+  INVOKEAI_MODEL_REPO: string;
+  INVOKEAI_MODEL_REVISION: string;
+  INVOKEAI_MODEL_TITLE: string;
+}
+
+/**
+ * Env shape guaranteed after AI video smoke-check validation.
+ */
+export interface AiVideoSmokeEnv extends LabEnv {
+  COMFYUI_URL: string;
+  COMFYUI_GATEWAY_USER: string;
+  COMFYUI_GATEWAY_PASSWORD: string;
+  COMFYUI_LTX_MODEL_TITLE: string;
+  COMFYUI_WAN_MODEL_TITLE: string;
+}

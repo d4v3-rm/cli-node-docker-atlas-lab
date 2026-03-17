@@ -1,0 +1,94 @@
+name: cli-node-docker-atlas-lab
+
+# Optional AI image layer for InvokeAI and the managed local image model set.
+services:
+  gateway:
+    environment:
+      ATLAS_AI_IMAGE_ENABLED: "true"
+
+  gateway-ai-image:
+    build:
+      context: ../..
+      dockerfile: infra/docker/images/gateway/Dockerfile
+      args:
+        CADDY_VERSION: ${CADDY_VERSION}
+    restart: unless-stopped
+    env_file:
+      - ../../env/lab.env
+    environment:
+      ATLAS_GATEWAY_TEMPLATE: Caddyfile.ai-image.template
+      ATLAS_AI_LLM_ENABLED: "false"
+      ATLAS_AI_AGENTS_ENABLED: "false"
+      ATLAS_AI_IMAGE_ENABLED: "true"
+      ATLAS_AI_VIDEO_ENABLED: "false"
+      ATLAS_WORKBENCH_ENABLED: "false"
+    ports:
+      - "${INVOKEAI_HTTPS_PORT}:${INVOKEAI_HTTPS_PORT}"
+    volumes:
+      - gateway-certs:/etc/caddy/certs
+      - gateway-config:/etc/caddy/dynamic
+      - gateway-data:/data
+    depends_on:
+      gateway:
+        condition: service_started
+      invokeai:
+        condition: service_healthy
+    networks:
+      - edge-net
+      - ai-image-net
+
+  invokeai:
+    build:
+      context: ../..
+      dockerfile: infra/docker/images/invokeai/Dockerfile
+      args:
+        BASE_IMAGE: ${INVOKEAI_IMAGE}
+    restart: unless-stopped
+    gpus: ${OLLAMA_GPU_REQUEST}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:9090/')\" || exit 1"
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 300s
+    environment:
+      MODEL_REPO: ${INVOKEAI_MODEL_REPO}
+      MODEL_REVISION: ${INVOKEAI_MODEL_REVISION}
+      MODEL_TARGET_DIR: /invokeai/models/external/flux2-klein-4b-fp8
+      MODEL_TITLE: ${INVOKEAI_MODEL_TITLE}
+      MODEL_MANIFEST_PATH: /opt/atlas-lab/model-sync/invokeai-models.json
+      TZ: ${TZ}
+      INVOKEAI_HOST: 0.0.0.0
+      INVOKEAI_PORT: "9090"
+      INVOKEAI_ROOT: /invokeai
+      INVOKEAI_MODELS_DIR: /invokeai/models
+      INVOKEAI_SCAN_MODELS_ON_STARTUP: "true"
+      NVIDIA_VISIBLE_DEVICES: ${OLLAMA_NVIDIA_VISIBLE_DEVICES}
+      NVIDIA_DRIVER_CAPABILITIES: ${OLLAMA_NVIDIA_DRIVER_CAPABILITIES}
+    volumes:
+      - invokeai-data:/invokeai
+      - ../../infra/docker/images/model-sync/download-model.py:/usr/local/bin/download-model.py:ro
+      - ../../config/models/invokeai-models.json:/opt/atlas-lab/model-sync/invokeai-models.json:ro
+    networks:
+      ai-image-net:
+      services-egress-net:
+        gw_priority: 1
+
+networks:
+  edge-net:
+    name: cli-node-docker-atlas-lab_edge
+  ai-image-net:
+    name: cli-node-docker-atlas-lab_ai_image
+    internal: true
+  services-egress-net:
+    name: cli-node-docker-atlas-lab_services_egress
+
+volumes:
+  gateway-certs:
+  gateway-config:
+  gateway-data:
+  invokeai-data:

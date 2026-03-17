@@ -1,0 +1,30 @@
+# Node Forge
+
+## What it does
+
+`code-server` environment dedicated to JavaScript and TypeScript development. It is suited for frontend work, CLI development, internal tools, package management, and fast experimentation on Node-based stacks.
+
+## How to access it
+
+- Compose profile: `workbench`
+- Runtime URL: `${NODE_DEV_URL}`
+- Access mode: `password`
+- Root password: `${NODE_DEV_PASSWORD}`
+- Activation command: `atlas-lab up --with-workbench`
+
+## What is included
+
+- Node.js, npm, pnpm, and yarn
+- Git and a base native-package toolchain
+- Persistent workspace backed by a Docker volume
+
+## When to use it
+
+- frontend development
+- TypeScript tooling
+- internal CLI work
+- Node backend prototypes
+
+## Operational note
+
+The environment is not exposed as a direct shortcut on the dashboard. The deck surfaces the briefing first, while the actual operational entry point remains the dedicated localhost workbench port.

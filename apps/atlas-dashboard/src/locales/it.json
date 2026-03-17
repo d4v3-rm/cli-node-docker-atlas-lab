@@ -1,0 +1,407 @@
+{
+  "language": {
+    "selectorLabel": "Lingua",
+    "ariaLabel": "Seleziona la lingua del dashboard",
+    "options": {
+      "en": "English",
+      "it": "Italiano"
+    }
+  },
+  "status": {
+    "eyebrow": "atlas command deck",
+    "errorTitle": "Impossibile inizializzare il dashboard",
+    "loadingSummary": "Sto caricando configurazione runtime, layer e briefing.",
+    "loadingTitle": "Allineamento del dashboard in corso",
+    "missingConfig": "La configurazione runtime del lab non e disponibile.",
+    "runtimeBadge": "atlas lab runtime"
+  },
+  "hero": {
+    "actionsEyebrow": "azioni dirette",
+    "actionsSummary": "Fascia di accesso rapido pensata per i task iniziali quando il lab e gia in esecuzione.",
+    "actionsTitle": "Entra nel routing, verifica la topologia o installa il certificato del gateway.",
+    "downloadCertificate": "Scarica certificato",
+    "openNetworkMap": "Apri network map"
+  },
+  "rails": {
+    "briefingsAndLinks": "briefing e link",
+    "layerHeartbeat": "stato dei layer",
+    "liveFootprint": "impronta live"
+  },
+  "panels": {
+    "accessNotesEyebrow": "note di accesso",
+    "accessNotesTitle": "Indicazioni operative e di accesso",
+    "operatingDoctrineEyebrow": "dottrina operativa",
+    "operatingDoctrineTitle": "Come e stato pensato il lab"
+  },
+  "sections": {
+    "aiBodyDisabled": "Il layer AI LLM resta opzionale. Quando e spento il dashboard mostra il comando esatto per abilitarlo.",
+    "aiBodyEnabled": "Il layer AI LLM e online: il dashboard porta in Open WebUI o alle API Ollama con credenziali e contesto operativo sempre visibili.",
+    "aiKicker": "piano opzionale",
+    "aiTitle": "AI LLM Layer",
+    "agentsBodyDisabled": "Il layer AI agents resta spento finche non lo richiedi esplicitamente. Quando non e attivo, il dashboard mostra il comando esatto per abilitarlo.",
+    "agentsBodyEnabled": "Il layer AI agents e online: n8n viene esposto sul suo gateway dedicato e l owner bootstrap resta allineato dalla CLI.",
+    "agentsKicker": "piano automazione",
+    "agentsTitle": "AI Agents Layer",
+    "footerBody": "Quattro segnali rapidi su routing, persistenza, uso consigliato e segmentazione dei layer.",
+    "footerKicker": "segnali atlas",
+    "footerTitle": "Chiusura operativa",
+    "imageBodyDisabled": "Il layer AI image resta spento finche non lo richiedi esplicitamente. Quando non e attivo, il dashboard mostra il comando esatto per abilitarlo.",
+    "imageBodyEnabled": "Il layer AI image e online: InvokeAI viene esposto tramite gateway dedicato, mentre il set di modelli configurato viene preparato automaticamente per il runtime dedicato.",
+    "imageKicker": "piano generativo",
+    "imageTitle": "AI Image Layer",
+    "servicesBody": "Il piano core resta sempre disponibile. Ogni card raccoglie endpoint, credenziali operative e un accesso diretto al servizio.",
+    "servicesKicker": "piano servizi",
+    "servicesTitle": "Servizi Core",
+    "videoBodyDisabled": "Il layer AI video resta spento finche non lo richiedi esplicitamente. Quando non e attivo, il dashboard mostra il comando esatto per abilitarlo.",
+    "videoBodyEnabled": "Il layer AI video e online: ComfyUI viene esposto tramite gateway dedicato e il set di modelli video richiesto viene precaricato nello storage persistente.",
+    "videoKicker": "piano motion",
+    "videoTitle": "AI Video Layer",
+    "workbenchBodyDisabled": "Gli ambienti restano staccati dal core. Li abiliti solo quando ti servono code-server o Postgres condiviso.",
+    "workbenchBodyEnabled": "Gli ambienti sono attivi: puoi entrare direttamente nel workspace o aprire prima il briefing dedicato per capire rete, credenziali e strumenti.",
+    "workbenchKicker": "piano workspace",
+    "workbenchTitle": "Workbench Layer"
+  },
+  "layerState": {
+    "activeTitle": "Layer attivo",
+    "inactiveTitle": "Layer non attivo",
+    "manualBadge": "attivazione manuale",
+    "onlineBadge": "online"
+  },
+  "layerSummary": {
+    "active": "attivo",
+    "optional": "opzionale"
+  },
+  "cards": {
+    "openBriefing": "Apri briefing",
+    "tones": {
+      "agents": "AI Agents",
+      "ai": "AI LLM",
+      "core": "Core",
+      "image": "AI Image",
+      "neutral": "Neutro",
+      "video": "AI Video",
+      "workbench": "Workbench"
+    }
+  },
+  "briefing": {
+    "close": "Chiudi",
+    "contentServedByRuntime": "Contenuto servito dal runtime Atlas.",
+    "fallbackTitle": "Briefing",
+    "loading": "Sto caricando il briefing selezionato.",
+    "openSourceFile": "Apri file sorgente",
+    "openSourceMarkdown": "Apri il markdown sorgente",
+    "titleEyebrow": "atlas briefing"
+  },
+  "errors": {
+    "briefingHttpStatus": "Impossibile caricare il briefing (HTTP {{status}}).",
+    "invalidBriefing": "Briefing non disponibile.",
+    "invalidRuntimeConfig": "Configurazione runtime non valida.",
+    "invalidRuntimeObject": "Configurazione runtime assente o non valida.",
+    "runtimeFetchFailed": "Impossibile leggere {{path}} ({{status}}).",
+    "runtimeHtmlFallback": "La config runtime non e disponibile: avvia Atlas Lab tramite gateway oppure usa npm run dev:atlas-dashboard.",
+    "runtimeIncomplete": "Configurazione runtime incompleta.",
+    "runtimeInvalidResponse": "Risposta runtime non valida.",
+    "runtimeInvalidResponseWithReason": "Risposta runtime non valida: {{reason}}."
+  },
+  "credentials": {
+    "accessMode": "modalita di accesso",
+    "authMode": "modalita auth",
+    "database": "database",
+    "desktopHost": "host desktop",
+    "desktopPort": "porta desktop",
+    "dockerHost": "host docker",
+    "dockerPort": "porta docker",
+    "email": "email",
+    "endpoint": "endpoint",
+    "gatewayPassword": "password gateway",
+    "gatewayUser": "utente gateway",
+    "ltxModel": "modello ltx",
+    "model": "modello",
+    "modelRevision": "revisione modello",
+    "ownerBootstrap": "owner bootstrap",
+    "ownerEmail": "email owner",
+    "ownerPassword": "password owner",
+    "password": "password",
+    "rootEmail": "email root",
+    "rootName": "nome root",
+    "rootPassword": "password root",
+    "rootUser": "utente root",
+    "superuser": "superuser",
+    "wanModel": "modello wan",
+    "usage": "uso"
+  },
+  "values": {
+    "browserConsole": "console browser",
+    "browserWorkspace": "workspace browser",
+    "directAppLogin": "login diretto applicazione",
+    "imageStudio": "studio immagini",
+    "localInferenceApi": "API di inference locale",
+    "password": "password",
+    "protectedApi": "API protetta",
+    "sharedDatabase": "database condiviso",
+    "videoStudio": "studio video",
+    "workflowControl": "controllo workflow",
+    "alwaysOnForge": "forge sempre accesa"
+  },
+  "dashboard": {
+    "coreLayerSummary": "Gitea resta il piano core sempre acceso del lab.",
+    "accessNotes": {
+      "agentsDisabled": "Il layer AI agents resta opzionale e n8n rimane spento finche non abiliti il piano automazione dedicato.",
+      "agentsEnabled": "n8n e online nel layer AI agents con l owner bootstrap gia allineato.",
+      "aiDisabled": "Il layer AI LLM non viene piu acceso di default: il deck lo marca come opzionale invece di fingere che sia online.",
+      "aiEnabled": "Open WebUI e Ollama sono realmente online e raggiungibili sulle porte AI LLM del gateway.",
+      "credentials": "Le credenziali operative sono esposte qui e restano allineate al bootstrap del lab.",
+      "https": "Tutti gli ingressi browser usano localhost con HTTPS dedicato, senza DNS custom o file hosts.",
+      "imageDisabled": "Il layer AI image resta opzionale e nessun endpoint immagini dedicato viene esposto finche non lo abiliti.",
+      "imageEnabled": "InvokeAI e online dietro il gateway AI image dedicato, e il set di modelli configurato viene predisposto automaticamente per il runtime.",
+      "videoDisabled": "Il layer AI video resta opzionale e nessun endpoint video dedicato viene esposto finche non lo abiliti.",
+      "videoEnabled": "ComfyUI e online dietro il gateway AI video dedicato con i modelli video richiesti gia predisposti localmente.",
+      "workbenchDisabled": "Workbench e Postgres restano separati dal core operativo finche non abiliti il layer dedicato.",
+      "workbenchEnabled": "I workbench e Postgres sono attivi: puoi aprire ambienti browser-based o connetterti dal desktop alla porta host di Postgres."
+    },
+    "agentsLayer": {
+      "capabilities": {
+        "n8n": "n8n locale",
+        "runners": "runner esterni",
+        "webhooks": "automazione webhook"
+      },
+      "description": "Layer AI agents opzionale per automazione workflow, integrazioni e pipeline operative di agenti. Il lab lo abilita solo quando lo richiedi esplicitamente.",
+      "summaryDisabled": "AI agents layer spento. n8n e i runner esterni non vengono avviati o esposti finche non abiliti il flag dedicato.",
+      "summaryEnabled": "n8n e i runner esterni sono attivi dietro il gateway AI agents.",
+      "title": "AI Agents Layer"
+    },
+    "agentServices": {
+      "n8n": {
+        "action": "Apri n8n",
+        "description": "Motore di orchestrazione per webhook, integrazioni e flussi di automazione agentica, gia bootstrapato con owner applicativo.",
+        "note": "Il primo accesso salta il setup wizard ma non nasconde i template ufficiali disponibili dentro l applicazione.",
+        "title": "n8n Automation"
+      }
+    },
+    "aiLayer": {
+      "capabilities": {
+        "llmModels": "modelli LLM GPU-backed",
+        "ollama": "API Ollama protetta",
+        "openWebUi": "Open WebUI locale"
+      },
+      "description": "Layer AI LLM opzionale per console conversazionale locale e inference LLM GPU-backed. Il deck lo attiva solo quando lo chiedi esplicitamente.",
+      "summaryDisabled": "AI LLM layer spento. Nessun servizio LLM viene avviato o esposto finche non abiliti il flag dedicato.",
+      "summaryEnabled": "Open WebUI e Ollama sono attivi e serviti dal gateway AI LLM.",
+      "title": "AI LLM Layer"
+    },
+    "aiServices": {
+      "ollama": {
+        "action": "Apri endpoint API",
+        "description": "Gateway sicuro verso l endpoint Ollama locale. Serve modelli LLM ed embeddings con accelerazione GPU del nodo host.",
+        "title": "Ollama Core"
+      },
+      "openWebUi": {
+        "action": "Apri Open WebUI",
+        "description": "Interfaccia conversazionale per lavorare sui modelli locali del lab dal browser, con credenziali esplicite e accesso immediato dal gateway.",
+        "title": "Open WebUI"
+      }
+    },
+    "imageLayer": {
+      "capabilities": {
+        "gateway": "gateway immagini protetto",
+        "invokeAi": "InvokeAI locale",
+        "models": "modelli locali bootstrapati"
+      },
+      "description": "Layer AI image opzionale per la generazione immagini locale. Espone InvokeAI tramite gateway dedicato e predispone il set di modelli configurato nello storage persistente del runtime.",
+      "summaryDisabled": "AI image layer spento. InvokeAI non viene avviato o esposto finche non abiliti il flag dedicato.",
+      "summaryEnabled": "InvokeAI e attivo dietro il gateway AI image, con il modello persistito nei volumi Docker.",
+      "title": "AI Image Layer"
+    },
+    "imageServices": {
+      "invokeAi": {
+        "action": "Apri InvokeAI",
+        "description": "Console browser-based per la generazione immagini servita dal gateway dedicato con un modello principale gia predisposto e modelli aggiuntivi allineati via script.",
+        "note": "Sorgente modello: {{modelRepo}}. Il modello viene predisposto nello storage persistente e scansionato da InvokeAI all avvio.",
+        "title": "InvokeAI Studio"
+      }
+    },
+    "videoLayer": {
+      "capabilities": {
+        "comfyUi": "ComfyUI locale",
+        "ltxVideo": "preload LTX-Video",
+        "wanVideo": "preload Wan 2.1"
+      },
+      "description": "Layer AI video opzionale per workflow text-to-video locali. Espone ComfyUI tramite gateway dedicato e predispone il set di modelli video richiesto nello storage persistente.",
+      "summaryDisabled": "AI video layer spento. ComfyUI non viene avviato o esposto finche non abiliti il flag dedicato.",
+      "summaryEnabled": "ComfyUI e attivo dietro il gateway AI video con entrambe le famiglie di modelli video gia predisposte localmente.",
+      "title": "AI Video Layer"
+    },
+    "videoServices": {
+      "comfyUi": {
+        "action": "Apri ComfyUI",
+        "description": "Studio browser-based a nodi per generazione video locale con le famiglie di modelli LTX-Video e Wan 2.1 gia precaricate.",
+        "note": "Il set di modelli video gestito viene predisposto tramite script della repository nello storage persistente Docker prima dell avvio di ComfyUI.",
+        "title": "ComfyUI Studio"
+      }
+    },
+    "footerCards": {
+      "persistence": {
+        "body": "Database, workspace, modelli, certificati e configurazione runtime restano persistiti solo in volumi Docker nominati.",
+        "label": "persistenza"
+      },
+      "routing": {
+        "body": "Il deck resta su {{localUrl}}; i servizi browser passano dal gateway HTTPS mentre Postgres per i client desktop usa {{postgresHost}}:{{postgresPort}}.",
+        "label": "routing"
+      },
+      "segmentation": {
+        "body": "Le reti interne restano separate per edge, AI, servizi dati e workbench. I gateway sono gli unici ingressi pubblicati.",
+        "label": "segmentazione"
+      },
+      "usage": {
+        "body": "Gitea e il piano core sempre acceso; AI agents, AI LLM, AI image, AI video e workbench vengono abilitati a layer solo quando servono davvero.",
+        "label": "uso"
+      }
+    },
+    "hero": {
+      "eyebrow": "atlas command deck",
+      "pills": {
+        "aiActive": "ai-llm attivo",
+        "aiOptional": "ai-llm opzionale",
+        "agentsActive": "ai-agents attivo",
+        "agentsOptional": "ai-agents opzionale",
+        "deck": "deck {{localUrl}}",
+        "host": "host {{publicUrl}}",
+        "httpsOnly": "ingress solo https",
+        "imageActive": "ai-image attivo",
+        "imageOptional": "ai-image opzionale",
+        "videoActive": "ai-video attivo",
+        "videoOptional": "ai-video opzionale",
+        "volumes": "persistenza su volumi",
+        "workbenchActive": "workbench attivi",
+        "workbenchOptional": "workbench opzionali"
+      },
+      "quickActions": {
+        "localDeckDescription": "Rivedi da browser il routing locale che il deck sta usando.",
+        "localDeckLabel": "Local deck",
+        "networkMapDescription": "Leggi la topologia del lab e i piani di rete pubblicati.",
+        "networkMapLabel": "Network map"
+      },
+      "summary": "Control room unificata per repository, automazione AI agents opzionale, servizi AI LLM opzionali, generazione AI image, generazione AI video e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.",
+      "titleLines": {
+        "first": "LAB",
+        "second": "ATLAS"
+      }
+    },
+    "metrics": {
+      "agentsDisabled": {
+        "caption": "layer AI agents non attivo",
+        "label": "ai-agents live"
+      },
+      "agentsEnabled": {
+        "caption": "n8n pubblicato sul gateway AI agents dedicato",
+        "label": "ai-agents live"
+      },
+      "aiDisabled": {
+        "caption": "layer AI LLM non attivo",
+        "label": "ai-llm live"
+      },
+      "aiEnabled": {
+        "caption": "layer AI LLM pubblicato sul gateway dedicato",
+        "label": "ai-llm live"
+      },
+      "core": {
+        "caption": "servizi sempre accesi e bootstrap mandatory",
+        "label": "core online"
+      },
+      "imageDisabled": {
+        "caption": "layer AI image non attivo",
+        "label": "ai-image live"
+      },
+      "imageEnabled": {
+        "caption": "InvokeAI pubblicato sul gateway AI image dedicato",
+        "label": "ai-image live"
+      },
+      "ingress": {
+        "caption": "gateway pubblici serviti adesso",
+        "label": "ingress planes"
+      },
+      "videoDisabled": {
+        "caption": "layer AI video non attivo",
+        "label": "ai-video live"
+      },
+      "videoEnabled": {
+        "caption": "ComfyUI pubblicato sul gateway AI video dedicato",
+        "label": "ai-video live"
+      },
+      "workbenchDisabled": {
+        "caption": "layer workbench non attivo",
+        "label": "workbench live"
+      },
+      "workbenchEnabled": {
+        "caption": "workspace e database esposti nel layer dedicato",
+        "label": "workbench live"
+      }
+    },
+    "networkMap": {
+      "title": "Network Map"
+    },
+    "operatingCharter": {
+      "agents": "n8n e la flotta di runner vivono in un layer AI agents esplicitamente opzionale.",
+      "ai": "Open WebUI e Ollama vivono in un layer AI LLM esplicitamente opzionale.",
+      "gitea": "Gitea governa codice, review e governance Git del progetto.",
+      "image": "InvokeAI vive in un layer AI image dedicato con un set di modelli gestito via script.",
+      "video": "ComfyUI vive in un layer AI video dedicato con asset LTX-Video e Wan 2.1 gia predisposti.",
+      "workbench": "Code-server e Postgres restano in un piano workbench separato dal core."
+    },
+    "services": {
+      "gitea": {
+        "action": "Apri Gitea",
+        "description": "Forge Git interna per repository, issue, review e flusso di collaborazione tecnica del lab.",
+        "title": "Gitea Forge"
+      },
+      "n8n": {
+        "action": "Apri n8n",
+        "description": "Motore di orchestrazione per webhook, integrazioni e pipeline operative, gia bootstrapato con owner applicativo.",
+        "note": "Il primo accesso salta il setup wizard ma non nasconde i template ufficiali disponibili dentro l applicazione.",
+        "title": "n8n Automation"
+      }
+    },
+    "workbenchLayer": {
+      "capabilities": {
+        "codeServer": "code-server dedicati",
+        "node": "workbench Node",
+        "postgres": "Postgres condiviso"
+      },
+      "description": "Layer separato per workspace browser-based e database condiviso. Il core resta pulito finche non ti serve realmente l ambiente di sviluppo.",
+      "summaryDisabled": "Workbench layer spento. Nessun code-server o Postgres viene esposto dal lab.",
+      "summaryEnabled": "Node, Python, AI, C++ e Postgres sono online nel piano workbench.",
+      "title": "Workbench Layer"
+    },
+    "workbenches": {
+      "ai": {
+        "briefingTitle": "AI Reactor",
+        "description": "Workspace code-server per notebook, esperimenti ML e tooling AI locale.",
+        "title": "AI Reactor"
+      },
+      "common": {
+        "openWorkspace": "Apri workspace"
+      },
+      "cpp": {
+        "briefingTitle": "C++ Foundry",
+        "description": "Workspace code-server per sviluppo C o C++, compilazione nativa e debugging.",
+        "title": "C++ Foundry"
+      },
+      "node": {
+        "briefingTitle": "Node Forge",
+        "description": "Workspace code-server per JavaScript, TypeScript, frontend e tooling npm o pnpm.",
+        "title": "Node Forge"
+      },
+      "postgres": {
+        "briefingTitle": "Postgres Vault",
+        "description": "PostgreSQL condiviso per schema design, query locali, migrazioni e test relazionali dal desktop o dai container.",
+        "note": "Dal sistema host usa localhost con la porta desktop. Dentro i container continua invece a usare postgres-dev:5432.",
+        "title": "Postgres Vault"
+      },
+      "python": {
+        "briefingTitle": "Python Grid",
+        "description": "Workspace code-server per backend Python, scripting e automazioni operative.",
+        "title": "Python Grid"
+      }
+    }
+  }
+}
