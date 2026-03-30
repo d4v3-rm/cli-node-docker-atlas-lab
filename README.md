@@ -22,10 +22,7 @@ Atlas Lab is built for a practical goal: run a repeatable local engineering plat
 ### What it gives you
 
 - 🧱 An always-on **core layer** with Gitea, the gateway, and Atlas Dashboard
-- 🤖 An optional **AI agents layer** with n8n and external runners
 - 🧠 An optional **AI LLM layer** with Open WebUI and Ollama
-- 🖼️ An optional **AI image layer** with InvokeAI and a script-managed local model set
-- 🎬 An optional **AI video layer** with ComfyUI and managed local video models
 - 🛠️ An optional **workbench layer** with browser-based Node, Python, AI, and C++ environments plus shared PostgreSQL
 - 🔐 HTTPS-only ingress on `localhost`
 - 📦 A self-contained npm package that can run without a local repository checkout
@@ -70,10 +67,7 @@ Atlas Lab is split into **six explicit layers**:
 | Layer | Status | Includes | Purpose |
 | --- | --- | --- | --- |
 | `core` | always on | gateway, Atlas Dashboard, Gitea, Gitea DB | baseline platform |
-| `ai-agents` | optional | n8n, n8n runners, AI agents gateway | workflow automation and agent orchestration |
 | `ai-llm` | optional | Open WebUI, Ollama, AI LLM gateway | local LLM workflows |
-| `ai-image` | optional | InvokeAI, AI image gateway, managed model staging | local image generation |
-| `ai-video` | optional | ComfyUI, AI video gateway, managed model staging | local video generation |
 | `workbench` | optional | Node Forge, Python Grid, AI Reactor, C++ Foundry, shared PostgreSQL, workbench gateway | browser-based development |
 
 ### Why the current topology
@@ -101,7 +95,6 @@ The CLI:
 - runs host preflight checks
 - reconciles runtime state
 - bootstraps Gitea
-- bootstraps n8n only when the `ai-agents` layer is enabled
 - reconciles Ollama only when the AI LLM layer is enabled
 - cleans up legacy runtime artifacts
 
@@ -116,11 +109,8 @@ The only host-level TCP service exposed directly is PostgreSQL from the workbenc
 | --- | --- | --- | --- |
 | Atlas Dashboard | `core` | `https://localhost:8443/` | operational dashboard |
 | Gitea | `core` | `https://localhost:8444/` | Git forge, issues, reviews |
-| n8n | `ai-agents` | `https://localhost:8445/` | workflow automation |
 | Open WebUI | `ai-llm` | `https://localhost:8446/` | only with `--with-ai-llm` |
 | Ollama | `ai-llm` | `https://localhost:8447/` | HTTPS API |
-| InvokeAI | `ai-image` | `https://localhost:8448/` | only with `--with-ai-image` |
-| ComfyUI | `ai-video` | `https://localhost:8449/` | only with `--with-ai-video` |
 | Node Forge | `workbench` | `https://localhost:8450/` | Node / TypeScript workspace |
 | Python Grid | `workbench` | `https://localhost:8451/` | Python workspace |
 | AI Reactor | `workbench` | `https://localhost:8452/` | AI / notebook workspace |
@@ -141,10 +131,7 @@ The only host-level TCP service exposed directly is PostgreSQL from the workbenc
 | --- | --- | --- |
 | `edge-net` | exposed | published ingress ports |
 | `apps-net` | internal | Gitea and shared browser-facing services |
-| `ai-agents-net` | internal | n8n and external runners |
 | `ai-llm-net` | internal | Open WebUI and Ollama |
-| `ai-image-net` | internal | InvokeAI and image-generation runtime |
-| `ai-video-net` | internal | ComfyUI and video-generation runtime |
 | `data-net` | internal | data services and infrastructure databases |
 | `workbench-net` | internal | workbenches and PostgreSQL |
 | `workbench-host-net` | bridge | host-side PostgreSQL bind |
@@ -171,8 +158,6 @@ Key volumes include:
 - `gateway-data`
 - `gitea-data`
 - `gitea-db`
-- `n8n-data`
-- `invokeai-data`
 - `ollama-data`
 - `open-webui-data`
 - `postgres-dev-data`
@@ -252,16 +237,12 @@ The main runtime configuration lives in:
 Key variables include:
 
 - `APP_VERSION`
-- `LAB_HTTPS_PORT`, `GITEA_HTTPS_PORT`, `N8N_HTTPS_PORT`
+- `LAB_HTTPS_PORT`, `GITEA_HTTPS_PORT`
 - `OPENWEBUI_HTTPS_PORT`, `OLLAMA_HTTPS_PORT`
-- `INVOKEAI_HTTPS_PORT`, `COMFYUI_HTTPS_PORT`
 - `NODE_DEV_HTTPS_PORT`, `PYTHON_DEV_HTTPS_PORT`, `AI_DEV_HTTPS_PORT`, `CPP_DEV_HTTPS_PORT`
 - `POSTGRES_DEV_HOST_PORT`
 - `OLLAMA_CHAT_MODEL`, `OLLAMA_EMBEDDING_MODEL`, `OLLAMA_RUNTIME_MODELS`
-- `INVOKEAI_MODEL_REPO`, `INVOKEAI_MODEL_REVISION`, `INVOKEAI_MODEL_TITLE`
-- `config/models/invokeai-models.json`, `config/models/comfyui-models.json`
 - `GITEA_ROOT_USERNAME`, `GITEA_ROOT_PASSWORD`
-- `N8N_ROOT_EMAIL`, `N8N_ROOT_PASSWORD`
 - `OPENWEBUI_ROOT_EMAIL`, `OPENWEBUI_ROOT_PASSWORD`
 
 Rule of thumb:
@@ -307,32 +288,26 @@ npm run dev -- up --with-ai-llm
 npm run dev -- up --with-workbench
 ```
 
-### 6. Start core + AI image generation
+### 6. Start the full lab
 
 ```powershell
-npm run dev -- up --with-ai-image
+npm run dev -- up --with-ai-llm --with-workbench
 ```
 
-### 7. Start the full lab
-
-```powershell
-npm run dev -- up --with-ai-llm --with-ai-image --with-workbench
-```
-
-### 8. Check status
+### 7. Check status
 
 ```powershell
 npm run dev -- status
 ```
 
-### 9. Run health checks
+### 8. Run health checks
 
 ```powershell
 npm run dev -- doctor --smoke
-npm run dev -- doctor --with-ai-llm --with-ai-image --smoke
+npm run dev -- doctor --with-ai-llm --smoke
 ```
 
-### 10. Stop the lab
+### 9. Stop the lab
 
 ```powershell
 npm run dev -- down
@@ -361,14 +336,13 @@ npm run dev -- down
 | --- | --- |
 | `atlas-lab up` | starts `core` only |
 | `atlas-lab up --with-ai-llm` | adds the AI LLM layer |
-| `atlas-lab up --with-ai-image` | adds the AI image layer |
 | `atlas-lab up --with-workbench` | adds the workbench layer |
-| `atlas-lab up --with-ai-llm --with-ai-image --with-workbench` | starts the full lab |
+| `atlas-lab up --with-ai-llm --with-workbench` | starts the full lab |
 | `atlas-lab bootstrap` | reruns core bootstrap |
 | `atlas-lab bootstrap --with-ai-llm` | reruns bootstrap and Ollama reconciliation |
 | `atlas-lab doctor` | runs host and configuration checks |
 | `atlas-lab doctor --smoke` | adds smoke tests for the core layer |
-| `atlas-lab doctor --with-ai-llm --with-ai-image --smoke` | adds smoke tests for the AI LLM and AI image layers |
+| `atlas-lab doctor --with-ai-llm --smoke` | adds smoke tests for the AI LLM layer |
 | `atlas-lab status` | shows Compose/runtime status |
 | `atlas-lab down` | stops the stack |
 | `atlas-lab save-images` | exports Docker images to a single archive |
@@ -440,19 +414,19 @@ Atlas Lab supports backup and restore for both **Docker images** and **Docker vo
 - one `.tar.gz` archive for selected volumes
 - embedded manifest metadata
 - realtime progress logs during export and restore
-- support for `core`, `ai-agents`, `ai-llm`, `ai-image`, `ai-video`, and `workbench` layer selection
+- support for `core`, `ai-llm`, and `workbench` layer selection
 
 ### Examples
 
 ```powershell
-npm run dev -- save-images --with-ai-agents --with-ai-llm --with-ai-image --with-ai-video --with-workbench
+npm run dev -- save-images --with-ai-llm --with-workbench
 npm run dev -- restore-images --input .\backups\images\atlas-lab-images.tar.gz
 npm run dev -- down
-npm run dev -- save-volumes --with-ai-agents --with-ai-llm --with-ai-image --with-ai-video --with-workbench
+npm run dev -- save-volumes --with-ai-llm --with-workbench
 npm run dev -- restore-volumes --input .\backups\volumes\atlas-lab-volumes.tar.gz
 ```
 
-Bootstrap is idempotent and reconciles Gitea, n8n when `ai-agents` is enabled, and Ollama when `ai-llm` is enabled.
+Bootstrap is idempotent and reconciles Gitea plus Ollama when `ai-llm` is enabled.
 
 ---
 
@@ -464,11 +438,8 @@ Bootstrap is idempotent and reconciles Gitea, n8n when `ai-agents` is enabled, a
 | --- | --- | --- |
 | Atlas Dashboard | `https://localhost:8443/` | no dedicated login |
 | Gitea | `https://localhost:8444/` | `root / RootGitea!2026` |
-| n8n | `https://localhost:8445/` | `root@n8n.local / RootN8NApp!2026` |
 | Open WebUI | `https://localhost:8446/` | `root@openwebui.local / RootOpenWebUI!2026` |
 | Ollama | `https://localhost:8447/` | gateway basic auth `root / RootOllama!2026` |
-| InvokeAI | `https://localhost:8448/` | gateway basic auth `root / RootInvokeAI!2026` |
-| ComfyUI | `https://localhost:8449/` | gateway basic auth `root / RootComfyUI!2026` |
 | PostgreSQL host-side | `localhost:15432` | `postgres / RootPostgresDev!2026` |
 
 For DBeaver and other desktop PostgreSQL clients:
@@ -500,7 +471,6 @@ Key files:
 - [`env/lab.env`](./env/lab.env)
 - [`infra/docker/compose.yml`](./infra/docker/compose.yml)
 - [`infra/docker/compose.ai-llm.yml`](./infra/docker/compose.ai-llm.yml)
-- [`infra/docker/compose.ai-image.yml`](./infra/docker/compose.ai-image.yml)
 - [`infra/docker/compose.workbench.yml`](./infra/docker/compose.workbench.yml)
 - [`src/bin/atlas-lab.ts`](./src/bin/atlas-lab.ts)
 - [`src/app/create-cli-app.ts`](./src/app/create-cli-app.ts)
@@ -519,7 +489,7 @@ Expected behavior. The lab uses a self-signed certificate.
 
 ### `atlas-lab up` fails during port preflight
 
-One of the configured lab ports (`8443-8448`, `8450-8453`, or `15432`) is occupied or excluded by the system.
+One of the configured lab ports (`8443-8447`, `8450-8453`, or `15432`) is occupied or excluded by the system.
 
 ```powershell
 atlas-lab status
@@ -534,10 +504,6 @@ This is usually a Docker daemon GPU pass-through issue, not an Ollama issue.
 nvidia-smi -L
 docker info
 ```
-
-### `atlas-lab up --with-ai-image` takes a long time on first start
-
-Expected behavior. The AI image layer prepares the configured image model set inside persistent storage during service startup before InvokeAI becomes fully ready.
 
 ### Workbenches do not start
 
@@ -555,10 +521,6 @@ Verify:
 - `OLLAMA_CHAT_MODEL`, `OLLAMA_EMBEDDING_MODEL`, and `OLLAMA_RUNTIME_MODELS` are set
 - `https://localhost:8447/api/tags` responds
 - the AI LLM bootstrap has run
-
-### n8n does not show the initial setup wizard
-
-Expected behavior. The CLI creates the bootstrap owner, so the first-run wizard is skipped.
 
 ---
 
@@ -612,13 +574,6 @@ This project is distributed under the **MIT** license.
 - Install with Docker: https://docs.gitea.com/installation/install-with-docker
 - Admin CLI: https://docs.gitea.com/administration/command-line
 
-### n8n
-
-- Environment variables: https://docs.n8n.io/hosting/configuration/environment-variables/
-- Configuration methods: https://docs.n8n.io/hosting/configuration/configuration-methods/
-- Hardening task runners: https://docs.n8n.io/hosting/securing/hardening-task-runners/
-- SSL behind reverse proxy: https://docs.n8n.io/hosting/securing/set-up-ssl/
-
 ### Open WebUI
 
 - Environment configuration: https://docs.openwebui.com/getting-started/env-configuration/
@@ -628,15 +583,6 @@ This project is distributed under the **MIT** license.
 
 - FAQ: https://docs.ollama.com/faq
 - API reference: https://github.com/ollama/ollama/blob/main/docs/api.md
-
-### InvokeAI
-
-- Docker installation docs: https://invoke-ai.github.io/InvokeAI/installation/060_INSTALL_DOCKER/
-
-### Hugging Face models
-
-- FLUX.2-klein-4b-fp8: https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8
-- Z-Image GGUF: https://huggingface.co/gguf-org/z-image-gguf
 
 ### code-server
 
@@ -656,7 +602,7 @@ This project is distributed under the **MIT** license.
 Atlas Lab is a **complete local platform** with:
 
 - an always-on core plane
-- optional AI LLM, AI image, and workbench layers
+- optional AI LLM and workbench layers
 - a dark-first React dashboard
 - a globally installable TypeScript CLI
 - self-contained npm packaging

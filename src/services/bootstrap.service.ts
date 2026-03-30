@@ -4,15 +4,10 @@ import { createComposeCommandArgs, type ComposeLayerSelection } from '../lib/com
 import type { BootstrapCommandOptions } from '../types/cli.types.js';
 import type { ProjectContext } from '../types/project.types.js';
 import { ensureGiteaAdmin } from './gitea-admin.service.js';
-import { ensureN8nOwner } from './n8n-owner.service.js';
 import { printCommandHeader } from '../ui/banner.js';
 import { formatTaskTitle, printInfo, printSuccess } from '../ui/logger.js';
 import { runCommand } from '../utils/process.js';
-import {
-  parseAiAgentsBootstrapEnv,
-  parseAiLlmBootstrapEnv,
-  parseBootstrapEnv
-} from './project.service.js';
+import { parseAiLlmBootstrapEnv, parseBootstrapEnv } from './project.service.js';
 
 const VERBOSE_TASK_RENDERER = 'verbose' as const;
 
@@ -25,7 +20,7 @@ export async function runBootstrapCommand(
 ): Promise<void> {
   printCommandHeader({
     title: 'Bootstrap Atlas Lab',
-    summary: 'Reconcile core runtime state plus optional AI agents and AI LLM bootstrap',
+    summary: 'Reconcile core runtime state plus optional AI LLM bootstrap',
     projectRoot: context.projectRoot,
     workingDirectory: context.workingDirectory
   });
@@ -46,7 +41,6 @@ export function createBootstrapTasks(
   options: BootstrapCommandOptions
 ) {
   const env = parseBootstrapEnv(context.env);
-  const aiAgentsEnv = options.withAiAgents ? parseAiAgentsBootstrapEnv(context.env) : undefined;
   const aiLlmEnv = options.withAiLlm ? parseAiLlmBootstrapEnv(context.env) : undefined;
 
   const tasks = [];
@@ -58,18 +52,6 @@ export function createBootstrapTasks(
         await waitForService(context, 'gitea');
         const result = await ensureGiteaAdmin(context, env);
         printInfo(`Gitea root account ${result}.`, 'bootstrap');
-      }
-    });
-  }
-
-  if (options.withAiAgents && !options.skipN8n && aiAgentsEnv) {
-    tasks.push({
-      title: formatTaskTitle('bootstrap', 'Align n8n owner account'),
-      task: async () => {
-        await waitForService(context, 'n8n', 180, { includeAiAgents: true });
-        await waitForService(context, 'gateway-ai-agents', 180, { includeAiAgents: true });
-        const result = await ensureN8nOwner(context, aiAgentsEnv);
-        printInfo(`n8n owner account ${result}.`, 'bootstrap');
       }
     });
   }

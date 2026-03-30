@@ -6,9 +6,6 @@
   },
   "features": {
     "aiLlmEnabled": ${ATLAS_AI_LLM_ENABLED},
-    "aiAgentsEnabled": ${ATLAS_AI_AGENTS_ENABLED},
-    "aiImageEnabled": ${ATLAS_AI_IMAGE_ENABLED},
-    "aiVideoEnabled": ${ATLAS_AI_VIDEO_ENABLED},
     "workbenchEnabled": ${ATLAS_WORKBENCH_ENABLED}
   },
   "assets": {
@@ -24,12 +21,6 @@
       "rootPassword": "${GITEA_ROOT_PASSWORD}",
       "rootEmail": "${GITEA_ROOT_EMAIL}"
     },
-    "n8n": {
-      "url": "${N8N_URL}",
-      "ownerName": "${N8N_ROOT_FIRST_NAME} ${N8N_ROOT_LAST_NAME}",
-      "ownerEmail": "${N8N_ROOT_EMAIL}",
-      "ownerPassword": "${N8N_ROOT_PASSWORD}"
-    },
     "openWebUi": {
       "url": "${OPENWEBUI_URL}",
       "rootName": "${OPENWEBUI_ROOT_NAME}",
@@ -40,23 +31,6 @@
       "url": "${OLLAMA_URL}",
       "gatewayUser": "${OLLAMA_GATEWAY_USER}",
       "gatewayPassword": "${OLLAMA_GATEWAY_PASSWORD}"
-    },
-    "invokeAi": {
-      "url": "${INVOKEAI_URL}",
-      "gatewayUser": "${INVOKEAI_GATEWAY_USER}",
-      "gatewayPassword": "${INVOKEAI_GATEWAY_PASSWORD}",
-      "modelRepo": "${INVOKEAI_MODEL_REPO}",
-      "modelRevision": "${INVOKEAI_MODEL_REVISION}",
-      "modelTitle": "${INVOKEAI_MODEL_TITLE}",
-      "briefingPath": "/content/invokeai.md"
-    },
-    "comfyUi": {
-      "url": "${COMFYUI_URL}",
-      "gatewayUser": "${COMFYUI_GATEWAY_USER}",
-      "gatewayPassword": "${COMFYUI_GATEWAY_PASSWORD}",
-      "ltxModelTitle": "${COMFYUI_LTX_MODEL_TITLE}",
-      "wanModelTitle": "${COMFYUI_WAN_MODEL_TITLE}",
-      "briefingPath": "/content/comfyui.md"
     }
   },
   "workbenches": {

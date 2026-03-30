@@ -2,7 +2,6 @@ import type { LegacyAiAliasOptions } from '../types/cli.types.js';
 
 interface CanonicalAiLayerOptions {
   withAiLlm?: boolean;
-  withAiImage?: boolean;
 }
 
 /**
@@ -14,11 +13,9 @@ export function normalizeAiAliasOptions<TOptions extends LegacyAiAliasOptions & 
   options: TOptions
 ): TOptions & {
   withAiLlm: boolean;
-  withAiImage: boolean;
 } {
   return {
     ...options,
-    withAiLlm: Boolean(options.withAiLlm || options.withAi),
-    withAiImage: Boolean(options.withAiImage || options.withImage)
+    withAiLlm: Boolean(options.withAiLlm || options.withAi)
   };
 }

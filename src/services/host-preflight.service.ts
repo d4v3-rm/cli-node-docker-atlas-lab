@@ -15,21 +15,9 @@ const CORE_PORT_ENV_KEYS = [
   'GITEA_HTTPS_PORT'
 ] as const;
 
-const AI_AGENTS_PORT_ENV_KEYS = [
-  'N8N_HTTPS_PORT'
-] as const;
-
 const AI_LLM_PORT_ENV_KEYS = [
   'OPENWEBUI_HTTPS_PORT',
   'OLLAMA_HTTPS_PORT'
-] as const;
-
-const AI_IMAGE_PORT_ENV_KEYS = [
-  'INVOKEAI_HTTPS_PORT'
-] as const;
-
-const AI_VIDEO_PORT_ENV_KEYS = [
-  'COMFYUI_HTTPS_PORT'
 ] as const;
 
 const WORKBENCH_PORT_ENV_KEYS = [
@@ -49,19 +37,13 @@ export async function assertPublishedPortsAvailable(
   context: ProjectContext,
   options: {
     includeAiLlm: boolean;
-    includeAiAgents: boolean;
-    includeAiImage: boolean;
-    includeAiVideo: boolean;
     includeWorkbench: boolean;
   }
 ): Promise<void> {
   const definitions = getConfiguredHostPorts(
     context.env,
     options.includeWorkbench,
-    options.includeAiLlm,
-    options.includeAiAgents,
-    options.includeAiImage,
-    options.includeAiVideo
+    options.includeAiLlm
   );
   const currentProjectPorts = await getRunningComposePublishedPorts(context);
   const results = await Promise.all(
@@ -86,17 +68,11 @@ export async function assertPublishedPortsAvailable(
 function getConfiguredHostPorts(
   env: LabEnv,
   includeWorkbench: boolean,
-  includeAiLlm: boolean,
-  includeAiAgents: boolean,
-  includeAiImage: boolean,
-  includeAiVideo: boolean
+  includeAiLlm: boolean
 ): HostPortDefinition[] {
   const envKeys = [
     ...CORE_PORT_ENV_KEYS,
     ...(includeAiLlm ? [...AI_LLM_PORT_ENV_KEYS] : []),
-    ...(includeAiAgents ? [...AI_AGENTS_PORT_ENV_KEYS] : []),
-    ...(includeAiImage ? [...AI_IMAGE_PORT_ENV_KEYS] : []),
-    ...(includeAiVideo ? [...AI_VIDEO_PORT_ENV_KEYS] : []),
     ...(includeWorkbench ? [...WORKBENCH_PORT_ENV_KEYS] : [])
   ];
 

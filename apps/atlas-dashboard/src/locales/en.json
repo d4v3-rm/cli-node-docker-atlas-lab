@@ -38,24 +38,12 @@
     "aiBodyEnabled": "The AI LLM layer is online: the dashboard takes you into Open WebUI or the Ollama APIs with credentials and operating context always visible.",
     "aiKicker": "optional plane",
     "aiTitle": "AI LLM Layer",
-    "agentsBodyDisabled": "The AI agents layer stays off until you explicitly request it. When inactive, the dashboard shows the exact activation command.",
-    "agentsBodyEnabled": "The AI agents layer is online: n8n is exposed on its dedicated gateway and the owner bootstrap stays aligned by the CLI.",
-    "agentsKicker": "automation plane",
-    "agentsTitle": "AI Agents Layer",
     "footerBody": "Four quick signals on routing, persistence, recommended usage, and layer segmentation.",
     "footerKicker": "atlas signals",
     "footerTitle": "Operational closeout",
-    "imageBodyDisabled": "The AI image layer stays off until you explicitly request it. When inactive, the dashboard shows the exact activation command.",
-    "imageBodyEnabled": "The AI image layer is online: InvokeAI is exposed through a dedicated gateway, while the configured model set is prepared automatically for the paired runtime.",
-    "imageKicker": "generation plane",
-    "imageTitle": "AI Image Layer",
     "servicesBody": "The core plane is always available. Each card collects endpoints, operational credentials, and a direct entry point into the service.",
     "servicesKicker": "service plane",
     "servicesTitle": "Core Services",
-    "videoBodyDisabled": "The AI video layer stays off until you explicitly request it. When inactive, the dashboard shows the exact activation command.",
-    "videoBodyEnabled": "The AI video layer is online: ComfyUI is exposed through a dedicated gateway and the requested video model set is preloaded into persistent storage.",
-    "videoKicker": "motion plane",
-    "videoTitle": "AI Video Layer",
     "workbenchBodyDisabled": "The environments stay detached from the core. You enable them only when you actually need code-server or shared Postgres.",
     "workbenchBodyEnabled": "The environments are active: you can jump directly into a workspace or open its dedicated briefing first to review networking, credentials, and tools.",
     "workbenchKicker": "workspace plane",
@@ -74,12 +62,9 @@
   "cards": {
     "openBriefing": "Open briefing",
     "tones": {
-      "agents": "AI Agents",
       "ai": "AI LLM",
       "core": "Core",
-      "image": "AI Image",
       "neutral": "Neutral",
-      "video": "AI Video",
       "workbench": "Workbench"
     }
   },
@@ -146,37 +131,12 @@
   "dashboard": {
     "coreLayerSummary": "Gitea remains the always-on core plane of the lab.",
     "accessNotes": {
-      "agentsDisabled": "The AI agents layer remains optional and n8n stays off until you enable the dedicated automation plane.",
-      "agentsEnabled": "n8n is online in the AI agents layer with the bootstrapped owner account already aligned.",
       "aiDisabled": "The AI LLM layer no longer starts by default: the deck marks it as optional instead of pretending that it is online.",
       "aiEnabled": "Open WebUI and Ollama are really online and reachable on the AI LLM gateway ports.",
       "credentials": "Operational credentials are exposed here and remain aligned with the lab bootstrap.",
       "https": "All browser ingresses use localhost with dedicated HTTPS, without custom DNS or hosts-file edits.",
-      "imageDisabled": "The AI image layer remains optional and no dedicated image endpoint is exposed until you enable it.",
-      "imageEnabled": "InvokeAI is online behind the dedicated AI image gateway, and the configured model set is already staged for the runtime.",
-      "videoDisabled": "The AI video layer remains optional and no dedicated video endpoint is exposed until you enable it.",
-      "videoEnabled": "ComfyUI is online behind the dedicated AI video gateway with the requested local video models already staged.",
       "workbenchDisabled": "Workbench and Postgres stay separated from the core operating plane until you enable the dedicated layer.",
       "workbenchEnabled": "Workbench and Postgres are active: you can open browser-based environments or connect from the desktop to the host Postgres port."
-    },
-    "agentsLayer": {
-      "capabilities": {
-        "n8n": "Local n8n",
-        "runners": "External runners",
-        "webhooks": "Webhook automation"
-      },
-      "description": "Optional AI agents layer for workflow automation, integrations, and operational agent pipelines. The lab enables it only when you explicitly request it.",
-      "summaryDisabled": "AI agents layer is off. n8n and the external runners are not started or exposed until you enable the dedicated flag.",
-      "summaryEnabled": "n8n and the external runners are active behind the AI agents gateway.",
-      "title": "AI Agents Layer"
-    },
-    "agentServices": {
-      "n8n": {
-        "action": "Open n8n",
-        "description": "Orchestration engine for webhooks, integrations, and agent automation flows, already bootstrapped with an application owner account.",
-        "note": "The first access skips the setup wizard but still exposes the official templates available inside the application.",
-        "title": "n8n Automation"
-      }
     },
     "aiLayer": {
       "capabilities": {
@@ -199,44 +159,6 @@
         "action": "Open Open WebUI",
         "description": "Conversational interface for working with local lab models in the browser, with explicit credentials and immediate access from the gateway.",
         "title": "Open WebUI"
-      }
-    },
-    "imageLayer": {
-      "capabilities": {
-        "gateway": "Protected image gateway",
-        "invokeAi": "Local InvokeAI",
-        "models": "Bootstrapped local models"
-      },
-      "description": "Optional AI image layer for local visual workflows. It exposes InvokeAI through a dedicated gateway and stages the configured model set in persistent storage for the paired runtime.",
-      "summaryDisabled": "AI image layer is off. InvokeAI is not started or exposed until you enable the dedicated flag.",
-      "summaryEnabled": "InvokeAI is active behind the AI image gateway, with persistent model storage kept inside Docker volumes.",
-      "title": "AI Image Layer"
-    },
-    "imageServices": {
-      "invokeAi": {
-        "action": "Open InvokeAI",
-        "description": "Browser-based image generation console served through the dedicated image gateway with a staged primary model and additional models aligned by script.",
-        "note": "Model source: {{modelRepo}}. The model is staged into persistent storage and scanned by InvokeAI at startup.",
-        "title": "InvokeAI Studio"
-      }
-    },
-    "videoLayer": {
-      "capabilities": {
-        "comfyUi": "Local ComfyUI",
-        "ltxVideo": "LTX-Video preload",
-        "wanVideo": "Wan 2.1 preload"
-      },
-      "description": "Optional AI video layer for local text-to-video workflows. It exposes ComfyUI through a dedicated gateway and stages the requested video model set in persistent storage.",
-      "summaryDisabled": "AI video layer is off. ComfyUI is not started or exposed until you enable the dedicated flag.",
-      "summaryEnabled": "ComfyUI is active behind the AI video gateway with both requested video model families staged locally.",
-      "title": "AI Video Layer"
-    },
-    "videoServices": {
-      "comfyUi": {
-        "action": "Open ComfyUI",
-        "description": "Browser-based node graph studio for local video generation with preloaded LTX-Video and Wan 2.1 model families.",
-        "note": "The managed video model set is staged through repository-backed sync scripts into persistent Docker storage before ComfyUI starts.",
-        "title": "ComfyUI Studio"
       }
     },
     "footerCards": {
@@ -262,15 +184,9 @@
       "pills": {
         "aiActive": "ai-llm active",
         "aiOptional": "ai-llm optional",
-        "agentsActive": "ai-agents active",
-        "agentsOptional": "ai-agents optional",
         "deck": "deck {{localUrl}}",
         "host": "host {{publicUrl}}",
         "httpsOnly": "https ingress only",
-        "imageActive": "ai-image active",
-        "imageOptional": "ai-image optional",
-        "videoActive": "ai-video active",
-        "videoOptional": "ai-video optional",
         "volumes": "volume persistence",
         "workbenchActive": "workbenches active",
         "workbenchOptional": "workbenches optional"
@@ -288,14 +204,6 @@
       }
     },
     "metrics": {
-      "agentsDisabled": {
-        "caption": "AI agents layer not active",
-        "label": "ai-agents live"
-      },
-      "agentsEnabled": {
-        "caption": "n8n published on the dedicated AI agents gateway",
-        "label": "ai-agents live"
-      },
       "aiDisabled": {
         "caption": "AI LLM layer not active",
         "label": "ai-llm live"
@@ -308,25 +216,9 @@
         "caption": "always-on services with mandatory bootstrap",
         "label": "core online"
       },
-      "imageDisabled": {
-        "caption": "AI image layer not active",
-        "label": "ai-image live"
-      },
-      "imageEnabled": {
-        "caption": "InvokeAI published on the dedicated AI image gateway",
-        "label": "ai-image live"
-      },
       "ingress": {
         "caption": "public gateways currently served",
         "label": "ingress planes"
-      },
-      "videoDisabled": {
-        "caption": "AI video layer not active",
-        "label": "ai-video live"
-      },
-      "videoEnabled": {
-        "caption": "ComfyUI published on the dedicated AI video gateway",
-        "label": "ai-video live"
       },
       "workbenchDisabled": {
         "caption": "workbench layer not active",
@@ -341,11 +233,8 @@
       "title": "Network Map"
     },
     "operatingCharter": {
-      "agents": "n8n and the runner fleet live in an explicitly optional AI agents layer.",
       "ai": "Open WebUI and Ollama live in an explicitly optional AI LLM layer.",
       "gitea": "Gitea governs code, review, and Git governance for the project.",
-      "image": "InvokeAI lives in a dedicated AI image layer with a script-managed model set.",
-      "video": "ComfyUI lives in a dedicated AI video layer with preloaded LTX-Video and Wan 2.1 assets.",
       "workbench": "Code-server and Postgres stay in a workbench plane separated from the core."
     },
     "services": {
@@ -353,12 +242,6 @@
         "action": "Open Gitea",
         "description": "Internal Git forge for repositories, issues, review, and the lab's technical collaboration flow.",
         "title": "Gitea Forge"
-      },
-      "n8n": {
-        "action": "Open n8n",
-        "description": "Orchestration engine for webhooks, integrations, and operational pipelines, already bootstrapped with an application owner account.",
-        "note": "The first access skips the setup wizard but still exposes the official templates available inside the application.",
-        "title": "n8n Automation"
       }
     },
     "workbenchLayer": {
