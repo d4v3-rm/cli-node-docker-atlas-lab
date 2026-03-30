@@ -172,8 +172,16 @@ function createTemplateEnvironment(requestOrigin: string): Record<string, string
 
   return {
     ...environment,
+    ATLAS_AI_AGENTS_ENABLED: resolveDevBooleanFlag(
+      'ATLAS_DASHBOARD_DEV_AI_AGENTS_ENABLED',
+      true
+    ),
     ATLAS_AI_LLM_ENABLED: resolveDevBooleanFlag('ATLAS_DASHBOARD_DEV_AI_LLM_ENABLED', true),
     ATLAS_AI_IMAGE_ENABLED: resolveDevBooleanFlag('ATLAS_DASHBOARD_DEV_AI_IMAGE_ENABLED', true),
+    ATLAS_AI_VIDEO_ENABLED: resolveDevBooleanFlag(
+      'ATLAS_DASHBOARD_DEV_AI_VIDEO_ENABLED',
+      true
+    ),
     ATLAS_WORKBENCH_ENABLED: resolveDevBooleanFlag(
       'ATLAS_DASHBOARD_DEV_WORKBENCH_ENABLED',
       true
