@@ -252,22 +252,12 @@
       },
       "description": "Separate layer for browser-based workspaces and a shared database. The core stays clean until you truly need the development environment.",
       "summaryDisabled": "Workbench layer is off. No code-server or Postgres is exposed by the lab.",
-      "summaryEnabled": "Node, Python, AI, C++, and Postgres are online in the workbench plane.",
+      "summaryEnabled": "Node, Python, and Postgres are online in the workbench plane.",
       "title": "Workbench Layer"
     },
     "workbenches": {
-      "ai": {
-        "briefingTitle": "AI Reactor",
-        "description": "Code-server workspace for notebooks, ML experiments, and local AI tooling.",
-        "title": "AI Reactor"
-      },
       "common": {
         "openWorkspace": "Open workspace"
-      },
-      "cpp": {
-        "briefingTitle": "C++ Foundry",
-        "description": "Code-server workspace for C or C++ development, native compilation, and debugging.",
-        "title": "C++ Foundry"
       },
       "node": {
         "briefingTitle": "Node Forge",

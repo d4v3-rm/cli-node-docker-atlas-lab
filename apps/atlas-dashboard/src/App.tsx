@@ -56,7 +56,6 @@ type DashboardIconComponent = ComponentType<{
 const iconMap: Record<DashboardIconKey, DashboardIconComponent> = {
   ai: ApiOutlined,
   certificate: SafetyCertificateOutlined,
-  cpp: CodeOutlined,
   forge: BranchesOutlined,
   host: GlobalOutlined,
   network: NodeIndexOutlined,

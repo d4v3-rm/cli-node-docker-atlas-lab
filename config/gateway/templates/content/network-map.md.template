@@ -18,8 +18,6 @@ Each layer publishes its HTTPS endpoints on `localhost` through a dedicated gate
 - Ollama: `${OLLAMA_URL}` only when the `ai-llm` layer is enabled
 - Node workbench: `${NODE_DEV_URL}` only when the `workbench` layer is enabled
 - Python workbench: `${PYTHON_DEV_URL}` only when the `workbench` layer is enabled
-- AI workbench: `${AI_DEV_URL}` only when the `workbench` layer is enabled
-- C++ workbench: `${CPP_DEV_URL}` only when the `workbench` layer is enabled
 - Postgres host access: `localhost:${POSTGRES_DEV_HOST_PORT}` only when the `workbench` layer is enabled
 
 ## Localhost multi-port routing
@@ -30,8 +28,6 @@ Each layer publishes its HTTPS endpoints on `localhost` through a dedicated gate
 - `8447`: Ollama, layer `ai-llm`
 - `8450`: Node workbench, layer `workbench`
 - `8451`: Python workbench, layer `workbench`
-- `8452`: AI workbench, layer `workbench`
-- `8453`: C++ workbench, layer `workbench`
 - `${POSTGRES_DEV_HOST_PORT}`: Postgres host access, layer `workbench`
 
 No DNS setup and no `hosts` file edits are required: just use `https://localhost:<port>/`.

@@ -23,9 +23,7 @@ const AI_LLM_PORT_ENV_KEYS = [
 const WORKBENCH_PORT_ENV_KEYS = [
   'POSTGRES_DEV_HOST_PORT',
   'NODE_DEV_HTTPS_PORT',
-  'PYTHON_DEV_HTTPS_PORT',
-  'AI_DEV_HTTPS_PORT',
-  'CPP_DEV_HTTPS_PORT'
+  'PYTHON_DEV_HTTPS_PORT'
 ] as const;
 
 const BIND_ADDRESSES: readonly HostBindAddress[] = ['0.0.0.0', '::'] as const;

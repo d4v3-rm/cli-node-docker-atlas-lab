@@ -194,7 +194,7 @@ export function createDashboardViewModel(
               ? 'dashboard.metrics.workbenchEnabled.label'
               : 'dashboard.metrics.workbenchDisabled.label'
           ),
-          value: workbenchEnabled ? 5 : 0
+          value: workbenchEnabled ? 3 : 0
         },
         {
           caption: t('dashboard.metrics.ingress.caption'),
@@ -395,66 +395,6 @@ export function createDashboardViewModel(
         id: 'python',
         status: t('values.browserWorkspace'),
         title: t('dashboard.workbenches.python.title'),
-        tone: 'workbench'
-      },
-      {
-        action: {
-          href: config.workbenches.ai.url,
-          label: t('dashboard.workbenches.common.openWorkspace')
-        },
-        briefing: {
-          path: config.workbenches.ai.briefingPath,
-          title: t('dashboard.workbenches.ai.briefingTitle')
-        },
-        credentials: [
-          {
-            label: credentialLabels.endpoint,
-            value: config.workbenches.ai.url
-          },
-          {
-            label: credentialLabels.authMode,
-            value: t('values.password')
-          },
-          {
-            label: credentialLabels.rootPassword,
-            value: config.workbenches.ai.password
-          }
-        ],
-        description: t('dashboard.workbenches.ai.description'),
-        icon: 'ai',
-        id: 'ai',
-        status: t('values.browserWorkspace'),
-        title: t('dashboard.workbenches.ai.title'),
-        tone: 'workbench'
-      },
-      {
-        action: {
-          href: config.workbenches.cpp.url,
-          label: t('dashboard.workbenches.common.openWorkspace')
-        },
-        briefing: {
-          path: config.workbenches.cpp.briefingPath,
-          title: t('dashboard.workbenches.cpp.briefingTitle')
-        },
-        credentials: [
-          {
-            label: credentialLabels.endpoint,
-            value: config.workbenches.cpp.url
-          },
-          {
-            label: credentialLabels.authMode,
-            value: t('values.password')
-          },
-          {
-            label: credentialLabels.rootPassword,
-            value: config.workbenches.cpp.password
-          }
-        ],
-        description: t('dashboard.workbenches.cpp.description'),
-        icon: 'cpp',
-        id: 'cpp',
-        status: t('values.browserWorkspace'),
-        title: t('dashboard.workbenches.cpp.title'),
         tone: 'workbench'
       },
       {

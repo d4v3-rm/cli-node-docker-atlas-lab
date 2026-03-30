@@ -3,7 +3,6 @@ import type { BriefingReference } from '@/types/briefing.types';
 export type DashboardIconKey =
   | 'ai'
   | 'certificate'
-  | 'cpp'
   | 'forge'
   | 'host'
   | 'network'

@@ -44,16 +44,6 @@
       "password": "${PYTHON_DEV_PASSWORD}",
       "briefingPath": "/content/python-dev.md"
     },
-    "ai": {
-      "url": "${AI_DEV_URL}",
-      "password": "${AI_DEV_PASSWORD}",
-      "briefingPath": "/content/ai-dev.md"
-    },
-    "cpp": {
-      "url": "${CPP_DEV_URL}",
-      "password": "${CPP_DEV_PASSWORD}",
-      "briefingPath": "/content/cpp-dev.md"
-    },
     "postgres": {
       "host": "localhost",
       "port": "${POSTGRES_DEV_HOST_PORT}",

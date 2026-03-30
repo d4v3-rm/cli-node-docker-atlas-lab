@@ -62,13 +62,13 @@ Atlas Lab is built for a practical goal: run a repeatable local engineering plat
 
 ## 🏗️ Architecture
 
-Atlas Lab is split into **six explicit layers**:
+Atlas Lab is split into **three explicit layers**:
 
 | Layer | Status | Includes | Purpose |
 | --- | --- | --- | --- |
 | `core` | always on | gateway, Atlas Dashboard, Gitea, Gitea DB | baseline platform |
 | `ai-llm` | optional | Open WebUI, Ollama, AI LLM gateway | local LLM workflows |
-| `workbench` | optional | Node Forge, Python Grid, AI Reactor, C++ Foundry, shared PostgreSQL, workbench gateway | browser-based development |
+| `workbench` | optional | Node Forge, Python Grid, shared PostgreSQL, workbench gateway | browser-based development |
 
 ### Why the current topology
 
@@ -113,8 +113,6 @@ The only host-level TCP service exposed directly is PostgreSQL from the workbenc
 | Ollama | `ai-llm` | `https://localhost:8447/` | HTTPS API |
 | Node Forge | `workbench` | `https://localhost:8450/` | Node / TypeScript workspace |
 | Python Grid | `workbench` | `https://localhost:8451/` | Python workspace |
-| AI Reactor | `workbench` | `https://localhost:8452/` | AI / notebook workspace |
-| C++ Foundry | `workbench` | `https://localhost:8453/` | C/C++ workspace |
 | PostgreSQL | `workbench` | `localhost:15432` | host-side desktop access |
 
 ### Operational rules
@@ -194,15 +192,10 @@ The AI LLM and AI image layers require:
 
 - `8443`
 - `8444`
-- `8445`
 - `8446`
 - `8447`
-- `8448`
-- `8449`
 - `8450`
 - `8451`
-- `8452`
-- `8453`
 - `15432` when `workbench` is enabled
 
 ### Windows PowerShell note
@@ -239,7 +232,7 @@ Key variables include:
 - `APP_VERSION`
 - `LAB_HTTPS_PORT`, `GITEA_HTTPS_PORT`
 - `OPENWEBUI_HTTPS_PORT`, `OLLAMA_HTTPS_PORT`
-- `NODE_DEV_HTTPS_PORT`, `PYTHON_DEV_HTTPS_PORT`, `AI_DEV_HTTPS_PORT`, `CPP_DEV_HTTPS_PORT`
+- `NODE_DEV_HTTPS_PORT`, `PYTHON_DEV_HTTPS_PORT`
 - `POSTGRES_DEV_HOST_PORT`
 - `OLLAMA_CHAT_MODEL`, `OLLAMA_EMBEDDING_MODEL`, `OLLAMA_RUNTIME_MODELS`
 - `GITEA_ROOT_USERNAME`, `GITEA_ROOT_PASSWORD`
@@ -489,7 +482,7 @@ Expected behavior. The lab uses a self-signed certificate.
 
 ### `atlas-lab up` fails during port preflight
 
-One of the configured lab ports (`8443-8447`, `8450-8453`, or `15432`) is occupied or excluded by the system.
+One of the configured lab ports (`8443-8447`, `8450-8451`, or `15432`) is occupied or excluded by the system.
 
 ```powershell
 atlas-lab status

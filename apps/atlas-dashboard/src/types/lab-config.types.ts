@@ -37,16 +37,6 @@ export interface LabRuntimeConfig {
     };
   };
   workbenches: {
-    ai: {
-      briefingPath: string;
-      password: string;
-      url: string;
-    };
-    cpp: {
-      briefingPath: string;
-      password: string;
-      url: string;
-    };
     node: {
       briefingPath: string;
       password: string;
