@@ -4,9 +4,6 @@
 export interface LabRuntimeConfig {
   features: {
     aiLlmEnabled: boolean;
-    aiAgentsEnabled: boolean;
-    aiImageEnabled: boolean;
-    aiVideoEnabled: boolean;
     workbenchEnabled: boolean;
   };
   assets: {
@@ -27,32 +24,9 @@ export interface LabRuntimeConfig {
       rootUsername: string;
       url: string;
     };
-    n8n: {
-      ownerEmail: string;
-      ownerName: string;
-      ownerPassword: string;
-      url: string;
-    };
     ollama: {
       gatewayPassword: string;
       gatewayUser: string;
-      url: string;
-    };
-    invokeAi: {
-      briefingPath: string;
-      gatewayPassword: string;
-      gatewayUser: string;
-      modelRepo: string;
-      modelRevision: string;
-      modelTitle: string;
-      url: string;
-    };
-    comfyUi: {
-      briefingPath: string;
-      gatewayPassword: string;
-      gatewayUser: string;
-      ltxModelTitle: string;
-      wanModelTitle: string;
       url: string;
     };
     openWebUi: {
@@ -63,16 +37,6 @@ export interface LabRuntimeConfig {
     };
   };
   workbenches: {
-    ai: {
-      briefingPath: string;
-      password: string;
-      url: string;
-    };
-    cpp: {
-      briefingPath: string;
-      password: string;
-      url: string;
-    };
     node: {
       briefingPath: string;
       password: string;

@@ -4,17 +4,11 @@ import type { ProjectContext } from '../../src/types/project.types.js';
 const context: ProjectContext = {
   env: {},
   layout: {
-    composeAiAgentsFile: 'infra/docker/compose.ai-agents.yml',
     composeAiLlmFile: 'infra/docker/compose.ai-llm.yml',
-    composeAiImageFile: 'infra/docker/compose.ai-image.yml',
-    composeAiVideoFile: 'infra/docker/compose.ai-video.yml',
     composeFile: 'infra/docker/compose.yml',
     composeWorkbenchFile: 'infra/docker/compose.workbench.yml',
     envFile: 'env/lab.env',
-    gatewayAiAgentsTemplateFile: 'config/gateway/templates/Caddyfile.ai-agents.template',
-    gatewayAiImageTemplateFile: 'config/gateway/templates/Caddyfile.ai-image.template',
     gatewayAiLlmTemplateFile: 'config/gateway/templates/Caddyfile.ai-llm.template',
-    gatewayAiVideoTemplateFile: 'config/gateway/templates/Caddyfile.ai-video.template',
     gatewayTemplateFile: 'config/gateway/templates/Caddyfile.template',
     gatewayWorkbenchTemplateFile: 'config/gateway/templates/Caddyfile.workbench.template'
   },
@@ -28,21 +22,15 @@ describe('compose lib', () => {
     expect(resolveComposeFiles(context)).toEqual(['infra/docker/compose.yml']);
   });
 
-  it('includes the ai-agents, ai-llm, ai-image, ai-video, and workbench compose files when requested', () => {
+  it('includes the ai-llm and workbench compose files when requested', () => {
     expect(
       resolveComposeFiles(context, {
-        includeAiAgents: true,
-        includeAiImage: true,
         includeAiLlm: true,
-        includeAiVideo: true,
         includeWorkbench: true
       })
     ).toEqual([
       'infra/docker/compose.yml',
-      'infra/docker/compose.ai-agents.yml',
       'infra/docker/compose.ai-llm.yml',
-      'infra/docker/compose.ai-image.yml',
-      'infra/docker/compose.ai-video.yml',
       'infra/docker/compose.workbench.yml'
     ]);
   });
@@ -53,13 +41,7 @@ describe('compose lib', () => {
       '--file',
       'infra/docker/compose.yml',
       '--file',
-      'infra/docker/compose.ai-agents.yml',
-      '--file',
       'infra/docker/compose.ai-llm.yml',
-      '--file',
-      'infra/docker/compose.ai-image.yml',
-      '--file',
-      'infra/docker/compose.ai-video.yml',
       '--file',
       'infra/docker/compose.workbench.yml',
       '--env-file',

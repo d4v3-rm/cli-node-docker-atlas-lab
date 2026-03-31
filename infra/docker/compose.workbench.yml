@@ -27,15 +27,10 @@ services:
     environment:
       ATLAS_GATEWAY_TEMPLATE: Caddyfile.workbench.template
       ATLAS_AI_LLM_ENABLED: "false"
-      ATLAS_AI_AGENTS_ENABLED: "false"
-      ATLAS_AI_IMAGE_ENABLED: "false"
-      ATLAS_AI_VIDEO_ENABLED: "false"
       ATLAS_WORKBENCH_ENABLED: "true"
     ports:
       - "${NODE_DEV_HTTPS_PORT}:${NODE_DEV_HTTPS_PORT}"
       - "${PYTHON_DEV_HTTPS_PORT}:${PYTHON_DEV_HTTPS_PORT}"
-      - "${AI_DEV_HTTPS_PORT}:${AI_DEV_HTTPS_PORT}"
-      - "${CPP_DEV_HTTPS_PORT}:${CPP_DEV_HTTPS_PORT}"
     volumes:
       - gateway-certs:/etc/caddy/certs
       - gateway-config:/etc/caddy/dynamic
@@ -46,10 +41,6 @@ services:
       node-dev:
         condition: service_started
       python-dev:
-        condition: service_started
-      ai-dev:
-        condition: service_started
-      cpp-dev:
         condition: service_started
     networks:
       - edge-net
@@ -139,65 +130,6 @@ services:
       workbench-egress-net:
         gw_priority: 1
 
-  ai-dev:
-    build:
-      context: ../..
-      dockerfile: infra/docker/images/workbenches/python/Dockerfile
-      args:
-        BASE_IMAGE: ${AI_DEV_BASE_IMAGE}
-        PYTHON_VERSION: ${AI_DEV_PYTHON_VERSION}
-        INSTALL_PACKAGES: ${AI_DEV_INSTALL_PACKAGES}
-        PYTHON_PIP_PACKAGES: ${AI_DEV_PIP_PACKAGES}
-        PIP_INDEX_URL: ${AI_DEV_PIP_INDEX_URL}
-        PIP_EXTRA_INDEX_URL: ${AI_DEV_PIP_EXTRA_INDEX_URL}
-    restart: unless-stopped
-    depends_on:
-      postgres-dev:
-        condition: service_healthy
-    environment:
-      CODE_SERVER_PASSWORD: ${AI_DEV_PASSWORD}
-      CODE_SERVER_AUTH: ${AI_DEV_AUTH}
-      CODE_SERVER_BIND_ADDR: 0.0.0.0:8080
-      CODE_SERVER_WORKDIR: /workspace
-      CODE_SERVER_EXTENSIONS: ${AI_DEV_EXTENSIONS}
-      PYTHON_DEV_PIP_PACKAGES: ${AI_DEV_RUNTIME_PIP_PACKAGES}
-      PYTHON_DEV_PIP_EXTRA_INDEX_URL: ${AI_DEV_PIP_EXTRA_INDEX_URL}
-      <<: *workbench-db-env
-    volumes:
-      - ai-dev-home:/home/coder
-      - ai-dev-workspace:/workspace
-    networks:
-      workbench-net:
-      workbench-egress-net:
-        gw_priority: 1
-
-  cpp-dev:
-    build:
-      context: ../..
-      dockerfile: infra/docker/images/workbenches/cpp/Dockerfile
-      args:
-        BASE_IMAGE: ${CPP_DEV_BASE_IMAGE}
-        CPP_PACKAGES: ${CPP_DEV_PACKAGES}
-        INSTALL_PACKAGES: ${CPP_DEV_INSTALL_PACKAGES}
-    restart: unless-stopped
-    depends_on:
-      postgres-dev:
-        condition: service_healthy
-    environment:
-      CODE_SERVER_PASSWORD: ${CPP_DEV_PASSWORD}
-      CODE_SERVER_AUTH: ${CPP_DEV_AUTH}
-      CODE_SERVER_BIND_ADDR: 0.0.0.0:8080
-      CODE_SERVER_WORKDIR: /workspace
-      CODE_SERVER_EXTENSIONS: ${CPP_DEV_EXTENSIONS}
-      <<: *workbench-db-env
-    volumes:
-      - cpp-dev-home:/home/coder
-      - cpp-dev-workspace:/workspace
-    networks:
-      workbench-net:
-      workbench-egress-net:
-        gw_priority: 1
-
 networks:
   edge-net:
     name: cli-node-docker-atlas-lab_edge
@@ -218,7 +150,3 @@ volumes:
   node-dev-workspace:
   python-dev-home:
   python-dev-workspace:
-  ai-dev-home:
-  ai-dev-workspace:
-  cpp-dev-home:
-  cpp-dev-workspace:

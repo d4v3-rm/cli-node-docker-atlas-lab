@@ -5,12 +5,10 @@ describe('cli option normalization', () => {
     expect(
       normalizeAiAliasOptions({
         withAi: true,
-        withImage: true,
         withWorkbench: true
       })
     ).toMatchObject({
       withAiLlm: true,
-      withAiImage: true,
       withWorkbench: true
     });
   });
@@ -18,12 +16,10 @@ describe('cli option normalization', () => {
   it('preserves the canonical AI layer flags when they are already present', () => {
     expect(
       normalizeAiAliasOptions({
-        withAiLlm: true,
-        withAiImage: false
+        withAiLlm: true
       })
     ).toMatchObject({
-      withAiLlm: true,
-      withAiImage: false
+      withAiLlm: true
     });
   });
 });

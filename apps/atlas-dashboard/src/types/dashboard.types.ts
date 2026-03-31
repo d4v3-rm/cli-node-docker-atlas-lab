@@ -3,10 +3,8 @@ import type { BriefingReference } from '@/types/briefing.types';
 export type DashboardIconKey =
   | 'ai'
   | 'certificate'
-  | 'cpp'
   | 'forge'
   | 'host'
-  | 'image'
   | 'network'
   | 'node'
   | 'ollama'
@@ -16,10 +14,9 @@ export type DashboardIconKey =
   | 'secure'
   | 'spark'
   | 'terminal'
-  | 'video'
   | 'workflow';
 
-export type DashboardTone = 'agents' | 'ai' | 'core' | 'image' | 'neutral' | 'video' | 'workbench';
+export type DashboardTone = 'ai' | 'core' | 'neutral' | 'workbench';
 
 export interface CredentialItem {
   label: string;
@@ -107,15 +104,9 @@ export interface OptionalLayerViewModel {
 
 export interface DashboardViewModel {
   accessNotes: string[];
-  agentsLayer: OptionalLayerViewModel;
-  agentServices: ServiceCardViewModel[];
   aiLayer: OptionalLayerViewModel;
   aiServices: ServiceCardViewModel[];
   footerCards: FooterCardViewModel[];
-  imageLayer: OptionalLayerViewModel;
-  imageServices: ServiceCardViewModel[];
-  videoLayer: OptionalLayerViewModel;
-  videoServices: ServiceCardViewModel[];
   hero: {
     eyebrow: string;
     metrics: MetricItem[];

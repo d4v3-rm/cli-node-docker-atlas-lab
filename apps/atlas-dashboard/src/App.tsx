@@ -4,7 +4,6 @@ import {
   ApiOutlined,
   ArrowRightOutlined,
   BranchesOutlined,
-  PictureOutlined,
   CloudServerOutlined,
   CodeOutlined,
   CompassOutlined,
@@ -15,8 +14,7 @@ import {
   NodeIndexOutlined,
   RobotOutlined,
   SafetyCertificateOutlined,
-  ThunderboltOutlined,
-  VideoCameraOutlined
+  ThunderboltOutlined
 } from '@ant-design/icons';
 import {
   Alert,
@@ -58,10 +56,8 @@ type DashboardIconComponent = ComponentType<{
 const iconMap: Record<DashboardIconKey, DashboardIconComponent> = {
   ai: ApiOutlined,
   certificate: SafetyCertificateOutlined,
-  cpp: CodeOutlined,
   forge: BranchesOutlined,
   host: GlobalOutlined,
-  image: PictureOutlined,
   network: NodeIndexOutlined,
   node: CodeOutlined,
   ollama: CloudServerOutlined,
@@ -71,7 +67,6 @@ const iconMap: Record<DashboardIconKey, DashboardIconComponent> = {
   secure: LockOutlined,
   spark: ThunderboltOutlined,
   terminal: CodeOutlined,
-  video: VideoCameraOutlined,
   workflow: BranchesOutlined
 };
 
@@ -79,11 +74,6 @@ const toneStyles: Record<
   DashboardTone,
   { accent: string; border: string; soft: string }
 > = {
-  agents: {
-    accent: atlasDashboardPalette.signal,
-    border: 'rgba(77, 163, 255, 0.28)',
-    soft: 'rgba(77, 163, 255, 0.14)'
-  },
   ai: {
     accent: atlasDashboardPalette.ai,
     border: 'rgba(214, 138, 72, 0.28)',
@@ -93,16 +83,6 @@ const toneStyles: Record<
     accent: atlasDashboardPalette.core,
     border: 'rgba(31, 159, 141, 0.28)',
     soft: 'rgba(31, 159, 141, 0.14)'
-  },
-  image: {
-    accent: atlasDashboardPalette.image,
-    border: 'rgba(200, 92, 255, 0.28)',
-    soft: 'rgba(200, 92, 255, 0.14)'
-  },
-  video: {
-    accent: atlasDashboardPalette.image,
-    border: 'rgba(200, 92, 255, 0.28)',
-    soft: 'rgba(200, 92, 255, 0.14)'
   },
   neutral: {
     accent: atlasDashboardPalette.signal,
@@ -207,10 +187,7 @@ export default function App() {
               </Col>
               <Col xs={24} xl={8} style={{ display: 'flex' }}>
                 <LayerRail
-                  agentsLayer={dashboard.agentsLayer}
                   aiLayer={dashboard.aiLayer}
-                  imageLayer={dashboard.imageLayer}
-                  videoLayer={dashboard.videoLayer}
                   workbenchLayer={dashboard.workbenchLayer}
                 />
               </Col>
@@ -263,56 +240,6 @@ export default function App() {
 
             <SectionBand
               body={t(
-                dashboard.agentsLayer.enabled
-                  ? 'sections.agentsBodyEnabled'
-                  : 'sections.agentsBodyDisabled'
-              )}
-              kicker={t('sections.agentsKicker')}
-              title={t('sections.agentsTitle')}
-            />
-            <LayerStateCard layer={dashboard.agentsLayer} />
-            {dashboard.agentsLayer.enabled ? (
-              <Row gutter={[24, 24]}>
-                {dashboard.agentServices.map((service) => (
-                  <Col xs={24} xl={12} key={service.id}>
-                    <OperationalCard
-                      item={service}
-                      primaryAction={service.action}
-                      tone={service.tone}
-                    />
-                  </Col>
-                ))}
-              </Row>
-            ) : null}
-
-            <SectionBand
-              body={t(
-                dashboard.imageLayer.enabled
-                  ? 'sections.imageBodyEnabled'
-                  : 'sections.imageBodyDisabled'
-              )}
-              kicker={t('sections.imageKicker')}
-              title={t('sections.imageTitle')}
-            />
-            <LayerStateCard layer={dashboard.imageLayer} />
-            {dashboard.imageLayer.enabled ? (
-              <Row gutter={[24, 24]}>
-                {dashboard.imageServices.map((service) => (
-                  <Col xs={24} xl={12} key={service.id}>
-                    <OperationalCard
-                      briefing={service.briefing}
-                      item={service}
-                      onOpenBriefing={setActiveBriefing}
-                      primaryAction={service.action}
-                      tone={service.tone}
-                    />
-                  </Col>
-                ))}
-              </Row>
-            ) : null}
-
-            <SectionBand
-              body={t(
                 dashboard.aiLayer.enabled
                   ? 'sections.aiBodyEnabled'
                   : 'sections.aiBodyDisabled'
@@ -327,32 +254,6 @@ export default function App() {
                   <Col xs={24} xl={12} key={service.id}>
                     <OperationalCard
                       item={service}
-                      primaryAction={service.action}
-                      tone={service.tone}
-                    />
-                  </Col>
-                ))}
-              </Row>
-            ) : null}
-
-            <SectionBand
-              body={t(
-                dashboard.videoLayer.enabled
-                  ? 'sections.videoBodyEnabled'
-                  : 'sections.videoBodyDisabled'
-              )}
-              kicker={t('sections.videoKicker')}
-              title={t('sections.videoTitle')}
-            />
-            <LayerStateCard layer={dashboard.videoLayer} />
-            {dashboard.videoLayer.enabled ? (
-              <Row gutter={[24, 24]}>
-                {dashboard.videoServices.map((service) => (
-                  <Col xs={24} xl={12} key={service.id}>
-                    <OperationalCard
-                      briefing={service.briefing}
-                      item={service}
-                      onOpenBriefing={setActiveBriefing}
                       primaryAction={service.action}
                       tone={service.tone}
                     />
@@ -717,16 +618,10 @@ function StatsRail({
 }
 
 function LayerRail({
-  agentsLayer,
   aiLayer,
-  imageLayer,
-  videoLayer,
   workbenchLayer
 }: {
-  agentsLayer: { enabled: boolean; summary: string; tone: DashboardTone };
   aiLayer: { enabled: boolean; summary: string; tone: DashboardTone };
-  imageLayer: { enabled: boolean; summary: string; tone: DashboardTone };
-  videoLayer: { enabled: boolean; summary: string; tone: DashboardTone };
   workbenchLayer: { enabled: boolean; summary: string; tone: DashboardTone };
 }) {
   const { t } = useTranslation();
@@ -743,28 +638,10 @@ function LayerRail({
             tone="core"
           />
           <LayerSummaryTile
-            enabled={agentsLayer.enabled}
-            summary={agentsLayer.summary}
-            title={t('cards.tones.agents')}
-            tone={agentsLayer.tone}
-          />
-          <LayerSummaryTile
             enabled={aiLayer.enabled}
             summary={aiLayer.summary}
             title={t('cards.tones.ai')}
             tone={aiLayer.tone}
-          />
-          <LayerSummaryTile
-            enabled={imageLayer.enabled}
-            summary={imageLayer.summary}
-            title={t('cards.tones.image')}
-            tone={imageLayer.tone}
-          />
-          <LayerSummaryTile
-            enabled={videoLayer.enabled}
-            summary={videoLayer.summary}
-            title={t('cards.tones.video')}
-            tone={videoLayer.tone}
           />
           <LayerSummaryTile
             enabled={workbenchLayer.enabled}
@@ -877,17 +754,11 @@ function LayerSummaryTile({
   const { t } = useTranslation();
   const palette = toneStyles[tone];
   const IconGlyph =
-    tone === 'agents'
-      ? BranchesOutlined
-      : tone === 'ai'
+    tone === 'ai'
       ? ApiOutlined
-      : tone === 'video'
-        ? VideoCameraOutlined
-      : tone === 'image'
-        ? PictureOutlined
-        : tone === 'workbench'
-          ? CodeOutlined
-          : ThunderboltOutlined;
+      : tone === 'workbench'
+        ? CodeOutlined
+        : ThunderboltOutlined;
 
   return (
     <Card
@@ -1048,15 +919,9 @@ function LayerStateCard({
   const { t } = useTranslation();
   const palette = toneStyles[layer.tone];
   const IconGlyph =
-    layer.tone === 'agents'
-      ? BranchesOutlined
-      : layer.tone === 'ai'
+    layer.tone === 'ai'
       ? ApiOutlined
-      : layer.tone === 'video'
-        ? VideoCameraOutlined
-      : layer.tone === 'image'
-        ? PictureOutlined
-        : CodeOutlined;
+      : CodeOutlined;
 
   return (
     <Card
@@ -1425,15 +1290,9 @@ function SignalPill({
   const capsuleBg =
     tone === 'core'
       ? 'rgba(31, 159, 141, 0.18)'
-      : tone === 'agents'
-        ? 'rgba(77, 163, 255, 0.18)'
       : tone === 'ai'
         ? 'rgba(214, 138, 72, 0.18)'
-      : tone === 'image'
-          ? 'rgba(200, 92, 255, 0.18)'
-        : tone === 'video'
-          ? 'rgba(200, 92, 255, 0.18)'
-        : tone === 'workbench'
+      : tone === 'workbench'
           ? 'rgba(90, 143, 201, 0.18)'
           : 'rgba(245, 251, 248, 0.14)';
   const capsuleBorder =

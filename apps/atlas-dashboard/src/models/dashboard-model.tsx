@@ -10,9 +10,6 @@ export function createDashboardViewModel(
   t: TFunction
 ): DashboardViewModel {
   const aiLlmEnabled = config.features.aiLlmEnabled;
-  const aiAgentsEnabled = config.features.aiAgentsEnabled;
-  const aiImageEnabled = config.features.aiImageEnabled;
-  const aiVideoEnabled = config.features.aiVideoEnabled;
   const workbenchEnabled = config.features.workbenchEnabled;
 
   const credentialLabels = {
@@ -27,19 +24,12 @@ export function createDashboardViewModel(
     endpoint: t('credentials.endpoint'),
     gatewayPassword: t('credentials.gatewayPassword'),
     gatewayUser: t('credentials.gatewayUser'),
-    ltxModel: t('credentials.ltxModel'),
-    model: t('credentials.model'),
-    modelRevision: t('credentials.modelRevision'),
-    ownerBootstrap: t('credentials.ownerBootstrap'),
-    ownerEmail: t('credentials.ownerEmail'),
-    ownerPassword: t('credentials.ownerPassword'),
     password: t('credentials.password'),
     rootEmail: t('credentials.rootEmail'),
     rootName: t('credentials.rootName'),
     rootPassword: t('credentials.rootPassword'),
     rootUser: t('credentials.rootUser'),
     superuser: t('credentials.superuser'),
-    wanModel: t('credentials.wanModel'),
     usage: t('credentials.usage')
   };
 
@@ -47,90 +37,12 @@ export function createDashboardViewModel(
     accessNotes: [
       t('dashboard.accessNotes.credentials'),
       t('dashboard.accessNotes.https'),
-      t(
-        aiAgentsEnabled
-          ? 'dashboard.accessNotes.agentsEnabled'
-          : 'dashboard.accessNotes.agentsDisabled'
-      ),
       t(aiLlmEnabled ? 'dashboard.accessNotes.aiEnabled' : 'dashboard.accessNotes.aiDisabled'),
-      t(
-        aiImageEnabled
-          ? 'dashboard.accessNotes.imageEnabled'
-          : 'dashboard.accessNotes.imageDisabled'
-      ),
-      t(
-        aiVideoEnabled
-          ? 'dashboard.accessNotes.videoEnabled'
-          : 'dashboard.accessNotes.videoDisabled'
-      ),
       t(
         workbenchEnabled
           ? 'dashboard.accessNotes.workbenchEnabled'
           : 'dashboard.accessNotes.workbenchDisabled'
       )
-    ],
-    agentsLayer: {
-      activationCommand: 'atlas-lab up --with-ai-agents',
-      capabilities: [
-        {
-          icon: 'workflow',
-          label: t('dashboard.agentsLayer.capabilities.n8n')
-        },
-        {
-          icon: 'route',
-          label: t('dashboard.agentsLayer.capabilities.webhooks')
-        },
-        {
-          icon: 'spark',
-          label: t('dashboard.agentsLayer.capabilities.runners')
-        }
-      ],
-      description: t('dashboard.agentsLayer.description'),
-      enabled: aiAgentsEnabled,
-      summary: t(
-        aiAgentsEnabled
-          ? 'dashboard.agentsLayer.summaryEnabled'
-          : 'dashboard.agentsLayer.summaryDisabled'
-      ),
-      title: t('dashboard.agentsLayer.title'),
-      tone: 'agents'
-    },
-    agentServices: [
-      {
-        action: {
-          href: config.services.n8n.url,
-          label: t('dashboard.agentServices.n8n.action')
-        },
-        credentials: [
-          {
-            label: credentialLabels.endpoint,
-            value: config.services.n8n.url
-          },
-          {
-            label: credentialLabels.accessMode,
-            value: t('values.directAppLogin')
-          },
-          {
-            label: credentialLabels.ownerBootstrap,
-            value: config.services.n8n.ownerName
-          },
-          {
-            label: credentialLabels.ownerEmail,
-            value: config.services.n8n.ownerEmail
-          },
-          {
-            label: credentialLabels.ownerPassword,
-            value: config.services.n8n.ownerPassword
-          }
-        ],
-        description: t('dashboard.agentServices.n8n.description'),
-        icon: 'workflow',
-        id: 'n8n',
-        note: t('dashboard.agentServices.n8n.note'),
-        status: t('values.workflowControl'),
-        title: t('dashboard.agentServices.n8n.title'),
-        tone: 'agents'
-      }
     ],
     aiLayer: {
       activationCommand: 'atlas-lab up --with-ai-llm',
@@ -220,142 +132,6 @@ export function createDashboardViewModel(
         tone: 'ai'
       }
     ],
-    imageLayer: {
-      activationCommand: 'atlas-lab up --with-ai-image',
-      capabilities: [
-        {
-          icon: 'image',
-          label: t('dashboard.imageLayer.capabilities.invokeAi')
-        },
-        {
-          icon: 'spark',
-          label: t('dashboard.imageLayer.capabilities.models')
-        },
-        {
-          icon: 'secure',
-          label: t('dashboard.imageLayer.capabilities.gateway')
-        }
-      ],
-      description: t('dashboard.imageLayer.description'),
-      enabled: aiImageEnabled,
-      summary: t(
-        aiImageEnabled
-          ? 'dashboard.imageLayer.summaryEnabled'
-          : 'dashboard.imageLayer.summaryDisabled'
-      ),
-      title: t('dashboard.imageLayer.title'),
-      tone: 'image'
-    },
-    imageServices: [
-      {
-        action: {
-          href: config.services.invokeAi.url,
-          label: t('dashboard.imageServices.invokeAi.action')
-        },
-        briefing: {
-          path: config.services.invokeAi.briefingPath,
-          title: t('dashboard.imageServices.invokeAi.title')
-        },
-        credentials: [
-          {
-            label: credentialLabels.endpoint,
-            value: config.services.invokeAi.url
-          },
-          {
-            label: credentialLabels.gatewayUser,
-            value: config.services.invokeAi.gatewayUser
-          },
-          {
-            label: credentialLabels.gatewayPassword,
-            value: config.services.invokeAi.gatewayPassword
-          },
-          {
-            label: credentialLabels.model,
-            value: config.services.invokeAi.modelTitle
-          },
-          {
-            label: credentialLabels.modelRevision,
-            value: config.services.invokeAi.modelRevision
-          }
-        ],
-        description: t('dashboard.imageServices.invokeAi.description'),
-        icon: 'image',
-        id: 'invokeai',
-        note: t('dashboard.imageServices.invokeAi.note', {
-          modelRepo: config.services.invokeAi.modelRepo
-        }),
-        status: t('values.imageStudio'),
-        title: t('dashboard.imageServices.invokeAi.title'),
-        tone: 'image'
-      }
-    ],
-    videoLayer: {
-      activationCommand: 'atlas-lab up --with-ai-video',
-      capabilities: [
-        {
-          icon: 'video',
-          label: t('dashboard.videoLayer.capabilities.comfyUi')
-        },
-        {
-          icon: 'spark',
-          label: t('dashboard.videoLayer.capabilities.ltxVideo')
-        },
-        {
-          icon: 'workflow',
-          label: t('dashboard.videoLayer.capabilities.wanVideo')
-        }
-      ],
-      description: t('dashboard.videoLayer.description'),
-      enabled: aiVideoEnabled,
-      summary: t(
-        aiVideoEnabled
-          ? 'dashboard.videoLayer.summaryEnabled'
-          : 'dashboard.videoLayer.summaryDisabled'
-      ),
-      title: t('dashboard.videoLayer.title'),
-      tone: 'video'
-    },
-    videoServices: [
-      {
-        action: {
-          href: config.services.comfyUi.url,
-          label: t('dashboard.videoServices.comfyUi.action')
-        },
-        briefing: {
-          path: config.services.comfyUi.briefingPath,
-          title: t('dashboard.videoServices.comfyUi.title')
-        },
-        credentials: [
-          {
-            label: credentialLabels.endpoint,
-            value: config.services.comfyUi.url
-          },
-          {
-            label: credentialLabels.gatewayUser,
-            value: config.services.comfyUi.gatewayUser
-          },
-          {
-            label: credentialLabels.gatewayPassword,
-            value: config.services.comfyUi.gatewayPassword
-          },
-          {
-            label: credentialLabels.ltxModel,
-            value: config.services.comfyUi.ltxModelTitle
-          },
-          {
-            label: credentialLabels.wanModel,
-            value: config.services.comfyUi.wanModelTitle
-          }
-        ],
-        description: t('dashboard.videoServices.comfyUi.description'),
-        icon: 'video',
-        id: 'comfyui',
-        note: t('dashboard.videoServices.comfyUi.note'),
-        status: t('values.videoStudio'),
-        title: t('dashboard.videoServices.comfyUi.title'),
-        tone: 'video'
-      }
-    ],
     footerCards: [
       {
         body: t('dashboard.footerCards.routing.body', {
@@ -396,19 +172,6 @@ export function createDashboardViewModel(
         },
         {
           caption: t(
-            aiAgentsEnabled
-              ? 'dashboard.metrics.agentsEnabled.caption'
-              : 'dashboard.metrics.agentsDisabled.caption'
-          ),
-          label: t(
-            aiAgentsEnabled
-              ? 'dashboard.metrics.agentsEnabled.label'
-              : 'dashboard.metrics.agentsDisabled.label'
-          ),
-          value: aiAgentsEnabled ? 1 : 0
-        },
-        {
-          caption: t(
             aiLlmEnabled
               ? 'dashboard.metrics.aiEnabled.caption'
               : 'dashboard.metrics.aiDisabled.caption'
@@ -422,32 +185,6 @@ export function createDashboardViewModel(
         },
         {
           caption: t(
-            aiImageEnabled
-              ? 'dashboard.metrics.imageEnabled.caption'
-              : 'dashboard.metrics.imageDisabled.caption'
-          ),
-          label: t(
-            aiImageEnabled
-              ? 'dashboard.metrics.imageEnabled.label'
-              : 'dashboard.metrics.imageDisabled.label'
-          ),
-          value: aiImageEnabled ? 1 : 0
-        },
-        {
-          caption: t(
-            aiVideoEnabled
-              ? 'dashboard.metrics.videoEnabled.caption'
-              : 'dashboard.metrics.videoDisabled.caption'
-          ),
-          label: t(
-            aiVideoEnabled
-              ? 'dashboard.metrics.videoEnabled.label'
-              : 'dashboard.metrics.videoDisabled.label'
-          ),
-          value: aiVideoEnabled ? 1 : 0
-        },
-        {
-          caption: t(
             workbenchEnabled
               ? 'dashboard.metrics.workbenchEnabled.caption'
               : 'dashboard.metrics.workbenchDisabled.caption'
@@ -457,18 +194,12 @@ export function createDashboardViewModel(
               ? 'dashboard.metrics.workbenchEnabled.label'
               : 'dashboard.metrics.workbenchDisabled.label'
           ),
-          value: workbenchEnabled ? 5 : 0
+          value: workbenchEnabled ? 3 : 0
         },
         {
           caption: t('dashboard.metrics.ingress.caption'),
           label: t('dashboard.metrics.ingress.label'),
-          value:
-            1 +
-            (aiAgentsEnabled ? 1 : 0) +
-            (aiLlmEnabled ? 1 : 0) +
-            (aiImageEnabled ? 1 : 0) +
-            (aiVideoEnabled ? 1 : 0) +
-            (workbenchEnabled ? 1 : 0)
+          value: 1 + (aiLlmEnabled ? 1 : 0) + (workbenchEnabled ? 1 : 0)
         }
       ],
       pills: [
@@ -497,15 +228,6 @@ export function createDashboardViewModel(
           tone: 'core'
         },
         {
-          icon: aiAgentsEnabled ? 'workflow' : 'certificate',
-          label: t(
-            aiAgentsEnabled
-              ? 'dashboard.hero.pills.agentsActive'
-              : 'dashboard.hero.pills.agentsOptional'
-          ),
-          tone: 'agents'
-        },
-        {
           icon: aiLlmEnabled ? 'spark' : 'certificate',
           label: t(
             aiLlmEnabled
@@ -513,24 +235,6 @@ export function createDashboardViewModel(
               : 'dashboard.hero.pills.aiOptional'
           ),
           tone: 'ai'
-        },
-        {
-          icon: aiImageEnabled ? 'image' : 'certificate',
-          label: t(
-            aiImageEnabled
-              ? 'dashboard.hero.pills.imageActive'
-              : 'dashboard.hero.pills.imageOptional'
-          ),
-          tone: 'image'
-        },
-        {
-          icon: aiVideoEnabled ? 'video' : 'certificate',
-          label: t(
-            aiVideoEnabled
-              ? 'dashboard.hero.pills.videoActive'
-              : 'dashboard.hero.pills.videoOptional'
-          ),
-          tone: 'video'
         },
         {
           icon: workbenchEnabled ? 'terminal' : 'certificate',
@@ -571,10 +275,7 @@ export function createDashboardViewModel(
     },
     operatingCharter: [
       t('dashboard.operatingCharter.gitea'),
-      t('dashboard.operatingCharter.agents'),
       t('dashboard.operatingCharter.ai'),
-      t('dashboard.operatingCharter.image'),
-      t('dashboard.operatingCharter.video'),
       t('dashboard.operatingCharter.workbench')
     ],
     services: [
@@ -694,66 +395,6 @@ export function createDashboardViewModel(
         id: 'python',
         status: t('values.browserWorkspace'),
         title: t('dashboard.workbenches.python.title'),
-        tone: 'workbench'
-      },
-      {
-        action: {
-          href: config.workbenches.ai.url,
-          label: t('dashboard.workbenches.common.openWorkspace')
-        },
-        briefing: {
-          path: config.workbenches.ai.briefingPath,
-          title: t('dashboard.workbenches.ai.briefingTitle')
-        },
-        credentials: [
-          {
-            label: credentialLabels.endpoint,
-            value: config.workbenches.ai.url
-          },
-          {
-            label: credentialLabels.authMode,
-            value: t('values.password')
-          },
-          {
-            label: credentialLabels.rootPassword,
-            value: config.workbenches.ai.password
-          }
-        ],
-        description: t('dashboard.workbenches.ai.description'),
-        icon: 'ai',
-        id: 'ai',
-        status: t('values.browserWorkspace'),
-        title: t('dashboard.workbenches.ai.title'),
-        tone: 'workbench'
-      },
-      {
-        action: {
-          href: config.workbenches.cpp.url,
-          label: t('dashboard.workbenches.common.openWorkspace')
-        },
-        briefing: {
-          path: config.workbenches.cpp.briefingPath,
-          title: t('dashboard.workbenches.cpp.briefingTitle')
-        },
-        credentials: [
-          {
-            label: credentialLabels.endpoint,
-            value: config.workbenches.cpp.url
-          },
-          {
-            label: credentialLabels.authMode,
-            value: t('values.password')
-          },
-          {
-            label: credentialLabels.rootPassword,
-            value: config.workbenches.cpp.password
-          }
-        ],
-        description: t('dashboard.workbenches.cpp.description'),
-        icon: 'cpp',
-        id: 'cpp',
-        status: t('values.browserWorkspace'),
-        title: t('dashboard.workbenches.cpp.title'),
         tone: 'workbench'
       },
       {

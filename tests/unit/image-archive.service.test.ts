@@ -2,8 +2,8 @@ import { normalizeImageReference } from '../../src/services/compose-project.serv
 
 describe('image archive helpers', () => {
   it('adds :latest when a compose image reference does not include a tag', () => {
-    expect(normalizeImageReference('cli-node-docker-atlas-lab-n8n')).toBe(
-      'cli-node-docker-atlas-lab-n8n:latest'
+    expect(normalizeImageReference('cli-node-docker-atlas-lab-gitea')).toBe(
+      'cli-node-docker-atlas-lab-gitea:latest'
     );
   });
 
