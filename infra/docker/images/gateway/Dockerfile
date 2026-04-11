@@ -1,4 +1,4 @@
-ARG CADDY_VERSION=2.10.2-alpine
+ARG CADDY_VERSION=2.11.2-alpine
 
 FROM node:22-alpine AS atlas_dashboard_builder
 

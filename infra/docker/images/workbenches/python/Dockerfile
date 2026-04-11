@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=ghcr.io/coder/code-server:4.109.5
+ARG BASE_IMAGE=ghcr.io/coder/code-server:4.115.0
 FROM ${BASE_IMAGE}
 
 USER root
