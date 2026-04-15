@@ -1,6 +1,6 @@
 # Atlas Lab 🚀
 
-![Version](https://img.shields.io/badge/version-0.36.4-blue.svg)
+![Version](https://img.shields.io/badge/version-0.37.2-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-22c55e.svg)
 ![Docker Compose](https://img.shields.io/badge/Docker%20Compose-v2-2496ED?logo=docker&logoColor=white)
 ![Gateway](https://img.shields.io/badge/Gateway-Caddy-1F2937?logo=caddy&logoColor=white)
