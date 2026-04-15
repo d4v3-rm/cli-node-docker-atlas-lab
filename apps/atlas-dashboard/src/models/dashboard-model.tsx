@@ -331,6 +331,72 @@ export function createDashboardViewModel(
         status: t('values.alwaysOnForge'),
         title: t('dashboard.services.gitea.title'),
         tone: 'core'
+      },
+      {
+        action: {
+          href: 'https://plane.so/',
+          label: t('dashboard.services.plane.action')
+        },
+        credentials: [
+          {
+            label: credentialLabels.endpoint,
+            value: 'https://plane.so/'
+          },
+          {
+            label: credentialLabels.usage,
+            value: t('dashboard.services.plane.usage')
+          }
+        ],
+        description: t('dashboard.services.plane.description'),
+        icon: 'route',
+        id: 'plane',
+        status: t('values.projectHub'),
+        title: t('dashboard.services.plane.title'),
+        tone: 'core'
+      },
+      {
+        action: {
+          href: 'https://penpot.app/',
+          label: t('dashboard.services.penpot.action')
+        },
+        credentials: [
+          {
+            label: credentialLabels.endpoint,
+            value: 'https://penpot.app/'
+          },
+          {
+            label: credentialLabels.usage,
+            value: t('dashboard.services.penpot.usage')
+          }
+        ],
+        description: t('dashboard.services.penpot.description'),
+        icon: 'host',
+        id: 'penpot',
+        status: t('values.designCollaboration'),
+        title: t('dashboard.services.penpot.title'),
+        tone: 'core'
+      },
+      {
+        action: {
+          href: 'https://github.com/nextcloud/all-in-one?tab=readme-ov-file',
+          label: t('dashboard.services.nextcloudAio.action')
+        },
+        credentials: [
+          {
+            label: credentialLabels.endpoint,
+            value: 'https://github.com/nextcloud/all-in-one?tab=readme-ov-file'
+          },
+          {
+            label: credentialLabels.usage,
+            value: t('dashboard.services.nextcloudAio.usage')
+          }
+        ],
+        description: t('dashboard.services.nextcloudAio.description'),
+        icon: 'secure',
+        id: 'nextcloud-aio',
+        status: t('values.deploymentGuide'),
+        title: t('dashboard.services.nextcloudAio.title'),
+        tone: 'core'
       }
     ],
     workbenchLayer: {

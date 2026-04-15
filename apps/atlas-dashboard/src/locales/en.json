@@ -118,10 +118,13 @@
   "values": {
     "browserConsole": "browser console",
     "browserWorkspace": "browser workspace",
+    "deploymentGuide": "deployment guide",
+    "designCollaboration": "design collaboration",
     "directAppLogin": "direct app login",
     "imageStudio": "image studio",
     "localInferenceApi": "local inference API",
     "password": "password",
+    "projectHub": "project hub",
     "protectedApi": "protected API",
     "sharedDatabase": "shared database",
     "videoStudio": "video studio",
@@ -247,6 +250,24 @@
         "action": "Open Gitea",
         "description": "Internal Git forge for repositories, issues, review, and the lab's technical collaboration flow.",
         "title": "Gitea Forge"
+      },
+      "nextcloudAio": {
+        "action": "Open Nextcloud AIO",
+        "description": "Official Nextcloud installation method for easier deployment and maintenance, with an integrated stack and optional features such as Office, Talk, backups, and antivirus.",
+        "title": "Nextcloud All-in-One",
+        "usage": "self-hosted deployment"
+      },
+      "penpot": {
+        "action": "Open Penpot",
+        "description": "Open-source design platform for teams collaborating across design, code, and shared workflows in one place.",
+        "title": "Penpot",
+        "usage": "design and code collaboration"
+      },
+      "plane": {
+        "action": "Open Plane",
+        "description": "Project and knowledge management workspace for teams and agents, with cloud, self-hosted, and air-gapped options.",
+        "title": "Plane",
+        "usage": "project and knowledge management"
       }
     },
     "workbenchLayer": {
