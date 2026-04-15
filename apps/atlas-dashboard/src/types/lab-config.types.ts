@@ -24,6 +24,9 @@ export interface LabRuntimeConfig {
       rootUsername: string;
       url: string;
     };
+    plane: {
+      url: string;
+    };
     n8n?: {
       ownerEmail?: string;
       ownerName?: string;
@@ -33,6 +36,13 @@ export interface LabRuntimeConfig {
     ollama: {
       gatewayPassword: string;
       gatewayUser: string;
+      url: string;
+    };
+    penpot: {
+      url: string;
+    };
+    nextcloudAio: {
+      setupUrl: string;
       url: string;
     };
     openWebUi: {

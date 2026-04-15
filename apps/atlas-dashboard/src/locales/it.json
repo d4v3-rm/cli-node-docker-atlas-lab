@@ -111,6 +111,7 @@
     "rootName": "nome root",
     "rootPassword": "password root",
     "rootUser": "utente root",
+    "setupUrl": "URL setup",
     "superuser": "superuser",
     "wanModel": "modello wan",
     "usage": "uso"
@@ -120,10 +121,12 @@
     "browserWorkspace": "workspace browser",
     "deploymentGuide": "guida di deployment",
     "designCollaboration": "collaborazione design",
+    "directAppOnboarding": "onboarding diretto in app",
     "directAppLogin": "login diretto applicazione",
     "imageStudio": "studio immagini",
     "localInferenceApi": "API di inference locale",
     "password": "password",
+    "privateCloud": "cloud privato",
     "projectHub": "hub progetti",
     "protectedApi": "API protetta",
     "sharedDatabase": "database condiviso",
@@ -132,7 +135,7 @@
     "alwaysOnForge": "forge sempre accesa"
   },
   "dashboard": {
-    "coreLayerSummary": "Gitea resta il piano core sempre acceso del lab.",
+    "coreLayerSummary": "Gitea, Plane, Penpot e Nextcloud AIO formano il piano core sempre acceso del lab.",
     "accessNotes": {
       "aiDisabled": "Il layer AI non viene piu acceso di default: il deck lo marca come opzionale invece di fingere che sia online.",
       "aiEnabled": "Open WebUI e Ollama sono realmente online e raggiungibili sulle porte AI del gateway.",
@@ -183,7 +186,7 @@
         "label": "segmentazione"
       },
       "usage": {
-        "body": "Gitea e il piano core sempre acceso; AI, AI image, AI video e workbench vengono abilitati a layer solo quando servono davvero.",
+        "body": "Gitea, Plane, Penpot e Nextcloud AIO restano sempre attivi nel piano core; AI, AI image, AI video e workbench vengono abilitati a layer solo quando servono davvero.",
         "label": "uso"
       }
     },
@@ -205,7 +208,7 @@
         "networkMapDescription": "Leggi la topologia del lab e i piani di rete pubblicati.",
         "networkMapLabel": "Network map"
       },
-      "summary": "Control room unificata per repository, strumenti AI opzionali, generazione AI image, generazione AI video e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.",
+      "summary": "Control room unificata per repository, coordinamento progetti, collaborazione design, cloud privato, strumenti AI opzionali e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.",
       "titleLines": {
         "first": "LAB",
         "second": "ATLAS"
@@ -252,20 +255,21 @@
         "title": "Gitea Forge"
       },
       "nextcloudAio": {
-        "action": "Apri Nextcloud AIO",
-        "description": "Metodo ufficiale di installazione Nextcloud per deployment e manutenzione semplificati, con stack integrato e feature opzionali come Office, Talk, backup e antivirus.",
+        "action": "Apri setup UI",
+        "description": "Stack Nextcloud All-in-One self-hosted instradato dal gateway del lab. Espone l applicazione sul suo URL dedicato dopo il completamento del setup guidato AIO.",
+        "note": "Apri prima la setup UI. Dopo che AIO ha predisposto i container applicativi, l URL principale risponde sulla porta gateway dedicata.",
         "title": "Nextcloud All-in-One",
         "usage": "deployment self-hosted"
       },
       "penpot": {
         "action": "Apri Penpot",
-        "description": "Piattaforma open-source di design per team che collaborano su design, codice e workflow condivisi in un unico spazio.",
+        "description": "Workspace Penpot self-hosted per product design, librerie condivise e collaborazione tra design e codice.",
         "title": "Penpot",
         "usage": "design e code collaboration"
       },
       "plane": {
         "action": "Apri Plane",
-        "description": "Workspace di project management e knowledge management per team e agenti, con opzioni cloud, self-hosted e air-gapped.",
+        "description": "Workspace Plane self-hosted per issue tracking, planning, roadmap e coordinamento interno dei progetti.",
         "title": "Plane",
         "usage": "project e knowledge management"
       }

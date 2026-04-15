@@ -30,6 +30,7 @@ export function createDashboardViewModel(
     rootName: t('credentials.rootName'),
     rootPassword: t('credentials.rootPassword'),
     rootUser: t('credentials.rootUser'),
+    setupUrl: t('credentials.setupUrl'),
     superuser: t('credentials.superuser'),
     usage: t('credentials.usage')
   };
@@ -191,7 +192,7 @@ export function createDashboardViewModel(
         {
           caption: t('dashboard.metrics.core.caption'),
           label: t('dashboard.metrics.core.label'),
-          value: 1
+          value: 4
         },
         {
           caption: t(
@@ -222,7 +223,7 @@ export function createDashboardViewModel(
         {
           caption: t('dashboard.metrics.ingress.caption'),
           label: t('dashboard.metrics.ingress.label'),
-          value: 1 + (aiLlmEnabled ? 1 : 0) + (workbenchEnabled ? 1 : 0)
+          value: 6 + (aiLlmEnabled ? 2 : 0) + (workbenchEnabled ? 2 : 0)
         }
       ],
       pills: [
@@ -334,17 +335,17 @@ export function createDashboardViewModel(
       },
       {
         action: {
-          href: 'https://plane.so/',
+          href: config.services.plane.url,
           label: t('dashboard.services.plane.action')
         },
         credentials: [
           {
             label: credentialLabels.endpoint,
-            value: 'https://plane.so/'
+            value: config.services.plane.url
           },
           {
-            label: credentialLabels.usage,
-            value: t('dashboard.services.plane.usage')
+            label: credentialLabels.accessMode,
+            value: t('values.directAppOnboarding')
           }
         ],
         description: t('dashboard.services.plane.description'),
@@ -356,17 +357,17 @@ export function createDashboardViewModel(
       },
       {
         action: {
-          href: 'https://penpot.app/',
+          href: config.services.penpot.url,
           label: t('dashboard.services.penpot.action')
         },
         credentials: [
           {
             label: credentialLabels.endpoint,
-            value: 'https://penpot.app/'
+            value: config.services.penpot.url
           },
           {
-            label: credentialLabels.usage,
-            value: t('dashboard.services.penpot.usage')
+            label: credentialLabels.accessMode,
+            value: t('values.directAppOnboarding')
           }
         ],
         description: t('dashboard.services.penpot.description'),
@@ -378,23 +379,28 @@ export function createDashboardViewModel(
       },
       {
         action: {
-          href: 'https://github.com/nextcloud/all-in-one?tab=readme-ov-file',
+          href: config.services.nextcloudAio.setupUrl,
           label: t('dashboard.services.nextcloudAio.action')
         },
         credentials: [
           {
             label: credentialLabels.endpoint,
-            value: 'https://github.com/nextcloud/all-in-one?tab=readme-ov-file'
+            value: config.services.nextcloudAio.url
           },
           {
-            label: credentialLabels.usage,
-            value: t('dashboard.services.nextcloudAio.usage')
+            label: credentialLabels.setupUrl,
+            value: config.services.nextcloudAio.setupUrl
+          },
+          {
+            label: credentialLabels.accessMode,
+            value: t('values.guidedSetup')
           }
         ],
         description: t('dashboard.services.nextcloudAio.description'),
         icon: 'secure',
         id: 'nextcloud-aio',
-        status: t('values.deploymentGuide'),
+        note: t('dashboard.services.nextcloudAio.note'),
+        status: t('values.privateCloud'),
         title: t('dashboard.services.nextcloudAio.title'),
         tone: 'core'
       }
