@@ -24,6 +24,12 @@ export interface LabRuntimeConfig {
       rootUsername: string;
       url: string;
     };
+    n8n?: {
+      ownerEmail?: string;
+      ownerName?: string;
+      ownerPassword?: string;
+      url: string;
+    };
     ollama: {
       gatewayPassword: string;
       gatewayUser: string;

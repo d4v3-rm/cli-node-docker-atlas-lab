@@ -10,6 +10,7 @@ export function createDashboardViewModel(
   t: TFunction
 ): DashboardViewModel {
   const aiLlmEnabled = config.features.aiLlmEnabled;
+  const n8nUrl = config.services.n8n?.url ?? 'https://n8n.io/';
   const workbenchEnabled = config.features.workbenchEnabled;
 
   const credentialLabels = {
@@ -129,6 +130,28 @@ export function createDashboardViewModel(
         id: 'ollama',
         status: t('values.protectedApi'),
         title: t('dashboard.aiServices.ollama.title'),
+        tone: 'ai'
+      },
+      {
+        action: {
+          href: n8nUrl,
+          label: t('dashboard.aiServices.n8n.action')
+        },
+        credentials: [
+          {
+            label: credentialLabels.endpoint,
+            value: n8nUrl
+          },
+          {
+            label: credentialLabels.usage,
+            value: t('values.workflowControl')
+          }
+        ],
+        description: t('dashboard.aiServices.n8n.description'),
+        icon: 'workflow',
+        id: 'n8n',
+        status: t('values.workflowControl'),
+        title: t('dashboard.aiServices.n8n.title'),
         tone: 'ai'
       }
     ],
