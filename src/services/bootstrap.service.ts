@@ -2,7 +2,7 @@ import { Listr } from 'listr2';
 import pWaitFor from 'p-wait-for';
 import { createComposeCommandArgs, type ComposeLayerSelection } from '../lib/compose.js';
 import type { BootstrapCommandOptions } from '../types/cli.types.js';
-import type { ProjectContext } from '../types/project.types.js';
+import type { AiLlmBootstrapEnv, ProjectContext } from '../types/project.types.js';
 import { ensureGiteaAdmin } from './gitea-admin.service.js';
 import { ensurePenpotAdmin } from './penpot-admin.service.js';
 import { ensurePlaneAdmin, waitForPlaneBootstrapPrerequisites } from './plane-admin.service.js';
@@ -10,6 +10,7 @@ import { printCommandHeader } from '../ui/banner.js';
 import { formatTaskTitle, printInfo, printSuccess } from '../ui/logger.js';
 import { runCommand } from '../utils/process.js';
 import { parseAiLlmBootstrapEnv, parseBootstrapEnv } from './project.service.js';
+import { collectConfiguredOllamaModels } from '../utils/model-lists.js';
 
 const VERBOSE_TASK_RENDERER = 'verbose' as const;
 
@@ -81,7 +82,7 @@ export function createBootstrapTasks(
     tasks.push({
       title: formatTaskTitle('bootstrap', 'Align Ollama runtime models'),
       task: async () => {
-        const result = await ensureOllamaModels(context);
+        const result = await ensureOllamaModels(context, aiLlmEnv);
         printInfo(`Ollama runtime models ${result}.`, 'bootstrap');
       }
     });
@@ -93,11 +94,26 @@ export function createBootstrapTasks(
  * Waits for Ollama and ensures the configured runtime models are present locally.
  */
 async function ensureOllamaModels(
-  context: ProjectContext
+  context: ProjectContext,
+  env: AiLlmBootstrapEnv
 ): Promise<'present' | 'pulled'> {
   await waitForService(context, 'ollama', 180, { includeAiLlm: true });
 
-  const syncResult = await runCommand(
+  const configuredModels = collectConfiguredOllamaModels(env);
+  const missingModels = await listMissingOllamaModels(context, configuredModels);
+
+  if (missingModels.length === 0) {
+    printInfo('All configured Ollama models are already available locally.', 'bootstrap');
+    return 'present';
+  }
+
+  printInfo(
+    `Syncing ${missingModels.length} missing Ollama model${missingModels.length === 1 ? '' : 's'}: ${missingModels.join(', ')}`,
+    'bootstrap'
+  );
+  printInfo('Large Ollama models can take a long time to download; progress will stream below.', 'bootstrap');
+
+  await runCommand(
     'docker',
     createComposeCommandArgs(context, [
       'exec',
@@ -108,24 +124,42 @@ async function ensureOllamaModels(
     ], { includeAiLlm: true }),
     {
       cwd: context.projectRoot,
-      captureOutput: true,
       scope: 'bootstrap'
     }
   );
 
-  const lines = syncResult.stdout
-    .split(/\r?\n/u)
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0);
+  return 'pulled';
+}
 
-  for (const line of lines) {
-    if (!line.startsWith('ATLAS_OLLAMA_MODEL_SYNC_RESULT=')) {
-      printInfo(line, 'bootstrap');
+/**
+ * Lists the configured Ollama models that are still missing locally inside the container.
+ */
+async function listMissingOllamaModels(
+  context: ProjectContext,
+  configuredModels: string[]
+): Promise<string[]> {
+  const missingModels: string[] = [];
+
+  for (const modelName of configuredModels) {
+    const inspectResult = await runCommand(
+      'docker',
+      createComposeCommandArgs(context, ['exec', '-T', 'ollama', 'ollama', 'show', modelName], {
+        includeAiLlm: true
+      }),
+      {
+        allowFailure: true,
+        captureOutput: true,
+        cwd: context.projectRoot,
+        scope: 'bootstrap'
+      }
+    );
+
+    if (inspectResult.exitCode !== 0) {
+      missingModels.push(modelName);
     }
   }
 
-  const resultLine = lines.find((line) => line.startsWith('ATLAS_OLLAMA_MODEL_SYNC_RESULT='));
-  return resultLine?.endsWith('pulled') ? 'pulled' : 'present';
+  return missingModels;
 }
 
 /**
