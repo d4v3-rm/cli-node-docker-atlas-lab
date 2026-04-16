@@ -35,6 +35,12 @@ export interface LabEnv {
   NEXTCLOUD_AIO_SETUP_URL?: string;
   OLLAMA_GATEWAY_USER?: string;
   OLLAMA_GATEWAY_PASSWORD?: string;
+  ATLAS_DOCKER_HUB_MIRRORS?: string;
+  ATLAS_REGISTRY_PROXIES?: string;
+  CADDY_VERSION?: string;
+  OLLAMA_VERSION?: string;
+  NODE_DEV_BASE_IMAGE?: string;
+  PYTHON_DEV_BASE_IMAGE?: string;
 }
 
 /**

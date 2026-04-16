@@ -5,7 +5,7 @@ import type { BootstrapCommandOptions } from '../types/cli.types.js';
 import type { ProjectContext } from '../types/project.types.js';
 import { ensureGiteaAdmin } from './gitea-admin.service.js';
 import { ensurePenpotAdmin } from './penpot-admin.service.js';
-import { ensurePlaneAdmin } from './plane-admin.service.js';
+import { ensurePlaneAdmin, waitForPlaneBootstrapPrerequisites } from './plane-admin.service.js';
 import { printCommandHeader } from '../ui/banner.js';
 import { formatTaskTitle, printInfo, printSuccess } from '../ui/logger.js';
 import { runCommand } from '../utils/process.js';
@@ -62,6 +62,7 @@ export function createBootstrapTasks(
     title: formatTaskTitle('bootstrap', 'Align Plane instance admin'),
     task: async () => {
       await waitForService(context, 'plane-api');
+      await waitForPlaneBootstrapPrerequisites(context);
       const result = await ensurePlaneAdmin(context, env);
       printInfo(`Plane instance admin ${result}.`, 'bootstrap');
     }

@@ -216,10 +216,16 @@ services:
     environment:
       <<: [*plane-app-env, *plane-db-env, *plane-redis-env, *plane-mq-env, *plane-s3-env]
     depends_on:
-      - plane-db
-      - plane-redis
-      - plane-mq
-      - plane-minio
+      plane-db:
+        condition: service_healthy
+      plane-redis:
+        condition: service_started
+      plane-mq:
+        condition: service_started
+      plane-minio:
+        condition: service_started
+      plane-migrator:
+        condition: service_completed_successfully
     volumes:
       - plane-api-logs:/code/plane/logs
     networks:
@@ -236,11 +242,18 @@ services:
     environment:
       <<: [*plane-app-env, *plane-db-env, *plane-redis-env, *plane-mq-env, *plane-s3-env]
     depends_on:
-      - plane-api
-      - plane-db
-      - plane-redis
-      - plane-mq
-      - plane-minio
+      plane-api:
+        condition: service_started
+      plane-db:
+        condition: service_healthy
+      plane-redis:
+        condition: service_started
+      plane-mq:
+        condition: service_started
+      plane-minio:
+        condition: service_started
+      plane-migrator:
+        condition: service_completed_successfully
     volumes:
       - plane-worker-logs:/code/plane/logs
     networks:
@@ -255,11 +268,18 @@ services:
     environment:
       <<: [*plane-app-env, *plane-db-env, *plane-redis-env, *plane-mq-env, *plane-s3-env]
     depends_on:
-      - plane-api
-      - plane-db
-      - plane-redis
-      - plane-mq
-      - plane-minio
+      plane-api:
+        condition: service_started
+      plane-db:
+        condition: service_healthy
+      plane-redis:
+        condition: service_started
+      plane-mq:
+        condition: service_started
+      plane-minio:
+        condition: service_started
+      plane-migrator:
+        condition: service_completed_successfully
     volumes:
       - plane-beat-logs:/code/plane/logs
     networks:
@@ -274,8 +294,10 @@ services:
     environment:
       <<: [*plane-app-env, *plane-db-env, *plane-redis-env, *plane-mq-env, *plane-s3-env]
     depends_on:
-      - plane-db
-      - plane-redis
+      plane-db:
+        condition: service_healthy
+      plane-redis:
+        condition: service_started
     volumes:
       - plane-migrator-logs:/code/plane/logs
     networks:

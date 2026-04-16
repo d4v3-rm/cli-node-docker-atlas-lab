@@ -9,6 +9,7 @@ import { printCommandHeader } from '../ui/banner.js';
 import { formatTaskTitle, printInfo, printSuccess } from '../ui/logger.js';
 import { runCommand } from '../utils/process.js';
 import { createBootstrapTasks } from './bootstrap.service.js';
+import { ensureStartupImagesAvailable } from './docker-image-prefetch.service.js';
 
 const LEGACY_IMAGES = [
   'cli-node-lab-ollama-init:latest',
@@ -55,6 +56,12 @@ export async function runUpCommand(
         }
       },
       {
+        title: formatTaskTitle('stack', 'Prepare required Docker images'),
+        task: async () => {
+          await ensureStartupImagesAvailable(context, options);
+        }
+      },
+      {
         title: formatTaskTitle('stack', 'Start Docker Compose stack'),
         task: async () => {
           printInfo('Starting Docker Compose services in detached mode.', 'stack');
@@ -72,7 +79,7 @@ export async function runUpCommand(
           new Listr(
             createBootstrapTasks(context, {
               skipGitea: false,
-              skipOllama: !options.withAiLlm,
+              skipOllama: Boolean(options.skipOllama) || !options.withAiLlm,
               withAiLlm: Boolean(options.withAiLlm)
             }),
             {
