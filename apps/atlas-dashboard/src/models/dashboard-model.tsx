@@ -10,6 +10,7 @@ export function createDashboardViewModel(
   t: TFunction
 ): DashboardViewModel {
   const aiLlmEnabled = config.features.aiLlmEnabled;
+  const n8nUrl = config.services.n8n?.url ?? 'https://n8n.io/';
   const workbenchEnabled = config.features.workbenchEnabled;
 
   const credentialLabels = {
@@ -29,6 +30,7 @@ export function createDashboardViewModel(
     rootName: t('credentials.rootName'),
     rootPassword: t('credentials.rootPassword'),
     rootUser: t('credentials.rootUser'),
+    setupUrl: t('credentials.setupUrl'),
     superuser: t('credentials.superuser'),
     usage: t('credentials.usage')
   };
@@ -130,6 +132,28 @@ export function createDashboardViewModel(
         status: t('values.protectedApi'),
         title: t('dashboard.aiServices.ollama.title'),
         tone: 'ai'
+      },
+      {
+        action: {
+          href: n8nUrl,
+          label: t('dashboard.aiServices.n8n.action')
+        },
+        credentials: [
+          {
+            label: credentialLabels.endpoint,
+            value: n8nUrl
+          },
+          {
+            label: credentialLabels.usage,
+            value: t('values.workflowControl')
+          }
+        ],
+        description: t('dashboard.aiServices.n8n.description'),
+        icon: 'workflow',
+        id: 'n8n',
+        status: t('values.workflowControl'),
+        title: t('dashboard.aiServices.n8n.title'),
+        tone: 'ai'
       }
     ],
     footerCards: [
@@ -168,7 +192,7 @@ export function createDashboardViewModel(
         {
           caption: t('dashboard.metrics.core.caption'),
           label: t('dashboard.metrics.core.label'),
-          value: 1
+          value: 4
         },
         {
           caption: t(
@@ -199,7 +223,7 @@ export function createDashboardViewModel(
         {
           caption: t('dashboard.metrics.ingress.caption'),
           label: t('dashboard.metrics.ingress.label'),
-          value: 1 + (aiLlmEnabled ? 1 : 0) + (workbenchEnabled ? 1 : 0)
+          value: 6 + (aiLlmEnabled ? 2 : 0) + (workbenchEnabled ? 2 : 0)
         }
       ],
       pills: [
@@ -307,6 +331,109 @@ export function createDashboardViewModel(
         id: 'gitea',
         status: t('values.alwaysOnForge'),
         title: t('dashboard.services.gitea.title'),
+        tone: 'core'
+      },
+      {
+        action: {
+          href: config.services.plane.url,
+          label: t('dashboard.services.plane.action')
+        },
+        credentials: [
+          {
+            label: credentialLabels.endpoint,
+            value: config.services.plane.url
+          },
+          {
+            label: credentialLabels.rootName,
+            value: config.services.plane.rootName
+          },
+          {
+            label: credentialLabels.rootEmail,
+            value: config.services.plane.rootEmail
+          },
+          {
+            label: credentialLabels.password,
+            value: config.services.plane.rootPassword
+          },
+          {
+            label: credentialLabels.accessMode,
+            value: t('values.directAppLogin')
+          }
+        ],
+        description: t('dashboard.services.plane.description'),
+        icon: 'route',
+        id: 'plane',
+        status: t('values.projectHub'),
+        title: t('dashboard.services.plane.title'),
+        tone: 'core'
+      },
+      {
+        action: {
+          href: config.services.penpot.url,
+          label: t('dashboard.services.penpot.action')
+        },
+        credentials: [
+          {
+            label: credentialLabels.endpoint,
+            value: config.services.penpot.url
+          },
+          {
+            label: credentialLabels.rootName,
+            value: config.services.penpot.rootName
+          },
+          {
+            label: credentialLabels.rootEmail,
+            value: config.services.penpot.rootEmail
+          },
+          {
+            label: credentialLabels.password,
+            value: config.services.penpot.rootPassword
+          },
+          {
+            label: credentialLabels.accessMode,
+            value: t('values.directAppLogin')
+          }
+        ],
+        description: t('dashboard.services.penpot.description'),
+        icon: 'host',
+        id: 'penpot',
+        status: t('values.designCollaboration'),
+        title: t('dashboard.services.penpot.title'),
+        tone: 'core'
+      },
+      {
+        action: {
+          href: config.services.nextcloudAio.setupUrl,
+          label: t('dashboard.services.nextcloudAio.action')
+        },
+        credentials: [
+          {
+            label: credentialLabels.endpoint,
+            value: config.services.nextcloudAio.url
+          },
+          {
+            label: credentialLabels.setupUrl,
+            value: config.services.nextcloudAio.setupUrl
+          },
+          {
+            label: credentialLabels.rootUser,
+            value: config.services.nextcloudAio.rootUsername
+          },
+          {
+            label: credentialLabels.password,
+            value: config.services.nextcloudAio.rootPassword
+          },
+          {
+            label: credentialLabels.accessMode,
+            value: t('values.guidedSetup')
+          }
+        ],
+        description: t('dashboard.services.nextcloudAio.description'),
+        icon: 'secure',
+        id: 'nextcloud-aio',
+        note: t('dashboard.services.nextcloudAio.note'),
+        status: t('values.privateCloud'),
+        title: t('dashboard.services.nextcloudAio.title'),
         tone: 'core'
       }
     ],

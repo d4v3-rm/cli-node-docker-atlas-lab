@@ -34,10 +34,10 @@
     "operatingDoctrineTitle": "How the lab is designed"
   },
   "sections": {
-    "aiBodyDisabled": "The AI LLM layer remains optional. When it is off, the dashboard shows the exact command required to enable it.",
-    "aiBodyEnabled": "The AI LLM layer is online: the dashboard takes you into Open WebUI or the Ollama APIs with credentials and operating context always visible.",
+    "aiBodyDisabled": "The AI layer remains optional. When it is off, the dashboard shows the exact command required to enable it.",
+    "aiBodyEnabled": "The AI layer is online: the dashboard takes you into Open WebUI, the Ollama APIs, and also includes n8n in the same section.",
     "aiKicker": "optional plane",
-    "aiTitle": "AI LLM Layer",
+    "aiTitle": "AI",
     "footerBody": "Four quick signals on routing, persistence, recommended usage, and layer segmentation.",
     "footerKicker": "atlas signals",
     "footerTitle": "Operational closeout",
@@ -62,7 +62,7 @@
   "cards": {
     "openBriefing": "Open briefing",
     "tones": {
-      "ai": "AI LLM",
+      "ai": "AI",
       "core": "Core",
       "neutral": "Neutral",
       "workbench": "Workbench"
@@ -111,6 +111,7 @@
     "rootName": "root name",
     "rootPassword": "root password",
     "rootUser": "root user",
+    "setupUrl": "setup URL",
     "superuser": "superuser",
     "wanModel": "wan model",
     "usage": "usage"
@@ -118,10 +119,16 @@
   "values": {
     "browserConsole": "browser console",
     "browserWorkspace": "browser workspace",
+    "deploymentGuide": "deployment guide",
+    "designCollaboration": "design collaboration",
+    "directAppOnboarding": "direct app onboarding",
     "directAppLogin": "direct app login",
+    "guidedSetup": "guided setup",
     "imageStudio": "image studio",
     "localInferenceApi": "local inference API",
     "password": "password",
+    "privateCloud": "private cloud",
+    "projectHub": "project hub",
     "protectedApi": "protected API",
     "sharedDatabase": "shared database",
     "videoStudio": "video studio",
@@ -129,10 +136,10 @@
     "alwaysOnForge": "always-on forge"
   },
   "dashboard": {
-    "coreLayerSummary": "Gitea remains the always-on core plane of the lab.",
+    "coreLayerSummary": "Gitea, Plane, Penpot, and Nextcloud AIO form the always-on core plane of the lab.",
     "accessNotes": {
-      "aiDisabled": "The AI LLM layer no longer starts by default: the deck marks it as optional instead of pretending that it is online.",
-      "aiEnabled": "Open WebUI and Ollama are really online and reachable on the AI LLM gateway ports.",
+      "aiDisabled": "The AI layer no longer starts by default: the deck marks it as optional instead of pretending that it is online.",
+      "aiEnabled": "Open WebUI and Ollama are really online and reachable on the AI gateway ports.",
       "credentials": "Operational credentials are exposed here and remain aligned with the lab bootstrap.",
       "https": "All browser ingresses use localhost with dedicated HTTPS, without custom DNS or hosts-file edits.",
       "workbenchDisabled": "Workbench and Postgres stay separated from the core operating plane until you enable the dedicated layer.",
@@ -144,12 +151,17 @@
         "ollama": "Protected Ollama API",
         "openWebUi": "Local Open WebUI"
       },
-      "description": "Optional AI LLM layer for local conversational workflows and GPU-backed LLM inference. The deck enables it only when you explicitly request it.",
-      "summaryDisabled": "AI LLM layer is off. No LLM service is started or exposed until you enable the dedicated flag.",
-      "summaryEnabled": "Open WebUI and Ollama are active and served through the AI LLM gateway.",
-      "title": "AI LLM Layer"
+      "description": "Optional AI layer for local conversational workflows and GPU-backed LLM inference. The deck enables it only when you explicitly request it.",
+      "summaryDisabled": "The AI layer is off. No AI service is started or exposed until you enable the dedicated flag.",
+      "summaryEnabled": "Open WebUI and Ollama are active and served through the AI gateway.",
+      "title": "AI"
     },
     "aiServices": {
+      "n8n": {
+        "action": "Open n8n",
+        "description": "Workflow automation platform for orchestrating integrations, agents, and AI flows, even outside the lab's local runtime.",
+        "title": "n8n"
+      },
       "ollama": {
         "action": "Open API endpoint",
         "description": "Secure gateway to the local Ollama endpoint. It serves LLMs and embedding models with GPU acceleration from the host node.",
@@ -175,15 +187,15 @@
         "label": "segmentation"
       },
       "usage": {
-        "body": "Gitea is the always-on core plane; AI agents, AI LLM, AI image, AI video, and workbench layers are enabled only when they are actually needed.",
+        "body": "Gitea, Plane, Penpot, and Nextcloud AIO stay on as the core plane; AI, AI image, AI video, and workbench layers are enabled only when they are actually needed.",
         "label": "usage"
       }
     },
     "hero": {
       "eyebrow": "atlas command deck",
       "pills": {
-        "aiActive": "ai-llm active",
-        "aiOptional": "ai-llm optional",
+        "aiActive": "ai active",
+        "aiOptional": "ai optional",
         "deck": "deck {{localUrl}}",
         "host": "host {{publicUrl}}",
         "httpsOnly": "https ingress only",
@@ -197,7 +209,7 @@
         "networkMapDescription": "Read the lab topology and the published network planes.",
         "networkMapLabel": "Network map"
       },
-      "summary": "Unified control room for repository work, optional AI agents automation, optional AI LLM services, AI image generation, AI video generation, and development environments. Browser ports stay on HTTPS over localhost, while Postgres from the workbench layer also exposes a host-side TCP port.",
+      "summary": "Unified control room for repository work, project coordination, design collaboration, private cloud access, optional AI tooling, and development environments. Browser ports stay on HTTPS over localhost, while Postgres from the workbench layer also exposes a host-side TCP port.",
       "titleLines": {
         "first": "LAB",
         "second": "ATLAS"
@@ -205,12 +217,12 @@
     },
     "metrics": {
       "aiDisabled": {
-        "caption": "AI LLM layer not active",
-        "label": "ai-llm live"
+        "caption": "AI layer not active",
+        "label": "ai live"
       },
       "aiEnabled": {
-        "caption": "AI LLM layer published on the dedicated gateway",
-        "label": "ai-llm live"
+        "caption": "AI layer published on the dedicated gateway",
+        "label": "ai live"
       },
       "core": {
         "caption": "always-on services with mandatory bootstrap",
@@ -233,7 +245,7 @@
       "title": "Network Map"
     },
     "operatingCharter": {
-      "ai": "Open WebUI and Ollama live in an explicitly optional AI LLM layer.",
+      "ai": "The AI section groups Open WebUI, Ollama, and n8n into an optional dashboard plane.",
       "gitea": "Gitea governs code, review, and Git governance for the project.",
       "workbench": "Code-server and Postgres stay in a workbench plane separated from the core."
     },
@@ -242,6 +254,25 @@
         "action": "Open Gitea",
         "description": "Internal Git forge for repositories, issues, review, and the lab's technical collaboration flow.",
         "title": "Gitea Forge"
+      },
+      "nextcloudAio": {
+        "action": "Open setup UI",
+        "description": "Self-hosted Nextcloud All-in-One stack routed through the lab gateway. It exposes the application on its dedicated URL once the guided AIO setup has completed.",
+        "note": "Use the setup UI first. When the Nextcloud application asks for the initial admin account, use the credentials listed here. After AIO provisions the application containers, the main app URL becomes available on the dedicated gateway port.",
+        "title": "Nextcloud All-in-One",
+        "usage": "self-hosted deployment"
+      },
+      "penpot": {
+        "action": "Open Penpot",
+        "description": "Self-hosted Penpot workspace for product design, shared libraries, and collaboration across design and code, with a bootstrap root profile aligned to the lab.",
+        "title": "Penpot",
+        "usage": "design and code collaboration"
+      },
+      "plane": {
+        "action": "Open Plane",
+        "description": "Self-hosted Plane workspace for issue tracking, planning, roadmaps, and internal project coordination, with a bootstrap instance admin aligned to the lab.",
+        "title": "Plane",
+        "usage": "project and knowledge management"
       }
     },
     "workbenchLayer": {

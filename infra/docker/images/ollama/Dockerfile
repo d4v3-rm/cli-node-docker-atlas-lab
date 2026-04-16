@@ -3,9 +3,10 @@ FROM ollama/ollama:${OLLAMA_VERSION}
 
 USER root
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends netcat-openbsd \
-    && rm -rf /var/lib/apt/lists/*
+COPY infra/docker/images/common/install-apt-packages.sh /usr/local/bin/install-apt-packages.sh
+
+RUN chmod +x /usr/local/bin/install-apt-packages.sh \
+    && /usr/local/bin/install-apt-packages.sh netcat-openbsd
 
 COPY infra/docker/images/ollama/start-ollama.sh /usr/local/bin/start-ollama.sh
 RUN chmod +x /usr/local/bin/start-ollama.sh

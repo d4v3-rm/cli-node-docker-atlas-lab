@@ -248,19 +248,17 @@ export default function App() {
               title={t('sections.aiTitle')}
             />
             <LayerStateCard layer={dashboard.aiLayer} />
-            {dashboard.aiLayer.enabled ? (
-              <Row gutter={[24, 24]}>
-                {dashboard.aiServices.map((service) => (
-                  <Col xs={24} xl={12} key={service.id}>
-                    <OperationalCard
-                      item={service}
-                      primaryAction={service.action}
-                      tone={service.tone}
-                    />
-                  </Col>
-                ))}
-              </Row>
-            ) : null}
+            <Row gutter={[24, 24]}>
+              {dashboard.aiServices.map((service) => (
+                <Col xs={24} xl={12} key={service.id}>
+                  <OperationalCard
+                    item={service}
+                    primaryAction={dashboard.aiLayer.enabled ? service.action : undefined}
+                    tone={service.tone}
+                  />
+                </Col>
+              ))}
+            </Row>
 
             <SectionBand
               body={t(

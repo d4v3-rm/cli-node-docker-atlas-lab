@@ -34,10 +34,10 @@
     "operatingDoctrineTitle": "Come e stato pensato il lab"
   },
   "sections": {
-    "aiBodyDisabled": "Il layer AI LLM resta opzionale. Quando e spento il dashboard mostra il comando esatto per abilitarlo.",
-    "aiBodyEnabled": "Il layer AI LLM e online: il dashboard porta in Open WebUI o alle API Ollama con credenziali e contesto operativo sempre visibili.",
+    "aiBodyDisabled": "Il layer AI resta opzionale. Quando e spento il dashboard mostra il comando esatto per abilitarlo.",
+    "aiBodyEnabled": "Il layer AI e online: il dashboard porta in Open WebUI, alle API Ollama e include anche n8n nella stessa sezione.",
     "aiKicker": "piano opzionale",
-    "aiTitle": "AI LLM Layer",
+    "aiTitle": "AI",
     "footerBody": "Quattro segnali rapidi su routing, persistenza, uso consigliato e segmentazione dei layer.",
     "footerKicker": "segnali atlas",
     "footerTitle": "Chiusura operativa",
@@ -62,7 +62,7 @@
   "cards": {
     "openBriefing": "Apri briefing",
     "tones": {
-      "ai": "AI LLM",
+      "ai": "AI",
       "core": "Core",
       "neutral": "Neutro",
       "workbench": "Workbench"
@@ -111,6 +111,7 @@
     "rootName": "nome root",
     "rootPassword": "password root",
     "rootUser": "utente root",
+    "setupUrl": "URL setup",
     "superuser": "superuser",
     "wanModel": "modello wan",
     "usage": "uso"
@@ -118,10 +119,16 @@
   "values": {
     "browserConsole": "console browser",
     "browserWorkspace": "workspace browser",
+    "deploymentGuide": "guida di deployment",
+    "designCollaboration": "collaborazione design",
+    "directAppOnboarding": "onboarding diretto in app",
     "directAppLogin": "login diretto applicazione",
+    "guidedSetup": "setup guidato",
     "imageStudio": "studio immagini",
     "localInferenceApi": "API di inference locale",
     "password": "password",
+    "privateCloud": "cloud privato",
+    "projectHub": "hub progetti",
     "protectedApi": "API protetta",
     "sharedDatabase": "database condiviso",
     "videoStudio": "studio video",
@@ -129,10 +136,10 @@
     "alwaysOnForge": "forge sempre accesa"
   },
   "dashboard": {
-    "coreLayerSummary": "Gitea resta il piano core sempre acceso del lab.",
+    "coreLayerSummary": "Gitea, Plane, Penpot e Nextcloud AIO formano il piano core sempre acceso del lab.",
     "accessNotes": {
-      "aiDisabled": "Il layer AI LLM non viene piu acceso di default: il deck lo marca come opzionale invece di fingere che sia online.",
-      "aiEnabled": "Open WebUI e Ollama sono realmente online e raggiungibili sulle porte AI LLM del gateway.",
+      "aiDisabled": "Il layer AI non viene piu acceso di default: il deck lo marca come opzionale invece di fingere che sia online.",
+      "aiEnabled": "Open WebUI e Ollama sono realmente online e raggiungibili sulle porte AI del gateway.",
       "credentials": "Le credenziali operative sono esposte qui e restano allineate al bootstrap del lab.",
       "https": "Tutti gli ingressi browser usano localhost con HTTPS dedicato, senza DNS custom o file hosts.",
       "workbenchDisabled": "Workbench e Postgres restano separati dal core operativo finche non abiliti il layer dedicato.",
@@ -144,12 +151,17 @@
         "ollama": "API Ollama protetta",
         "openWebUi": "Open WebUI locale"
       },
-      "description": "Layer AI LLM opzionale per console conversazionale locale e inference LLM GPU-backed. Il deck lo attiva solo quando lo chiedi esplicitamente.",
-      "summaryDisabled": "AI LLM layer spento. Nessun servizio LLM viene avviato o esposto finche non abiliti il flag dedicato.",
-      "summaryEnabled": "Open WebUI e Ollama sono attivi e serviti dal gateway AI LLM.",
-      "title": "AI LLM Layer"
+      "description": "Layer AI opzionale per console conversazionale locale e inference LLM GPU-backed. Il deck lo attiva solo quando lo chiedi esplicitamente.",
+      "summaryDisabled": "Layer AI spento. Nessun servizio AI viene avviato o esposto finche non abiliti il flag dedicato.",
+      "summaryEnabled": "Open WebUI e Ollama sono attivi e serviti dal gateway AI.",
+      "title": "AI"
     },
     "aiServices": {
+      "n8n": {
+        "action": "Apri n8n",
+        "description": "Piattaforma di automazione workflow utile per orchestrare integrazioni, agenti e flussi AI anche fuori dal runtime locale del lab.",
+        "title": "n8n"
+      },
       "ollama": {
         "action": "Apri endpoint API",
         "description": "Gateway sicuro verso l endpoint Ollama locale. Serve modelli LLM ed embeddings con accelerazione GPU del nodo host.",
@@ -175,15 +187,15 @@
         "label": "segmentazione"
       },
       "usage": {
-        "body": "Gitea e il piano core sempre acceso; AI agents, AI LLM, AI image, AI video e workbench vengono abilitati a layer solo quando servono davvero.",
+        "body": "Gitea, Plane, Penpot e Nextcloud AIO restano sempre attivi nel piano core; AI, AI image, AI video e workbench vengono abilitati a layer solo quando servono davvero.",
         "label": "uso"
       }
     },
     "hero": {
       "eyebrow": "atlas command deck",
       "pills": {
-        "aiActive": "ai-llm attivo",
-        "aiOptional": "ai-llm opzionale",
+        "aiActive": "ai attivo",
+        "aiOptional": "ai opzionale",
         "deck": "deck {{localUrl}}",
         "host": "host {{publicUrl}}",
         "httpsOnly": "ingress solo https",
@@ -197,7 +209,7 @@
         "networkMapDescription": "Leggi la topologia del lab e i piani di rete pubblicati.",
         "networkMapLabel": "Network map"
       },
-      "summary": "Control room unificata per repository, automazione AI agents opzionale, servizi AI LLM opzionali, generazione AI image, generazione AI video e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.",
+      "summary": "Control room unificata per repository, coordinamento progetti, collaborazione design, cloud privato, strumenti AI opzionali e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.",
       "titleLines": {
         "first": "LAB",
         "second": "ATLAS"
@@ -205,12 +217,12 @@
     },
     "metrics": {
       "aiDisabled": {
-        "caption": "layer AI LLM non attivo",
-        "label": "ai-llm live"
+        "caption": "layer AI non attivo",
+        "label": "ai live"
       },
       "aiEnabled": {
-        "caption": "layer AI LLM pubblicato sul gateway dedicato",
-        "label": "ai-llm live"
+        "caption": "layer AI pubblicato sul gateway dedicato",
+        "label": "ai live"
       },
       "core": {
         "caption": "servizi sempre accesi e bootstrap mandatory",
@@ -233,7 +245,7 @@
       "title": "Network Map"
     },
     "operatingCharter": {
-      "ai": "Open WebUI e Ollama vivono in un layer AI LLM esplicitamente opzionale.",
+      "ai": "La sezione AI raccoglie Open WebUI, Ollama e n8n in un piano opzionale del dashboard.",
       "gitea": "Gitea governa codice, review e governance Git del progetto.",
       "workbench": "Code-server e Postgres restano in un piano workbench separato dal core."
     },
@@ -242,6 +254,25 @@
         "action": "Apri Gitea",
         "description": "Forge Git interna per repository, issue, review e flusso di collaborazione tecnica del lab.",
         "title": "Gitea Forge"
+      },
+      "nextcloudAio": {
+        "action": "Apri setup UI",
+        "description": "Stack Nextcloud All-in-One self-hosted instradato dal gateway del lab. Espone l'applicazione sul suo URL dedicato dopo il completamento del setup guidato AIO.",
+        "note": "Apri prima la setup UI. Quando l'applicazione Nextcloud chiede l'account admin iniziale, usa le credenziali mostrate qui. Dopo che AIO ha predisposto i container applicativi, l'URL principale risponde sulla porta gateway dedicata.",
+        "title": "Nextcloud All-in-One",
+        "usage": "deployment self-hosted"
+      },
+      "penpot": {
+        "action": "Apri Penpot",
+        "description": "Workspace Penpot self-hosted per product design, librerie condivise e collaborazione tra design e codice, con profilo root allineato al bootstrap del lab.",
+        "title": "Penpot",
+        "usage": "design e code collaboration"
+      },
+      "plane": {
+        "action": "Apri Plane",
+        "description": "Workspace Plane self-hosted per issue tracking, planning, roadmap e coordinamento interno dei progetti, con instance admin iniziale allineato al bootstrap del lab.",
+        "title": "Plane",
+        "usage": "project e knowledge management"
       }
     },
     "workbenchLayer": {

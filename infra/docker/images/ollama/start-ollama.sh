@@ -26,6 +26,11 @@ wait_for_ready() {
 }
 
 sync_models_if_configured() {
+  if [ "${OLLAMA_SYNC_ON_START:-0}" != "1" ]; then
+    echo "Skipping startup model sync; Atlas Lab bootstrap handles model reconciliation."
+    return
+  fi
+
   if [ -f /opt/atlas-lab/model-sync/sync-ollama-models.sh ]; then
     sh /opt/atlas-lab/model-sync/sync-ollama-models.sh
   else

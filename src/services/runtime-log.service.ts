@@ -1,5 +1,5 @@
 import { appendFileSync, mkdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { EOL } from 'node:os';
 import { stripVTControlCharacters } from 'node:util';
 import { APP_METADATA } from '../config/app-metadata.js';
@@ -128,5 +128,6 @@ function appendLines(content: string): void {
     return;
   }
 
+  mkdirSync(dirname(fileLogSession.filePath), { recursive: true });
   appendFileSync(fileLogSession.filePath, `${content}${EOL}`, 'utf8');
 }

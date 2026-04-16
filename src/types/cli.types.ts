@@ -17,6 +17,7 @@ export interface LegacyAiAliasOptions {
  */
 export interface UpCommandOptions extends GlobalCliOptions, LegacyAiAliasOptions {
   build?: boolean;
+  skipOllama?: boolean;
   withAiLlm?: boolean;
   withWorkbench?: boolean;
 }
