@@ -9,8 +9,10 @@ ARG PYTHON_PIP_PACKAGES
 ARG PIP_INDEX_URL
 ARG PIP_EXTRA_INDEX_URL
 
-RUN apt-get update && \
-  apt-get install -y --no-install-recommends \
+COPY infra/docker/images/common/install-apt-packages.sh /usr/local/bin/install-apt-packages.sh
+
+RUN chmod +x /usr/local/bin/install-apt-packages.sh && \
+  /usr/local/bin/install-apt-packages.sh \
     ca-certificates \
     curl \
     git \
@@ -27,8 +29,7 @@ RUN apt-get update && \
     libxmlsec1-dev \
     libffi-dev \
     liblzma-dev \
-    ${INSTALL_PACKAGES} && \
-  rm -rf /var/lib/apt/lists/*
+    ${INSTALL_PACKAGES}
 
 RUN git clone https://github.com/pyenv/pyenv.git /opt/pyenv
 

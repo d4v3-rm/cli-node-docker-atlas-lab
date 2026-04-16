@@ -9,8 +9,10 @@ ARG YARN_VERSION
 ARG INSTALL_PACKAGES
 ARG TARGETARCH
 
-RUN apt-get update && \
-  apt-get install -y --no-install-recommends \
+COPY infra/docker/images/common/install-apt-packages.sh /usr/local/bin/install-apt-packages.sh
+
+RUN chmod +x /usr/local/bin/install-apt-packages.sh && \
+  /usr/local/bin/install-apt-packages.sh \
     ca-certificates \
     curl \
     git \
@@ -20,8 +22,7 @@ RUN apt-get update && \
     g++ \
     xz-utils \
     bash \
-    ${INSTALL_PACKAGES} && \
-  rm -rf /var/lib/apt/lists/*
+    ${INSTALL_PACKAGES}
 
 RUN set -eux; \
   case "${TARGETARCH}" in \
