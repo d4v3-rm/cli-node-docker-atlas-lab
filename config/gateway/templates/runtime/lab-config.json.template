@@ -22,7 +22,10 @@
       "rootEmail": "${GITEA_ROOT_EMAIL}"
     },
     "plane": {
-      "url": "${PLANE_URL}"
+      "url": "${PLANE_URL}",
+      "rootName": "${PLANE_ROOT_NAME}",
+      "rootEmail": "${PLANE_ROOT_EMAIL}",
+      "rootPassword": "${PLANE_ROOT_PASSWORD}"
     },
     "openWebUi": {
       "url": "${OPENWEBUI_URL}",
@@ -36,11 +39,16 @@
       "gatewayPassword": "${OLLAMA_GATEWAY_PASSWORD}"
     },
     "penpot": {
-      "url": "${PENPOT_URL}"
+      "url": "${PENPOT_URL}",
+      "rootName": "${PENPOT_ROOT_NAME}",
+      "rootEmail": "${PENPOT_ROOT_EMAIL}",
+      "rootPassword": "${PENPOT_ROOT_PASSWORD}"
     },
     "nextcloudAio": {
       "url": "${NEXTCLOUD_AIO_URL}",
-      "setupUrl": "${NEXTCLOUD_AIO_SETUP_URL}"
+      "setupUrl": "${NEXTCLOUD_AIO_SETUP_URL}",
+      "rootUsername": "${NEXTCLOUD_AIO_ROOT_USERNAME}",
+      "rootPassword": "${NEXTCLOUD_AIO_ROOT_PASSWORD}"
     }
   },
   "workbenches": {

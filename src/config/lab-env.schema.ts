@@ -22,16 +22,29 @@ export const labEnvSchema = z
     GITEA_ROOT_USERNAME: optionalEnvValue,
     GITEA_ROOT_PASSWORD: optionalEnvValue,
     GITEA_ROOT_EMAIL: optionalEnvValue,
+    PLANE_ROOT_NAME: optionalEnvValue,
+    PLANE_ROOT_EMAIL: optionalEnvValue,
+    PLANE_ROOT_PASSWORD: optionalEnvValue,
+    PLANE_INSTANCE_NAME: optionalEnvValue,
     OPENWEBUI_ROOT_EMAIL: optionalEnvValue,
     OPENWEBUI_ROOT_PASSWORD: optionalEnvValue,
+    PENPOT_ROOT_NAME: optionalEnvValue,
+    PENPOT_ROOT_EMAIL: optionalEnvValue,
+    PENPOT_ROOT_PASSWORD: optionalEnvValue,
+    NEXTCLOUD_AIO_ROOT_USERNAME: optionalEnvValue,
+    NEXTCLOUD_AIO_ROOT_PASSWORD: optionalEnvValue,
     OLLAMA_EMBEDDING_MODEL: optionalEnvValue,
     OLLAMA_CHAT_MODEL: optionalEnvValue,
     OLLAMA_RUNTIME_MODELS: optionalEnvValue,
     POSTGRES_DEV_HOST_PORT: optionalEnvValue,
     LAB_URL: optionalEnvValue,
     GITEA_URL: optionalEnvValue,
+    PLANE_URL: optionalEnvValue,
     OPENWEBUI_URL: optionalEnvValue,
     OLLAMA_URL: optionalEnvValue,
+    PENPOT_URL: optionalEnvValue,
+    NEXTCLOUD_AIO_URL: optionalEnvValue,
+    NEXTCLOUD_AIO_SETUP_URL: optionalEnvValue,
     OLLAMA_GATEWAY_USER: optionalEnvValue,
     OLLAMA_GATEWAY_PASSWORD: optionalEnvValue
   })
@@ -45,7 +58,14 @@ export const bootstrapEnvSchema = labEnvSchema.extend({
   GITEA_GID: requiredEnvValue,
   GITEA_ROOT_USERNAME: requiredEnvValue,
   GITEA_ROOT_PASSWORD: requiredEnvValue,
-  GITEA_ROOT_EMAIL: requiredEnvValue
+  GITEA_ROOT_EMAIL: requiredEnvValue,
+  PLANE_ROOT_NAME: requiredEnvValue,
+  PLANE_ROOT_EMAIL: requiredEnvValue,
+  PLANE_ROOT_PASSWORD: requiredEnvValue,
+  PLANE_INSTANCE_NAME: requiredEnvValue,
+  PENPOT_ROOT_NAME: requiredEnvValue,
+  PENPOT_ROOT_EMAIL: requiredEnvValue,
+  PENPOT_ROOT_PASSWORD: requiredEnvValue
 });
 
 /**

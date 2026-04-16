@@ -123,6 +123,7 @@
     "designCollaboration": "collaborazione design",
     "directAppOnboarding": "onboarding diretto in app",
     "directAppLogin": "login diretto applicazione",
+    "guidedSetup": "setup guidato",
     "imageStudio": "studio immagini",
     "localInferenceApi": "API di inference locale",
     "password": "password",
@@ -256,20 +257,20 @@
       },
       "nextcloudAio": {
         "action": "Apri setup UI",
-        "description": "Stack Nextcloud All-in-One self-hosted instradato dal gateway del lab. Espone l applicazione sul suo URL dedicato dopo il completamento del setup guidato AIO.",
-        "note": "Apri prima la setup UI. Dopo che AIO ha predisposto i container applicativi, l URL principale risponde sulla porta gateway dedicata.",
+        "description": "Stack Nextcloud All-in-One self-hosted instradato dal gateway del lab. Espone l'applicazione sul suo URL dedicato dopo il completamento del setup guidato AIO.",
+        "note": "Apri prima la setup UI. Quando l'applicazione Nextcloud chiede l'account admin iniziale, usa le credenziali mostrate qui. Dopo che AIO ha predisposto i container applicativi, l'URL principale risponde sulla porta gateway dedicata.",
         "title": "Nextcloud All-in-One",
         "usage": "deployment self-hosted"
       },
       "penpot": {
         "action": "Apri Penpot",
-        "description": "Workspace Penpot self-hosted per product design, librerie condivise e collaborazione tra design e codice.",
+        "description": "Workspace Penpot self-hosted per product design, librerie condivise e collaborazione tra design e codice, con profilo root allineato al bootstrap del lab.",
         "title": "Penpot",
         "usage": "design e code collaboration"
       },
       "plane": {
         "action": "Apri Plane",
-        "description": "Workspace Plane self-hosted per issue tracking, planning, roadmap e coordinamento interno dei progetti.",
+        "description": "Workspace Plane self-hosted per issue tracking, planning, roadmap e coordinamento interno dei progetti, con instance admin iniziale allineato al bootstrap del lab.",
         "title": "Plane",
         "usage": "project e knowledge management"
       }

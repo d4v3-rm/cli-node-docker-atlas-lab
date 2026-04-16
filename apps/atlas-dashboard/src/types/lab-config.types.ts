@@ -25,6 +25,9 @@ export interface LabRuntimeConfig {
       url: string;
     };
     plane: {
+      rootEmail: string;
+      rootName: string;
+      rootPassword: string;
       url: string;
     };
     n8n?: {
@@ -39,9 +42,14 @@ export interface LabRuntimeConfig {
       url: string;
     };
     penpot: {
+      rootEmail: string;
+      rootName: string;
+      rootPassword: string;
       url: string;
     };
     nextcloudAio: {
+      rootPassword: string;
+      rootUsername: string;
       setupUrl: string;
       url: string;
     };

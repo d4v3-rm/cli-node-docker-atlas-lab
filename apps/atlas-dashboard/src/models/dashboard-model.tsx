@@ -344,8 +344,20 @@ export function createDashboardViewModel(
             value: config.services.plane.url
           },
           {
+            label: credentialLabels.rootName,
+            value: config.services.plane.rootName
+          },
+          {
+            label: credentialLabels.rootEmail,
+            value: config.services.plane.rootEmail
+          },
+          {
+            label: credentialLabels.password,
+            value: config.services.plane.rootPassword
+          },
+          {
             label: credentialLabels.accessMode,
-            value: t('values.directAppOnboarding')
+            value: t('values.directAppLogin')
           }
         ],
         description: t('dashboard.services.plane.description'),
@@ -366,8 +378,20 @@ export function createDashboardViewModel(
             value: config.services.penpot.url
           },
           {
+            label: credentialLabels.rootName,
+            value: config.services.penpot.rootName
+          },
+          {
+            label: credentialLabels.rootEmail,
+            value: config.services.penpot.rootEmail
+          },
+          {
+            label: credentialLabels.password,
+            value: config.services.penpot.rootPassword
+          },
+          {
             label: credentialLabels.accessMode,
-            value: t('values.directAppOnboarding')
+            value: t('values.directAppLogin')
           }
         ],
         description: t('dashboard.services.penpot.description'),
@@ -390,6 +414,14 @@ export function createDashboardViewModel(
           {
             label: credentialLabels.setupUrl,
             value: config.services.nextcloudAio.setupUrl
+          },
+          {
+            label: credentialLabels.rootUser,
+            value: config.services.nextcloudAio.rootUsername
+          },
+          {
+            label: credentialLabels.password,
+            value: config.services.nextcloudAio.rootPassword
           },
           {
             label: credentialLabels.accessMode,

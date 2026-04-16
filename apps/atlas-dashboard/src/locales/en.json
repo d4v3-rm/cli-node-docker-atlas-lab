@@ -123,6 +123,7 @@
     "designCollaboration": "design collaboration",
     "directAppOnboarding": "direct app onboarding",
     "directAppLogin": "direct app login",
+    "guidedSetup": "guided setup",
     "imageStudio": "image studio",
     "localInferenceApi": "local inference API",
     "password": "password",
@@ -257,19 +258,19 @@
       "nextcloudAio": {
         "action": "Open setup UI",
         "description": "Self-hosted Nextcloud All-in-One stack routed through the lab gateway. It exposes the application on its dedicated URL once the guided AIO setup has completed.",
-        "note": "Use the setup UI first. After AIO provisions the application containers, the main app URL becomes available on the dedicated gateway port.",
+        "note": "Use the setup UI first. When the Nextcloud application asks for the initial admin account, use the credentials listed here. After AIO provisions the application containers, the main app URL becomes available on the dedicated gateway port.",
         "title": "Nextcloud All-in-One",
         "usage": "self-hosted deployment"
       },
       "penpot": {
         "action": "Open Penpot",
-        "description": "Self-hosted Penpot workspace for product design, shared libraries, and collaboration across design and code.",
+        "description": "Self-hosted Penpot workspace for product design, shared libraries, and collaboration across design and code, with a bootstrap root profile aligned to the lab.",
         "title": "Penpot",
         "usage": "design and code collaboration"
       },
       "plane": {
         "action": "Open Plane",
-        "description": "Self-hosted Plane workspace for issue tracking, planning, roadmaps, and internal project coordination.",
+        "description": "Self-hosted Plane workspace for issue tracking, planning, roadmaps, and internal project coordination, with a bootstrap instance admin aligned to the lab.",
         "title": "Plane",
         "usage": "project and knowledge management"
       }
