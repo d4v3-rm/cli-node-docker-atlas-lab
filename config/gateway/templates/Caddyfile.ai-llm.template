@@ -42,3 +42,7 @@ https://${LAB_PUBLIC_HOST}:${OPENWEBUI_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${
 https://${LAB_PUBLIC_HOST}:${OLLAMA_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${OLLAMA_HTTPS_PORT} {
   import guarded_proxy ${OLLAMA_GATEWAY_USER} ${OLLAMA_GATEWAY_PASSWORD_HASH} ollama:11434
 }
+
+https://${LAB_PUBLIC_HOST}:${N8N_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${N8N_HTTPS_PORT} {
+  import service_proxy n8n:5678
+}

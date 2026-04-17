@@ -33,6 +33,12 @@
       "rootEmail": "${OPENWEBUI_ROOT_EMAIL}",
       "rootPassword": "${OPENWEBUI_ROOT_PASSWORD}"
     },
+    "n8n": {
+      "url": "${N8N_URL}",
+      "ownerName": "${N8N_ROOT_FIRST_NAME} ${N8N_ROOT_LAST_NAME}",
+      "ownerEmail": "${N8N_ROOT_EMAIL}",
+      "ownerPassword": "${N8N_ROOT_PASSWORD}"
+    },
     "ollama": {
       "url": "${OLLAMA_URL}",
       "gatewayUser": "${OLLAMA_GATEWAY_USER}",
