@@ -139,7 +139,7 @@
     "coreLayerSummary": "Gitea, Plane, Penpot e Nextcloud AIO formano il piano core sempre acceso del lab.",
     "accessNotes": {
       "aiDisabled": "Il layer AI non viene piu acceso di default: il deck lo marca come opzionale invece di fingere che sia online.",
-      "aiEnabled": "Open WebUI e Ollama sono realmente online e raggiungibili sulle porte AI del gateway.",
+      "aiEnabled": "Open WebUI, Ollama e n8n sono online e raggiungibili sulle porte dedicate del gateway AI.",
       "credentials": "Le credenziali operative sono esposte qui e restano allineate al bootstrap del lab.",
       "https": "Tutti gli ingressi browser usano localhost con HTTPS dedicato, senza DNS custom o file hosts.",
       "workbenchDisabled": "Workbench e Postgres restano separati dal core operativo finche non abiliti il layer dedicato.",
@@ -148,18 +148,19 @@
     "aiLayer": {
       "capabilities": {
         "llmModels": "modelli LLM GPU-backed",
+        "n8n": "automazione n8n locale",
         "ollama": "API Ollama protetta",
         "openWebUi": "Open WebUI locale"
       },
-      "description": "Layer AI opzionale per console conversazionale locale e inference LLM GPU-backed. Il deck lo attiva solo quando lo chiedi esplicitamente.",
+      "description": "Layer AI opzionale per console conversazionale locale, orchestrazione workflow e inference LLM GPU-backed. Il deck lo attiva solo quando lo chiedi esplicitamente.",
       "summaryDisabled": "Layer AI spento. Nessun servizio AI viene avviato o esposto finche non abiliti il flag dedicato.",
-      "summaryEnabled": "Open WebUI e Ollama sono attivi e serviti dal gateway AI.",
+      "summaryEnabled": "Open WebUI, Ollama e n8n sono attivi e serviti dal gateway AI.",
       "title": "AI"
     },
     "aiServices": {
       "n8n": {
         "action": "Apri n8n",
-        "description": "Piattaforma di automazione workflow utile per orchestrare integrazioni, agenti e flussi AI anche fuori dal runtime locale del lab.",
+        "description": "Piattaforma locale di automazione workflow per orchestrare integrazioni, agenti e flussi AI, con owner bootstrap allineato al runtime del lab.",
         "title": "n8n"
       },
       "ollama": {

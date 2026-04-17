@@ -139,7 +139,7 @@
     "coreLayerSummary": "Gitea, Plane, Penpot, and Nextcloud AIO form the always-on core plane of the lab.",
     "accessNotes": {
       "aiDisabled": "The AI layer no longer starts by default: the deck marks it as optional instead of pretending that it is online.",
-      "aiEnabled": "Open WebUI and Ollama are really online and reachable on the AI gateway ports.",
+      "aiEnabled": "Open WebUI, Ollama, and n8n are online and reachable on the dedicated AI gateway ports.",
       "credentials": "Operational credentials are exposed here and remain aligned with the lab bootstrap.",
       "https": "All browser ingresses use localhost with dedicated HTTPS, without custom DNS or hosts-file edits.",
       "workbenchDisabled": "Workbench and Postgres stay separated from the core operating plane until you enable the dedicated layer.",
@@ -148,18 +148,19 @@
     "aiLayer": {
       "capabilities": {
         "llmModels": "GPU-backed LLM models",
+        "n8n": "Local n8n automation",
         "ollama": "Protected Ollama API",
         "openWebUi": "Local Open WebUI"
       },
-      "description": "Optional AI layer for local conversational workflows and GPU-backed LLM inference. The deck enables it only when you explicitly request it.",
+      "description": "Optional AI layer for local conversational workflows, workflow orchestration, and GPU-backed LLM inference. The deck enables it only when you explicitly request it.",
       "summaryDisabled": "The AI layer is off. No AI service is started or exposed until you enable the dedicated flag.",
-      "summaryEnabled": "Open WebUI and Ollama are active and served through the AI gateway.",
+      "summaryEnabled": "Open WebUI, Ollama, and n8n are active and served through the AI gateway.",
       "title": "AI"
     },
     "aiServices": {
       "n8n": {
         "action": "Open n8n",
-        "description": "Workflow automation platform for orchestrating integrations, agents, and AI flows, even outside the lab's local runtime.",
+        "description": "Local workflow automation platform for orchestrating integrations, agents, and AI flows, with the bootstrap owner account aligned to the lab runtime.",
         "title": "n8n"
       },
       "ollama": {

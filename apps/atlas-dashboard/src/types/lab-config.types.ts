@@ -30,10 +30,10 @@ export interface LabRuntimeConfig {
       rootPassword: string;
       url: string;
     };
-    n8n?: {
-      ownerEmail?: string;
-      ownerName?: string;
-      ownerPassword?: string;
+    n8n: {
+      ownerEmail: string;
+      ownerName: string;
+      ownerPassword: string;
       url: string;
     };
     ollama: {

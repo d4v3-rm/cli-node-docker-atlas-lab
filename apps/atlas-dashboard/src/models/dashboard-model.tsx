@@ -10,7 +10,7 @@ export function createDashboardViewModel(
   t: TFunction
 ): DashboardViewModel {
   const aiLlmEnabled = config.features.aiLlmEnabled;
-  const n8nUrl = config.services.n8n?.url ?? 'https://n8n.io/';
+  const n8nUrl = config.services.n8n.url;
   const workbenchEnabled = config.features.workbenchEnabled;
 
   const credentialLabels = {
@@ -25,6 +25,9 @@ export function createDashboardViewModel(
     endpoint: t('credentials.endpoint'),
     gatewayPassword: t('credentials.gatewayPassword'),
     gatewayUser: t('credentials.gatewayUser'),
+    ownerBootstrap: t('credentials.ownerBootstrap'),
+    ownerEmail: t('credentials.ownerEmail'),
+    ownerPassword: t('credentials.ownerPassword'),
     password: t('credentials.password'),
     rootEmail: t('credentials.rootEmail'),
     rootName: t('credentials.rootName'),
@@ -56,6 +59,10 @@ export function createDashboardViewModel(
         {
           icon: 'ollama',
           label: t('dashboard.aiLayer.capabilities.ollama')
+        },
+        {
+          icon: 'workflow',
+          label: t('dashboard.aiLayer.capabilities.n8n')
         },
         {
           icon: 'ai',
@@ -144,8 +151,20 @@ export function createDashboardViewModel(
             value: n8nUrl
           },
           {
-            label: credentialLabels.usage,
-            value: t('values.workflowControl')
+            label: credentialLabels.accessMode,
+            value: t('values.directAppLogin')
+          },
+          {
+            label: credentialLabels.ownerBootstrap,
+            value: config.services.n8n.ownerName
+          },
+          {
+            label: credentialLabels.ownerEmail,
+            value: config.services.n8n.ownerEmail
+          },
+          {
+            label: credentialLabels.ownerPassword,
+            value: config.services.n8n.ownerPassword
           }
         ],
         description: t('dashboard.aiServices.n8n.description'),
@@ -205,7 +224,7 @@ export function createDashboardViewModel(
               ? 'dashboard.metrics.aiEnabled.label'
               : 'dashboard.metrics.aiDisabled.label'
           ),
-          value: aiLlmEnabled ? 2 : 0
+          value: aiLlmEnabled ? 3 : 0
         },
         {
           caption: t(
@@ -223,7 +242,7 @@ export function createDashboardViewModel(
         {
           caption: t('dashboard.metrics.ingress.caption'),
           label: t('dashboard.metrics.ingress.label'),
-          value: 6 + (aiLlmEnabled ? 2 : 0) + (workbenchEnabled ? 2 : 0)
+          value: 6 + (aiLlmEnabled ? 3 : 0) + (workbenchEnabled ? 2 : 0)
         }
       ],
       pills: [
