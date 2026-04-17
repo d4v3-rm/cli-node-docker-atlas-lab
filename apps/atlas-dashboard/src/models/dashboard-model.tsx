@@ -33,7 +33,6 @@ export function createDashboardViewModel(
     rootName: t('credentials.rootName'),
     rootPassword: t('credentials.rootPassword'),
     rootUser: t('credentials.rootUser'),
-    setupUrl: t('credentials.setupUrl'),
     superuser: t('credentials.superuser'),
     usage: t('credentials.usage')
   };
@@ -211,7 +210,7 @@ export function createDashboardViewModel(
         {
           caption: t('dashboard.metrics.core.caption'),
           label: t('dashboard.metrics.core.label'),
-          value: 4
+          value: 3
         },
         {
           caption: t(
@@ -242,7 +241,7 @@ export function createDashboardViewModel(
         {
           caption: t('dashboard.metrics.ingress.caption'),
           label: t('dashboard.metrics.ingress.label'),
-          value: 6 + (aiLlmEnabled ? 3 : 0) + (workbenchEnabled ? 2 : 0)
+          value: 4 + (aiLlmEnabled ? 3 : 0) + (workbenchEnabled ? 2 : 0)
         }
       ],
       pills: [
@@ -418,41 +417,6 @@ export function createDashboardViewModel(
         id: 'penpot',
         status: t('values.designCollaboration'),
         title: t('dashboard.services.penpot.title'),
-        tone: 'core'
-      },
-      {
-        action: {
-          href: config.services.nextcloudAio.setupUrl,
-          label: t('dashboard.services.nextcloudAio.action')
-        },
-        credentials: [
-          {
-            label: credentialLabels.endpoint,
-            value: config.services.nextcloudAio.url
-          },
-          {
-            label: credentialLabels.setupUrl,
-            value: config.services.nextcloudAio.setupUrl
-          },
-          {
-            label: credentialLabels.rootUser,
-            value: config.services.nextcloudAio.rootUsername
-          },
-          {
-            label: credentialLabels.password,
-            value: config.services.nextcloudAio.rootPassword
-          },
-          {
-            label: credentialLabels.accessMode,
-            value: t('values.guidedSetup')
-          }
-        ],
-        description: t('dashboard.services.nextcloudAio.description'),
-        icon: 'secure',
-        id: 'nextcloud-aio',
-        note: t('dashboard.services.nextcloudAio.note'),
-        status: t('values.privateCloud'),
-        title: t('dashboard.services.nextcloudAio.title'),
         tone: 'core'
       }
     ],

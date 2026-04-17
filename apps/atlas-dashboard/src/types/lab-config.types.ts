@@ -47,12 +47,6 @@ export interface LabRuntimeConfig {
       rootPassword: string;
       url: string;
     };
-    nextcloudAio: {
-      rootPassword: string;
-      rootUsername: string;
-      setupUrl: string;
-      url: string;
-    };
     openWebUi: {
       rootEmail: string;
       rootName: string;
