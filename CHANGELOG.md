@@ -10,11 +10,9 @@ The script does not create tags locally.
 - Range: `v0.36.4..HEAD`
 - Included commits: 13
 
-### Features (4)
+### Features (2)
 
 - [atlas-dashboard] rename AI layer and add n8n card (`619c080`)
-- [atlas-dashboard] add Plane Penpot and Nextcloud AIO core cards (`1f7e6be`)
-- [core] add Plane Penpot and Nextcloud AIO services (`d370dc7`)
 - [core] bootstrap Plane and Penpot default admins (`676a690`)
 
 ### Fix (6)
