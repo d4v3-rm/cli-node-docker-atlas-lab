@@ -35,8 +35,6 @@ export const labEnvSchema = z
     PENPOT_ROOT_NAME: optionalEnvValue,
     PENPOT_ROOT_EMAIL: optionalEnvValue,
     PENPOT_ROOT_PASSWORD: optionalEnvValue,
-    NEXTCLOUD_AIO_ROOT_USERNAME: optionalEnvValue,
-    NEXTCLOUD_AIO_ROOT_PASSWORD: optionalEnvValue,
     OLLAMA_EMBEDDING_MODEL: optionalEnvValue,
     OLLAMA_CHAT_MODEL: optionalEnvValue,
     OLLAMA_RUNTIME_MODELS: optionalEnvValue,
@@ -48,8 +46,6 @@ export const labEnvSchema = z
     OPENWEBUI_URL: optionalEnvValue,
     OLLAMA_URL: optionalEnvValue,
     PENPOT_URL: optionalEnvValue,
-    NEXTCLOUD_AIO_URL: optionalEnvValue,
-    NEXTCLOUD_AIO_SETUP_URL: optionalEnvValue,
     OLLAMA_GATEWAY_USER: optionalEnvValue,
     OLLAMA_GATEWAY_PASSWORD: optionalEnvValue
   })

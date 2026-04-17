@@ -23,8 +23,6 @@ export interface LabEnv {
   PENPOT_ROOT_NAME?: string;
   PENPOT_ROOT_EMAIL?: string;
   PENPOT_ROOT_PASSWORD?: string;
-  NEXTCLOUD_AIO_ROOT_USERNAME?: string;
-  NEXTCLOUD_AIO_ROOT_PASSWORD?: string;
   OLLAMA_EMBEDDING_MODEL?: string;
   OLLAMA_CHAT_MODEL?: string;
   OLLAMA_RUNTIME_MODELS?: string;
@@ -36,8 +34,6 @@ export interface LabEnv {
   OPENWEBUI_URL?: string;
   OLLAMA_URL?: string;
   PENPOT_URL?: string;
-  NEXTCLOUD_AIO_URL?: string;
-  NEXTCLOUD_AIO_SETUP_URL?: string;
   OLLAMA_GATEWAY_USER?: string;
   OLLAMA_GATEWAY_PASSWORD?: string;
   ATLAS_DOCKER_HUB_MIRRORS?: string;

@@ -49,12 +49,6 @@
       "rootName": "${PENPOT_ROOT_NAME}",
       "rootEmail": "${PENPOT_ROOT_EMAIL}",
       "rootPassword": "${PENPOT_ROOT_PASSWORD}"
-    },
-    "nextcloudAio": {
-      "url": "${NEXTCLOUD_AIO_URL}",
-      "setupUrl": "${NEXTCLOUD_AIO_SETUP_URL}",
-      "rootUsername": "${NEXTCLOUD_AIO_ROOT_USERNAME}",
-      "rootPassword": "${NEXTCLOUD_AIO_ROOT_PASSWORD}"
     }
   },
   "workbenches": {
