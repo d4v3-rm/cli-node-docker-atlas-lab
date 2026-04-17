@@ -1,6 +1,6 @@
 name: cli-node-docker-atlas-lab
 
-# Optional AI LLM layer for Open WebUI and Ollama.
+# Optional AI LLM layer for Open WebUI, Ollama, and n8n.
 x-lab-env: &lab-env
   TZ: ${TZ}
 
@@ -25,6 +25,7 @@ services:
     ports:
       - "${OPENWEBUI_HTTPS_PORT}:${OPENWEBUI_HTTPS_PORT}"
       - "${OLLAMA_HTTPS_PORT}:${OLLAMA_HTTPS_PORT}"
+      - "${N8N_HTTPS_PORT}:${N8N_HTTPS_PORT}"
     volumes:
       - gateway-certs:/etc/caddy/certs
       - gateway-config:/etc/caddy/dynamic
@@ -32,6 +33,8 @@ services:
     depends_on:
       gateway:
         condition: service_started
+      n8n:
+        condition: service_healthy
       open-webui:
         condition: service_healthy
       ollama:
@@ -104,6 +107,51 @@ services:
       services-egress-net:
         gw_priority: 1
 
+  n8n:
+    build:
+      context: ../..
+      dockerfile: infra/docker/images/n8n/Dockerfile
+      args:
+        N8N_VERSION: ${N8N_VERSION}
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"require('node:http').get('http://127.0.0.1:5678/healthz/readiness', (response) => process.exit(response.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))\""
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    environment:
+      <<: *lab-env
+      GENERIC_TIMEZONE: ${TZ}
+      N8N_HOST: ${LAB_PUBLIC_HOST}
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: https
+      N8N_EDITOR_BASE_URL: ${N8N_URL}
+      WEBHOOK_URL: ${N8N_URL}
+      N8N_PROXY_HOPS: "1"
+      N8N_SECURE_COOKIE: "true"
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+      CURL_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+      NODE_OPTIONS: --use-openssl-ca
+      NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+      N8N_TEMPLATES_ENABLED: "true"
+      EXTERNAL_FRONTEND_HOOKS_URLS: ""
+      N8N_DIAGNOSTICS_CONFIG_FRONTEND: ""
+      N8N_DIAGNOSTICS_CONFIG_BACKEND: ""
+    volumes:
+      - n8n-data:/home/node/.n8n
+    networks:
+      ai-llm-net:
+      services-egress-net:
+        gw_priority: 1
+
 networks:
   edge-net:
     name: cli-node-docker-atlas-lab_edge
@@ -120,5 +168,6 @@ volumes:
   gateway-certs:
   gateway-config:
   gateway-data:
+  n8n-data:
   ollama-data:
   open-webui-data:

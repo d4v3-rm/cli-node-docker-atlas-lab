@@ -22,6 +22,10 @@ export const labEnvSchema = z
     GITEA_ROOT_USERNAME: optionalEnvValue,
     GITEA_ROOT_PASSWORD: optionalEnvValue,
     GITEA_ROOT_EMAIL: optionalEnvValue,
+    N8N_ROOT_FIRST_NAME: optionalEnvValue,
+    N8N_ROOT_LAST_NAME: optionalEnvValue,
+    N8N_ROOT_EMAIL: optionalEnvValue,
+    N8N_ROOT_PASSWORD: optionalEnvValue,
     PLANE_ROOT_NAME: optionalEnvValue,
     PLANE_ROOT_EMAIL: optionalEnvValue,
     PLANE_ROOT_PASSWORD: optionalEnvValue,
@@ -31,20 +35,17 @@ export const labEnvSchema = z
     PENPOT_ROOT_NAME: optionalEnvValue,
     PENPOT_ROOT_EMAIL: optionalEnvValue,
     PENPOT_ROOT_PASSWORD: optionalEnvValue,
-    NEXTCLOUD_AIO_ROOT_USERNAME: optionalEnvValue,
-    NEXTCLOUD_AIO_ROOT_PASSWORD: optionalEnvValue,
     OLLAMA_EMBEDDING_MODEL: optionalEnvValue,
     OLLAMA_CHAT_MODEL: optionalEnvValue,
     OLLAMA_RUNTIME_MODELS: optionalEnvValue,
     POSTGRES_DEV_HOST_PORT: optionalEnvValue,
     LAB_URL: optionalEnvValue,
     GITEA_URL: optionalEnvValue,
+    N8N_URL: optionalEnvValue,
     PLANE_URL: optionalEnvValue,
     OPENWEBUI_URL: optionalEnvValue,
     OLLAMA_URL: optionalEnvValue,
     PENPOT_URL: optionalEnvValue,
-    NEXTCLOUD_AIO_URL: optionalEnvValue,
-    NEXTCLOUD_AIO_SETUP_URL: optionalEnvValue,
     OLLAMA_GATEWAY_USER: optionalEnvValue,
     OLLAMA_GATEWAY_PASSWORD: optionalEnvValue
   })
@@ -80,6 +81,11 @@ export const smokeEnvSchema = labEnvSchema.extend({
  * Schema for AI LLM bootstrap workflows that reconcile the Ollama runtime.
  */
 export const aiLlmBootstrapEnvSchema = labEnvSchema.extend({
+  N8N_URL: requiredEnvValue,
+  N8N_ROOT_FIRST_NAME: requiredEnvValue,
+  N8N_ROOT_LAST_NAME: requiredEnvValue,
+  N8N_ROOT_EMAIL: requiredEnvValue,
+  N8N_ROOT_PASSWORD: requiredEnvValue,
   OLLAMA_EMBEDDING_MODEL: requiredEnvValue,
   OLLAMA_CHAT_MODEL: requiredEnvValue
 });
@@ -88,6 +94,9 @@ export const aiLlmBootstrapEnvSchema = labEnvSchema.extend({
  * Schema for AI LLM smoke checks against Open WebUI and Ollama.
  */
 export const aiLlmSmokeEnvSchema = labEnvSchema.extend({
+  N8N_URL: requiredEnvValue,
+  N8N_ROOT_EMAIL: requiredEnvValue,
+  N8N_ROOT_PASSWORD: requiredEnvValue,
   OPENWEBUI_URL: requiredEnvValue,
   OPENWEBUI_ROOT_EMAIL: requiredEnvValue,
   OPENWEBUI_ROOT_PASSWORD: requiredEnvValue,

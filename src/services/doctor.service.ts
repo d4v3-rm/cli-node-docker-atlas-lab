@@ -13,6 +13,7 @@ import { collectExpectedOllamaModelIdentifiers } from '../utils/model-lists.js';
 import { runCommand } from '../utils/process.js';
 import { readGatewayCertificate } from './gateway-certificate.service.js';
 import { checkNvidiaGpuRuntime } from './gpu-preflight.service.js';
+import { canLoginToN8n } from './n8n-owner.service.js';
 import { parseAiLlmSmokeEnv, parseSmokeEnv } from './project.service.js';
 
 /**
@@ -243,6 +244,18 @@ function buildSmokeChecks(
   }
 
   checks.push(
+    {
+      name: 'Smoke n8n',
+      run: async (caCertificate) => {
+        const ok = await canLoginToN8n(aiLlmEnv, caCertificate);
+
+        return {
+          name: 'Smoke n8n',
+          ok,
+          detail: ok ? 'Owner login verified' : 'Could not authenticate with the configured owner account'
+        };
+      }
+    },
     {
       name: 'Smoke Open WebUI',
       run: async (caCertificate) => {

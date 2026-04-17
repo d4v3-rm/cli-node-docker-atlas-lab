@@ -35,15 +35,6 @@
   }
 }
 
-(insecure_service_proxy) {
-  import lab_tls
-  reverse_proxy {args[0]} {
-    transport http {
-      tls_insecure_skip_verify
-    }
-  }
-}
-
 https://${LAB_PUBLIC_HOST}:${LAB_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${LAB_HTTPS_PORT} {
   import lab_tls
   root * /srv
@@ -61,12 +52,4 @@ https://${LAB_PUBLIC_HOST}:${PLANE_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${PLAN
 
 https://${LAB_PUBLIC_HOST}:${PENPOT_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${PENPOT_HTTPS_PORT} {
   import service_proxy penpot-frontend:8080
-}
-
-https://${LAB_PUBLIC_HOST}:${NEXTCLOUD_AIO_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${NEXTCLOUD_AIO_HTTPS_PORT} {
-  import service_proxy host.docker.internal:${NEXTCLOUD_AIO_APACHE_PORT}
-}
-
-https://${LAB_PUBLIC_HOST}:${NEXTCLOUD_AIO_SETUP_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${NEXTCLOUD_AIO_SETUP_HTTPS_PORT} {
-  import insecure_service_proxy host.docker.internal:${NEXTCLOUD_AIO_MASTER_PORT}
 }

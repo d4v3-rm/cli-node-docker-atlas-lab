@@ -30,10 +30,10 @@ export interface LabRuntimeConfig {
       rootPassword: string;
       url: string;
     };
-    n8n?: {
-      ownerEmail?: string;
-      ownerName?: string;
-      ownerPassword?: string;
+    n8n: {
+      ownerEmail: string;
+      ownerName: string;
+      ownerPassword: string;
       url: string;
     };
     ollama: {
@@ -45,12 +45,6 @@ export interface LabRuntimeConfig {
       rootEmail: string;
       rootName: string;
       rootPassword: string;
-      url: string;
-    };
-    nextcloudAio: {
-      rootPassword: string;
-      rootUsername: string;
-      setupUrl: string;
       url: string;
     };
     openWebUi: {

@@ -111,7 +111,6 @@
     "rootName": "root name",
     "rootPassword": "root password",
     "rootUser": "root user",
-    "setupUrl": "setup URL",
     "superuser": "superuser",
     "wanModel": "wan model",
     "usage": "usage"
@@ -123,11 +122,9 @@
     "designCollaboration": "design collaboration",
     "directAppOnboarding": "direct app onboarding",
     "directAppLogin": "direct app login",
-    "guidedSetup": "guided setup",
     "imageStudio": "image studio",
     "localInferenceApi": "local inference API",
     "password": "password",
-    "privateCloud": "private cloud",
     "projectHub": "project hub",
     "protectedApi": "protected API",
     "sharedDatabase": "shared database",
@@ -136,10 +133,10 @@
     "alwaysOnForge": "always-on forge"
   },
   "dashboard": {
-    "coreLayerSummary": "Gitea, Plane, Penpot, and Nextcloud AIO form the always-on core plane of the lab.",
+    "coreLayerSummary": "Gitea, Plane, and Penpot form the always-on core plane of the lab.",
     "accessNotes": {
       "aiDisabled": "The AI layer no longer starts by default: the deck marks it as optional instead of pretending that it is online.",
-      "aiEnabled": "Open WebUI and Ollama are really online and reachable on the AI gateway ports.",
+      "aiEnabled": "Open WebUI, Ollama, and n8n are online and reachable on the dedicated AI gateway ports.",
       "credentials": "Operational credentials are exposed here and remain aligned with the lab bootstrap.",
       "https": "All browser ingresses use localhost with dedicated HTTPS, without custom DNS or hosts-file edits.",
       "workbenchDisabled": "Workbench and Postgres stay separated from the core operating plane until you enable the dedicated layer.",
@@ -148,18 +145,19 @@
     "aiLayer": {
       "capabilities": {
         "llmModels": "GPU-backed LLM models",
+        "n8n": "Local n8n automation",
         "ollama": "Protected Ollama API",
         "openWebUi": "Local Open WebUI"
       },
-      "description": "Optional AI layer for local conversational workflows and GPU-backed LLM inference. The deck enables it only when you explicitly request it.",
+      "description": "Optional AI layer for local conversational workflows, workflow orchestration, and GPU-backed LLM inference. The deck enables it only when you explicitly request it.",
       "summaryDisabled": "The AI layer is off. No AI service is started or exposed until you enable the dedicated flag.",
-      "summaryEnabled": "Open WebUI and Ollama are active and served through the AI gateway.",
+      "summaryEnabled": "Open WebUI, Ollama, and n8n are active and served through the AI gateway.",
       "title": "AI"
     },
     "aiServices": {
       "n8n": {
         "action": "Open n8n",
-        "description": "Workflow automation platform for orchestrating integrations, agents, and AI flows, even outside the lab's local runtime.",
+        "description": "Local workflow automation platform for orchestrating integrations, agents, and AI flows, with the bootstrap owner account aligned to the lab runtime.",
         "title": "n8n"
       },
       "ollama": {
@@ -187,7 +185,7 @@
         "label": "segmentation"
       },
       "usage": {
-        "body": "Gitea, Plane, Penpot, and Nextcloud AIO stay on as the core plane; AI, AI image, AI video, and workbench layers are enabled only when they are actually needed.",
+        "body": "Gitea, Plane, and Penpot stay on as the core plane; the AI and workbench layers are enabled only when they are actually needed.",
         "label": "usage"
       }
     },
@@ -209,7 +207,7 @@
         "networkMapDescription": "Read the lab topology and the published network planes.",
         "networkMapLabel": "Network map"
       },
-      "summary": "Unified control room for repository work, project coordination, design collaboration, private cloud access, optional AI tooling, and development environments. Browser ports stay on HTTPS over localhost, while Postgres from the workbench layer also exposes a host-side TCP port.",
+      "summary": "Unified control room for repository work, project coordination, design collaboration, optional AI tooling, and development environments. Browser ports stay on HTTPS over localhost, while Postgres from the workbench layer also exposes a host-side TCP port.",
       "titleLines": {
         "first": "LAB",
         "second": "ATLAS"
@@ -254,13 +252,6 @@
         "action": "Open Gitea",
         "description": "Internal Git forge for repositories, issues, review, and the lab's technical collaboration flow.",
         "title": "Gitea Forge"
-      },
-      "nextcloudAio": {
-        "action": "Open setup UI",
-        "description": "Self-hosted Nextcloud All-in-One stack routed through the lab gateway. It exposes the application on its dedicated URL once the guided AIO setup has completed.",
-        "note": "Use the setup UI first. When the Nextcloud application asks for the initial admin account, use the credentials listed here. After AIO provisions the application containers, the main app URL becomes available on the dedicated gateway port.",
-        "title": "Nextcloud All-in-One",
-        "usage": "self-hosted deployment"
       },
       "penpot": {
         "action": "Open Penpot",

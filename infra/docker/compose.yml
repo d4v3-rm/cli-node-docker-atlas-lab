@@ -62,15 +62,11 @@ services:
       timeout: 5s
       retries: 30
       start_period: 2s
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     ports:
       - "${LAB_HTTPS_PORT}:${LAB_HTTPS_PORT}"
       - "${GITEA_HTTPS_PORT}:${GITEA_HTTPS_PORT}"
       - "${PLANE_HTTPS_PORT}:${PLANE_HTTPS_PORT}"
       - "${PENPOT_HTTPS_PORT}:${PENPOT_HTTPS_PORT}"
-      - "${NEXTCLOUD_AIO_HTTPS_PORT}:${NEXTCLOUD_AIO_HTTPS_PORT}"
-      - "${NEXTCLOUD_AIO_SETUP_HTTPS_PORT}:${NEXTCLOUD_AIO_SETUP_HTTPS_PORT}"
     volumes:
       - gateway-certs:/etc/caddy/certs
       - gateway-config:/etc/caddy/dynamic
@@ -82,8 +78,6 @@ services:
       plane-proxy:
         condition: service_started
       penpot-frontend:
-        condition: service_started
-      nextcloud-aio-mastercontainer:
         condition: service_started
     networks:
       - edge-net
@@ -482,23 +476,6 @@ services:
     networks:
       - penpot-net
 
-  nextcloud-aio-mastercontainer:
-    image: ghcr.io/nextcloud-releases/all-in-one:${NEXTCLOUD_AIO_VERSION}
-    container_name: nextcloud-aio-mastercontainer
-    init: true
-    restart: always
-    network_mode: bridge
-    ports:
-      - "${NEXTCLOUD_AIO_MASTER_PORT}:8080"
-    volumes:
-      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    environment:
-      APACHE_PORT: ${NEXTCLOUD_AIO_APACHE_PORT}
-      APACHE_IP_BINDING: 0.0.0.0
-      APACHE_ADDITIONAL_NETWORK: ""
-      SKIP_DOMAIN_VALIDATION: "true"
-
 networks:
   edge-net:
     name: cli-node-docker-atlas-lab_edge
@@ -534,5 +511,3 @@ volumes:
   plane-migrator-logs:
   penpot-assets:
   penpot-postgres:
-  nextcloud_aio_mastercontainer:
-    name: nextcloud_aio_mastercontainer

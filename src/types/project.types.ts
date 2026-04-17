@@ -10,6 +10,10 @@ export interface LabEnv {
   GITEA_ROOT_USERNAME?: string;
   GITEA_ROOT_PASSWORD?: string;
   GITEA_ROOT_EMAIL?: string;
+  N8N_ROOT_FIRST_NAME?: string;
+  N8N_ROOT_LAST_NAME?: string;
+  N8N_ROOT_EMAIL?: string;
+  N8N_ROOT_PASSWORD?: string;
   PLANE_ROOT_NAME?: string;
   PLANE_ROOT_EMAIL?: string;
   PLANE_ROOT_PASSWORD?: string;
@@ -19,20 +23,17 @@ export interface LabEnv {
   PENPOT_ROOT_NAME?: string;
   PENPOT_ROOT_EMAIL?: string;
   PENPOT_ROOT_PASSWORD?: string;
-  NEXTCLOUD_AIO_ROOT_USERNAME?: string;
-  NEXTCLOUD_AIO_ROOT_PASSWORD?: string;
   OLLAMA_EMBEDDING_MODEL?: string;
   OLLAMA_CHAT_MODEL?: string;
   OLLAMA_RUNTIME_MODELS?: string;
   POSTGRES_DEV_HOST_PORT?: string;
   LAB_URL?: string;
   GITEA_URL?: string;
+  N8N_URL?: string;
   PLANE_URL?: string;
   OPENWEBUI_URL?: string;
   OLLAMA_URL?: string;
   PENPOT_URL?: string;
-  NEXTCLOUD_AIO_URL?: string;
-  NEXTCLOUD_AIO_SETUP_URL?: string;
   OLLAMA_GATEWAY_USER?: string;
   OLLAMA_GATEWAY_PASSWORD?: string;
   ATLAS_DOCKER_HUB_MIRRORS?: string;
@@ -84,6 +85,11 @@ export interface BootstrapEnv extends LabEnv {
  * Env shape guaranteed after AI LLM bootstrap validation.
  */
 export interface AiLlmBootstrapEnv extends LabEnv {
+  N8N_URL: string;
+  N8N_ROOT_FIRST_NAME: string;
+  N8N_ROOT_LAST_NAME: string;
+  N8N_ROOT_EMAIL: string;
+  N8N_ROOT_PASSWORD: string;
   OLLAMA_EMBEDDING_MODEL: string;
   OLLAMA_CHAT_MODEL: string;
 }
@@ -100,6 +106,9 @@ export interface SmokeEnv extends LabEnv {
  * Env shape guaranteed after AI LLM smoke-check validation.
  */
 export interface AiLlmSmokeEnv extends LabEnv {
+  N8N_URL: string;
+  N8N_ROOT_EMAIL: string;
+  N8N_ROOT_PASSWORD: string;
   OPENWEBUI_URL: string;
   OPENWEBUI_ROOT_EMAIL: string;
   OPENWEBUI_ROOT_PASSWORD: string;

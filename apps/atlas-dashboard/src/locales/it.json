@@ -111,7 +111,6 @@
     "rootName": "nome root",
     "rootPassword": "password root",
     "rootUser": "utente root",
-    "setupUrl": "URL setup",
     "superuser": "superuser",
     "wanModel": "modello wan",
     "usage": "uso"
@@ -123,11 +122,9 @@
     "designCollaboration": "collaborazione design",
     "directAppOnboarding": "onboarding diretto in app",
     "directAppLogin": "login diretto applicazione",
-    "guidedSetup": "setup guidato",
     "imageStudio": "studio immagini",
     "localInferenceApi": "API di inference locale",
     "password": "password",
-    "privateCloud": "cloud privato",
     "projectHub": "hub progetti",
     "protectedApi": "API protetta",
     "sharedDatabase": "database condiviso",
@@ -136,10 +133,10 @@
     "alwaysOnForge": "forge sempre accesa"
   },
   "dashboard": {
-    "coreLayerSummary": "Gitea, Plane, Penpot e Nextcloud AIO formano il piano core sempre acceso del lab.",
+    "coreLayerSummary": "Gitea, Plane e Penpot formano il piano core sempre acceso del lab.",
     "accessNotes": {
       "aiDisabled": "Il layer AI non viene piu acceso di default: il deck lo marca come opzionale invece di fingere che sia online.",
-      "aiEnabled": "Open WebUI e Ollama sono realmente online e raggiungibili sulle porte AI del gateway.",
+      "aiEnabled": "Open WebUI, Ollama e n8n sono online e raggiungibili sulle porte dedicate del gateway AI.",
       "credentials": "Le credenziali operative sono esposte qui e restano allineate al bootstrap del lab.",
       "https": "Tutti gli ingressi browser usano localhost con HTTPS dedicato, senza DNS custom o file hosts.",
       "workbenchDisabled": "Workbench e Postgres restano separati dal core operativo finche non abiliti il layer dedicato.",
@@ -148,18 +145,19 @@
     "aiLayer": {
       "capabilities": {
         "llmModels": "modelli LLM GPU-backed",
+        "n8n": "automazione n8n locale",
         "ollama": "API Ollama protetta",
         "openWebUi": "Open WebUI locale"
       },
-      "description": "Layer AI opzionale per console conversazionale locale e inference LLM GPU-backed. Il deck lo attiva solo quando lo chiedi esplicitamente.",
+      "description": "Layer AI opzionale per console conversazionale locale, orchestrazione workflow e inference LLM GPU-backed. Il deck lo attiva solo quando lo chiedi esplicitamente.",
       "summaryDisabled": "Layer AI spento. Nessun servizio AI viene avviato o esposto finche non abiliti il flag dedicato.",
-      "summaryEnabled": "Open WebUI e Ollama sono attivi e serviti dal gateway AI.",
+      "summaryEnabled": "Open WebUI, Ollama e n8n sono attivi e serviti dal gateway AI.",
       "title": "AI"
     },
     "aiServices": {
       "n8n": {
         "action": "Apri n8n",
-        "description": "Piattaforma di automazione workflow utile per orchestrare integrazioni, agenti e flussi AI anche fuori dal runtime locale del lab.",
+        "description": "Piattaforma locale di automazione workflow per orchestrare integrazioni, agenti e flussi AI, con owner bootstrap allineato al runtime del lab.",
         "title": "n8n"
       },
       "ollama": {
@@ -187,7 +185,7 @@
         "label": "segmentazione"
       },
       "usage": {
-        "body": "Gitea, Plane, Penpot e Nextcloud AIO restano sempre attivi nel piano core; AI, AI image, AI video e workbench vengono abilitati a layer solo quando servono davvero.",
+        "body": "Gitea, Plane e Penpot restano sempre attivi nel piano core; i layer AI e workbench vengono abilitati solo quando servono davvero.",
         "label": "uso"
       }
     },
@@ -209,7 +207,7 @@
         "networkMapDescription": "Leggi la topologia del lab e i piani di rete pubblicati.",
         "networkMapLabel": "Network map"
       },
-      "summary": "Control room unificata per repository, coordinamento progetti, collaborazione design, cloud privato, strumenti AI opzionali e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.",
+      "summary": "Control room unificata per repository, coordinamento progetti, collaborazione design, strumenti AI opzionali e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.",
       "titleLines": {
         "first": "LAB",
         "second": "ATLAS"
@@ -254,13 +252,6 @@
         "action": "Apri Gitea",
         "description": "Forge Git interna per repository, issue, review e flusso di collaborazione tecnica del lab.",
         "title": "Gitea Forge"
-      },
-      "nextcloudAio": {
-        "action": "Apri setup UI",
-        "description": "Stack Nextcloud All-in-One self-hosted instradato dal gateway del lab. Espone l'applicazione sul suo URL dedicato dopo il completamento del setup guidato AIO.",
-        "note": "Apri prima la setup UI. Quando l'applicazione Nextcloud chiede l'account admin iniziale, usa le credenziali mostrate qui. Dopo che AIO ha predisposto i container applicativi, l'URL principale risponde sulla porta gateway dedicata.",
-        "title": "Nextcloud All-in-One",
-        "usage": "deployment self-hosted"
       },
       "penpot": {
         "action": "Apri Penpot",

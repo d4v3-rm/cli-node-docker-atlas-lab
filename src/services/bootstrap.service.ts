@@ -4,6 +4,7 @@ import { createComposeCommandArgs, type ComposeLayerSelection } from '../lib/com
 import type { BootstrapCommandOptions } from '../types/cli.types.js';
 import type { AiLlmBootstrapEnv, ProjectContext } from '../types/project.types.js';
 import { ensureGiteaAdmin } from './gitea-admin.service.js';
+import { ensureN8nOwner } from './n8n-owner.service.js';
 import { ensurePenpotAdmin } from './penpot-admin.service.js';
 import { ensurePlaneAdmin, waitForPlaneBootstrapPrerequisites } from './plane-admin.service.js';
 import { printCommandHeader } from '../ui/banner.js';
@@ -77,6 +78,18 @@ export function createBootstrapTasks(
       printInfo(`Penpot root profile ${result}.`, 'bootstrap');
     }
   });
+
+  if (options.withAiLlm && aiLlmEnv) {
+    tasks.push({
+      title: formatTaskTitle('bootstrap', 'Align n8n owner account'),
+      task: async () => {
+        await waitForService(context, 'n8n', 180, { includeAiLlm: true });
+        await waitForService(context, 'gateway-ai-llm', 180, { includeAiLlm: true });
+        const result = await ensureN8nOwner(context, aiLlmEnv);
+        printInfo(`n8n owner account ${result}.`, 'bootstrap');
+      }
+    });
+  }
 
   if (options.withAiLlm && !options.skipOllama && aiLlmEnv) {
     tasks.push({

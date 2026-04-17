@@ -7,11 +7,11 @@
 ![CLI](https://img.shields.io/badge/CLI-Node.js%20%2B%20TypeScript-3C873A?logo=nodedotjs&logoColor=white)
 ![Dashboard](https://img.shields.io/badge/UI-Atlas%20Dashboard-0F172A?logo=antdesign&logoColor=white)
 ![Security](https://img.shields.io/badge/Ingress-HTTPS%20Only-0F766E)
-![Profiles](https://img.shields.io/badge/Layers-core%20%7C%20ai--agents%20%7C%20ai--llm%20%7C%20ai--image%20%7C%20ai--video%20%7C%20workbench-7C3AED)
+![Profiles](https://img.shields.io/badge/Layers-core%20%7C%20ai--llm%20%7C%20workbench-7C3AED)
 ![Persistence](https://img.shields.io/badge/Persistence-Docker%20Volumes-CA8A04)
 
 > 🧭 **Atlas Lab** is a localhost-first self-hosted platform made of a Node.js/TypeScript CLI, a layered Docker Compose stack, and an operational React dashboard served by the gateway.
-> It is designed to provide Git hosting, optional automation agents, optional local AI LLM services, optional AI image and video generation, browser-based development workbenches, and structured image/volume backup workflows on a single machine.
+> It is designed to provide Git hosting, optional local AI services with Open WebUI, Ollama, and n8n, browser-based development workbenches, and structured image/volume backup workflows on a single machine.
 
 ---
 
@@ -22,8 +22,8 @@ Atlas Lab is built for a practical goal: run a repeatable local engineering plat
 ### What it gives you
 
 - 🧱 An always-on **core layer** with Gitea, the gateway, and Atlas Dashboard
-- 🧠 An optional **AI LLM layer** with Open WebUI and Ollama
-- 🛠️ An optional **workbench layer** with browser-based Node, Python, AI, and C++ environments plus shared PostgreSQL
+- 🧠 An optional **AI LLM layer** with Open WebUI, Ollama, and n8n
+- 🛠️ An optional **workbench layer** with browser-based Node and Python environments plus shared PostgreSQL
 - 🔐 HTTPS-only ingress on `localhost`
 - 📦 A self-contained npm package that can run without a local repository checkout
 - 💾 Persistent state stored in named Docker volumes
@@ -67,7 +67,7 @@ Atlas Lab is split into **three explicit layers**:
 | Layer | Status | Includes | Purpose |
 | --- | --- | --- | --- |
 | `core` | always on | gateway, Atlas Dashboard, Gitea, Gitea DB | baseline platform |
-| `ai-llm` | optional | Open WebUI, Ollama, AI LLM gateway | local LLM workflows |
+| `ai-llm` | optional | Open WebUI, Ollama, n8n, AI gateway | local AI workflows and automation |
 | `workbench` | optional | Node Forge, Python Grid, shared PostgreSQL, workbench gateway | browser-based development |
 
 ### Why the current topology
@@ -95,6 +95,7 @@ The CLI:
 - runs host preflight checks
 - reconciles runtime state
 - bootstraps Gitea
+- aligns the n8n owner bootstrap account when the AI LLM layer is enabled
 - reconciles Ollama only when the AI LLM layer is enabled
 - cleans up legacy runtime artifacts
 
@@ -111,6 +112,7 @@ The only host-level TCP service exposed directly is PostgreSQL from the workbenc
 | Gitea | `core` | `https://localhost:8444/` | Git forge, issues, reviews |
 | Open WebUI | `ai-llm` | `https://localhost:8446/` | only with `--with-ai-llm` |
 | Ollama | `ai-llm` | `https://localhost:8447/` | HTTPS API |
+| n8n | `ai-llm` | `https://localhost:8453/` | workflow automation and agent orchestration |
 | Node Forge | `workbench` | `https://localhost:8450/` | Node / TypeScript workspace |
 | Python Grid | `workbench` | `https://localhost:8451/` | Python workspace |
 | PostgreSQL | `workbench` | `localhost:15432` | host-side desktop access |
@@ -129,7 +131,7 @@ The only host-level TCP service exposed directly is PostgreSQL from the workbenc
 | --- | --- | --- |
 | `edge-net` | exposed | published ingress ports |
 | `apps-net` | internal | Gitea and shared browser-facing services |
-| `ai-llm-net` | internal | Open WebUI and Ollama |
+| `ai-llm-net` | internal | Open WebUI, Ollama, and n8n |
 | `data-net` | internal | data services and infrastructure databases |
 | `workbench-net` | internal | workbenches and PostgreSQL |
 | `workbench-host-net` | bridge | host-side PostgreSQL bind |
@@ -157,6 +159,7 @@ Key volumes include:
 - `gitea-data`
 - `gitea-db`
 - `ollama-data`
+- `n8n-data`
 - `open-webui-data`
 - `postgres-dev-data`
 - workbench home/workspace volumes for Node, Python, AI, and C++
@@ -175,7 +178,7 @@ Recreating containers does not wipe state. Removing the volumes does.
 
 ### AI requirements
 
-The AI LLM and AI image layers require:
+The AI LLM layer requires:
 
 - an `NVIDIA` GPU
 - a working `nvidia-smi` on the host
@@ -194,6 +197,7 @@ The AI LLM and AI image layers require:
 - `8444`
 - `8446`
 - `8447`
+- `8453`
 - `8450`
 - `8451`
 - `15432` when `workbench` is enabled
@@ -231,12 +235,13 @@ Key variables include:
 
 - `APP_VERSION`
 - `LAB_HTTPS_PORT`, `GITEA_HTTPS_PORT`
-- `OPENWEBUI_HTTPS_PORT`, `OLLAMA_HTTPS_PORT`
+- `OPENWEBUI_HTTPS_PORT`, `OLLAMA_HTTPS_PORT`, `N8N_HTTPS_PORT`
 - `NODE_DEV_HTTPS_PORT`, `PYTHON_DEV_HTTPS_PORT`
 - `POSTGRES_DEV_HOST_PORT`
 - `OLLAMA_CHAT_MODEL`, `OLLAMA_EMBEDDING_MODEL`, `OLLAMA_RUNTIME_MODELS`
 - `GITEA_ROOT_USERNAME`, `GITEA_ROOT_PASSWORD`
 - `OPENWEBUI_ROOT_EMAIL`, `OPENWEBUI_ROOT_PASSWORD`
+- `N8N_ROOT_EMAIL`, `N8N_ROOT_PASSWORD`
 
 Rule of thumb:
 
@@ -332,7 +337,7 @@ npm run dev -- down
 | `atlas-lab up --with-workbench` | adds the workbench layer |
 | `atlas-lab up --with-ai-llm --with-workbench` | starts the full lab |
 | `atlas-lab bootstrap` | reruns core bootstrap |
-| `atlas-lab bootstrap --with-ai-llm` | reruns bootstrap and Ollama reconciliation |
+| `atlas-lab bootstrap --with-ai-llm` | reruns bootstrap, n8n owner alignment, and Ollama reconciliation |
 | `atlas-lab doctor` | runs host and configuration checks |
 | `atlas-lab doctor --smoke` | adds smoke tests for the core layer |
 | `atlas-lab doctor --with-ai-llm --smoke` | adds smoke tests for the AI LLM layer |
@@ -419,7 +424,7 @@ npm run dev -- save-volumes --with-ai-llm --with-workbench
 npm run dev -- restore-volumes --input .\backups\volumes\atlas-lab-volumes.tar.gz
 ```
 
-Bootstrap is idempotent and reconciles Gitea plus Ollama when `ai-llm` is enabled.
+Bootstrap is idempotent and reconciles Gitea, n8n, and Ollama when `ai-llm` is enabled.
 
 ---
 
@@ -433,6 +438,7 @@ Bootstrap is idempotent and reconciles Gitea plus Ollama when `ai-llm` is enable
 | Gitea | `https://localhost:8444/` | `root / RootGitea!2026` |
 | Open WebUI | `https://localhost:8446/` | `root@openwebui.local / RootOpenWebUI!2026` |
 | Ollama | `https://localhost:8447/` | gateway basic auth `root / RootOllama!2026` |
+| n8n | `https://localhost:8453/` | owner bootstrap `root@n8n.local / RootN8NApp!2026` |
 | PostgreSQL host-side | `localhost:15432` | `postgres / RootPostgresDev!2026` |
 
 For DBeaver and other desktop PostgreSQL clients:
