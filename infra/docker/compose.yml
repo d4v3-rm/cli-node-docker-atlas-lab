@@ -219,9 +219,11 @@ services:
     environment:
       <<: *lab-env
       CMD_DB_URL: postgres://${HEDGEDOC_POSTGRES_USER}:${HEDGEDOC_POSTGRES_PASSWORD}@hedgedoc-db:5432/${HEDGEDOC_POSTGRES_DATABASE}
-      CMD_DOMAIN: ${LAB_PUBLIC_HOST}
+      # HedgeDoc 1.x builds absolute asset URLs from CMD_DOMAIN and mishandles proxy ports.
+      CMD_DOMAIN: ${LAB_PUBLIC_HOST}:${HEDGEDOC_HTTPS_PORT}
       CMD_PROTOCOL_USESSL: "true"
-      CMD_URL_ADDPORT: "true"
+      CMD_URL_ADDPORT: "false"
+      CMD_ALLOW_ORIGIN: ${LAB_PUBLIC_HOST}:${HEDGEDOC_HTTPS_PORT},${LAB_GATEWAY_IP}:${HEDGEDOC_HTTPS_PORT}
       CMD_ALLOW_ANONYMOUS: "false"
       CMD_EMAIL: "true"
       CMD_ALLOW_EMAIL_REGISTER: "true"
