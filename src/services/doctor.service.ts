@@ -236,6 +236,22 @@ function buildSmokeChecks(
       name: 'Smoke Gitea',
       run: (caCertificate) =>
         runStatusCheck('Smoke Gitea', new URL('/api/healthz', env.GITEA_URL).toString(), caCertificate)
+    },
+    {
+      name: 'Smoke BookStack',
+      run: (caCertificate) => runStatusCheck('Smoke BookStack', env.BOOKSTACK_URL, caCertificate)
+    },
+    {
+      name: 'Smoke Plane',
+      run: (caCertificate) => runStatusCheck('Smoke Plane', env.PLANE_URL, caCertificate)
+    },
+    {
+      name: 'Smoke Penpot',
+      run: (caCertificate) => runStatusCheck('Smoke Penpot', env.PENPOT_URL, caCertificate)
+    },
+    {
+      name: 'Smoke HedgeDoc',
+      run: (caCertificate) => runStatusCheck('Smoke HedgeDoc', env.HEDGEDOC_URL, caCertificate)
     }
   ];
 

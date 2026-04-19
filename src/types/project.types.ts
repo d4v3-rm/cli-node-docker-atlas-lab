@@ -14,6 +14,9 @@ export interface LabEnv {
   N8N_ROOT_LAST_NAME?: string;
   N8N_ROOT_EMAIL?: string;
   N8N_ROOT_PASSWORD?: string;
+  BOOKSTACK_ROOT_NAME?: string;
+  BOOKSTACK_ROOT_EMAIL?: string;
+  BOOKSTACK_ROOT_PASSWORD?: string;
   PLANE_ROOT_NAME?: string;
   PLANE_ROOT_EMAIL?: string;
   PLANE_ROOT_PASSWORD?: string;
@@ -30,10 +33,12 @@ export interface LabEnv {
   LAB_URL?: string;
   GITEA_URL?: string;
   N8N_URL?: string;
+  BOOKSTACK_URL?: string;
   PLANE_URL?: string;
   OPENWEBUI_URL?: string;
   OLLAMA_URL?: string;
   PENPOT_URL?: string;
+  HEDGEDOC_URL?: string;
   OLLAMA_GATEWAY_USER?: string;
   OLLAMA_GATEWAY_PASSWORD?: string;
   ATLAS_DOCKER_HUB_MIRRORS?: string;
@@ -72,6 +77,9 @@ export interface BootstrapEnv extends LabEnv {
   GITEA_ROOT_USERNAME: string;
   GITEA_ROOT_PASSWORD: string;
   GITEA_ROOT_EMAIL: string;
+  BOOKSTACK_ROOT_NAME: string;
+  BOOKSTACK_ROOT_EMAIL: string;
+  BOOKSTACK_ROOT_PASSWORD: string;
   PLANE_ROOT_NAME: string;
   PLANE_ROOT_EMAIL: string;
   PLANE_ROOT_PASSWORD: string;
@@ -100,6 +108,10 @@ export interface AiLlmBootstrapEnv extends LabEnv {
 export interface SmokeEnv extends LabEnv {
   LAB_URL: string;
   GITEA_URL: string;
+  BOOKSTACK_URL: string;
+  PLANE_URL: string;
+  PENPOT_URL: string;
+  HEDGEDOC_URL: string;
 }
 
 /**

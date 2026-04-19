@@ -26,6 +26,9 @@ export const labEnvSchema = z
     N8N_ROOT_LAST_NAME: optionalEnvValue,
     N8N_ROOT_EMAIL: optionalEnvValue,
     N8N_ROOT_PASSWORD: optionalEnvValue,
+    BOOKSTACK_ROOT_NAME: optionalEnvValue,
+    BOOKSTACK_ROOT_EMAIL: optionalEnvValue,
+    BOOKSTACK_ROOT_PASSWORD: optionalEnvValue,
     PLANE_ROOT_NAME: optionalEnvValue,
     PLANE_ROOT_EMAIL: optionalEnvValue,
     PLANE_ROOT_PASSWORD: optionalEnvValue,
@@ -42,10 +45,12 @@ export const labEnvSchema = z
     LAB_URL: optionalEnvValue,
     GITEA_URL: optionalEnvValue,
     N8N_URL: optionalEnvValue,
+    BOOKSTACK_URL: optionalEnvValue,
     PLANE_URL: optionalEnvValue,
     OPENWEBUI_URL: optionalEnvValue,
     OLLAMA_URL: optionalEnvValue,
     PENPOT_URL: optionalEnvValue,
+    HEDGEDOC_URL: optionalEnvValue,
     OLLAMA_GATEWAY_USER: optionalEnvValue,
     OLLAMA_GATEWAY_PASSWORD: optionalEnvValue
   })
@@ -60,6 +65,9 @@ export const bootstrapEnvSchema = labEnvSchema.extend({
   GITEA_ROOT_USERNAME: requiredEnvValue,
   GITEA_ROOT_PASSWORD: requiredEnvValue,
   GITEA_ROOT_EMAIL: requiredEnvValue,
+  BOOKSTACK_ROOT_NAME: requiredEnvValue,
+  BOOKSTACK_ROOT_EMAIL: requiredEnvValue,
+  BOOKSTACK_ROOT_PASSWORD: requiredEnvValue,
   PLANE_ROOT_NAME: requiredEnvValue,
   PLANE_ROOT_EMAIL: requiredEnvValue,
   PLANE_ROOT_PASSWORD: requiredEnvValue,
@@ -74,7 +82,11 @@ export const bootstrapEnvSchema = labEnvSchema.extend({
  */
 export const smokeEnvSchema = labEnvSchema.extend({
   LAB_URL: requiredEnvValue,
-  GITEA_URL: requiredEnvValue
+  GITEA_URL: requiredEnvValue,
+  BOOKSTACK_URL: requiredEnvValue,
+  PLANE_URL: requiredEnvValue,
+  PENPOT_URL: requiredEnvValue,
+  HEDGEDOC_URL: requiredEnvValue
 });
 
 /**

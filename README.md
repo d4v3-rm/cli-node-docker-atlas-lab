@@ -1,6 +1,6 @@
 # Atlas Lab 🚀
 
-![Version](https://img.shields.io/badge/version-0.40.5-blue.svg)
+![Version](https://img.shields.io/badge/version-0.45.2-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-22c55e.svg)
 ![Docker Compose](https://img.shields.io/badge/Docker%20Compose-v2-2496ED?logo=docker&logoColor=white)
 ![Gateway](https://img.shields.io/badge/Gateway-Caddy-1F2937?logo=caddy&logoColor=white)
@@ -11,7 +11,7 @@
 ![Persistence](https://img.shields.io/badge/Persistence-Docker%20Volumes-CA8A04)
 
 > 🧭 **Atlas Lab** is a localhost-first self-hosted platform made of a Node.js/TypeScript CLI, a layered Docker Compose stack, and an operational React dashboard served by the gateway.
-> It is designed to provide Git hosting, optional local AI services with Open WebUI, Ollama, and n8n, browser-based development workbenches, and structured image/volume backup workflows on a single machine.
+> It is designed to provide Git hosting, project and design collaboration, internal documentation, collaborative markdown notes, optional local AI services with Open WebUI, Ollama, and n8n, browser-based development workbenches, and structured image/volume backup workflows on a single machine.
 
 ---
 
@@ -21,7 +21,7 @@ Atlas Lab is built for a practical goal: run a repeatable local engineering plat
 
 ### What it gives you
 
-- 🧱 An always-on **core layer** with Gitea, the gateway, and Atlas Dashboard
+- 🧱 An always-on **core layer** with Atlas Dashboard, Gitea, Plane, Penpot, BookStack, and HedgeDoc
 - 🧠 An optional **AI LLM layer** with Open WebUI, Ollama, and n8n
 - 🛠️ An optional **workbench layer** with browser-based Node and Python environments plus shared PostgreSQL
 - 🔐 HTTPS-only ingress on `localhost`
@@ -66,7 +66,7 @@ Atlas Lab is split into **three explicit layers**:
 
 | Layer | Status | Includes | Purpose |
 | --- | --- | --- | --- |
-| `core` | always on | gateway, Atlas Dashboard, Gitea, Gitea DB | baseline platform |
+| `core` | always on | gateway, Atlas Dashboard, Gitea, Plane, Penpot, BookStack, HedgeDoc, and their backing data services | baseline platform |
 | `ai-llm` | optional | Open WebUI, Ollama, n8n, AI gateway | local AI workflows and automation |
 | `workbench` | optional | Node Forge, Python Grid, shared PostgreSQL, workbench gateway | browser-based development |
 
@@ -95,9 +95,11 @@ The CLI:
 - runs host preflight checks
 - reconciles runtime state
 - bootstraps Gitea
+- bootstraps the initial BookStack admin
+- aligns the Plane instance admin
+- aligns the Penpot root profile
 - aligns the n8n owner bootstrap account when the AI LLM layer is enabled
 - reconciles Ollama only when the AI LLM layer is enabled
-- cleans up legacy runtime artifacts
 
 ---
 
@@ -110,11 +112,15 @@ The only host-level TCP service exposed directly is PostgreSQL from the workbenc
 | --- | --- | --- | --- |
 | Atlas Dashboard | `core` | `https://localhost:8443/` | operational dashboard |
 | Gitea | `core` | `https://localhost:8444/` | Git forge, issues, reviews |
+| Plane | `core` | `https://localhost:8445/` | project planning and issue tracking |
 | Open WebUI | `ai-llm` | `https://localhost:8446/` | only with `--with-ai-llm` |
 | Ollama | `ai-llm` | `https://localhost:8447/` | HTTPS API |
-| n8n | `ai-llm` | `https://localhost:8453/` | workflow automation and agent orchestration |
+| Penpot | `core` | `https://localhost:8448/` | collaborative design workspace |
+| BookStack | `core` | `https://localhost:8449/` | internal wiki and knowledge base |
 | Node Forge | `workbench` | `https://localhost:8450/` | Node / TypeScript workspace |
 | Python Grid | `workbench` | `https://localhost:8451/` | Python workspace |
+| HedgeDoc | `core` | `https://localhost:8452/` | collaborative markdown notes |
+| n8n | `ai-llm` | `https://localhost:8453/` | workflow automation and agent orchestration |
 | PostgreSQL | `workbench` | `localhost:15432` | host-side desktop access |
 
 ### Operational rules
@@ -130,7 +136,7 @@ The only host-level TCP service exposed directly is PostgreSQL from the workbenc
 | Network | Type | Purpose |
 | --- | --- | --- |
 | `edge-net` | exposed | published ingress ports |
-| `apps-net` | internal | Gitea and shared browser-facing services |
+| `apps-net` | internal | Gitea, BookStack, HedgeDoc, and shared browser-facing core services |
 | `ai-llm-net` | internal | Open WebUI, Ollama, and n8n |
 | `data-net` | internal | data services and infrastructure databases |
 | `workbench-net` | internal | workbenches and PostgreSQL |
@@ -158,11 +164,15 @@ Key volumes include:
 - `gateway-data`
 - `gitea-data`
 - `gitea-db`
+- `bookstack-config`
+- `bookstack-db`
+- `hedgedoc-db`
+- `hedgedoc-uploads`
 - `ollama-data`
 - `n8n-data`
 - `open-webui-data`
 - `postgres-dev-data`
-- workbench home/workspace volumes for Node, Python, AI, and C++
+- workbench home/workspace volumes for Node and Python
 
 Recreating containers does not wipe state. Removing the volumes does.
 
@@ -195,11 +205,15 @@ The AI LLM layer requires:
 
 - `8443`
 - `8444`
+- `8445`
 - `8446`
 - `8447`
-- `8453`
+- `8448`
+- `8449`
 - `8450`
 - `8451`
+- `8452`
+- `8453`
 - `15432` when `workbench` is enabled
 
 ### Windows PowerShell note
@@ -234,13 +248,16 @@ The main runtime configuration lives in:
 Key variables include:
 
 - `APP_VERSION`
-- `LAB_HTTPS_PORT`, `GITEA_HTTPS_PORT`
-- `OPENWEBUI_HTTPS_PORT`, `OLLAMA_HTTPS_PORT`, `N8N_HTTPS_PORT`
+- `LAB_HTTPS_PORT`, `GITEA_HTTPS_PORT`, `PLANE_HTTPS_PORT`, `PENPOT_HTTPS_PORT`
+- `BOOKSTACK_HTTPS_PORT`, `OPENWEBUI_HTTPS_PORT`, `OLLAMA_HTTPS_PORT`, `HEDGEDOC_HTTPS_PORT`, `N8N_HTTPS_PORT`
 - `NODE_DEV_HTTPS_PORT`, `PYTHON_DEV_HTTPS_PORT`
 - `POSTGRES_DEV_HOST_PORT`
 - `OLLAMA_CHAT_MODEL`, `OLLAMA_EMBEDDING_MODEL`, `OLLAMA_RUNTIME_MODELS`
 - `GITEA_ROOT_USERNAME`, `GITEA_ROOT_PASSWORD`
+- `BOOKSTACK_ROOT_NAME`, `BOOKSTACK_ROOT_EMAIL`, `BOOKSTACK_ROOT_PASSWORD`
+- `PLANE_ROOT_EMAIL`, `PLANE_ROOT_PASSWORD`
 - `OPENWEBUI_ROOT_EMAIL`, `OPENWEBUI_ROOT_PASSWORD`
+- `PENPOT_ROOT_EMAIL`, `PENPOT_ROOT_PASSWORD`
 - `N8N_ROOT_EMAIL`, `N8N_ROOT_PASSWORD`
 
 Rule of thumb:
@@ -424,7 +441,7 @@ npm run dev -- save-volumes --with-ai-llm --with-workbench
 npm run dev -- restore-volumes --input .\backups\volumes\atlas-lab-volumes.tar.gz
 ```
 
-Bootstrap is idempotent and reconciles Gitea, n8n, and Ollama when `ai-llm` is enabled.
+Bootstrap is idempotent and reconciles Gitea, BookStack, Plane, Penpot, and, when `ai-llm` is enabled, n8n and Ollama.
 
 ---
 
@@ -436,8 +453,12 @@ Bootstrap is idempotent and reconciles Gitea, n8n, and Ollama when `ai-llm` is e
 | --- | --- | --- |
 | Atlas Dashboard | `https://localhost:8443/` | no dedicated login |
 | Gitea | `https://localhost:8444/` | `root / RootGitea!2026` |
+| Plane | `https://localhost:8445/` | `root@plane.local / RootPlane!2026` |
 | Open WebUI | `https://localhost:8446/` | `root@openwebui.local / RootOpenWebUI!2026` |
 | Ollama | `https://localhost:8447/` | gateway basic auth `root / RootOllama!2026` |
+| Penpot | `https://localhost:8448/` | `root@penpot.local / RootPenpot!2026` |
+| BookStack | `https://localhost:8449/` | `root@bookstack.local / RootBookStack!2026` |
+| HedgeDoc | `https://localhost:8452/` | local email accounts enabled; create the first account in-app |
 | n8n | `https://localhost:8453/` | owner bootstrap `root@n8n.local / RootN8NApp!2026` |
 | PostgreSQL host-side | `localhost:15432` | `postgres / RootPostgresDev!2026` |
 
@@ -488,7 +509,7 @@ Expected behavior. The lab uses a self-signed certificate.
 
 ### `atlas-lab up` fails during port preflight
 
-One of the configured lab ports (`8443-8447`, `8450-8451`, or `15432`) is occupied or excluded by the system.
+One of the configured lab ports (`8443-8449`, `8450-8453`, or `15432`) is occupied or excluded by the system.
 
 ```powershell
 atlas-lab status
@@ -572,6 +593,21 @@ This project is distributed under the **MIT** license.
 
 - Install with Docker: https://docs.gitea.com/installation/install-with-docker
 - Admin CLI: https://docs.gitea.com/administration/command-line
+
+### n8n
+
+- Self-hosted user management: https://docs.n8n.io/hosting/configuration/user-management-self-hosted/
+- Docker install: https://docs.n8n.io/hosting/installation/docker/
+
+### BookStack
+
+- Installation: https://www.bookstackapp.com/docs/admin/installation
+- Commands: https://www.bookstackapp.com/docs/admin/commands/
+
+### HedgeDoc
+
+- Docker image: https://docs.hedgedoc.org/setup/docker/
+- Configuration: https://docs.hedgedoc.org/configuration/
 
 ### Open WebUI
 

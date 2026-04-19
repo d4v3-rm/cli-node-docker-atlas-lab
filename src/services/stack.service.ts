@@ -11,14 +11,10 @@ import { runCommand } from '../utils/process.js';
 import { createBootstrapTasks } from './bootstrap.service.js';
 import { ensureStartupImagesAvailable } from './docker-image-prefetch.service.js';
 
-const LEGACY_IMAGES = [
-  'cli-node-lab-ollama-init:latest',
-  'cli-node-docker-atlas-lab-ollama-init:latest'
-] as const;
 const VERBOSE_TASK_RENDERER = 'verbose' as const;
 
 /**
- * Runs `docker compose up`, the bootstrap workflow, and the legacy image cleanup.
+ * Runs `docker compose up` and the post-start bootstrap workflow.
  */
 export async function runUpCommand(
   context: ProjectContext,
@@ -88,12 +84,6 @@ export async function runUpCommand(
               renderer: VERBOSE_TASK_RENDERER
             }
           )
-      },
-      {
-        title: formatTaskTitle('stack', 'Remove legacy init images'),
-        task: async () => {
-          await cleanupLegacyImages(context.projectRoot);
-        }
       }
     ],
     {
@@ -192,28 +182,6 @@ function createComposeUpArgs(context: ProjectContext, options: UpCommandOptions)
     includeAiLlm: Boolean(options.withAiLlm),
     includeWorkbench: Boolean(options.withWorkbench)
   });
-}
-
-/**
- * Removes the old one-shot init image if it is still present locally.
- */
-async function cleanupLegacyImages(projectRoot: string): Promise<number> {
-  let removedImages = 0;
-
-  for (const image of LEGACY_IMAGES) {
-    const result = await runCommand('docker', ['image', 'rm', '-f', image], {
-      cwd: projectRoot,
-      captureOutput: true,
-      allowFailure: true,
-      scope: 'stack'
-    });
-
-    if (result.exitCode === 0) {
-      removedImages += 1;
-    }
-  }
-
-  return removedImages;
 }
 
 /**

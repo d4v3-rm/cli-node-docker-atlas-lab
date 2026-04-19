@@ -24,6 +24,12 @@ export interface LabRuntimeConfig {
       rootUsername: string;
       url: string;
     };
+    bookStack: {
+      rootEmail: string;
+      rootName: string;
+      rootPassword: string;
+      url: string;
+    };
     plane: {
       rootEmail: string;
       rootName: string;
@@ -45,6 +51,9 @@ export interface LabRuntimeConfig {
       rootEmail: string;
       rootName: string;
       rootPassword: string;
+      url: string;
+    };
+    hedgeDoc: {
       url: string;
     };
     openWebUi: {

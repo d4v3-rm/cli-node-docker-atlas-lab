@@ -53,3 +53,11 @@ https://${LAB_PUBLIC_HOST}:${PLANE_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${PLAN
 https://${LAB_PUBLIC_HOST}:${PENPOT_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${PENPOT_HTTPS_PORT} {
   import service_proxy penpot-frontend:8080
 }
+
+https://${LAB_PUBLIC_HOST}:${BOOKSTACK_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${BOOKSTACK_HTTPS_PORT} {
+  import service_proxy bookstack:80
+}
+
+https://${LAB_PUBLIC_HOST}:${HEDGEDOC_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${HEDGEDOC_HTTPS_PORT} {
+  import service_proxy hedgedoc:3000
+}

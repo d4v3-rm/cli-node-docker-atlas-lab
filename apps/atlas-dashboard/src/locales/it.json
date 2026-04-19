@@ -123,10 +123,13 @@
     "directAppOnboarding": "onboarding diretto in app",
     "directAppLogin": "login diretto applicazione",
     "imageStudio": "studio immagini",
+    "knowledgeBase": "knowledge base",
     "localInferenceApi": "API di inference locale",
     "password": "password",
     "projectHub": "hub progetti",
     "protectedApi": "API protetta",
+    "collaborativeMarkdown": "markdown collaborativo",
+    "collaborativeNotes": "note collaborative",
     "sharedDatabase": "database condiviso",
     "videoStudio": "studio video",
     "workflowControl": "controllo workflow",
@@ -253,11 +256,22 @@
         "description": "Forge Git interna per repository, issue, review e flusso di collaborazione tecnica del lab.",
         "title": "Gitea Forge"
       },
+      "bookStack": {
+        "action": "Apri BookStack",
+        "description": "Base di conoscenza e documentazione interna self-hosted, con admin iniziale deterministico allineato dal bootstrap del lab.",
+        "title": "BookStack"
+      },
       "penpot": {
         "action": "Apri Penpot",
         "description": "Workspace Penpot self-hosted per product design, librerie condivise e collaborazione tra design e codice, con profilo root allineato al bootstrap del lab.",
         "title": "Penpot",
         "usage": "design e code collaboration"
+      },
+      "hedgeDoc": {
+        "action": "Apri HedgeDoc",
+        "description": "Workspace self-hosted di markdown collaborativo per note condivise, meeting pad e documentazione leggera.",
+        "note": "Gli account email locali sono abilitati e l accesso anonimo e disattivato. Crea il primo account direttamente nell app.",
+        "title": "HedgeDoc"
       },
       "plane": {
         "action": "Apri Plane",

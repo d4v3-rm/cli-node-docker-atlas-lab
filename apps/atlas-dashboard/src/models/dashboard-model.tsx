@@ -210,7 +210,7 @@ export function createDashboardViewModel(
         {
           caption: t('dashboard.metrics.core.caption'),
           label: t('dashboard.metrics.core.label'),
-          value: 3
+          value: 5
         },
         {
           caption: t(
@@ -241,7 +241,7 @@ export function createDashboardViewModel(
         {
           caption: t('dashboard.metrics.ingress.caption'),
           label: t('dashboard.metrics.ingress.label'),
-          value: 4 + (aiLlmEnabled ? 3 : 0) + (workbenchEnabled ? 2 : 0)
+          value: 6 + (aiLlmEnabled ? 3 : 0) + (workbenchEnabled ? 2 : 0)
         }
       ],
       pills: [
@@ -353,6 +353,40 @@ export function createDashboardViewModel(
       },
       {
         action: {
+          href: config.services.bookStack.url,
+          label: t('dashboard.services.bookStack.action')
+        },
+        credentials: [
+          {
+            label: credentialLabels.endpoint,
+            value: config.services.bookStack.url
+          },
+          {
+            label: credentialLabels.rootName,
+            value: config.services.bookStack.rootName
+          },
+          {
+            label: credentialLabels.rootEmail,
+            value: config.services.bookStack.rootEmail
+          },
+          {
+            label: credentialLabels.password,
+            value: config.services.bookStack.rootPassword
+          },
+          {
+            label: credentialLabels.accessMode,
+            value: t('values.directAppLogin')
+          }
+        ],
+        description: t('dashboard.services.bookStack.description'),
+        icon: 'host',
+        id: 'bookstack',
+        status: t('values.knowledgeBase'),
+        title: t('dashboard.services.bookStack.title'),
+        tone: 'core'
+      },
+      {
+        action: {
           href: config.services.plane.url,
           label: t('dashboard.services.plane.action')
         },
@@ -417,6 +451,33 @@ export function createDashboardViewModel(
         id: 'penpot',
         status: t('values.designCollaboration'),
         title: t('dashboard.services.penpot.title'),
+        tone: 'core'
+      },
+      {
+        action: {
+          href: config.services.hedgeDoc.url,
+          label: t('dashboard.services.hedgeDoc.action')
+        },
+        credentials: [
+          {
+            label: credentialLabels.endpoint,
+            value: config.services.hedgeDoc.url
+          },
+          {
+            label: credentialLabels.accessMode,
+            value: t('values.directAppOnboarding')
+          },
+          {
+            label: credentialLabels.usage,
+            value: t('values.collaborativeMarkdown')
+          }
+        ],
+        description: t('dashboard.services.hedgeDoc.description'),
+        icon: 'workflow',
+        id: 'hedgedoc',
+        note: t('dashboard.services.hedgeDoc.note'),
+        status: t('values.collaborativeNotes'),
+        title: t('dashboard.services.hedgeDoc.title'),
         tone: 'core'
       }
     ],

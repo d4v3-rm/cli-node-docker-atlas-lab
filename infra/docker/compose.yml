@@ -67,6 +67,8 @@ services:
       - "${GITEA_HTTPS_PORT}:${GITEA_HTTPS_PORT}"
       - "${PLANE_HTTPS_PORT}:${PLANE_HTTPS_PORT}"
       - "${PENPOT_HTTPS_PORT}:${PENPOT_HTTPS_PORT}"
+      - "${BOOKSTACK_HTTPS_PORT}:${BOOKSTACK_HTTPS_PORT}"
+      - "${HEDGEDOC_HTTPS_PORT}:${HEDGEDOC_HTTPS_PORT}"
     volumes:
       - gateway-certs:/etc/caddy/certs
       - gateway-config:/etc/caddy/dynamic
@@ -74,6 +76,10 @@ services:
       - gateway-data:/data
     depends_on:
       gitea:
+        condition: service_healthy
+      bookstack:
+        condition: service_healthy
+      hedgedoc:
         condition: service_healthy
       plane-proxy:
         condition: service_started
@@ -141,6 +147,110 @@ services:
       MARIADB_ROOT_PASSWORD: ${GITEA_DB_ROOT_PASSWORD}
     volumes:
       - gitea-db:/var/lib/mysql
+    networks:
+      - data-net
+
+  bookstack:
+    image: lscr.io/linuxserver/bookstack:${BOOKSTACK_VERSION}
+    restart: unless-stopped
+    depends_on:
+      bookstack-db:
+        condition: service_healthy
+    environment:
+      <<: *lab-env
+      PUID: ${BOOKSTACK_UID}
+      PGID: ${BOOKSTACK_GID}
+      APP_URL: ${BOOKSTACK_APP_URL}
+      APP_KEY: ${BOOKSTACK_APP_KEY}
+      DB_HOST: bookstack-db
+      DB_PORT: "3306"
+      DB_USERNAME: ${BOOKSTACK_DB_USER}
+      DB_PASSWORD: ${BOOKSTACK_DB_PASSWORD}
+      DB_DATABASE: ${BOOKSTACK_DB_DATABASE}
+    healthcheck:
+      test: ["CMD-SHELL", "php -r '$$s=@fsockopen(\"127.0.0.1\",80); exit($$s ? 0 : 1);'"]
+      interval: 15s
+      timeout: 10s
+      retries: 12
+      start_period: 30s
+    volumes:
+      - bookstack-config:/config
+    networks:
+      apps-net:
+      data-net:
+      services-egress-net:
+        gw_priority: 1
+
+  bookstack-db:
+    image: mariadb:${BOOKSTACK_DB_VERSION}
+    restart: unless-stopped
+    command: ["--innodb_linux_aio=aio"]
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -u root -p$$MARIADB_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    environment:
+      MARIADB_DATABASE: ${BOOKSTACK_DB_DATABASE}
+      MARIADB_USER: ${BOOKSTACK_DB_USER}
+      MARIADB_PASSWORD: ${BOOKSTACK_DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${BOOKSTACK_DB_ROOT_PASSWORD}
+    volumes:
+      - bookstack-db:/var/lib/mysql
+    networks:
+      - data-net
+
+  hedgedoc:
+    image: quay.io/hedgedoc/hedgedoc:${HEDGEDOC_VERSION}
+    restart: unless-stopped
+    depends_on:
+      hedgedoc-db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"require('node:http').get('http://127.0.0.1:3000', (response) => process.exit(response.statusCode < 500 ? 0 : 1)).on('error', () => process.exit(1))\""
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    environment:
+      <<: *lab-env
+      CMD_DB_URL: postgres://${HEDGEDOC_POSTGRES_USER}:${HEDGEDOC_POSTGRES_PASSWORD}@hedgedoc-db:5432/${HEDGEDOC_POSTGRES_DATABASE}
+      # HedgeDoc 1.x builds absolute asset URLs from CMD_DOMAIN and mishandles proxy ports.
+      CMD_DOMAIN: ${LAB_PUBLIC_HOST}:${HEDGEDOC_HTTPS_PORT}
+      CMD_PROTOCOL_USESSL: "true"
+      CMD_URL_ADDPORT: "false"
+      CMD_ALLOW_ORIGIN: ${LAB_PUBLIC_HOST}:${HEDGEDOC_HTTPS_PORT},${LAB_GATEWAY_IP}:${HEDGEDOC_HTTPS_PORT}
+      CMD_ALLOW_ANONYMOUS: "false"
+      CMD_EMAIL: "true"
+      CMD_ALLOW_EMAIL_REGISTER: "true"
+      CMD_SESSION_SECRET: ${HEDGEDOC_SESSION_SECRET}
+      CMD_ALLOW_GRAVATAR: "false"
+    volumes:
+      - hedgedoc-uploads:/hedgedoc/public/uploads
+    networks:
+      apps-net:
+      data-net:
+      services-egress-net:
+        gw_priority: 1
+
+  hedgedoc-db:
+    image: postgres:${HEDGEDOC_POSTGRES_VERSION}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    environment:
+      POSTGRES_USER: ${HEDGEDOC_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${HEDGEDOC_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${HEDGEDOC_POSTGRES_DATABASE}
+    volumes:
+      - hedgedoc-db:/var/lib/postgresql/data
     networks:
       - data-net
 
@@ -501,6 +611,10 @@ volumes:
   gateway-data:
   gitea-data:
   gitea-db:
+  bookstack-config:
+  bookstack-db:
+  hedgedoc-db:
+  hedgedoc-uploads:
   plane-db:
   plane-redis:
   plane-mq:
