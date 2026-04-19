@@ -3,6 +3,7 @@ import pWaitFor from 'p-wait-for';
 import { createComposeCommandArgs, type ComposeLayerSelection } from '../lib/compose.js';
 import type { BootstrapCommandOptions } from '../types/cli.types.js';
 import type { AiLlmBootstrapEnv, ProjectContext } from '../types/project.types.js';
+import { ensureBookStackAdmin } from './bookstack-admin.service.js';
 import { ensureGiteaAdmin } from './gitea-admin.service.js';
 import { ensureN8nOwner } from './n8n-owner.service.js';
 import { ensurePenpotAdmin } from './penpot-admin.service.js';
@@ -61,6 +62,24 @@ export function createBootstrapTasks(
   }
 
   tasks.push({
+    title: formatTaskTitle('bootstrap', 'Align BookStack initial admin'),
+    task: async () => {
+      await waitForService(context, 'bookstack');
+      const result = await ensureBookStackAdmin(context, env);
+
+      if (result === 'configured') {
+        printInfo('BookStack initial admin configured.', 'bootstrap');
+        return;
+      }
+
+      printInfo(
+        'BookStack already has a non-default admin profile; leaving the existing account in place.',
+        'bootstrap'
+      );
+    }
+  });
+
+  tasks.push({
     title: formatTaskTitle('bootstrap', 'Align Plane instance admin'),
     task: async () => {
       await waitForService(context, 'plane-api');
@@ -103,6 +122,7 @@ export function createBootstrapTasks(
 
   return tasks;
 }
+
 /**
  * Waits for Ollama and ensures the configured runtime models are present locally.
  */
