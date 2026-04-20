@@ -20,10 +20,14 @@ interface UseNetworkMapSceneOptions {
 interface SceneNodeEntry {
   aura: THREE.Mesh | null;
   basePosition: THREE.Vector3;
+  label: CSS2DObject;
+  labelDistance: number;
+  labelRoot: HTMLDivElement;
   mesh: THREE.Mesh;
   node: NetworkGraphViewModel['nodes'][number];
   orbit: THREE.Mesh | null;
   phaseOffset: number;
+  worldPosition: THREE.Vector3;
 }
 
 interface SceneLinkEntry {
@@ -137,6 +141,7 @@ export function useNetworkMapScene({
       const entry = createSceneNode(node, index);
       nodeEntries.set(node.id, entry);
       graphRoot.add(entry.mesh);
+      scene.add(entry.label);
     });
 
     const linkEntries: SceneLinkEntry[] = graph.links.flatMap((link) => {
@@ -168,6 +173,12 @@ export function useNetworkMapScene({
     const nodeMeshes = Array.from(nodeEntries.values()).map((entry) => entry.mesh);
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
+    const labelDirection = new THREE.Vector2();
+    const cameraRight = new THREE.Vector3();
+    const cameraUp = new THREE.Vector3();
+    const cameraForward = new THREE.Vector3();
+    const labelOffset = new THREE.Vector3();
+    const projectedPosition = new THREE.Vector3();
     const scaleTarget = new THREE.Vector3();
     const clock = new THREE.Clock();
     let frameHandle = 0;
@@ -231,6 +242,30 @@ export function useNetworkMapScene({
 
         scaleTarget.setScalar(selectedScale);
         entry.mesh.scale.lerp(scaleTarget, 0.12);
+
+        entry.mesh.getWorldPosition(entry.worldPosition);
+        projectedPosition.copy(entry.worldPosition).project(camera);
+        labelDirection.set(projectedPosition.x, projectedPosition.y);
+
+        if (labelDirection.lengthSq() < 0.0001) {
+          labelDirection.set(0.64, 0.76);
+        } else {
+          labelDirection.normalize();
+        }
+
+        camera.matrixWorld.extractBasis(cameraRight, cameraUp, cameraForward);
+        labelOffset
+          .copy(cameraRight)
+          .multiplyScalar(labelDirection.x * entry.labelDistance)
+          .addScaledVector(cameraUp, labelDirection.y * entry.labelDistance * 0.92);
+
+        if (labelOffset.lengthSq() < 0.0001) {
+          labelOffset.copy(cameraUp).multiplyScalar(entry.labelDistance);
+        }
+
+        entry.label.position.copy(entry.worldPosition).add(labelOffset);
+        entry.label.visible = projectedPosition.z > -1 && projectedPosition.z < 1.2;
+        entry.labelRoot.style.transform = resolveLabelTransform(labelDirection);
       });
 
       linkEntries.forEach((entry) => {
@@ -321,17 +356,19 @@ function createSceneNode(
     mesh.add(orbit);
   }
 
-  const label = new CSS2DObject(createNodeLabel(node));
-  label.position.set(0, size * 1.8, 0);
-  mesh.add(label);
+  const { object: label, root: labelRoot } = createNodeLabel(node);
 
   return {
     aura,
     basePosition,
+    label,
+    labelDistance: size * 3.8 + 6,
+    labelRoot,
     mesh,
     node,
     orbit,
-    phaseOffset: index * 0.72
+    phaseOffset: index * 0.72,
+    worldPosition: new THREE.Vector3()
   };
 }
 
@@ -391,7 +428,7 @@ function createNodeLabel(node: NetworkGraphViewModel['nodes'][number]) {
   root.style.gap = '6px';
   root.style.maxWidth = '260px';
   root.style.pointerEvents = 'none';
-  root.style.transform = 'translate(-50%, -100%)';
+  root.style.transform = 'translate(0%, -100%)';
 
   const title = document.createElement('div');
   title.textContent = node.title;
@@ -425,7 +462,19 @@ function createNodeLabel(node: NetworkGraphViewModel['nodes'][number]) {
   root.appendChild(title);
   root.appendChild(labelsRow);
 
-  return root;
+  return {
+    object: new CSS2DObject(root),
+    root
+  };
+}
+
+function resolveLabelTransform(direction: THREE.Vector2) {
+  const horizontal =
+    direction.x > 0.24 ? '0%' : direction.x < -0.24 ? '-100%' : '-50%';
+  const vertical =
+    direction.y > 0.24 ? '-100%' : direction.y < -0.24 ? '0%' : '-50%';
+
+  return `translate(${horizontal}, ${vertical})`;
 }
 
 function createStarField() {
