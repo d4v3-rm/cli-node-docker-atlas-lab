@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 import DashboardApp from './App';
 import '@/shared/config/i18n';
 import { DashboardProviders } from '@/app/providers/dashboard-providers';
@@ -9,8 +10,10 @@ applyDashboardDocumentChrome();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <DashboardProviders>
+    <BrowserRouter>
+      <DashboardProviders>
         <DashboardApp />
-    </DashboardProviders>
+      </DashboardProviders>
+    </BrowserRouter>
   </StrictMode>
 );

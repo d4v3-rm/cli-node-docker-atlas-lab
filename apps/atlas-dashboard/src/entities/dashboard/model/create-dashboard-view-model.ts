@@ -4,7 +4,6 @@ import type { DashboardViewModel } from '@/entities/dashboard/model/dashboard-vi
 import { createAiLayer, createAiServices } from './builders/dashboard-ai.builder';
 import {
   createCoreServices,
-  createFooterCards,
   createNetworkMap
 } from './builders/dashboard-core.builder';
 import { createCredentialLabels } from './builders/dashboard-credential-labels.builder';
@@ -26,7 +25,6 @@ export function createDashboardViewModel(
   return {
     aiLayer: createAiLayer(config, t),
     aiServices: createAiServices(config, credentialLabels, t),
-    footerCards: createFooterCards(config, t),
     hero: createDashboardHero(config, t),
     networkMap: createNetworkMap(config, t),
     services: createCoreServices(config, credentialLabels, t),

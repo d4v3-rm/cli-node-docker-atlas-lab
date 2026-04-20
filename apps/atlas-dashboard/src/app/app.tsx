@@ -1,5 +1,11 @@
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { DashboardPage } from '@/pages/dashboard';
 
 export function DashboardApp() {
-  return <DashboardPage />;
+  return (
+    <Routes>
+      <Route element={<DashboardPage />} path="/" />
+      <Route element={<Navigate replace to="/" />} path="*" />
+    </Routes>
+  );
 }

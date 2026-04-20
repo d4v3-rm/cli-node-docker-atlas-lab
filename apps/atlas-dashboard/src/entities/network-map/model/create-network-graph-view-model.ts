@@ -7,6 +7,12 @@ import type {
   NetworkGraphViewModel
 } from './network-graph.types';
 
+const networkGraphPositionSpread = Object.freeze({
+  x: 1.34,
+  y: 1.16,
+  z: 1.52
+});
+
 export function createNetworkGraphViewModel(
   config: LabRuntimeConfig,
   t: TFunction
@@ -321,5 +327,20 @@ function createLink(
 }
 
 function createNode(node: NetworkGraphNodeViewModel): NetworkGraphNodeViewModel {
-  return node;
+  return {
+    ...node,
+    position: spreadNetworkGraphPosition(node.position)
+  };
+}
+
+function spreadNetworkGraphPosition(
+  position: NetworkGraphNodeViewModel['position']
+): NetworkGraphNodeViewModel['position'] {
+  const [x, y, z] = position;
+
+  return [
+    x * networkGraphPositionSpread.x,
+    y * networkGraphPositionSpread.y,
+    z * networkGraphPositionSpread.z
+  ];
 }

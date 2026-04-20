@@ -16,9 +16,6 @@
     "runtimeBadge": "atlas lab runtime"
   },
   "hero": {
-    "actionsEyebrow": "azioni dirette",
-    "actionsSummary": "Fascia di accesso rapido pensata per i task iniziali quando il lab e gia in esecuzione.",
-    "actionsTitle": "Entra nel routing, verifica la topologia o installa il certificato del gateway.",
     "downloadCertificate": "Scarica certificato",
     "openNetworkMap": "Apri network map"
   },

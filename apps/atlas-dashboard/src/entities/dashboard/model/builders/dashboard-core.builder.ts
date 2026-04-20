@@ -1,7 +1,6 @@
 import type { TFunction } from 'i18next';
 import type { LabRuntimeConfig } from '@/entities/runtime-config';
 import type {
-  FooterCardViewModel,
   ServiceCardViewModel
 } from '@/entities/dashboard/model/dashboard-view-model.types';
 import type { DashboardCredentialLabels } from './dashboard-credential-labels.builder';
@@ -15,42 +14,6 @@ export function createNetworkMap(
     path: config.content.networkMapPath,
     title: t('dashboard.networkMap.title')
   };
-}
-
-export function createFooterCards(
-  config: LabRuntimeConfig,
-  t: TFunction
-): FooterCardViewModel[] {
-  return [
-    {
-      body: t('dashboard.footerCards.routing.body', {
-        localUrl: config.lab.localUrl,
-        postgresHost: config.workbenches.postgres.host,
-        postgresPort: config.workbenches.postgres.port
-      }),
-      icon: 'route',
-      id: 'routing',
-      label: t('dashboard.footerCards.routing.label')
-    },
-    {
-      body: t('dashboard.footerCards.persistence.body'),
-      icon: 'postgres',
-      id: 'persistence',
-      label: t('dashboard.footerCards.persistence.label')
-    },
-    {
-      body: t('dashboard.footerCards.usage.body'),
-      icon: 'spark',
-      id: 'usage',
-      label: t('dashboard.footerCards.usage.label')
-    },
-    {
-      body: t('dashboard.footerCards.segmentation.body'),
-      icon: 'network',
-      id: 'segmentation',
-      label: t('dashboard.footerCards.segmentation.label')
-    }
-  ];
 }
 
 export function createCoreServices(

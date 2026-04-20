@@ -16,9 +16,6 @@
     "runtimeBadge": "atlas lab runtime"
   },
   "hero": {
-    "actionsEyebrow": "direct actions",
-    "actionsSummary": "Quick access rail for the first tasks once the lab is already running.",
-    "actionsTitle": "Open routing, inspect topology, or install the gateway certificate.",
     "downloadCertificate": "Download certificate",
     "openNetworkMap": "Open network map"
   },

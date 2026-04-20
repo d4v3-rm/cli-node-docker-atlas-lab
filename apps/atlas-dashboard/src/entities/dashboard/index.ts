@@ -10,7 +10,6 @@ export type {
   DashboardIconKey,
   DashboardTone,
   DashboardViewModel,
-  FooterCardViewModel,
   OptionalLayerViewModel,
   ServiceCardViewModel,
   WorkbenchCardViewModel

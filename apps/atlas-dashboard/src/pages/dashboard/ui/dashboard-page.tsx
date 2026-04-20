@@ -8,7 +8,6 @@ import {
   HeroSection
 } from '@/widgets/dashboard-hero';
 import {
-  InsightCard,
   OperationalCard
 } from '@/widgets/dashboard-cards';
 import {
@@ -32,9 +31,11 @@ export function DashboardPage() {
     isNetworkMapOpen,
     isLoading,
     networkGraph,
+    selectedNetworkNodeId,
     selectedLayer,
     setActiveBriefing,
     setIsNetworkMapOpen,
+    setSelectedNetworkNodeId,
     setSelectedLayer
   } = useDashboardPageState();
 
@@ -127,7 +128,7 @@ export function DashboardPage() {
                 />
                 <Row gutter={[24, 24]}>
                   {dashboard.services.map((service) => (
-                    <Col xs={24} xl={12} key={service.id}>
+                    <Col xs={24} xl={12} key={service.id} style={{ display: 'flex' }}>
                       <OperationalCard
                         item={service}
                         primaryAction={service.action}
@@ -153,7 +154,7 @@ export function DashboardPage() {
                 <LayerStateCard layer={dashboard.aiLayer} />
                 <Row gutter={[24, 24]}>
                   {dashboard.aiServices.map((service) => (
-                    <Col xs={24} xl={12} key={service.id}>
+                    <Col xs={24} xl={12} key={service.id} style={{ display: 'flex' }}>
                       <OperationalCard
                         item={service}
                         primaryAction={dashboard.aiLayer.enabled ? service.action : undefined}
@@ -180,7 +181,7 @@ export function DashboardPage() {
                 {dashboard.workbenchLayer.enabled ? (
                   <Row gutter={[24, 24]}>
                     {dashboard.workbenches.map((workbench) => (
-                      <Col xs={24} md={12} xl={8} key={workbench.id}>
+                      <Col xs={24} md={12} xl={8} key={workbench.id} style={{ display: 'flex' }}>
                         <OperationalCard
                           briefing={workbench.briefing}
                           item={workbench}
@@ -194,19 +195,6 @@ export function DashboardPage() {
                 ) : null}
               </>
             ) : null}
-
-            <SectionBand
-              body={t('sections.footerBody')}
-              kicker={t('sections.footerKicker')}
-              title={t('sections.footerTitle')}
-            />
-            <Row gutter={[18, 18]}>
-              {dashboard.footerCards.map((card) => (
-                <Col xs={24} md={12} xl={6} key={card.id}>
-                  <InsightCard body={card.body} icon={card.icon} label={card.label} />
-                </Col>
-              ))}
-            </Row>
           </Flex>
         </Content>
       </Layout>
@@ -219,7 +207,9 @@ export function DashboardPage() {
         <NetworkMapDialog
           graph={networkGraph}
           onClose={() => setIsNetworkMapOpen(false)}
+          onSelectNode={setSelectedNetworkNodeId}
           open={isNetworkMapOpen}
+          selectedNodeId={selectedNetworkNodeId}
           source={dashboard.networkMap}
         />
       ) : null}

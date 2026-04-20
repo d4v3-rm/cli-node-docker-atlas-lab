@@ -119,36 +119,6 @@ export function HeroSection({
               }}
               vertical
             >
-              <Flex vertical gap={14}>
-                <Text style={{ ...overlineStyle, color: 'rgba(247, 250, 248, 0.72)' }}>
-                  {t('hero.actionsEyebrow')}
-                </Text>
-                <Title
-                  level={3}
-                  style={{
-                    color: atlasDashboardPalette.white,
-                    fontSize: 'clamp(1.9rem, 3vw, 2.8rem)',
-                    letterSpacing: '-0.06em',
-                    lineHeight: 1,
-                    margin: 0,
-                    maxWidth: 460
-                  }}
-                >
-                  {t('hero.actionsTitle')}
-                </Title>
-                <Paragraph
-                  style={{
-                    color: 'rgba(247, 250, 248, 0.72)',
-                    fontSize: 16,
-                    lineHeight: 1.8,
-                    margin: 0,
-                    maxWidth: 420
-                  }}
-                >
-                  {t('hero.actionsSummary')}
-                </Paragraph>
-              </Flex>
-
               <Flex vertical gap={12}>
                 <ActionButton
                   block

@@ -60,13 +60,6 @@ export interface WorkbenchCardViewModel {
   tone: DashboardTone;
 }
 
-export interface FooterCardViewModel {
-  body: string;
-  icon: DashboardIconKey;
-  id: string;
-  label: string;
-}
-
 export interface LayerCapability {
   icon: DashboardIconKey;
   label: string;
@@ -92,7 +85,6 @@ export interface DashboardHeroViewModel {
 export interface DashboardViewModel {
   aiLayer: OptionalLayerViewModel;
   aiServices: ServiceCardViewModel[];
-  footerCards: FooterCardViewModel[];
   hero: DashboardHeroViewModel;
   networkMap: BriefingReference;
   services: ServiceCardViewModel[];

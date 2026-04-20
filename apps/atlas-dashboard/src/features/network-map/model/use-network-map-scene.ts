@@ -22,6 +22,7 @@ interface SceneNodeEntry {
   basePosition: THREE.Vector3;
   mesh: THREE.Mesh;
   node: NetworkGraphViewModel['nodes'][number];
+  orbit: THREE.Mesh | null;
   phaseOffset: number;
 }
 
@@ -53,32 +54,42 @@ export function useNetworkMapScene({
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(atlasDashboardPalette.bg);
+    scene.fog = new THREE.Fog(atlasDashboardPalette.bg, 180, 360);
+
+    const initialWidth = Math.max(container.clientWidth, window.innerWidth);
+    const initialHeight = Math.max(container.clientHeight, window.innerHeight);
 
     const camera = new THREE.PerspectiveCamera(
       42,
-      container.clientWidth / container.clientHeight,
+      initialWidth / Math.max(initialHeight, 1),
       0.1,
-      1200
+      1600
     );
-    camera.position.set(0, 16, 158);
+    camera.position.set(0, 30, 224);
 
     const renderer = new THREE.WebGLRenderer({
       alpha: false,
       antialias: true
     });
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setClearColor(atlasDashboardPalette.bg, 1);
+    renderer.setSize(initialWidth, initialHeight);
     renderer.domElement.style.display = 'block';
     renderer.domElement.style.height = '100%';
+    renderer.domElement.style.inset = '0';
+    renderer.domElement.style.position = 'absolute';
     renderer.domElement.style.width = '100%';
+    renderer.domElement.style.zIndex = '0';
 
     const labelRenderer = new CSS2DRenderer();
-    labelRenderer.setSize(container.clientWidth, container.clientHeight);
+    labelRenderer.setSize(initialWidth, initialHeight);
     Object.assign(labelRenderer.domElement.style, {
       inset: '0',
       overflow: 'hidden',
       pointerEvents: 'none',
-      position: 'absolute'
+      position: 'absolute',
+      zIndex: '1'
     });
 
     container.appendChild(renderer.domElement);
@@ -86,26 +97,35 @@ export function useNetworkMapScene({
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.autoRotate = true;
-    controls.autoRotateSpeed = 0.7;
+    controls.autoRotateSpeed = 0.5;
     controls.enableDamping = true;
-    controls.maxDistance = 240;
+    controls.maxDistance = 340;
     controls.maxPolarAngle = Math.PI * 0.8;
-    controls.minDistance = 84;
+    controls.minDistance = 118;
     controls.minPolarAngle = Math.PI * 0.16;
     controls.target.set(0, 0, 0);
     controls.update();
 
-    scene.add(new THREE.AmbientLight(0xffffff, 1.15));
+    scene.add(new THREE.AmbientLight(0xffffff, 1.28));
+
+    const hemisphereLight = new THREE.HemisphereLight(
+      0xffffff,
+      new THREE.Color(atlasDashboardPalette.panel),
+      1.1
+    );
+    hemisphereLight.position.set(0, 140, 0);
+    scene.add(hemisphereLight);
 
     const keyLight = new THREE.DirectionalLight(0xffffff, 1.05);
     keyLight.position.set(80, 140, 120);
     scene.add(keyLight);
 
-    const fillLight = new THREE.PointLight(atlasDashboardPalette.core, 22, 220, 2.1);
-    fillLight.position.set(0, 10, 0);
+    const fillLight = new THREE.PointLight(atlasDashboardPalette.core, 28, 280, 2.1);
+    fillLight.position.set(0, 24, 24);
     scene.add(fillLight);
 
     const graphRoot = new THREE.Group();
+    graphRoot.rotation.x = -0.12;
     scene.add(graphRoot);
 
     const starField = createStarField();
@@ -200,6 +220,10 @@ export function useNetworkMapScene({
           entry.aura.rotation.z += 0.01;
         }
 
+        if (entry.orbit) {
+          entry.orbit.rotation.z -= 0.009;
+        }
+
         const isSelected = entry.node.id === selectedNodeIdRef.current;
         const selectedScale = isSelected
           ? 1.16 + Math.sin(elapsed * 3 + entry.phaseOffset) * 0.04
@@ -274,10 +298,27 @@ function createSceneNode(
   mesh.position.copy(basePosition);
   mesh.userData.nodeId = node.id;
 
+  const outline = new THREE.LineSegments(
+    new THREE.EdgesGeometry(geometry),
+    new THREE.LineBasicMaterial({
+      color,
+      opacity: node.active ? 0.95 : 0.34,
+      transparent: true
+    })
+  );
+  outline.scale.setScalar(1.05);
+  mesh.add(outline);
+
   const aura = createNodeAura(node.kind, size, color, node.active);
 
   if (aura) {
     mesh.add(aura);
+  }
+
+  const orbit = createNodeOrbit(node.kind, size, color, node.active);
+
+  if (orbit) {
+    mesh.add(orbit);
   }
 
   const label = new CSS2DObject(createNodeLabel(node));
@@ -289,6 +330,7 @@ function createSceneNode(
     basePosition,
     mesh,
     node,
+    orbit,
     phaseOffset: index * 0.72
   };
 }
@@ -314,6 +356,30 @@ function createNodeAura(
   aura.rotation.x = Math.PI / 2;
 
   return aura;
+}
+
+function createNodeOrbit(
+  kind: NetworkGraphViewModel['nodes'][number]['kind'],
+  size: number,
+  color: THREE.Color,
+  active: boolean
+) {
+  if (kind !== 'gateway' && kind !== 'plane') {
+    return null;
+  }
+
+  const orbit = new THREE.Mesh(
+    new THREE.RingGeometry(size * 1.9, size * 2.2, 64),
+    new THREE.MeshBasicMaterial({
+      color,
+      opacity: active ? 0.22 : 0.1,
+      side: THREE.DoubleSide,
+      transparent: true
+    })
+  );
+  orbit.rotation.x = Math.PI / 2;
+
+  return orbit;
 }
 
 function createNodeLabel(node: NetworkGraphViewModel['nodes'][number]) {
@@ -368,9 +434,9 @@ function createStarField() {
 
   for (let index = 0; index < 480; index += 1) {
     vertices.push(
-      THREE.MathUtils.randFloatSpread(420),
-      THREE.MathUtils.randFloatSpread(280),
-      THREE.MathUtils.randFloatSpread(420)
+      THREE.MathUtils.randFloatSpread(560),
+      THREE.MathUtils.randFloatSpread(360),
+      THREE.MathUtils.randFloatSpread(560)
     );
   }
 
