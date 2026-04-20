@@ -3,6 +3,7 @@ import { Card, Flex, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { dashboardToneStyles, type OptionalLayerViewModel } from '@/entities/dashboard';
 import { atlasDashboardLayerRailStyles, atlasDashboardPalette } from '@/shared/theme/atlas-theme';
+import { createAtlasDashboardLayerRailToneStyles } from '@/shared/theme/dashboard-visual-styles';
 import { surfaceCardStyle } from '@/shared/ui';
 
 const { Text, Title } = Typography;
@@ -66,15 +67,16 @@ export function LayerRail({
           {t('rails.layerHeartbeatFootprint')}
         </Title>
 
-        <Flex vertical style={atlasDashboardLayerRailStyles.comparisonGrid}>
+        <div style={atlasDashboardLayerRailStyles.comparisonGrid}>
           {layers.map((layer) => (
-            <LayerFootprintRow
-              key={layer.title}
-              layer={layer}
-              maxUnits={maxUnits}
-            />
+            <div key={layer.title} style={{ minWidth: 0 }}>
+              <LayerFootprintRow
+                layer={layer}
+                maxUnits={maxUnits}
+              />
+            </div>
           ))}
-        </Flex>
+        </div>
       </Flex>
     </Card>
   );
@@ -90,6 +92,7 @@ function LayerFootprintRow({
   maxUnits
 }: LayerFootprintRowProps) {
   const palette = dashboardToneStyles[layer.tone];
+  const toneVisuals = createAtlasDashboardLayerRailToneStyles(palette);
   const IconGlyph =
     layer.tone === 'ai'
       ? ApiOutlined
@@ -102,11 +105,7 @@ function LayerFootprintRow({
   return (
     <Flex
       gap={14}
-      style={{
-        background: palette.soft,
-        borderRadius: 22,
-        padding: 16
-      }}
+      style={toneVisuals.row}
       vertical
     >
       <Flex align="center" gap={14} justify="space-between" wrap="wrap">
@@ -114,29 +113,17 @@ function LayerFootprintRow({
           <Flex
             align="center"
             justify="center"
-            style={{
-              background: atlasDashboardPalette.panelAlt,
-              borderRadius: 16,
-              color: palette.accent,
-              height: 48,
-              width: 48
-            }}
+            style={toneVisuals.iconShell}
           >
             <IconGlyph style={{ fontSize: 18 }} />
           </Flex>
 
-          <Text
-            strong
-            style={{
-              color: atlasDashboardPalette.white,
-              fontSize: 17
-            }}
-          >
+          <Text strong style={toneVisuals.title}>
             {layer.title}
           </Text>
         </Flex>
 
-        <Text style={{ color: atlasDashboardPalette.white }}>
+        <Text style={toneVisuals.counter}>
           {layer.liveUnits}/{layer.totalUnits}
         </Text>
       </Flex>
@@ -144,23 +131,13 @@ function LayerFootprintRow({
       <div style={atlasDashboardLayerRailStyles.comparisonTrack}>
         <div
           style={{
-            background: atlasDashboardPalette.panel,
-            borderRadius: 999,
-            height: 18,
-            left: 0,
-            position: 'absolute',
-            top: 0,
+            ...toneVisuals.configuredBar,
             width: configuredWidth
           }}
         />
         <div
           style={{
-            background: palette.accent,
-            borderRadius: 999,
-            height: 18,
-            left: 0,
-            position: 'absolute',
-            top: 0,
+            ...toneVisuals.liveBar,
             width: liveWidth
           }}
         />

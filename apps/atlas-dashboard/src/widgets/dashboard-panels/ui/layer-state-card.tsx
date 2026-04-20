@@ -11,6 +11,10 @@ import {
   monoFontFamily,
   surfaceCardStyle
 } from '@/shared/ui';
+import {
+  atlasDashboardCardLayoutStyles,
+  createAtlasDashboardToneCardStyles
+} from '@/shared/theme/dashboard-visual-styles';
 
 const { Paragraph, Text, Title } = Typography;
 
@@ -21,13 +25,14 @@ interface LayerStateCardProps {
 export function LayerStateCard({ layer }: LayerStateCardProps) {
   const { t } = useTranslation();
   const palette = dashboardToneStyles[layer.tone];
+  const toneVisuals = createAtlasDashboardToneCardStyles(palette);
   const IconGlyph = layer.tone === 'ai' ? ApiOutlined : CodeOutlined;
 
   return (
     <Card
       style={{
         ...surfaceCardStyle,
-        background: atlasDashboardPalette.panel
+        ...toneVisuals.shell
       }}
       styles={{ body: { padding: 24 } }}
     >
@@ -41,9 +46,7 @@ export function LayerStateCard({ layer }: LayerStateCardProps) {
                 size="large"
                 type="text"
                 style={{
-                  background: palette.soft,
-                  color: palette.accent,
-                  flexShrink: 0,
+                  ...toneVisuals.iconButton,
                   height: 56,
                   width: 56
                 }}
@@ -74,11 +77,10 @@ export function LayerStateCard({ layer }: LayerStateCardProps) {
           <Card
             size="small"
             style={{
-              background: atlasDashboardPalette.panelAlt,
-              borderRadius: 24,
-              height: '100%'
+              ...toneVisuals.subSurface,
+              borderRadius: 24
             }}
-            styles={{ body: { padding: 20 } }}
+            styles={{ body: atlasDashboardCardLayoutStyles.layerStateAsideBody }}
           >
             <Flex vertical justify="space-between" gap={16} style={{ height: '100%' }}>
               <Flex align="center" gap={12} justify="space-between" wrap="wrap">
@@ -87,11 +89,7 @@ export function LayerStateCard({ layer }: LayerStateCardProps) {
                 </Text>
                 <Tag
                   color={palette.accent}
-                  style={{
-                    background: palette.soft,
-                    fontWeight: 700,
-                    marginInlineEnd: 0
-                  }}
+                  style={toneVisuals.softTag}
                 >
                   {layer.enabled ? t('layerState.onlineBadge') : t('layerState.manualBadge')}
                 </Tag>
@@ -103,7 +101,7 @@ export function LayerStateCard({ layer }: LayerStateCardProps) {
                 <Card
                   size="small"
                   style={{
-                    background: atlasDashboardPalette.hero,
+                    background: atlasDashboardPalette.panel,
                     border: 'none',
                     borderRadius: 18
                   }}

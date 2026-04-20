@@ -36,12 +36,22 @@ export function applyDashboardDocumentChrome() {
     .ant-card,
     .ant-card .ant-card-head,
     .ant-card .ant-card-body,
+    .ant-btn,
+    .ant-btn::before,
+    .ant-btn::after,
+    .ant-segmented,
+    .ant-segmented .ant-segmented-item,
+    .ant-segmented .ant-segmented-thumb,
+    .ant-select .ant-select-selector,
+    .ant-tag,
+    .ant-alert,
     .ant-modal .ant-modal-content,
     .ant-popover .ant-popover-inner,
     .ant-dropdown .ant-dropdown-menu,
     .ant-select-dropdown,
     .ant-tooltip .ant-tooltip-content {
       box-shadow: none !important;
+      text-shadow: none !important;
     }
   `;
 }

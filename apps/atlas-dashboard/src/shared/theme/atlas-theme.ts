@@ -24,6 +24,8 @@ export const atlasDashboardPalette = {
 export const atlasDashboardLayerSwitcherStyles: {
   container: CSSProperties;
   eyebrow: CSSProperties;
+  optionBody: CSSProperties;
+  optionIcon: CSSProperties;
   shell: CSSProperties;
   segmented: SegmentedProps['styles'];
 } = {
@@ -36,6 +38,24 @@ export const atlasDashboardLayerSwitcherStyles: {
   eyebrow: {
     color: atlasDashboardPalette.muted,
     textAlign: 'center'
+  },
+  optionBody: {
+    alignItems: 'center',
+    borderRadius: 999,
+    display: 'flex',
+    gap: 10,
+    justifyContent: 'center',
+    minHeight: 44,
+    padding: '0 14px',
+    width: '100%'
+  },
+  optionIcon: {
+    alignItems: 'center',
+    borderRadius: 999,
+    display: 'inline-flex',
+    height: 26,
+    justifyContent: 'center',
+    width: 26
   },
   shell: {
     background: atlasDashboardPalette.panelAlt,
@@ -60,6 +80,29 @@ export const atlasDashboardLayerSwitcherStyles: {
   }
 } as const;
 
+export const atlasDashboardLayerSwitcherToneStyles = {
+  ai: {
+    accent: atlasDashboardPalette.ai,
+    iconBg: 'rgba(214, 138, 72, 0.16)',
+    selectedBg: 'rgba(214, 138, 72, 0.22)'
+  },
+  all: {
+    accent: atlasDashboardPalette.signal,
+    iconBg: 'rgba(91, 146, 200, 0.16)',
+    selectedBg: 'rgba(91, 146, 200, 0.22)'
+  },
+  core: {
+    accent: atlasDashboardPalette.core,
+    iconBg: 'rgba(31, 159, 141, 0.16)',
+    selectedBg: 'rgba(31, 159, 141, 0.22)'
+  },
+  workbench: {
+    accent: atlasDashboardPalette.workbench,
+    iconBg: 'rgba(90, 143, 201, 0.16)',
+    selectedBg: 'rgba(90, 143, 201, 0.22)'
+  }
+} as const;
+
 export const atlasDashboardLayerRailStyles: {
   backdrop: CSSProperties;
   comparisonGrid: CSSProperties;
@@ -80,7 +123,10 @@ export const atlasDashboardLayerRailStyles: {
     position: 'absolute'
   },
   comparisonGrid: {
-    gap: 16
+    display: 'grid',
+    gap: 16,
+    gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+    width: '100%'
   },
   comparisonTrack: {
     background: atlasDashboardPalette.bg,

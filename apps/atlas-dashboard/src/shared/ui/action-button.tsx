@@ -1,6 +1,10 @@
 import type { ComponentType, CSSProperties } from 'react';
 import { Button } from 'antd';
 import { atlasDashboardPalette } from '@/shared/theme/atlas-theme';
+import {
+  createAtlasDashboardActionButtonStyles,
+  type AtlasDashboardToneVisualPalette
+} from '@/shared/theme/dashboard-visual-styles';
 
 type ActionIconComponent = ComponentType<{
   className?: string;
@@ -13,6 +17,7 @@ interface ActionButtonProps {
   icon: ActionIconComponent;
   label: string;
   onClick?: () => void;
+  palette?: AtlasDashboardToneVisualPalette;
   style?: CSSProperties;
   tone: 'brand' | 'ghost' | 'outline' | 'solid';
 }
@@ -23,11 +28,12 @@ export function ActionButton({
   icon,
   label,
   onClick,
+  palette,
   style,
   tone
 }: ActionButtonProps) {
   const IconGlyph = icon;
-  const colors = {
+  const fallbackColors = {
     brand: {
       background: atlasDashboardPalette.core,
       color: atlasDashboardPalette.white
@@ -45,6 +51,9 @@ export function ActionButton({
       color: atlasDashboardPalette.white
     }
   }[tone];
+  const colors = palette
+    ? createAtlasDashboardActionButtonStyles(palette)[tone]
+    : fallbackColors;
 
   return (
     <Button

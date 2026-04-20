@@ -11,6 +11,10 @@ import {
 import type { BriefingReference } from '@/shared/types';
 import { atlasDashboardPalette } from '@/shared/theme/atlas-theme';
 import {
+  atlasDashboardCardLayoutStyles,
+  createAtlasDashboardToneCardStyles
+} from '@/shared/theme/dashboard-visual-styles';
+import {
   ActionButton,
   monoFontFamily,
   overlineStyle,
@@ -36,21 +40,25 @@ export function OperationalCard({
 }: OperationalCardProps) {
   const { t } = useTranslation();
   const palette = dashboardToneStyles[tone];
+  const toneVisuals = createAtlasDashboardToneCardStyles(palette);
   const IconGlyph = dashboardIconMap[item.icon];
 
   return (
     <Card
-      style={{ ...surfaceCardStyle, height: '100%', overflow: 'hidden' }}
-      styles={{ body: { padding: 0 } }}
+      style={{
+        ...surfaceCardStyle,
+        ...atlasDashboardCardLayoutStyles.fullHeightShell,
+        ...toneVisuals.shell
+      }}
+      styles={{
+        body: atlasDashboardCardLayoutStyles.fullHeightBody
+      }}
     >
       <Flex
         align="center"
         gap={16}
         justify="space-between"
-        style={{
-          background: atlasDashboardPalette.panelAlt,
-          padding: 20
-        }}
+        style={toneVisuals.header}
         wrap="wrap"
       >
         <Flex align="center" gap={16}>
@@ -60,9 +68,7 @@ export function OperationalCard({
             size="large"
             type="text"
             style={{
-              background: palette.soft,
-              color: palette.accent,
-              flexShrink: 0,
+              ...toneVisuals.iconButton,
               height: 52,
               width: 52
             }}
@@ -76,17 +82,17 @@ export function OperationalCard({
         </Flex>
         <Tag
           color={palette.accent}
-          style={{
-            background: palette.soft,
-            fontWeight: 700,
-            marginInlineEnd: 0
-          }}
+          style={toneVisuals.softTag}
         >
           {resolveToneLabel(t, tone)}
         </Tag>
       </Flex>
 
-      <Flex vertical gap={18} style={{ padding: 20 }}>
+      <Flex
+        gap={18}
+        style={atlasDashboardCardLayoutStyles.content}
+        vertical
+      >
         <Paragraph style={{ color: atlasDashboardPalette.muted, lineHeight: 1.78, margin: 0 }}>
           {item.description}
         </Paragraph>
@@ -107,17 +113,14 @@ export function OperationalCard({
               >
                 <Card
                   size="small"
-                  style={{
-                    background: atlasDashboardPalette.panelAlt,
-                    borderRadius: 20,
-                    height: '100%'
-                  }}
-                  styles={{ body: { padding: 16 } }}
+                  style={toneVisuals.subSurface}
+                  styles={{ body: atlasDashboardCardLayoutStyles.nestedBody }}
                 >
                   <Flex vertical gap={8}>
                     <Text style={overlineStyle}>{credential.label}</Text>
                     <Text
                       style={{
+                        color: atlasDashboardPalette.white,
                         fontFamily: useMono ? monoFontFamily : undefined,
                         lineHeight: 1.8,
                         overflowWrap: 'anywhere'
@@ -132,12 +135,23 @@ export function OperationalCard({
           })}
         </Row>
 
-        <Flex gap={12} wrap="wrap">
+        {item.note ? (
+          <Alert
+            description={item.note}
+            message={null}
+            showIcon={false}
+            style={toneVisuals.note}
+            type="info"
+          />
+        ) : null}
+
+        <Flex gap={12} style={atlasDashboardCardLayoutStyles.actionRow} wrap="wrap">
           {primaryAction ? (
             <ActionButton
               href={primaryAction.href}
               icon={ArrowRightOutlined}
               label={primaryAction.label}
+              palette={palette}
               tone="brand"
             />
           ) : null}
@@ -146,23 +160,11 @@ export function OperationalCard({
               icon={CompassOutlined}
               label={t('cards.openBriefing')}
               onClick={() => onOpenBriefing(briefing)}
+              palette={palette}
               tone="outline"
             />
           ) : null}
         </Flex>
-
-        {item.note ? (
-          <Alert
-            description={item.note}
-            message={null}
-            showIcon={false}
-            style={{
-              background: palette.soft,
-              borderRadius: 20
-            }}
-            type="info"
-          />
-        ) : null}
       </Flex>
     </Card>
   );
