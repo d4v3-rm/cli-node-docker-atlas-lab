@@ -16,15 +16,30 @@
     "runtimeBadge": "atlas lab runtime"
   },
   "hero": {
-    "actionsEyebrow": "azioni dirette",
-    "actionsSummary": "Fascia di accesso rapido pensata per i task iniziali quando il lab e gia in esecuzione.",
-    "actionsTitle": "Entra nel routing, verifica la topologia o installa il certificato del gateway.",
     "downloadCertificate": "Scarica certificato",
     "openNetworkMap": "Apri network map"
   },
+  "layerSwitcher": {
+    "eyebrow": "switcher layer",
+    "options": {
+      "all": "Tutti i layer"
+    }
+  },
   "rails": {
     "briefingsAndLinks": "briefing e link",
+    "layerHeartbeatBody": "Vista immediata di cio che resta sempre attivo e di cio che rimane opzionale tra piano core, AI e workbench.",
     "layerHeartbeat": "stato dei layer",
+    "layerHeartbeatChartBody": "Le superfici di servizio configurate restano visibili anche quando un layer opzionale e spento, cosi puoi confrontare impronta totale e cio che e pubblicato adesso.",
+    "layerHeartbeatChartTitle": "grafico impronta",
+    "layerHeartbeatConfiguredLegend": "configurato",
+    "layerHeartbeatFootprint": "impronta live",
+    "layerHeartbeatGauge": "grafico disponibilita",
+    "layerHeartbeatGaugeBody": "{{active}} layer su {{total}} sono live in questo momento, mentre i piani opzionali restano attenuati finche non vengono pubblicati.",
+    "layerHeartbeatLiveLegend": "live",
+    "layerHeartbeatStatusLine": "Pubblicazione dei layer per piano",
+    "layerHeartbeatStats": "assetto runtime",
+    "layerHeartbeatSurfaceLabel": "superfici servizio",
+    "layerHeartbeatTitle": "Postura operativa dei layer del lab",
     "liveFootprint": "impronta live"
   },
   "panels": {
@@ -76,6 +91,53 @@
     "openSourceFile": "Apri file sorgente",
     "openSourceMarkdown": "Apri il markdown sorgente",
     "titleEyebrow": "atlas briefing"
+  },
+  "networkMapDialog": {
+    "eyebrow": "network map",
+    "title": "Topologia 3D ruotabile dei piani del lab",
+    "summary": "Ispeziona route pubblicate, piani interni e accesso host in un grafo 3D live. Trascina per ruotare, zooma per leggere meglio e clicca un nodo per bloccarne le label.",
+    "instructions": "Trascina per ruotare, usa la rotella per zoomare e clicca un nodo per ispezionare label e postura di rete.",
+    "openSource": "Apri markdown sorgente",
+    "legendTitle": "legenda topologia",
+    "legend": {
+      "ai": "Piano AI",
+      "core": "Piano core",
+      "edge": "Edge e host",
+      "workbench": "Piano workbench"
+    },
+    "selectionEyebrow": "focus nodo",
+    "labelsTitle": "label associate",
+    "connectionsTitle": "nodi collegati",
+    "statusActive": "superficie live",
+    "statusOptional": "superficie opzionale",
+    "gatewayTitle": "Atlas Gateway",
+    "gatewayBody": "Singolo ingresso localhost che pubblica dashboard e servizi browser tramite HTTPS.",
+    "deckTitle": "Atlas Deck",
+    "deckBody": "Control deck locale servito con la stessa postura edge del resto del lab.",
+    "corePlaneBody": "Piano operativo sempre attivo per repository, planning, documentazione e collaborazione design.",
+    "aiPlaneBody": "Piano AI opzionale con route dedicate per UI conversazionale, inference e flussi di automazione.",
+    "workbenchPlaneBody": "Piano workbench opzionale per workspace browser-based e accesso dati condivisi.",
+    "hostAccessTitle": "Host Access",
+    "hostAccessBody": "Superficie TCP host-side riservata all accesso PostgreSQL desktop fuori dagli ingressi browser.",
+    "labels": {
+      "alwaysOn": "sempre attivo",
+      "automation": "automazione",
+      "browser": "superficie browser",
+      "controlPlane": "piano di controllo",
+      "controlRoom": "control room",
+      "edge": "router edge",
+      "gpu": "gpu-backed",
+      "hostTcp": "tcp host",
+      "https": "ingress https",
+      "optional": "layer opzionale",
+      "sharedData": "dati condivisi",
+      "workspace": "workspace"
+    },
+    "stats": {
+      "links": "link",
+      "nodes": "nodi",
+      "published": "pubblicati"
+    }
   },
   "errors": {
     "briefingHttpStatus": "Impossibile caricare il briefing (HTTP {{status}}).",

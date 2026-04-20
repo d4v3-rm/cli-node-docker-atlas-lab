@@ -15,6 +15,8 @@ const runtimeConfigTemplatePath = resolve(
   'config/gateway/templates/runtime/lab-config.json.template'
 );
 const contentTemplateRoot = resolve(repositoryRoot, 'config/gateway/templates/content');
+const atlasDashboardDevServerPort = 5173;
+const atlasDashboardPreviewServerPort = 4173;
 
 /**
  * Builds the Atlas Dashboard from the repository root while keeping
@@ -23,6 +25,11 @@ const contentTemplateRoot = resolve(repositoryRoot, 'config/gateway/templates/co
 export default defineConfig({
   root: atlasDashboardRoot,
   plugins: [react(), atlasDashboardLocalRuntimePlugin()],
+  preview: {
+    host: '127.0.0.1',
+    port: atlasDashboardPreviewServerPort,
+    strictPort: true
+  },
   build: {
     assetsDir: 'static',
     outDir: resolve(repositoryRoot, '.atlas-dashboard-dist'),
@@ -57,6 +64,15 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': atlasDashboardSourceRoot
+    }
+  },
+  server: {
+    host: '127.0.0.1',
+    port: atlasDashboardDevServerPort,
+    strictPort: true,
+    watch: {
+      interval: 120,
+      usePolling: shouldUsePollingForDevServer()
     }
   }
 });
@@ -202,8 +218,18 @@ function resolveDevBooleanFlag(name: string, fallback: boolean): string {
     : 'false';
 }
 
+function shouldUsePollingForDevServer(): boolean {
+  const raw = process.env.ATLAS_DASHBOARD_DEV_USE_POLLING;
+
+  if (raw !== undefined) {
+    return ['1', 'true', 'yes', 'on'].includes(raw.trim().toLowerCase());
+  }
+
+  return process.platform === 'win32';
+}
+
 function resolveRequestOrigin(request: IncomingMessage): string {
-  const host = request.headers.host ?? 'localhost:5173';
+  const host = request.headers.host ?? `127.0.0.1:${atlasDashboardDevServerPort}`;
   const forwardedProto = request.headers['x-forwarded-proto'];
   const protocol = Array.isArray(forwardedProto)
     ? forwardedProto[0]
