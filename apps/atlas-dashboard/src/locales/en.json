@@ -22,9 +22,27 @@
     "downloadCertificate": "Download certificate",
     "openNetworkMap": "Open network map"
   },
+  "layerSwitcher": {
+    "eyebrow": "layer switcher",
+    "options": {
+      "all": "All layers"
+    }
+  },
   "rails": {
     "briefingsAndLinks": "briefings and links",
+    "layerHeartbeatBody": "Single-glance visibility on what is always-on and what remains optional across the core, AI, and workbench planes.",
     "layerHeartbeat": "layer heartbeat",
+    "layerHeartbeatChartBody": "Configured service surfaces stay visible even when an optional layer is off, so you can compare total footprint against what is currently published.",
+    "layerHeartbeatChartTitle": "footprint graph",
+    "layerHeartbeatConfiguredLegend": "configured",
+    "layerHeartbeatFootprint": "live footprint",
+    "layerHeartbeatGauge": "availability graph",
+    "layerHeartbeatGaugeBody": "{{active}} of {{total}} layers are live right now, with the optional planes dimmed until they are published.",
+    "layerHeartbeatLiveLegend": "live",
+    "layerHeartbeatStatusLine": "Layer publication by plane",
+    "layerHeartbeatStats": "runtime posture",
+    "layerHeartbeatSurfaceLabel": "service surfaces",
+    "layerHeartbeatTitle": "Operational posture across the lab layers",
     "liveFootprint": "live footprint"
   },
   "panels": {
@@ -76,6 +94,53 @@
     "openSourceFile": "Open source file",
     "openSourceMarkdown": "Open source markdown",
     "titleEyebrow": "atlas briefing"
+  },
+  "networkMapDialog": {
+    "eyebrow": "network map",
+    "title": "Rotating 3D topology of the lab planes",
+    "summary": "Inspect published routes, internal planes, and host access in a live 3D graph. Drag to rotate, zoom to inspect, and click a node to lock its labels.",
+    "instructions": "Drag to rotate, use the wheel to zoom, and click a node to inspect its attached labels and network posture.",
+    "openSource": "Open source markdown",
+    "legendTitle": "topology legend",
+    "legend": {
+      "ai": "AI plane",
+      "core": "Core plane",
+      "edge": "Edge and host",
+      "workbench": "Workbench plane"
+    },
+    "selectionEyebrow": "node focus",
+    "labelsTitle": "attached labels",
+    "connectionsTitle": "connected nodes",
+    "statusActive": "live surface",
+    "statusOptional": "optional surface",
+    "gatewayTitle": "Atlas Gateway",
+    "gatewayBody": "Single localhost ingress that publishes the dashboard and browser-facing services over HTTPS.",
+    "deckTitle": "Atlas Deck",
+    "deckBody": "Local command deck served through the same edge posture as the rest of the lab.",
+    "corePlaneBody": "Always-on operating plane for repository work, planning, documentation, and design collaboration.",
+    "aiPlaneBody": "Optional AI plane with dedicated published routes for conversational UI, inference, and automation flows.",
+    "workbenchPlaneBody": "Optional workbench plane for browser workspaces and shared data access.",
+    "hostAccessTitle": "Host Access",
+    "hostAccessBody": "Host-side TCP surface reserved for desktop PostgreSQL access outside the browser ingress.",
+    "labels": {
+      "alwaysOn": "always on",
+      "automation": "automation",
+      "browser": "browser surface",
+      "controlPlane": "control plane",
+      "controlRoom": "control room",
+      "edge": "edge router",
+      "gpu": "gpu-backed",
+      "hostTcp": "host tcp",
+      "https": "https ingress",
+      "optional": "optional layer",
+      "sharedData": "shared data",
+      "workspace": "workspace"
+    },
+    "stats": {
+      "links": "links",
+      "nodes": "nodes",
+      "published": "published"
+    }
   },
   "errors": {
     "briefingHttpStatus": "Unable to load the briefing (HTTP {{status}}).",
