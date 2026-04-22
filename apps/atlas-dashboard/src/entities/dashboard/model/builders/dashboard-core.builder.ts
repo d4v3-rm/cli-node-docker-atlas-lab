@@ -185,6 +185,43 @@ export function createCoreServices(
       status: t('values.collaborativeNotes'),
       title: t('dashboard.services.hedgeDoc.title'),
       tone: 'core'
+    },
+    {
+      action: {
+        href: config.services.obsidian.url,
+        label: t('dashboard.services.obsidian.action')
+      },
+      credentials: [
+        {
+          label: labels.endpoint,
+          value: config.services.obsidian.url
+        },
+        {
+          label: labels.username,
+          value: config.services.obsidian.username,
+          concealed: true
+        },
+        {
+          label: labels.password,
+          value: config.services.obsidian.password,
+          concealed: true
+        },
+        {
+          label: labels.authMode,
+          value: t('values.basicAuth')
+        },
+        {
+          label: labels.usage,
+          value: t('values.knowledgeVault')
+        }
+      ],
+      description: t('dashboard.services.obsidian.description'),
+      icon: 'host',
+      id: 'obsidian',
+      note: t('dashboard.services.obsidian.note'),
+      status: t('values.knowledgeVault'),
+      title: t('dashboard.services.obsidian.title'),
+      tone: 'core'
     }
   ];
 }

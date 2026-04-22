@@ -133,6 +133,20 @@ export function createNetworkGraphViewModel(
       tone: 'core'
     }),
     createNode({
+      active: true,
+      description: t('dashboard.services.obsidian.description'),
+      id: 'obsidian',
+      kind: 'service',
+      labels: [
+        config.services.obsidian.url,
+        t('values.knowledgeVault'),
+        t('networkMapDialog.labels.browser')
+      ],
+      position: [-20, -42, 34],
+      title: t('dashboard.services.obsidian.title'),
+      tone: 'core'
+    }),
+    createNode({
       active: aiActive,
       description: t('networkMapDialog.aiPlaneBody'),
       id: 'ai-plane',
@@ -271,6 +285,7 @@ export function createNetworkGraphViewModel(
     createLink('core-plane', 'plane', 'core', true),
     createLink('core-plane', 'penpot', 'core', true),
     createLink('core-plane', 'hedgedoc', 'core', true),
+    createLink('core-plane', 'obsidian', 'core', true),
     createLink('gateway', 'ai-plane', 'ai', aiActive),
     createLink('ai-plane', 'open-webui', 'ai', aiActive),
     createLink('ai-plane', 'ollama', 'ai', aiActive),

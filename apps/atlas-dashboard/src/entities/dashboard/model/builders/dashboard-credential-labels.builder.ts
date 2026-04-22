@@ -21,6 +21,7 @@ export interface DashboardCredentialLabels {
   rootPassword: string;
   rootUser: string;
   superuser: string;
+  username: string;
   usage: string;
 }
 
@@ -48,6 +49,7 @@ export function createCredentialLabels(
     rootPassword: t('credentials.rootPassword'),
     rootUser: t('credentials.rootUser'),
     superuser: t('credentials.superuser'),
+    username: t('credentials.username'),
     usage: t('credentials.usage')
   };
 }

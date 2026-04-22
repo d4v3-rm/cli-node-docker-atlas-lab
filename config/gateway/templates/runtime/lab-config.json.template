@@ -58,6 +58,11 @@
     },
     "hedgeDoc": {
       "url": "${HEDGEDOC_URL}"
+    },
+    "obsidian": {
+      "url": "${OBSIDIAN_URL}",
+      "username": "${OBSIDIAN_USERNAME}",
+      "password": "${OBSIDIAN_PASSWORD}"
     }
   },
   "workbenches": {

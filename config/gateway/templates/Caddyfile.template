@@ -61,3 +61,7 @@ https://${LAB_PUBLIC_HOST}:${BOOKSTACK_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${
 https://${LAB_PUBLIC_HOST}:${HEDGEDOC_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${HEDGEDOC_HTTPS_PORT} {
   import service_proxy hedgedoc:3000
 }
+
+https://${LAB_PUBLIC_HOST}:${OBSIDIAN_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${OBSIDIAN_HTTPS_PORT} {
+  import service_proxy obsidian:3000
+}

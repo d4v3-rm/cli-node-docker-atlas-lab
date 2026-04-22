@@ -11,7 +11,7 @@
 ![Persistence](https://img.shields.io/badge/Persistence-Docker%20Volumes-CA8A04)
 
 > 🧭 **Atlas Lab** is a localhost-first self-hosted platform made of a Node.js/TypeScript CLI, a layered Docker Compose stack, and an operational React dashboard served by the gateway.
-> It is designed to provide Git hosting, project and design collaboration, internal documentation, collaborative markdown notes, optional local AI services with Open WebUI, Ollama, and n8n, browser-based development workbenches, and structured image/volume backup workflows on a single machine.
+> It is designed to provide Git hosting, project and design collaboration, internal documentation, collaborative markdown notes, browser-delivered Obsidian vaults, optional local AI services with Open WebUI, Ollama, and n8n, browser-based development workbenches, and structured image/volume backup workflows on a single machine.
 
 ---
 
@@ -21,7 +21,7 @@ Atlas Lab is built for a practical goal: run a repeatable local engineering plat
 
 ### What it gives you
 
-- 🧱 An always-on **core layer** with Atlas Dashboard, Gitea, Plane, Penpot, BookStack, and HedgeDoc
+- 🧱 An always-on **core layer** with Atlas Dashboard, Gitea, Plane, Penpot, BookStack, HedgeDoc, and Obsidian
 - 🧠 An optional **AI LLM layer** with Open WebUI, Ollama, and n8n
 - 🛠️ An optional **workbench layer** with browser-based Node and Python environments plus shared PostgreSQL
 - 🔐 HTTPS-only ingress on `localhost`
@@ -66,7 +66,7 @@ Atlas Lab is split into **three explicit layers**:
 
 | Layer | Status | Includes | Purpose |
 | --- | --- | --- | --- |
-| `core` | always on | gateway, Atlas Dashboard, Gitea, Plane, Penpot, BookStack, HedgeDoc, and their backing data services | baseline platform |
+| `core` | always on | gateway, Atlas Dashboard, Gitea, Plane, Penpot, BookStack, HedgeDoc, Obsidian, and their backing data services | baseline platform |
 | `ai-llm` | optional | Open WebUI, Ollama, n8n, AI gateway | local AI workflows and automation |
 | `workbench` | optional | Node Forge, Python Grid, shared PostgreSQL, workbench gateway | browser-based development |
 
@@ -121,6 +121,7 @@ The only host-level TCP service exposed directly is PostgreSQL from the workbenc
 | Python Grid | `workbench` | `https://localhost:8451/` | Python workspace |
 | HedgeDoc | `core` | `https://localhost:8452/` | collaborative markdown notes |
 | n8n | `ai-llm` | `https://localhost:8453/` | workflow automation and agent orchestration |
+| Obsidian | `core` | `https://localhost:8454/` | browser knowledge vault |
 | PostgreSQL | `workbench` | `localhost:15432` | host-side desktop access |
 
 ### Operational rules
@@ -136,7 +137,7 @@ The only host-level TCP service exposed directly is PostgreSQL from the workbenc
 | Network | Type | Purpose |
 | --- | --- | --- |
 | `edge-net` | exposed | published ingress ports |
-| `apps-net` | internal | Gitea, BookStack, HedgeDoc, and shared browser-facing core services |
+| `apps-net` | internal | Gitea, BookStack, HedgeDoc, Obsidian, and shared browser-facing core services |
 | `ai-llm-net` | internal | Open WebUI, Ollama, and n8n |
 | `data-net` | internal | data services and infrastructure databases |
 | `workbench-net` | internal | workbenches and PostgreSQL |
@@ -168,6 +169,7 @@ Key volumes include:
 - `bookstack-db`
 - `hedgedoc-db`
 - `hedgedoc-uploads`
+- `obsidian-config`
 - `ollama-data`
 - `n8n-data`
 - `open-webui-data`
@@ -214,6 +216,7 @@ The AI LLM layer requires:
 - `8451`
 - `8452`
 - `8453`
+- `8454`
 - `15432` when `workbench` is enabled
 
 ### Windows PowerShell note
@@ -460,6 +463,7 @@ Bootstrap is idempotent and reconciles Gitea, BookStack, Plane, Penpot, and, whe
 | BookStack | `https://localhost:8449/` | `root@bookstack.local / RootBookStack!2026` |
 | HedgeDoc | `https://localhost:8452/` | local email accounts enabled; create the first account in-app |
 | n8n | `https://localhost:8453/` | owner bootstrap `root@n8n.local / RootN8NApp!2026` |
+| Obsidian | `https://localhost:8454/` | basic auth `atlas / RootObsidian!2026` |
 | PostgreSQL host-side | `localhost:15432` | `postgres / RootPostgresDev!2026` |
 
 For DBeaver and other desktop PostgreSQL clients:
@@ -530,7 +534,7 @@ Expected behavior. The lab uses a self-signed certificate.
 
 ### `atlas-lab up` fails during port preflight
 
-One of the configured lab ports (`8443-8449`, `8450-8453`, or `15432`) is occupied or excluded by the system.
+One of the configured lab ports (`8443-8454` or `15432`) is occupied or excluded by the system.
 
 ```powershell
 atlas-lab status
@@ -629,6 +633,11 @@ This project is distributed under the **MIT** license.
 
 - Docker image: https://docs.hedgedoc.org/setup/docker/
 - Configuration: https://docs.hedgedoc.org/configuration/
+
+### Obsidian
+
+- Docker Hub image: https://hub.docker.com/r/linuxserver/obsidian
+- Source repository: https://github.com/linuxserver/docker-obsidian
 
 ### Open WebUI
 

@@ -4,7 +4,7 @@
 
 The deck remains available locally at `${LAB_LOCAL_URL}`. The lab is split into three layers:
 
-- `core`: deck, Gitea, Plane, Penpot, BookStack, HedgeDoc, and the base gateway
+- `core`: deck, Gitea, Plane, Penpot, BookStack, HedgeDoc, Obsidian, and the base gateway
 - `ai-llm`: Open WebUI, Ollama, and n8n
 - `workbench`: Postgres and code-server environments
 
@@ -18,6 +18,7 @@ Each layer publishes its HTTPS endpoints on `localhost` through a dedicated gate
 - Penpot: `${PENPOT_URL}`
 - BookStack: `${BOOKSTACK_URL}`
 - HedgeDoc: `${HEDGEDOC_URL}`
+- Obsidian: `${OBSIDIAN_URL}`
 - Open WebUI: `${OPENWEBUI_URL}` only when the `ai-llm` layer is enabled
 - Ollama: `${OLLAMA_URL}` only when the `ai-llm` layer is enabled
 - n8n: `${N8N_URL}` only when the `ai-llm` layer is enabled
@@ -38,6 +39,7 @@ Each layer publishes its HTTPS endpoints on `localhost` through a dedicated gate
 - `8451`: Python workbench, layer `workbench`
 - `8452`: HedgeDoc
 - `8453`: n8n, layer `ai-llm`
+- `8454`: Obsidian
 - `${POSTGRES_DEV_HOST_PORT}`: Postgres host access, layer `workbench`
 
 No DNS setup and no `hosts` file edits are required: just use `https://localhost:<port>/`.
@@ -48,7 +50,7 @@ The gateway generates a self-signed SAN certificate that covers `localhost` and 
 
 ## Internal segmentation
 
-- `apps-net`: Gitea, BookStack, HedgeDoc, and Atlas gateway-routed browser services
+- `apps-net`: Gitea, BookStack, HedgeDoc, Obsidian, and Atlas gateway-routed browser services
 - `plane-net`: Plane application services
 - `ai-llm-net`: n8n, Ollama, and Open WebUI
 - `data-net`: infrastructure databases
