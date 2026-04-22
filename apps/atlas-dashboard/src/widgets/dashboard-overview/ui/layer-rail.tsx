@@ -51,7 +51,6 @@ export function LayerRail({
       totalUnits: workbenchCount
     }
   ];
-  const maxUnits = Math.max(...layers.map((layer) => layer.totalUnits), 1);
 
   return (
     <Card style={{ ...surfaceCardStyle, width: '100%' }} styles={{ body: { padding: 24 } }}>
@@ -70,10 +69,7 @@ export function LayerRail({
         <div style={atlasDashboardLayerRailStyles.comparisonGrid}>
           {layers.map((layer) => (
             <div key={layer.title} style={{ minWidth: 0 }}>
-              <LayerFootprintRow
-                layer={layer}
-                maxUnits={maxUnits}
-              />
+              <LayerFootprintRow layer={layer} />
             </div>
           ))}
         </div>
@@ -84,13 +80,9 @@ export function LayerRail({
 
 interface LayerFootprintRowProps {
   layer: LayerTelemetry;
-  maxUnits: number;
 }
 
-function LayerFootprintRow({
-  layer,
-  maxUnits
-}: LayerFootprintRowProps) {
+function LayerFootprintRow({ layer }: LayerFootprintRowProps) {
   const palette = dashboardToneStyles[layer.tone];
   const toneVisuals = createAtlasDashboardLayerRailToneStyles(palette);
   const IconGlyph =
@@ -99,8 +91,11 @@ function LayerFootprintRow({
       : layer.tone === 'workbench'
         ? CodeOutlined
         : ThunderboltOutlined;
-  const configuredWidth = `${(layer.totalUnits / maxUnits) * 100}%`;
-  const liveWidth = `${(layer.liveUnits / maxUnits) * 100}%`;
+  const configuredWidth = layer.totalUnits > 0 ? '100%' : '0%';
+  const liveWidth =
+    layer.totalUnits > 0
+      ? `${Math.min(layer.liveUnits / layer.totalUnits, 1) * 100}%`
+      : '0%';
 
   return (
     <Flex

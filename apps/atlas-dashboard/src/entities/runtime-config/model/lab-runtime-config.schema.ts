@@ -37,6 +37,11 @@ export const labRuntimeConfigSchema = z.object({
     hedgeDoc: z.object({
       url: nonEmptyString
     }),
+    obsidian: z.object({
+      password: nonEmptyString,
+      url: nonEmptyString,
+      username: nonEmptyString
+    }),
     n8n: z.object({
       ownerEmail: nonEmptyString,
       ownerName: nonEmptyString,

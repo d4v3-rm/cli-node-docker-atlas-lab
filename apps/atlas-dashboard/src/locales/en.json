@@ -75,7 +75,9 @@
     "optional": "optional"
   },
   "cards": {
+    "hideCredential": "Hide credential",
     "openBriefing": "Open briefing",
+    "revealCredential": "Reveal credential",
     "tones": {
       "ai": "AI",
       "core": "Core",
@@ -174,10 +176,12 @@
     "rootPassword": "root password",
     "rootUser": "root user",
     "superuser": "superuser",
+    "username": "username",
     "wanModel": "wan model",
     "usage": "usage"
   },
   "values": {
+    "basicAuth": "basic auth",
     "browserConsole": "browser console",
     "browserWorkspace": "browser workspace",
     "deploymentGuide": "deployment guide",
@@ -192,6 +196,7 @@
     "protectedApi": "protected API",
     "collaborativeMarkdown": "collaborative markdown",
     "collaborativeNotes": "collaborative notes",
+    "knowledgeVault": "knowledge vault",
     "sharedDatabase": "shared database",
     "videoStudio": "video studio",
     "workflowControl": "workflow control",
@@ -332,8 +337,14 @@
       "hedgeDoc": {
         "action": "Open HedgeDoc",
         "description": "Self-hosted collaborative markdown workspace for shared notes, meeting pads, and lightweight documentation flows.",
-        "note": "Local email accounts are enabled and anonymous access is disabled. Create the first account directly in the app.",
+        "note": "No bootstrap UI credentials are preset for HedgeDoc. Local email accounts are enabled and anonymous access is disabled: create the first account directly in the app.",
         "title": "HedgeDoc"
+      },
+      "obsidian": {
+        "action": "Open Obsidian",
+        "description": "Browser-delivered Obsidian workspace for personal vaults, local note graphing, and plugin-driven writing workflows.",
+        "note": "This service exposes a desktop session in the browser with an in-container terminal. Keep it on trusted localhost even though basic auth is enabled.",
+        "title": "Obsidian"
       },
       "plane": {
         "action": "Open Plane",

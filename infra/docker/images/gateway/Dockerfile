@@ -8,7 +8,6 @@ COPY package*.json ./
 
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
-COPY config/atlas-dashboard/ ./config/atlas-dashboard/
 COPY apps/atlas-dashboard/ ./apps/atlas-dashboard/
 
 RUN npm run build:atlas-dashboard

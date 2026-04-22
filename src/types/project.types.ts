@@ -39,6 +39,9 @@ export interface LabEnv {
   OLLAMA_URL?: string;
   PENPOT_URL?: string;
   HEDGEDOC_URL?: string;
+  OBSIDIAN_URL?: string;
+  OBSIDIAN_USERNAME?: string;
+  OBSIDIAN_PASSWORD?: string;
   OLLAMA_GATEWAY_USER?: string;
   OLLAMA_GATEWAY_PASSWORD?: string;
   ATLAS_DOCKER_HUB_MIRRORS?: string;
@@ -112,6 +115,9 @@ export interface SmokeEnv extends LabEnv {
   PLANE_URL: string;
   PENPOT_URL: string;
   HEDGEDOC_URL: string;
+  OBSIDIAN_URL: string;
+  OBSIDIAN_USERNAME: string;
+  OBSIDIAN_PASSWORD: string;
 }
 
 /**

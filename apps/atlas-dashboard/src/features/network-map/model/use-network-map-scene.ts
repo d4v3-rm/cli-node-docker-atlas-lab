@@ -1,4 +1,4 @@
-import { useEffect, useRef, type RefObject } from 'react';
+import { useEffect, useEffectEvent, useRef, type RefObject } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import {
@@ -22,7 +22,6 @@ interface SceneNodeEntry {
   basePosition: THREE.Vector3;
   label: CSS2DObject;
   labelDistance: number;
-  labelRoot: HTMLDivElement;
   mesh: THREE.Mesh;
   node: NetworkGraphViewModel['nodes'][number];
   orbit: THREE.Mesh | null;
@@ -44,6 +43,9 @@ export function useNetworkMapScene({
   selectedNodeId
 }: UseNetworkMapSceneOptions) {
   const selectedNodeIdRef = useRef<string | null>(selectedNodeId);
+  const onSelectNodeEvent = useEffectEvent((nodeId: string) => {
+    onSelectNode(nodeId);
+  });
 
   useEffect(() => {
     selectedNodeIdRef.current = selectedNodeId;
@@ -173,10 +175,7 @@ export function useNetworkMapScene({
     const nodeMeshes = Array.from(nodeEntries.values()).map((entry) => entry.mesh);
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
-    const labelDirection = new THREE.Vector2();
-    const cameraRight = new THREE.Vector3();
     const cameraUp = new THREE.Vector3();
-    const cameraForward = new THREE.Vector3();
     const labelOffset = new THREE.Vector3();
     const projectedPosition = new THREE.Vector3();
     const scaleTarget = new THREE.Vector3();
@@ -201,7 +200,7 @@ export function useNetworkMapScene({
       const nodeId = hit?.object.userData.nodeId;
 
       if (typeof nodeId === 'string') {
-        onSelectNode(nodeId);
+        onSelectNodeEvent(nodeId);
       }
     };
 
@@ -245,27 +244,11 @@ export function useNetworkMapScene({
 
         entry.mesh.getWorldPosition(entry.worldPosition);
         projectedPosition.copy(entry.worldPosition).project(camera);
-        labelDirection.set(projectedPosition.x, projectedPosition.y);
-
-        if (labelDirection.lengthSq() < 0.0001) {
-          labelDirection.set(0.64, 0.76);
-        } else {
-          labelDirection.normalize();
-        }
-
-        camera.matrixWorld.extractBasis(cameraRight, cameraUp, cameraForward);
-        labelOffset
-          .copy(cameraRight)
-          .multiplyScalar(labelDirection.x * entry.labelDistance)
-          .addScaledVector(cameraUp, labelDirection.y * entry.labelDistance * 0.92);
-
-        if (labelOffset.lengthSq() < 0.0001) {
-          labelOffset.copy(cameraUp).multiplyScalar(entry.labelDistance);
-        }
+        cameraUp.setFromMatrixColumn(camera.matrixWorld, 1).normalize();
+        labelOffset.copy(cameraUp).multiplyScalar(entry.labelDistance);
 
         entry.label.position.copy(entry.worldPosition).add(labelOffset);
         entry.label.visible = projectedPosition.z > -1 && projectedPosition.z < 1.2;
-        entry.labelRoot.style.transform = resolveLabelTransform(labelDirection);
       });
 
       linkEntries.forEach((entry) => {
@@ -308,7 +291,7 @@ export function useNetworkMapScene({
       labelRenderer.domElement.remove();
       renderer.domElement.remove();
     };
-  }, [containerRef, graph, onSelectNode, open]);
+  }, [containerRef, graph, open]);
 }
 
 function createSceneNode(
@@ -356,14 +339,13 @@ function createSceneNode(
     mesh.add(orbit);
   }
 
-  const { object: label, root: labelRoot } = createNodeLabel(node);
+  const label = createNodeLabel(node);
 
   return {
     aura,
     basePosition,
     label,
     labelDistance: size * 3.8 + 6,
-    labelRoot,
     mesh,
     node,
     orbit,
@@ -462,19 +444,10 @@ function createNodeLabel(node: NetworkGraphViewModel['nodes'][number]) {
   root.appendChild(title);
   root.appendChild(labelsRow);
 
-  return {
-    object: new CSS2DObject(root),
-    root
-  };
-}
+  const object = new CSS2DObject(root);
+  object.center.set(0.5, 1);
 
-function resolveLabelTransform(direction: THREE.Vector2) {
-  const horizontal =
-    direction.x > 0.24 ? '0%' : direction.x < -0.24 ? '-100%' : '-50%';
-  const vertical =
-    direction.y > 0.24 ? '-100%' : direction.y < -0.24 ? '0%' : '-50%';
-
-  return `translate(${horizontal}, ${vertical})`;
+  return object;
 }
 
 function createStarField() {

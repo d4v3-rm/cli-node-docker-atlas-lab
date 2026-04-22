@@ -75,7 +75,9 @@
     "optional": "opzionale"
   },
   "cards": {
+    "hideCredential": "Nascondi credenziale",
     "openBriefing": "Apri briefing",
+    "revealCredential": "Mostra credenziale",
     "tones": {
       "ai": "AI",
       "core": "Core",
@@ -174,10 +176,12 @@
     "rootPassword": "password root",
     "rootUser": "utente root",
     "superuser": "superuser",
+    "username": "username",
     "wanModel": "modello wan",
     "usage": "uso"
   },
   "values": {
+    "basicAuth": "basic auth",
     "browserConsole": "console browser",
     "browserWorkspace": "workspace browser",
     "deploymentGuide": "guida di deployment",
@@ -192,6 +196,7 @@
     "protectedApi": "API protetta",
     "collaborativeMarkdown": "markdown collaborativo",
     "collaborativeNotes": "note collaborative",
+    "knowledgeVault": "vault di conoscenza",
     "sharedDatabase": "database condiviso",
     "videoStudio": "studio video",
     "workflowControl": "controllo workflow",
@@ -331,9 +336,15 @@
       },
       "hedgeDoc": {
         "action": "Apri HedgeDoc",
-        "description": "Workspace self-hosted di markdown collaborativo per note condivise, meeting pad e documentazione leggera.",
-        "note": "Gli account email locali sono abilitati e l accesso anonimo e disattivato. Crea il primo account direttamente nell app.",
+        "description": "Spazio self-hosted per markdown collaborativo, note condivise, appunti di riunione e documentazione leggera.",
+        "note": "HedgeDoc non include credenziali iniziali preconfigurate per l'interfaccia. Gli account email locali sono abilitati e l'accesso anonimo è disattivato: crea il primo account direttamente dall'app.",
         "title": "HedgeDoc"
+      },
+      "obsidian": {
+        "action": "Apri Obsidian",
+        "description": "Workspace Obsidian nel browser per vault personali, grafo locale delle note e flussi di scrittura basati su plugin.",
+        "note": "Questo servizio espone una sessione desktop nel browser con terminale interno al container. Mantienilo su localhost fidato anche se la basic auth è attiva.",
+        "title": "Obsidian"
       },
       "plane": {
         "action": "Apri Plane",

@@ -3,7 +3,7 @@ import {
   normalizeDockerHubRepositoryPath,
   parseDockerHubMirrorHosts,
   parseRegistryProxyHosts
-} from '../../src/services/docker-image-prefetch.service.js';
+} from '../../src/services/orchestration/docker-image-prefetch.service.js';
 
 describe('docker-image-prefetch.service', () => {
   it('normalizes Docker Hub shorthand references to their repository paths', () => {

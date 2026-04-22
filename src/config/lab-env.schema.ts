@@ -51,6 +51,9 @@ export const labEnvSchema = z
     OLLAMA_URL: optionalEnvValue,
     PENPOT_URL: optionalEnvValue,
     HEDGEDOC_URL: optionalEnvValue,
+    OBSIDIAN_URL: optionalEnvValue,
+    OBSIDIAN_USERNAME: optionalEnvValue,
+    OBSIDIAN_PASSWORD: optionalEnvValue,
     OLLAMA_GATEWAY_USER: optionalEnvValue,
     OLLAMA_GATEWAY_PASSWORD: optionalEnvValue
   })
@@ -86,7 +89,10 @@ export const smokeEnvSchema = labEnvSchema.extend({
   BOOKSTACK_URL: requiredEnvValue,
   PLANE_URL: requiredEnvValue,
   PENPOT_URL: requiredEnvValue,
-  HEDGEDOC_URL: requiredEnvValue
+  HEDGEDOC_URL: requiredEnvValue,
+  OBSIDIAN_URL: requiredEnvValue,
+  OBSIDIAN_USERNAME: requiredEnvValue,
+  OBSIDIAN_PASSWORD: requiredEnvValue
 });
 
 /**

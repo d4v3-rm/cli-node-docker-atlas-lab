@@ -34,15 +34,18 @@ export function createCoreServices(
         },
         {
           label: labels.rootUser,
-          value: config.services.gitea.rootUsername
+          value: config.services.gitea.rootUsername,
+          concealed: true
         },
         {
           label: labels.password,
-          value: config.services.gitea.rootPassword
+          value: config.services.gitea.rootPassword,
+          concealed: true
         },
         {
           label: labels.email,
-          value: config.services.gitea.rootEmail
+          value: config.services.gitea.rootEmail,
+          concealed: true
         }
       ],
       description: t('dashboard.services.gitea.description'),
@@ -68,11 +71,13 @@ export function createCoreServices(
         },
         {
           label: labels.rootEmail,
-          value: config.services.bookStack.rootEmail
+          value: config.services.bookStack.rootEmail,
+          concealed: true
         },
         {
           label: labels.password,
-          value: config.services.bookStack.rootPassword
+          value: config.services.bookStack.rootPassword,
+          concealed: true
         },
         {
           label: labels.accessMode,
@@ -102,11 +107,13 @@ export function createCoreServices(
         },
         {
           label: labels.rootEmail,
-          value: config.services.plane.rootEmail
+          value: config.services.plane.rootEmail,
+          concealed: true
         },
         {
           label: labels.password,
-          value: config.services.plane.rootPassword
+          value: config.services.plane.rootPassword,
+          concealed: true
         },
         {
           label: labels.accessMode,
@@ -136,11 +143,13 @@ export function createCoreServices(
         },
         {
           label: labels.rootEmail,
-          value: config.services.penpot.rootEmail
+          value: config.services.penpot.rootEmail,
+          concealed: true
         },
         {
           label: labels.password,
-          value: config.services.penpot.rootPassword
+          value: config.services.penpot.rootPassword,
+          concealed: true
         },
         {
           label: labels.accessMode,
@@ -165,10 +174,6 @@ export function createCoreServices(
           value: config.services.hedgeDoc.url
         },
         {
-          label: labels.accessMode,
-          value: t('values.directAppOnboarding')
-        },
-        {
           label: labels.usage,
           value: t('values.collaborativeMarkdown')
         }
@@ -179,6 +184,43 @@ export function createCoreServices(
       note: t('dashboard.services.hedgeDoc.note'),
       status: t('values.collaborativeNotes'),
       title: t('dashboard.services.hedgeDoc.title'),
+      tone: 'core'
+    },
+    {
+      action: {
+        href: config.services.obsidian.url,
+        label: t('dashboard.services.obsidian.action')
+      },
+      credentials: [
+        {
+          label: labels.endpoint,
+          value: config.services.obsidian.url
+        },
+        {
+          label: labels.username,
+          value: config.services.obsidian.username,
+          concealed: true
+        },
+        {
+          label: labels.password,
+          value: config.services.obsidian.password,
+          concealed: true
+        },
+        {
+          label: labels.authMode,
+          value: t('values.basicAuth')
+        },
+        {
+          label: labels.usage,
+          value: t('values.knowledgeVault')
+        }
+      ],
+      description: t('dashboard.services.obsidian.description'),
+      icon: 'host',
+      id: 'obsidian',
+      note: t('dashboard.services.obsidian.note'),
+      status: t('values.knowledgeVault'),
+      title: t('dashboard.services.obsidian.title'),
       tone: 'core'
     }
   ];

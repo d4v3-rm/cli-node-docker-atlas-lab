@@ -3,8 +3,8 @@ import { APP_METADATA } from './app-metadata.js';
 import type { RuntimeMode } from '../types/runtime.types.js';
 
 const DEVELOPMENT_ENTRYPOINTS = [
-  `/src/bin/${APP_METADATA.cliName}.ts`,
-  '/src/bin/lab-atlas.ts'
+  `/src/cli/${APP_METADATA.cliName}.ts`,
+  '/src/cli/lab-atlas.ts'
 ] as const;
 
 /**

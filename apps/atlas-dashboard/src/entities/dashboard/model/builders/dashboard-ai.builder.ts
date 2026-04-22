@@ -66,11 +66,13 @@ export function createAiServices(
         },
         {
           label: labels.rootEmail,
-          value: config.services.openWebUi.rootEmail
+          value: config.services.openWebUi.rootEmail,
+          concealed: true
         },
         {
           label: labels.password,
-          value: config.services.openWebUi.rootPassword
+          value: config.services.openWebUi.rootPassword,
+          concealed: true
         }
       ],
       description: t('dashboard.aiServices.openWebUi.description'),
@@ -92,11 +94,13 @@ export function createAiServices(
         },
         {
           label: labels.gatewayUser,
-          value: config.services.ollama.gatewayUser
+          value: config.services.ollama.gatewayUser,
+          concealed: true
         },
         {
           label: labels.gatewayPassword,
-          value: config.services.ollama.gatewayPassword
+          value: config.services.ollama.gatewayPassword,
+          concealed: true
         },
         {
           label: labels.usage,
@@ -130,11 +134,13 @@ export function createAiServices(
         },
         {
           label: labels.ownerEmail,
-          value: config.services.n8n.ownerEmail
+          value: config.services.n8n.ownerEmail,
+          concealed: true
         },
         {
           label: labels.ownerPassword,
-          value: config.services.n8n.ownerPassword
+          value: config.services.n8n.ownerPassword,
+          concealed: true
         }
       ],
       description: t('dashboard.aiServices.n8n.description'),

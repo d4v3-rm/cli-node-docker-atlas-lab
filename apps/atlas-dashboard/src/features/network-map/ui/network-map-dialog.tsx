@@ -112,6 +112,10 @@ export function NetworkMapDialog({
       .filter((node): node is NonNullable<typeof node> => Boolean(node));
   }, [graph.links, graph.nodes, selectedNode]);
 
+  const selectedNodePalette = selectedNode
+    ? dashboardToneStyles[selectedNode.tone]
+    : dashboardToneStyles.neutral;
+
   if (!open || !isMounted || typeof document === 'undefined') {
     return null;
   }
@@ -161,23 +165,28 @@ export function NetworkMapDialog({
           <Flex
             align="flex-start"
             gap={18}
-            justify="space-between"
-            style={floatingPanelStyle({
+            style={createToneAwareFloatingPanelStyle(selectedNodePalette, {
               left: 24,
-              maxWidth: 'min(620px, calc(100vw - 48px))',
+              width: 'min(520px, calc(100vw - 48px))',
               top: 24
             })}
-            wrap="wrap"
+            vertical
           >
-            <Flex flex={1} vertical gap={8} style={{ minWidth: 280 }}>
-              <Text style={overlineStyle}>{t('networkMapDialog.eyebrow')}</Text>
+            <Flex vertical gap={8} style={{ minWidth: 0 }}>
+              <Text
+                style={{
+                  ...overlineStyle,
+                  color: selectedNodePalette.accent
+                }}
+              >
+                {t('networkMapDialog.eyebrow')}
+              </Text>
               <Title
                 level={2}
                 style={{
                   color: atlasDashboardPalette.white,
                   letterSpacing: '-0.05em',
-                  margin: 0,
-                  maxWidth: 560
+                  margin: 0
                 }}
               >
                 {graph.title}
@@ -187,8 +196,7 @@ export function NetworkMapDialog({
                   color: atlasDashboardPalette.muted,
                   fontSize: 16,
                   lineHeight: 1.8,
-                  margin: 0,
-                  maxWidth: 560
+                  margin: 0
                 }}
               >
                 {graph.summary}
@@ -197,7 +205,12 @@ export function NetworkMapDialog({
 
             <Flex gap={10} wrap="wrap">
               <Link href={source.path} rel="noreferrer" target="_blank">
-                <Button icon={<ExportOutlined />} size="large" type="text">
+                <Button
+                  icon={<ExportOutlined />}
+                  size="large"
+                  style={{ color: selectedNodePalette.accent }}
+                  type="text"
+                >
                   {t('networkMapDialog.openSource')}
                 </Button>
               </Link>
@@ -205,6 +218,7 @@ export function NetworkMapDialog({
                 icon={<CloseOutlined />}
                 onClick={onClose}
                 size="large"
+                style={{ color: selectedNodePalette.accent }}
                 type="text"
               >
                 {t('briefing.close')}
@@ -228,12 +242,7 @@ export function NetworkMapDialog({
               return (
                 <Flex
                   key={stat.id}
-                  style={{
-                    background: atlasDashboardPalette.panelAlt,
-                    borderRadius: 22,
-                    minWidth: 120,
-                    padding: '12px 14px'
-                  }}
+                  style={createToneAwareFloatingStatStyle(selectedNodePalette)}
                   vertical
                 >
                   <Text style={{ ...overlineStyle, color: palette.accent }}>{stat.label}</Text>
@@ -255,14 +264,21 @@ export function NetworkMapDialog({
           {selectedNode ? (
             <Flex
               gap={14}
-              style={floatingPanelStyle({
+              style={createToneAwareFloatingPanelStyle(selectedNodePalette, {
                 bottom: 24,
                 left: 24,
                 maxWidth: 'min(380px, calc(100vw - 48px))'
               })}
               vertical
             >
-              <Text style={overlineStyle}>{t('networkMapDialog.selectionEyebrow')}</Text>
+              <Text
+                style={{
+                  ...overlineStyle,
+                  color: selectedNodePalette.accent
+                }}
+              >
+                {t('networkMapDialog.selectionEyebrow')}
+              </Text>
               <Flex align="center" gap={10} justify="space-between" wrap="wrap">
                 <Title
                   level={3}
@@ -275,9 +291,9 @@ export function NetworkMapDialog({
                   {selectedNode.title}
                 </Title>
                 <Tag
-                  color={dashboardToneStyles[selectedNode.tone].accent}
                   style={{
-                    background: atlasDashboardPalette.panel,
+                    background: selectedNodePalette.soft,
+                    color: atlasDashboardPalette.white,
                     fontWeight: 700,
                     marginInlineEnd: 0
                   }}
@@ -304,7 +320,7 @@ export function NetworkMapDialog({
                     <Tag
                       key={`${selectedNode.id}-${label}`}
                       style={{
-                        background: atlasDashboardPalette.panel,
+                        background: selectedNodePalette.soft,
                         color: atlasDashboardPalette.white,
                         fontWeight: 600,
                         marginInlineEnd: 0,
@@ -324,9 +340,9 @@ export function NetworkMapDialog({
                   {connectedNodes.map((node) => (
                     <Tag
                       key={`${selectedNode.id}-${node.id}`}
-                      color={dashboardToneStyles[node.tone].accent}
                       style={{
-                        background: atlasDashboardPalette.panel,
+                        background: dashboardToneStyles[node.tone].soft,
+                        color: atlasDashboardPalette.white,
                         fontWeight: 600,
                         marginInlineEnd: 0,
                         paddingInline: 12,
@@ -343,21 +359,28 @@ export function NetworkMapDialog({
 
           <Flex
             gap={12}
-            style={floatingPanelStyle({
+            style={createToneAwareFloatingPanelStyle(selectedNodePalette, {
               bottom: 24,
               maxWidth: 'min(420px, calc(100vw - 48px))',
               right: 24
             })}
             vertical
           >
-            <Text style={overlineStyle}>{t('networkMapDialog.legendTitle')}</Text>
+            <Text
+              style={{
+                ...overlineStyle,
+                color: selectedNodePalette.accent
+              }}
+            >
+              {t('networkMapDialog.legendTitle')}
+            </Text>
             <Flex gap={8} wrap="wrap">
               {(['neutral', 'core', 'ai', 'workbench'] as const).map((tone) => (
                 <Tag
                   color={dashboardToneStyles[tone].accent}
                   key={tone}
                   style={{
-                    background: atlasDashboardPalette.panel,
+                    background: dashboardToneStyles[tone].soft,
                     fontWeight: 700,
                     marginInlineEnd: 0,
                     paddingInline: 12,
@@ -392,8 +415,9 @@ export function NetworkMapDialog({
 }
 
 function floatingPanelStyle(
-  position: Partial<Record<'bottom' | 'left' | 'right' | 'top', number>> & {
+  position: Partial<Record<'bottom' | 'left' | 'right' | 'top', number | string>> & {
     maxWidth?: string;
+    width?: string;
   }
 ) {
   return {
@@ -403,5 +427,29 @@ function floatingPanelStyle(
     position: 'absolute' as const,
     zIndex: 2,
     ...position
+  };
+}
+
+function createToneAwareFloatingPanelStyle(
+  palette: (typeof dashboardToneStyles)[keyof typeof dashboardToneStyles],
+  position: Partial<Record<'bottom' | 'left' | 'right' | 'top', number | string>> & {
+    maxWidth?: string;
+    width?: string;
+  }
+) {
+  return {
+    ...floatingPanelStyle(position),
+    background: palette.surfaceAlt
+  };
+}
+
+function createToneAwareFloatingStatStyle(
+  palette: (typeof dashboardToneStyles)[keyof typeof dashboardToneStyles]
+) {
+  return {
+    background: palette.surfaceAlt,
+    borderRadius: 22,
+    minWidth: 120,
+    padding: '12px 14px'
   };
 }

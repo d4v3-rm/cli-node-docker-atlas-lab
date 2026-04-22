@@ -2,7 +2,10 @@ import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { resolvePackagedProjectRoot, resolveProjectRoot } from '../../src/services/project.service.js';
+import {
+  resolvePackagedProjectRoot,
+  resolveProjectRoot
+} from '../../src/services/runtime/project.service.js';
 
 describe('project.service', () => {
   it('resolves the packaged asset root from the bundled entrypoint location', () => {

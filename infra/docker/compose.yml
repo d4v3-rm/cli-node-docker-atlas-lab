@@ -69,6 +69,7 @@ services:
       - "${PENPOT_HTTPS_PORT}:${PENPOT_HTTPS_PORT}"
       - "${BOOKSTACK_HTTPS_PORT}:${BOOKSTACK_HTTPS_PORT}"
       - "${HEDGEDOC_HTTPS_PORT}:${HEDGEDOC_HTTPS_PORT}"
+      - "${OBSIDIAN_HTTPS_PORT}:${OBSIDIAN_HTTPS_PORT}"
     volumes:
       - gateway-certs:/etc/caddy/certs
       - gateway-config:/etc/caddy/dynamic
@@ -81,6 +82,8 @@ services:
         condition: service_healthy
       hedgedoc:
         condition: service_healthy
+      obsidian:
+        condition: service_started
       plane-proxy:
         condition: service_started
       penpot-frontend:
@@ -253,6 +256,24 @@ services:
       - hedgedoc-db:/var/lib/postgresql/data
     networks:
       - data-net
+
+  obsidian:
+    image: lscr.io/linuxserver/obsidian:${OBSIDIAN_VERSION}
+    restart: unless-stopped
+    shm_size: "1gb"
+    environment:
+      <<: *lab-env
+      PUID: ${OBSIDIAN_UID}
+      PGID: ${OBSIDIAN_GID}
+      CUSTOM_USER: ${OBSIDIAN_USERNAME}
+      PASSWORD: ${OBSIDIAN_PASSWORD}
+      TITLE: Atlas Lab Obsidian
+    volumes:
+      - obsidian-config:/config
+    networks:
+      apps-net:
+      services-egress-net:
+        gw_priority: 1
 
   plane-web:
     image: makeplane/plane-frontend:${PLANE_APP_RELEASE}
@@ -615,6 +636,7 @@ volumes:
   bookstack-db:
   hedgedoc-db:
   hedgedoc-uploads:
+  obsidian-config:
   plane-db:
   plane-redis:
   plane-mq:

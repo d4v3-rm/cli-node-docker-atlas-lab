@@ -19,6 +19,7 @@ export type DashboardIconKey =
 export type DashboardTone = 'ai' | 'core' | 'neutral' | 'workbench';
 
 export interface CredentialItem {
+  concealed?: boolean;
   label: string;
   value: string;
 }
