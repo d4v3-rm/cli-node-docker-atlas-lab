@@ -1,5 +1,5 @@
 import pWaitFor from 'p-wait-for';
-import { createComposeCommandArgs } from '../../lib/docker/compose.js';
+import { createComposeCommandArgs } from '../../lib/compose.js';
 import { readGatewayCertificate } from '../runtime/gateway-certificate.service.js';
 import type { AiLlmBootstrapEnv, AiLlmSmokeEnv, ProjectContext } from '../../types/project.types.js';
 import type { HttpsResponse } from '../../types/http.types.js';

@@ -9,7 +9,7 @@
     "atlas-lab": "./bin/atlas-lab"
   },
   "scripts": {
-    "dev": "tsx ./src/cli/bin/atlas-lab.ts",
+    "dev": "tsx ./src/cli/atlas-lab.ts",
     "build": "tsup",
     "verify": "npm run typecheck && npm run test && npm run build && npm run build:atlas-dashboard",
     "set:version": "node ./scripts/set-version.mjs",

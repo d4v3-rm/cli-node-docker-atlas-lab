@@ -478,7 +478,7 @@ For DBeaver and other desktop PostgreSQL clients:
 | --- | --- | --- |
 | CLI shell | entrypoint, command registration, terminal rendering | `src/cli/`, `bin/` |
 | domain services | runtime orchestration, diagnostics, integrations, archive workflows | `src/services/` |
-| shared contracts | config schemas, Docker helpers, utilities, shared types | `src/config/`, `src/lib/docker/`, `src/types/`, `src/utils/` |
+| shared contracts | config schemas, Docker helpers, utilities, shared types | `src/config/`, `src/lib/`, `src/types/`, `src/utils/` |
 | dashboard | React frontend plus local Vite and TS config | `apps/atlas-dashboard/` |
 | runtime assets | packaged env files and gateway templates | `env/`, `config/gateway/templates/` |
 | infrastructure | Compose layers, Dockerfiles, startup scripts | `infra/docker/` |
@@ -489,13 +489,10 @@ Source tree:
 ```text
 src/
   cli/
-    app/
-    bin/
     commands/
     ui/
   config/
   lib/
-    docker/
   services/
     archive/
     diagnostics/
@@ -514,11 +511,11 @@ Key files:
 - [`infra/docker/compose.yml`](./infra/docker/compose.yml)
 - [`infra/docker/compose.ai-llm.yml`](./infra/docker/compose.ai-llm.yml)
 - [`infra/docker/compose.workbench.yml`](./infra/docker/compose.workbench.yml)
-- [`src/cli/bin/atlas-lab.ts`](./src/cli/bin/atlas-lab.ts)
-- [`src/cli/app/create-cli-app.ts`](./src/cli/app/create-cli-app.ts)
+- [`src/cli/atlas-lab.ts`](./src/cli/atlas-lab.ts)
+- [`src/cli/create-cli-app.ts`](./src/cli/create-cli-app.ts)
 - [`src/services/orchestration/stack.service.ts`](./src/services/orchestration/stack.service.ts)
 - [`src/services/runtime/project.service.ts`](./src/services/runtime/project.service.ts)
-- [`src/lib/docker/compose.ts`](./src/lib/docker/compose.ts)
+- [`src/lib/compose.ts`](./src/lib/compose.ts)
 - [`config/gateway/templates/Caddyfile.template`](./config/gateway/templates/Caddyfile.template)
 - [`config/gateway/templates/runtime/lab-config.json.template`](./config/gateway/templates/runtime/lab-config.json.template)
 - [`infra/docker/images/gateway/bootstrap-gateway.sh`](./infra/docker/images/gateway/bootstrap-gateway.sh)

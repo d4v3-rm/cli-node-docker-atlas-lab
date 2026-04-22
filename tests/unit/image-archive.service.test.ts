@@ -1,4 +1,4 @@
-import { normalizeImageReference } from '../../../src/services/orchestration/compose-project.service.js';
+import { normalizeImageReference } from '../../src/services/orchestration/compose-project.service.js';
 
 describe('image archive helpers', () => {
   it('adds :latest when a compose image reference does not include a tag', () => {

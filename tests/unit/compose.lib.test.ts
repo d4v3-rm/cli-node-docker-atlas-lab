@@ -1,5 +1,5 @@
-import { createComposeCommandArgs, resolveComposeFiles } from '../../../src/lib/docker/compose.js';
-import type { ProjectContext } from '../../../src/types/project.types.js';
+import { createComposeCommandArgs, resolveComposeFiles } from '../../src/lib/compose.js';
+import type { ProjectContext } from '../../src/types/project.types.js';
 
 const context: ProjectContext = {
   env: {},

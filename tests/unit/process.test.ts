@@ -1,4 +1,4 @@
-import { summarizeFailureDetail } from '../../../src/utils/process.js';
+import { summarizeFailureDetail } from '../../src/utils/process.js';
 
 describe('process failure formatting', () => {
   it('prefers actionable stdout lines when stderr is empty', () => {

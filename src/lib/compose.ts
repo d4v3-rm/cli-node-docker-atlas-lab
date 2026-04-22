@@ -1,4 +1,4 @@
-import type { ProjectContext } from '../../types/project.types.js';
+import type { ProjectContext } from '../types/project.types.js';
 
 export interface ComposeLayerSelection {
   includeAiLlm?: boolean;

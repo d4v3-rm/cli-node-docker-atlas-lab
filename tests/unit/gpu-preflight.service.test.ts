@@ -1,7 +1,7 @@
 import {
   dockerInfoSupportsNvidiaGpu,
   parseNvidiaGpuNames
-} from '../../../src/services/diagnostics/gpu-preflight.service.js';
+} from '../../src/services/diagnostics/gpu-preflight.service.js';
 
 describe('gpu-preflight.service', () => {
   it('parses the GPU names returned by nvidia-smi', () => {

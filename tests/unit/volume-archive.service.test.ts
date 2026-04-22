@@ -1,4 +1,4 @@
-import type { VolumeArchiveManifest } from '../../../src/types/docker.types.js';
+import type { VolumeArchiveManifest } from '../../src/types/docker.types.js';
 
 describe('volume archive manifest', () => {
   it('represents archived volumes with logical and docker names', () => {

@@ -1,4 +1,4 @@
-import { normalizeArchiveBundleOutputPath } from '../../../src/services/archive/archive-bundle.service.js';
+import { normalizeArchiveBundleOutputPath } from '../../src/services/archive/archive-bundle.service.js';
 
 describe('archive bundle helpers', () => {
   it('appends .tar.gz when the user omits an archive extension', () => {

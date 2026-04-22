@@ -1,4 +1,4 @@
-import { normalizeAiAliasOptions } from '../../../src/utils/cli-options.js';
+import { normalizeAiAliasOptions } from '../../src/utils/cli-options.js';
 
 describe('cli option normalization', () => {
   it('maps legacy Commander alias keys to the canonical AI layer flags', () => {

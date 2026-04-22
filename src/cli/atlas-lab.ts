@@ -1,6 +1,6 @@
 import process from 'node:process';
-import { runCli } from '../app/run-cli.js';
-import { printError } from '../ui/logger.js';
+import { runCli } from './run-cli.js';
+import { printError } from './ui/logger.js';
 
 /**
  * Bootstraps the TypeScript CLI entrypoint and surfaces styled errors.

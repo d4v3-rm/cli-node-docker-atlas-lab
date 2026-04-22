@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { Listr } from 'listr2';
 import { REQUIRED_REPOSITORY_FILES } from '../../config/repository-layout.js';
-import { createComposeCommandArgs } from '../../lib/docker/compose.js';
+import { createComposeCommandArgs } from '../../lib/compose.js';
 import type { DoctorCommandOptions } from '../../types/cli.types.js';
 import type { HostCheckResult, SmokeCheckDefinition } from '../../types/doctor.types.js';
 import type { AiLlmSmokeEnv, ProjectContext, SmokeEnv } from '../../types/project.types.js';

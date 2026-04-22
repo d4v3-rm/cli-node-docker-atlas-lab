@@ -1,4 +1,4 @@
-import { parseGiteaUsernames } from '../../../src/services/integrations/gitea-admin.service.js';
+import { parseGiteaUsernames } from '../../src/services/integrations/gitea-admin.service.js';
 
 describe('gitea-admin.service', () => {
   it('extracts exact usernames from the gitea admin list table', () => {

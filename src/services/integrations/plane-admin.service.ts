@@ -1,4 +1,4 @@
-import { createComposeCommandArgs } from '../../lib/docker/compose.js';
+import { createComposeCommandArgs } from '../../lib/compose.js';
 import type { BootstrapEnv, ProjectContext } from '../../types/project.types.js';
 import { printInfo } from '../../cli/ui/logger.js';
 import { runCommand } from '../../utils/process.js';

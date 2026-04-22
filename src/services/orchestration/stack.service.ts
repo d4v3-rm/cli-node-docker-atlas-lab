@@ -1,5 +1,5 @@
 import { Listr } from 'listr2';
-import { createComposeCommandArgs } from '../../lib/docker/compose.js';
+import { createComposeCommandArgs } from '../../lib/compose.js';
 import type { GlobalCliOptions, UpCommandOptions } from '../../types/cli.types.js';
 import type { ProjectContext } from '../../types/project.types.js';
 import { assertPublishedPortsAvailable } from '../diagnostics/host-preflight.service.js';

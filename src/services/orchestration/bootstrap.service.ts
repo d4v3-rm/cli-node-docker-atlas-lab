@@ -1,6 +1,6 @@
 import { Listr } from 'listr2';
 import pWaitFor from 'p-wait-for';
-import { createComposeCommandArgs, type ComposeLayerSelection } from '../../lib/docker/compose.js';
+import { createComposeCommandArgs, type ComposeLayerSelection } from '../../lib/compose.js';
 import type { BootstrapCommandOptions } from '../../types/cli.types.js';
 import type { AiLlmBootstrapEnv, ProjectContext } from '../../types/project.types.js';
 import { ensureBookStackAdmin } from '../integrations/bookstack-admin.service.js';

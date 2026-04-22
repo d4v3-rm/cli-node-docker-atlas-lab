@@ -1,4 +1,4 @@
-import { classifyN8nOwnerSetupResponse } from '../../../src/services/integrations/n8n-owner.service.js';
+import { classifyN8nOwnerSetupResponse } from '../../src/services/integrations/n8n-owner.service.js';
 
 describe('n8n-owner.service', () => {
   it('marks a successful setup response as created', () => {

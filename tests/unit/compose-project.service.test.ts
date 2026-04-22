@@ -1,7 +1,7 @@
 import {
   collectPublishedPorts,
   parseComposePsEntries
-} from '../../../src/services/orchestration/compose-project.service.js';
+} from '../../src/services/orchestration/compose-project.service.js';
 
 describe('compose-project.service', () => {
   it('parses newline-delimited compose ps output', () => {

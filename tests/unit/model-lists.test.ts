@@ -1,7 +1,7 @@
 import {
   collectConfiguredOllamaModels,
   collectExpectedOllamaModelIdentifiers
-} from '../../../src/utils/model-lists.js';
+} from '../../src/utils/model-lists.js';
 
 describe('model-lists', () => {
   it('collects runtime, chat, and embedding models without duplicates', () => {

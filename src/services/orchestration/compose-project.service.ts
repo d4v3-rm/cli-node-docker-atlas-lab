@@ -1,5 +1,5 @@
 import { APP_METADATA } from '../../config/app-metadata.js';
-import { createComposeCommandArgs } from '../../lib/docker/compose.js';
+import { createComposeCommandArgs } from '../../lib/compose.js';
 import type { ComposePsEntry } from '../../types/docker.types.js';
 import type { GlobalCliOptions, SaveImagesCommandOptions } from '../../types/cli.types.js';
 import type { ProjectContext } from '../../types/project.types.js';

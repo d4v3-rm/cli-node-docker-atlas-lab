@@ -5,7 +5,7 @@ import { pathToFileURL } from 'node:url';
 import {
   resolvePackagedProjectRoot,
   resolveProjectRoot
-} from '../../../src/services/runtime/project.service.js';
+} from '../../src/services/runtime/project.service.js';
 
 describe('project.service', () => {
   it('resolves the packaged asset root from the bundled entrypoint location', () => {
