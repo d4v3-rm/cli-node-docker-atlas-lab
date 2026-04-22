@@ -1,5 +1,9 @@
 import { execa } from 'execa';
-import { isFileLoggingEnabled, writeProcessOutput, writeRuntimeLog } from '../services/runtime-log.service.js';
+import {
+  isFileLoggingEnabled,
+  writeProcessOutput,
+  writeRuntimeLog
+} from '../services/runtime/runtime-log.service.js';
 import type { CommandExecutionOptions, CommandExecutionResult } from '../types/process.types.js';
 
 /**

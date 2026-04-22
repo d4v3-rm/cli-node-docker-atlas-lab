@@ -1,5 +1,11 @@
-import { ArrowRightOutlined, CompassOutlined } from '@ant-design/icons';
+import {
+  ArrowRightOutlined,
+  CompassOutlined,
+  EyeInvisibleOutlined,
+  EyeOutlined
+} from '@ant-design/icons';
 import { Alert, Button, Card, Col, Flex, Row, Tag, Typography } from 'antd';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   dashboardIconMap,
@@ -39,6 +45,7 @@ export function OperationalCard({
   tone
 }: OperationalCardProps) {
   const { t } = useTranslation();
+  const [revealedCredentials, setRevealedCredentials] = useState<Record<string, boolean>>({});
   const palette = dashboardToneStyles[tone];
   const toneVisuals = createAtlasDashboardToneCardStyles(palette);
   const IconGlyph = dashboardIconMap[item.icon];
@@ -99,6 +106,12 @@ export function OperationalCard({
 
         <Row gutter={[12, 12]}>
           {item.credentials.map((credential) => {
+            const credentialKey = `${item.id}-${credential.label}`;
+            const isRevealed = Boolean(revealedCredentials[credentialKey]);
+            const displayedValue =
+              credential.concealed && !isRevealed
+                ? maskCredentialValue(credential.value)
+                : credential.value;
             const useMono =
               credential.value.includes(':') ||
               credential.value.includes('@') ||
@@ -107,7 +120,7 @@ export function OperationalCard({
 
             return (
               <Col
-                key={`${item.id}-${credential.label}`}
+                key={credentialKey}
                 md={item.credentials.length > 1 ? 12 : 24}
                 span={24}
               >
@@ -117,7 +130,30 @@ export function OperationalCard({
                   styles={{ body: atlasDashboardCardLayoutStyles.nestedBody }}
                 >
                   <Flex vertical gap={8}>
-                    <Text style={overlineStyle}>{credential.label}</Text>
+                    <Flex align="center" justify="space-between" gap={8}>
+                      <Text style={overlineStyle}>{credential.label}</Text>
+                      {credential.concealed ? (
+                        <Button
+                          aria-label={
+                            isRevealed
+                              ? t('cards.hideCredential')
+                              : t('cards.revealCredential')
+                          }
+                          icon={isRevealed ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                          onClick={() =>
+                            setRevealedCredentials((current) => ({
+                              ...current,
+                              [credentialKey]: !current[credentialKey]
+                            }))
+                          }
+                          size="small"
+                          style={{
+                            color: palette.accent
+                          }}
+                          type="text"
+                        />
+                      ) : null}
+                    </Flex>
                     <Text
                       style={{
                         color: atlasDashboardPalette.white,
@@ -126,7 +162,7 @@ export function OperationalCard({
                         overflowWrap: 'anywhere'
                       }}
                     >
-                      {credential.value}
+                      {displayedValue}
                     </Text>
                   </Flex>
                 </Card>
@@ -168,4 +204,10 @@ export function OperationalCard({
       </Flex>
     </Card>
   );
+}
+
+function maskCredentialValue(value: string) {
+  const maskLength = Math.max(8, Math.min(value.trim().length, 18));
+
+  return '•'.repeat(maskLength);
 }

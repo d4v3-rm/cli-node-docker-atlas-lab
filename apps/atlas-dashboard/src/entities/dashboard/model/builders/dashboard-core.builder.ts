@@ -34,15 +34,18 @@ export function createCoreServices(
         },
         {
           label: labels.rootUser,
-          value: config.services.gitea.rootUsername
+          value: config.services.gitea.rootUsername,
+          concealed: true
         },
         {
           label: labels.password,
-          value: config.services.gitea.rootPassword
+          value: config.services.gitea.rootPassword,
+          concealed: true
         },
         {
           label: labels.email,
-          value: config.services.gitea.rootEmail
+          value: config.services.gitea.rootEmail,
+          concealed: true
         }
       ],
       description: t('dashboard.services.gitea.description'),
@@ -68,11 +71,13 @@ export function createCoreServices(
         },
         {
           label: labels.rootEmail,
-          value: config.services.bookStack.rootEmail
+          value: config.services.bookStack.rootEmail,
+          concealed: true
         },
         {
           label: labels.password,
-          value: config.services.bookStack.rootPassword
+          value: config.services.bookStack.rootPassword,
+          concealed: true
         },
         {
           label: labels.accessMode,
@@ -102,11 +107,13 @@ export function createCoreServices(
         },
         {
           label: labels.rootEmail,
-          value: config.services.plane.rootEmail
+          value: config.services.plane.rootEmail,
+          concealed: true
         },
         {
           label: labels.password,
-          value: config.services.plane.rootPassword
+          value: config.services.plane.rootPassword,
+          concealed: true
         },
         {
           label: labels.accessMode,
@@ -136,11 +143,13 @@ export function createCoreServices(
         },
         {
           label: labels.rootEmail,
-          value: config.services.penpot.rootEmail
+          value: config.services.penpot.rootEmail,
+          concealed: true
         },
         {
           label: labels.password,
-          value: config.services.penpot.rootPassword
+          value: config.services.penpot.rootPassword,
+          concealed: true
         },
         {
           label: labels.accessMode,
@@ -163,10 +172,6 @@ export function createCoreServices(
         {
           label: labels.endpoint,
           value: config.services.hedgeDoc.url
-        },
-        {
-          label: labels.accessMode,
-          value: t('values.directAppOnboarding')
         },
         {
           label: labels.usage,

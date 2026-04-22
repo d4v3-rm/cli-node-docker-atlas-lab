@@ -75,7 +75,9 @@
     "optional": "opzionale"
   },
   "cards": {
+    "hideCredential": "Nascondi credenziale",
     "openBriefing": "Apri briefing",
+    "revealCredential": "Mostra credenziale",
     "tones": {
       "ai": "AI",
       "core": "Core",
@@ -332,7 +334,7 @@
       "hedgeDoc": {
         "action": "Apri HedgeDoc",
         "description": "Workspace self-hosted di markdown collaborativo per note condivise, meeting pad e documentazione leggera.",
-        "note": "Gli account email locali sono abilitati e l accesso anonimo e disattivato. Crea il primo account direttamente nell app.",
+        "note": "Non esistono credenziali UI bootstrap preimpostate per HedgeDoc. Gli account email locali sono abilitati e l accesso anonimo e disattivato: crea il primo account direttamente nell app.",
         "title": "HedgeDoc"
       },
       "plane": {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import {
@@ -13,13 +13,23 @@ const networkMapParamValue = 'network';
 
 export function useDashboardPageState() {
   const { config, error, isLoading } = useLabConfig();
-  const { t } = useTranslation();
+  const { i18n } = useTranslation();
   const [activeBriefing, setActiveBriefing] = useState<BriefingReference | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedLayer = parseDashboardLayer(searchParams.get('layer'));
   const selectedNetworkNodeId = searchParams.get('node');
   const isNetworkMapOpen =
     searchParams.get('map') === networkMapParamValue || Boolean(selectedNetworkNodeId);
+  const activeLanguage = i18n.resolvedLanguage ?? i18n.language;
+  const fixedT = useMemo(() => i18n.getFixedT(activeLanguage), [activeLanguage, i18n]);
+
+  const dashboard = useMemo(() => {
+    return config ? createDashboardViewModel(config, fixedT) : null;
+  }, [config, fixedT]);
+
+  const networkGraph = useMemo(() => {
+    return config ? createNetworkGraphViewModel(config, fixedT) : null;
+  }, [config, fixedT]);
 
   const updateSearchState = (
     updates: Record<'layer' | 'map' | 'node', string | null>,
@@ -73,11 +83,11 @@ export function useDashboardPageState() {
   return {
     activeBriefing,
     config,
-    dashboard: config ? createDashboardViewModel(config, t) : null,
+    dashboard,
     error,
     isNetworkMapOpen,
     isLoading,
-    networkGraph: config ? createNetworkGraphViewModel(config, t) : null,
+    networkGraph,
     selectedNetworkNodeId,
     selectedLayer,
     setActiveBriefing,

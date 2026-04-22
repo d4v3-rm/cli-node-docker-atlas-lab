@@ -75,7 +75,9 @@
     "optional": "optional"
   },
   "cards": {
+    "hideCredential": "Hide credential",
     "openBriefing": "Open briefing",
+    "revealCredential": "Reveal credential",
     "tones": {
       "ai": "AI",
       "core": "Core",
@@ -332,7 +334,7 @@
       "hedgeDoc": {
         "action": "Open HedgeDoc",
         "description": "Self-hosted collaborative markdown workspace for shared notes, meeting pads, and lightweight documentation flows.",
-        "note": "Local email accounts are enabled and anonymous access is disabled. Create the first account directly in the app.",
+        "note": "No bootstrap UI credentials are preset for HedgeDoc. Local email accounts are enabled and anonymous access is disabled: create the first account directly in the app.",
         "title": "HedgeDoc"
       },
       "plane": {

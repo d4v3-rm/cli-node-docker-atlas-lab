@@ -66,7 +66,8 @@ export function createWorkbenches(
         },
         {
           label: labels.rootPassword,
-          value: config.workbenches.node.password
+          value: config.workbenches.node.password,
+          concealed: true
         }
       ],
       description: t('dashboard.workbenches.node.description'),
@@ -96,7 +97,8 @@ export function createWorkbenches(
         },
         {
           label: labels.rootPassword,
-          value: config.workbenches.python.password
+          value: config.workbenches.python.password,
+          concealed: true
         }
       ],
       description: t('dashboard.workbenches.python.description'),
@@ -134,11 +136,13 @@ export function createWorkbenches(
         },
         {
           label: labels.superuser,
-          value: config.workbenches.postgres.superuser
+          value: config.workbenches.postgres.superuser,
+          concealed: true
         },
         {
           label: labels.password,
-          value: config.workbenches.postgres.password
+          value: config.workbenches.postgres.password,
+          concealed: true
         }
       ],
       description: t('dashboard.workbenches.postgres.description'),

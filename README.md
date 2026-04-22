@@ -392,10 +392,10 @@ The dashboard frontend lives in:
 
 - [`apps/atlas-dashboard`](./apps/atlas-dashboard)
 
-Its toolchain config lives in:
+Its toolchain config now lives alongside the app:
 
-- [`config/atlas-dashboard/vite.config.ts`](./config/atlas-dashboard/vite.config.ts)
-- [`config/atlas-dashboard/tsconfig.json`](./config/atlas-dashboard/tsconfig.json)
+- [`apps/atlas-dashboard/vite.config.ts`](./apps/atlas-dashboard/vite.config.ts)
+- [`apps/atlas-dashboard/tsconfig.json`](./apps/atlas-dashboard/tsconfig.json)
 
 ### Responsibilities
 
@@ -476,13 +476,35 @@ For DBeaver and other desktop PostgreSQL clients:
 
 | Area | Purpose | Paths |
 | --- | --- | --- |
-| CLI | application logic and commands | `src/`, `bin/` |
-| dashboard | React frontend | `apps/atlas-dashboard`, `config/atlas-dashboard/` |
-| Compose | layer orchestration | `infra/docker/compose*.yml` |
-| images | Dockerfiles and startup scripts | `infra/docker/images/` |
-| gateway | runtime templates and briefings | `config/gateway/templates/` |
-| env | operational configuration | `env/lab.env` |
-| repo scripts | versioning and support tooling | `scripts/` |
+| CLI shell | entrypoint, command registration, terminal rendering | `src/cli/`, `bin/` |
+| domain services | runtime orchestration, diagnostics, integrations, archive workflows | `src/services/` |
+| shared contracts | config schemas, Docker helpers, utilities, shared types | `src/config/`, `src/lib/docker/`, `src/types/`, `src/utils/` |
+| dashboard | React frontend plus local Vite and TS config | `apps/atlas-dashboard/` |
+| runtime assets | packaged env files and gateway templates | `env/`, `config/gateway/templates/` |
+| infrastructure | Compose layers, Dockerfiles, startup scripts | `infra/docker/` |
+| verification and tooling | unit tests, release helpers, CI support | `tests/`, `scripts/`, `.github/` |
+
+Source tree:
+
+```text
+src/
+  cli/
+    app/
+    bin/
+    commands/
+    ui/
+  config/
+  lib/
+    docker/
+  services/
+    archive/
+    diagnostics/
+    integrations/
+    orchestration/
+    runtime/
+  types/
+  utils/
+```
 
 Key files:
 
@@ -492,9 +514,11 @@ Key files:
 - [`infra/docker/compose.yml`](./infra/docker/compose.yml)
 - [`infra/docker/compose.ai-llm.yml`](./infra/docker/compose.ai-llm.yml)
 - [`infra/docker/compose.workbench.yml`](./infra/docker/compose.workbench.yml)
-- [`src/bin/atlas-lab.ts`](./src/bin/atlas-lab.ts)
-- [`src/app/create-cli-app.ts`](./src/app/create-cli-app.ts)
-- [`src/services/`](./src/services)
+- [`src/cli/bin/atlas-lab.ts`](./src/cli/bin/atlas-lab.ts)
+- [`src/cli/app/create-cli-app.ts`](./src/cli/app/create-cli-app.ts)
+- [`src/services/orchestration/stack.service.ts`](./src/services/orchestration/stack.service.ts)
+- [`src/services/runtime/project.service.ts`](./src/services/runtime/project.service.ts)
+- [`src/lib/docker/compose.ts`](./src/lib/docker/compose.ts)
 - [`config/gateway/templates/Caddyfile.template`](./config/gateway/templates/Caddyfile.template)
 - [`config/gateway/templates/runtime/lab-config.json.template`](./config/gateway/templates/runtime/lab-config.json.template)
 - [`infra/docker/images/gateway/bootstrap-gateway.sh`](./infra/docker/images/gateway/bootstrap-gateway.sh)
