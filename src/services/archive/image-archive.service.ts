@@ -4,7 +4,7 @@ import type { RestoreImagesCommandOptions, SaveImagesCommandOptions } from '../.
 import type { ImageArchiveManifest } from '../../types/docker.types.js';
 import type { ProjectContext } from '../../types/project.types.js';
 import { printCommandHeader } from '../../cli/ui/banner.js';
-import { printInfo, printSuccess } from '../../cli/ui/logger.js';
+import { printInfo, printSuccess, printWarning } from '../../cli/ui/logger.js';
 import { listConfiguredComposeImages } from '../orchestration/compose-project.service.js';
 import {
   cleanupArchiveWorkspace,
@@ -49,18 +49,40 @@ export async function runSaveImagesCommand(
       printInfo(`Queue image ${image}`, 'compose');
     }
 
+    const { available: availableImages, missing } = await filterAvailableDockerImages(
+      context.projectRoot,
+      images
+    );
+
+    for (const image of missing) {
+      printWarning(`Skip missing Docker image ${image}`, 'stack');
+    }
+
+    if (availableImages.length === 0) {
+      throw new Error(
+        'No selected Docker images are available locally. Start or build the requested lab layers before saving images.'
+      );
+    }
+
+    if (missing.length > 0) {
+      printInfo(
+        `Saving ${availableImages.length} available Docker image${availableImages.length === 1 ? '' : 's'} and skipping ${missing.length} missing image${missing.length === 1 ? '' : 's'}.`,
+        'stack'
+      );
+    }
+
     await ensureArchiveHelperImage(context.projectRoot, 'stack');
 
     const payloadPath = join(workspacePath, IMAGE_ARCHIVE_PAYLOAD_FILE);
     printInfo(`Saving Docker images into staging payload ${payloadPath}`, 'stack');
-    await runCommand('docker', ['image', 'save', '--output', payloadPath, ...images], {
+    await runCommand('docker', ['image', 'save', '--output', payloadPath, ...availableImages], {
       cwd: context.projectRoot,
       scope: 'stack'
     });
 
     const manifest: ImageArchiveManifest = {
       createdAt: new Date().toISOString(),
-      images,
+      images: availableImages,
       project: context.projectRoot
     };
 
@@ -69,7 +91,7 @@ export async function runSaveImagesCommand(
       `${JSON.stringify(manifest, null, 2)}\n`,
       'utf8'
     );
-    printInfo(`Embedded image manifest with ${images.length} entries.`, 'stack');
+    printInfo(`Embedded image manifest with ${availableImages.length} entries.`, 'stack');
 
     await packDirectoryToArchiveBundle(workspacePath, outputPath, context.projectRoot, 'stack');
   } finally {
@@ -77,6 +99,46 @@ export async function runSaveImagesCommand(
   }
 
   printSuccess(`Docker images saved to ${outputPath}`, 'stack');
+}
+
+/**
+ * Filters the selected Docker images down to the tags available in the local daemon.
+ */
+async function filterAvailableDockerImages(
+  projectRoot: string,
+  images: string[]
+): Promise<{ available: string[]; missing: string[] }> {
+  const existingImages = new Set<string>();
+
+  for (const image of images) {
+    printInfo(`Inspect image ${image}`, 'stack');
+
+    const result = await runCommand('docker', ['image', 'inspect', image], {
+      allowFailure: true,
+      captureOutput: true,
+      cwd: projectRoot,
+      scope: 'stack'
+    });
+
+    if (result.exitCode === 0) {
+      existingImages.add(image);
+    }
+  }
+
+  return selectAvailableDockerImages(images, existingImages);
+}
+
+/**
+ * Partitions image references while preserving the Compose resolution order.
+ */
+export function selectAvailableDockerImages(
+  images: string[],
+  existingImages: ReadonlySet<string>
+): { available: string[]; missing: string[] } {
+  return {
+    available: images.filter((image) => existingImages.has(image)),
+    missing: images.filter((image) => !existingImages.has(image))
+  };
 }
 
 /**
