@@ -91,7 +91,7 @@ export async function runSaveImagesCommand(
       `${JSON.stringify(manifest, null, 2)}\n`,
       'utf8'
     );
-    printInfo(`Embedded image manifest with ${images.length} entries.`, 'stack');
+    printInfo(`Embedded image manifest with ${availableImages.length} entries.`, 'stack');
 
     await packDirectoryToArchiveBundle(workspacePath, outputPath, context.projectRoot, 'stack');
   } finally {
