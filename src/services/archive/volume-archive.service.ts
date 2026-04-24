@@ -4,7 +4,7 @@ import type { RestoreVolumesCommandOptions, SaveVolumesCommandOptions } from '..
 import type { VolumeArchiveEntry, VolumeArchiveManifest } from '../../types/docker.types.js';
 import type { ProjectContext } from '../../types/project.types.js';
 import { printCommandHeader } from '../../cli/ui/banner.js';
-import { printInfo, printSuccess } from '../../cli/ui/logger.js';
+import { printInfo, printSuccess, printWarning } from '../../cli/ui/logger.js';
 import { hasRunningComposeServices, listConfiguredDockerVolumes } from '../orchestration/compose-project.service.js';
 import {
   ARCHIVE_BUNDLE_HELPER_IMAGE,
@@ -41,23 +41,44 @@ export async function runSaveVolumesCommand(
   }
 
   printInfo('Resolving configured Docker volumes...', 'compose');
-  const volumes = (await listConfiguredDockerVolumes(context, options)).map((volume) => ({
+  const configuredVolumes = (await listConfiguredDockerVolumes(context, options)).map((volume) => ({
     archiveFile: `${volume.logicalName}.tar`,
     dockerName: volume.dockerName,
     logicalName: volume.logicalName
   }));
 
-  if (volumes.length === 0) {
+  if (configuredVolumes.length === 0) {
     throw new Error('No Docker volumes were resolved for the selected lab layers.');
   }
 
-  printInfo(`Resolved ${volumes.length} Docker volumes for export.`, 'compose');
-  for (const volume of volumes) {
+  printInfo(`Resolved ${configuredVolumes.length} Docker volumes for export.`, 'compose');
+  for (const volume of configuredVolumes) {
     printInfo(`Queue volume ${volume.logicalName} (${volume.dockerName})`, 'compose');
   }
 
+  const { available: volumes, missing } = await filterExistingDockerVolumes(
+    context.projectRoot,
+    configuredVolumes
+  );
+
+  for (const volume of missing) {
+    printWarning(`Skip missing Docker volume ${volume.logicalName} (${volume.dockerName})`, 'stack');
+  }
+
+  if (volumes.length === 0) {
+    throw new Error(
+      'No selected Docker volumes exist locally. Start the requested lab layers before saving volumes.'
+    );
+  }
+
+  if (missing.length > 0) {
+    printInfo(
+      `Saving ${volumes.length} available Docker volume${volumes.length === 1 ? '' : 's'} and skipping ${missing.length} missing volume${missing.length === 1 ? '' : 's'}.`,
+      'stack'
+    );
+  }
+
   await ensureArchiveHelperImage(context.projectRoot, 'stack');
-  await validateDockerVolumesExist(context.projectRoot, volumes);
 
   const workspacePath = createArchiveWorkspace('volumes');
 
@@ -177,9 +198,14 @@ async function ensureDockerVolumeExists(volumeName: string, projectRoot: string)
 }
 
 /**
- * Validates that every Docker volume required by the export exists locally.
+ * Filters the selected Docker volumes down to the ones that exist locally.
  */
-async function validateDockerVolumesExist(projectRoot: string, volumes: VolumeArchiveEntry[]): Promise<void> {
+async function filterExistingDockerVolumes(
+  projectRoot: string,
+  volumes: VolumeArchiveEntry[]
+): Promise<{ available: VolumeArchiveEntry[]; missing: VolumeArchiveEntry[] }> {
+  const existingDockerNames = new Set<string>();
+
   for (const volume of volumes) {
     printInfo(`Inspect volume ${volume.logicalName} (${volume.dockerName})`, 'stack');
 
@@ -190,10 +216,25 @@ async function validateDockerVolumesExist(projectRoot: string, volumes: VolumeAr
       scope: 'stack'
     });
 
-    if (result.exitCode !== 0) {
-      throw new Error(`Docker volume not found: ${volume.dockerName}`);
+    if (result.exitCode === 0) {
+      existingDockerNames.add(volume.dockerName);
     }
   }
+
+  return selectExistingDockerVolumes(volumes, existingDockerNames);
+}
+
+/**
+ * Partitions volume entries while preserving the Compose resolution order.
+ */
+export function selectExistingDockerVolumes(
+  volumes: VolumeArchiveEntry[],
+  existingDockerNames: ReadonlySet<string>
+): { available: VolumeArchiveEntry[]; missing: VolumeArchiveEntry[] } {
+  return {
+    available: volumes.filter((volume) => existingDockerNames.has(volume.dockerName)),
+    missing: volumes.filter((volume) => !existingDockerNames.has(volume.dockerName))
+  };
 }
 
 /**

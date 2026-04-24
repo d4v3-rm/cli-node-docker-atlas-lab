@@ -22,6 +22,13 @@ export function printInfo(message: string, scope: LogScope = 'app'): void {
 }
 
 /**
+ * Prints a warning line with consistent styling.
+ */
+export function printWarning(message: string, scope: LogScope = 'app'): void {
+  printLogLine('warn', message, scope);
+}
+
+/**
  * Prints an error panel that stays visible even after task renderers exit.
  */
 export function printError(message: string, scope: LogScope = 'app'): void {

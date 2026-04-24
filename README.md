@@ -433,6 +433,7 @@ Atlas Lab supports backup and restore for both **Docker images** and **Docker vo
 - embedded manifest metadata
 - realtime progress logs during export and restore
 - support for `core`, `ai-llm`, and `workbench` layer selection
+- requested optional layer assets that do not exist locally are skipped with a warning
 
 ### Examples
 
