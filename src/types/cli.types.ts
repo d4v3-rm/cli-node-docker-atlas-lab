@@ -26,7 +26,6 @@ export interface UpCommandOptions extends GlobalCliOptions, LegacyAiAliasOptions
  * Options supported by the `bootstrap` command.
  */
 export interface BootstrapCommandOptions extends GlobalCliOptions, LegacyAiAliasOptions {
-  skipGitea?: boolean;
   skipOllama?: boolean;
   withAiLlm?: boolean;
 }

@@ -17,11 +17,9 @@ const requiredEnvValue = z.string().trim().min(1);
  */
 export const labEnvSchema = z
   .object({
-    GITEA_UID: optionalEnvValue,
-    GITEA_GID: optionalEnvValue,
-    GITEA_ROOT_USERNAME: optionalEnvValue,
-    GITEA_ROOT_PASSWORD: optionalEnvValue,
-    GITEA_ROOT_EMAIL: optionalEnvValue,
+    GITLAB_ROOT_USERNAME: optionalEnvValue,
+    GITLAB_ROOT_PASSWORD: optionalEnvValue,
+    GITLAB_ROOT_EMAIL: optionalEnvValue,
     N8N_ROOT_FIRST_NAME: optionalEnvValue,
     N8N_ROOT_LAST_NAME: optionalEnvValue,
     N8N_ROOT_EMAIL: optionalEnvValue,
@@ -29,10 +27,6 @@ export const labEnvSchema = z
     BOOKSTACK_ROOT_NAME: optionalEnvValue,
     BOOKSTACK_ROOT_EMAIL: optionalEnvValue,
     BOOKSTACK_ROOT_PASSWORD: optionalEnvValue,
-    PLANE_ROOT_NAME: optionalEnvValue,
-    PLANE_ROOT_EMAIL: optionalEnvValue,
-    PLANE_ROOT_PASSWORD: optionalEnvValue,
-    PLANE_INSTANCE_NAME: optionalEnvValue,
     OPENWEBUI_ROOT_EMAIL: optionalEnvValue,
     OPENWEBUI_ROOT_PASSWORD: optionalEnvValue,
     PENPOT_ROOT_NAME: optionalEnvValue,
@@ -43,17 +37,13 @@ export const labEnvSchema = z
     OLLAMA_RUNTIME_MODELS: optionalEnvValue,
     POSTGRES_DEV_HOST_PORT: optionalEnvValue,
     LAB_URL: optionalEnvValue,
-    GITEA_URL: optionalEnvValue,
+    GITLAB_URL: optionalEnvValue,
+    GITLAB_EXTERNAL_URL: optionalEnvValue,
     N8N_URL: optionalEnvValue,
     BOOKSTACK_URL: optionalEnvValue,
-    PLANE_URL: optionalEnvValue,
     OPENWEBUI_URL: optionalEnvValue,
     OLLAMA_URL: optionalEnvValue,
     PENPOT_URL: optionalEnvValue,
-    HEDGEDOC_URL: optionalEnvValue,
-    OBSIDIAN_URL: optionalEnvValue,
-    OBSIDIAN_USERNAME: optionalEnvValue,
-    OBSIDIAN_PASSWORD: optionalEnvValue,
     OLLAMA_GATEWAY_USER: optionalEnvValue,
     OLLAMA_GATEWAY_PASSWORD: optionalEnvValue
   })
@@ -63,18 +53,9 @@ export const labEnvSchema = z
  * Schema for workflows that require bootstrap-related env values.
  */
 export const bootstrapEnvSchema = labEnvSchema.extend({
-  GITEA_UID: requiredEnvValue,
-  GITEA_GID: requiredEnvValue,
-  GITEA_ROOT_USERNAME: requiredEnvValue,
-  GITEA_ROOT_PASSWORD: requiredEnvValue,
-  GITEA_ROOT_EMAIL: requiredEnvValue,
   BOOKSTACK_ROOT_NAME: requiredEnvValue,
   BOOKSTACK_ROOT_EMAIL: requiredEnvValue,
   BOOKSTACK_ROOT_PASSWORD: requiredEnvValue,
-  PLANE_ROOT_NAME: requiredEnvValue,
-  PLANE_ROOT_EMAIL: requiredEnvValue,
-  PLANE_ROOT_PASSWORD: requiredEnvValue,
-  PLANE_INSTANCE_NAME: requiredEnvValue,
   PENPOT_ROOT_NAME: requiredEnvValue,
   PENPOT_ROOT_EMAIL: requiredEnvValue,
   PENPOT_ROOT_PASSWORD: requiredEnvValue
@@ -85,14 +66,9 @@ export const bootstrapEnvSchema = labEnvSchema.extend({
  */
 export const smokeEnvSchema = labEnvSchema.extend({
   LAB_URL: requiredEnvValue,
-  GITEA_URL: requiredEnvValue,
+  GITLAB_URL: requiredEnvValue,
   BOOKSTACK_URL: requiredEnvValue,
-  PLANE_URL: requiredEnvValue,
-  PENPOT_URL: requiredEnvValue,
-  HEDGEDOC_URL: requiredEnvValue,
-  OBSIDIAN_URL: requiredEnvValue,
-  OBSIDIAN_USERNAME: requiredEnvValue,
-  OBSIDIAN_PASSWORD: requiredEnvValue
+  PENPOT_URL: requiredEnvValue
 });
 
 /**

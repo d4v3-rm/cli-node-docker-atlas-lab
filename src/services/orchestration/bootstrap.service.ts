@@ -4,10 +4,8 @@ import { createComposeCommandArgs, type ComposeLayerSelection } from '../../lib/
 import type { BootstrapCommandOptions } from '../../types/cli.types.js';
 import type { AiLlmBootstrapEnv, ProjectContext } from '../../types/project.types.js';
 import { ensureBookStackAdmin } from '../integrations/bookstack-admin.service.js';
-import { ensureGiteaAdmin } from '../integrations/gitea-admin.service.js';
 import { ensureN8nOwner } from '../integrations/n8n-owner.service.js';
 import { ensurePenpotAdmin } from '../integrations/penpot-admin.service.js';
-import { ensurePlaneAdmin, waitForPlaneBootstrapPrerequisites } from '../integrations/plane-admin.service.js';
 import { printCommandHeader } from '../../cli/ui/banner.js';
 import { formatTaskTitle, printInfo, printSuccess } from '../../cli/ui/logger.js';
 import { runCommand } from '../../utils/process.js';
@@ -50,17 +48,6 @@ export function createBootstrapTasks(
 
   const tasks = [];
 
-  if (!options.skipGitea) {
-    tasks.push({
-      title: formatTaskTitle('bootstrap', 'Align Gitea root account'),
-      task: async () => {
-        await waitForService(context, 'gitea');
-        const result = await ensureGiteaAdmin(context, env);
-        printInfo(`Gitea root account ${result}.`, 'bootstrap');
-      }
-    });
-  }
-
   tasks.push({
     title: formatTaskTitle('bootstrap', 'Align BookStack initial admin'),
     task: async () => {
@@ -76,16 +63,6 @@ export function createBootstrapTasks(
         'BookStack already has a non-default admin profile; leaving the existing account in place.',
         'bootstrap'
       );
-    }
-  });
-
-  tasks.push({
-    title: formatTaskTitle('bootstrap', 'Align Plane instance admin'),
-    task: async () => {
-      await waitForService(context, 'plane-api');
-      await waitForPlaneBootstrapPrerequisites(context);
-      const result = await ensurePlaneAdmin(context, env);
-      printInfo(`Plane instance admin ${result}.`, 'bootstrap');
     }
   });
 

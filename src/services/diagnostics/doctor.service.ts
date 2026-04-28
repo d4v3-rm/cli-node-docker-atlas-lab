@@ -233,36 +233,17 @@ function buildSmokeChecks(
       run: (caCertificate) => runStatusCheck('Smoke deck', env.LAB_URL, caCertificate)
     },
     {
-      name: 'Smoke Gitea',
+      name: 'Smoke GitLab',
       run: (caCertificate) =>
-        runStatusCheck('Smoke Gitea', new URL('/api/healthz', env.GITEA_URL).toString(), caCertificate)
+        runStatusCheck('Smoke GitLab', new URL('/-/health', env.GITLAB_URL).toString(), caCertificate)
     },
     {
       name: 'Smoke BookStack',
       run: (caCertificate) => runStatusCheck('Smoke BookStack', env.BOOKSTACK_URL, caCertificate)
     },
     {
-      name: 'Smoke Plane',
-      run: (caCertificate) => runStatusCheck('Smoke Plane', env.PLANE_URL, caCertificate)
-    },
-    {
       name: 'Smoke Penpot',
       run: (caCertificate) => runStatusCheck('Smoke Penpot', env.PENPOT_URL, caCertificate)
-    },
-    {
-      name: 'Smoke HedgeDoc',
-      run: (caCertificate) => runStatusCheck('Smoke HedgeDoc', env.HEDGEDOC_URL, caCertificate)
-    },
-    {
-      name: 'Smoke Obsidian',
-      run: (caCertificate) =>
-        runStatusCheckWithBasicAuth(
-          'Smoke Obsidian',
-          env.OBSIDIAN_URL,
-          caCertificate,
-          env.OBSIDIAN_USERNAME,
-          env.OBSIDIAN_PASSWORD
-        )
     }
   ];
 
@@ -391,39 +372,6 @@ async function runStatusCheck(
 ): Promise<HostCheckResult> {
   try {
     const response = await requestHttps(url, { caCertificate });
-
-    return {
-      name,
-      ok: response.statusCode >= 200 && response.statusCode < 400,
-      detail: `HTTP ${response.statusCode}`
-    };
-  } catch (error) {
-    return {
-      name,
-      ok: false,
-      detail: error instanceof Error ? error.message : 'Unknown smoke-check failure'
-    };
-  }
-}
-
-/**
- * Executes a status-based smoke check against an HTTPS endpoint protected by basic auth.
- */
-async function runStatusCheckWithBasicAuth(
-  name: string,
-  url: string,
-  caCertificate: string,
-  username: string,
-  password: string
-): Promise<HostCheckResult> {
-  try {
-    const response = await requestHttps(url, {
-      auth: {
-        password,
-        username
-      },
-      caCertificate
-    });
 
     return {
       name,

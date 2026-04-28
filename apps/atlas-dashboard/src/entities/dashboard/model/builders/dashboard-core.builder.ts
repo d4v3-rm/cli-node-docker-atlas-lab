@@ -24,35 +24,35 @@ export function createCoreServices(
   return [
     {
       action: {
-        href: config.services.gitea.url,
-        label: t('dashboard.services.gitea.action')
+        href: config.services.gitLab.url,
+        label: t('dashboard.services.gitLab.action')
       },
       credentials: [
         {
           label: labels.endpoint,
-          value: config.services.gitea.url
+          value: config.services.gitLab.url
         },
         {
           label: labels.rootUser,
-          value: config.services.gitea.rootUsername,
+          value: config.services.gitLab.rootUsername,
           concealed: true
         },
         {
           label: labels.password,
-          value: config.services.gitea.rootPassword,
+          value: config.services.gitLab.rootPassword,
           concealed: true
         },
         {
           label: labels.email,
-          value: config.services.gitea.rootEmail,
+          value: config.services.gitLab.rootEmail,
           concealed: true
         }
       ],
-      description: t('dashboard.services.gitea.description'),
+      description: t('dashboard.services.gitLab.description'),
       icon: 'forge',
-      id: 'gitea',
+      id: 'gitlab',
       status: t('values.alwaysOnForge'),
-      title: t('dashboard.services.gitea.title'),
+      title: t('dashboard.services.gitLab.title'),
       tone: 'core'
     },
     {
@@ -93,42 +93,6 @@ export function createCoreServices(
     },
     {
       action: {
-        href: config.services.plane.url,
-        label: t('dashboard.services.plane.action')
-      },
-      credentials: [
-        {
-          label: labels.endpoint,
-          value: config.services.plane.url
-        },
-        {
-          label: labels.rootName,
-          value: config.services.plane.rootName
-        },
-        {
-          label: labels.rootEmail,
-          value: config.services.plane.rootEmail,
-          concealed: true
-        },
-        {
-          label: labels.password,
-          value: config.services.plane.rootPassword,
-          concealed: true
-        },
-        {
-          label: labels.accessMode,
-          value: t('values.directAppLogin')
-        }
-      ],
-      description: t('dashboard.services.plane.description'),
-      icon: 'route',
-      id: 'plane',
-      status: t('values.projectHub'),
-      title: t('dashboard.services.plane.title'),
-      tone: 'core'
-    },
-    {
-      action: {
         href: config.services.penpot.url,
         label: t('dashboard.services.penpot.action')
       },
@@ -161,66 +125,6 @@ export function createCoreServices(
       id: 'penpot',
       status: t('values.designCollaboration'),
       title: t('dashboard.services.penpot.title'),
-      tone: 'core'
-    },
-    {
-      action: {
-        href: config.services.hedgeDoc.url,
-        label: t('dashboard.services.hedgeDoc.action')
-      },
-      credentials: [
-        {
-          label: labels.endpoint,
-          value: config.services.hedgeDoc.url
-        },
-        {
-          label: labels.usage,
-          value: t('values.collaborativeMarkdown')
-        }
-      ],
-      description: t('dashboard.services.hedgeDoc.description'),
-      icon: 'workflow',
-      id: 'hedgedoc',
-      note: t('dashboard.services.hedgeDoc.note'),
-      status: t('values.collaborativeNotes'),
-      title: t('dashboard.services.hedgeDoc.title'),
-      tone: 'core'
-    },
-    {
-      action: {
-        href: config.services.obsidian.url,
-        label: t('dashboard.services.obsidian.action')
-      },
-      credentials: [
-        {
-          label: labels.endpoint,
-          value: config.services.obsidian.url
-        },
-        {
-          label: labels.username,
-          value: config.services.obsidian.username,
-          concealed: true
-        },
-        {
-          label: labels.password,
-          value: config.services.obsidian.password,
-          concealed: true
-        },
-        {
-          label: labels.authMode,
-          value: t('values.basicAuth')
-        },
-        {
-          label: labels.usage,
-          value: t('values.knowledgeVault')
-        }
-      ],
-      description: t('dashboard.services.obsidian.description'),
-      icon: 'host',
-      id: 'obsidian',
-      note: t('dashboard.services.obsidian.note'),
-      status: t('values.knowledgeVault'),
-      title: t('dashboard.services.obsidian.title'),
       tone: 'core'
     }
   ];

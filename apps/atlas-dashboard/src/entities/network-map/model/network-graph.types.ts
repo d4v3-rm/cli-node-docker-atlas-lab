@@ -1,6 +1,6 @@
 import type { DashboardTone } from '@/entities/dashboard';
 
-export type NetworkGraphNodeKind = 'gateway' | 'host' | 'plane' | 'service';
+export type NetworkGraphNodeKind = 'gateway' | 'host' | 'layer' | 'service';
 
 export interface NetworkGraphNodeViewModel {
   active: boolean;

@@ -5,11 +5,9 @@ import type { RepositoryLayout } from './repository-layout.types.js';
  */
 export interface LabEnv {
   [key: string]: string | undefined;
-  GITEA_UID?: string;
-  GITEA_GID?: string;
-  GITEA_ROOT_USERNAME?: string;
-  GITEA_ROOT_PASSWORD?: string;
-  GITEA_ROOT_EMAIL?: string;
+  GITLAB_ROOT_USERNAME?: string;
+  GITLAB_ROOT_PASSWORD?: string;
+  GITLAB_ROOT_EMAIL?: string;
   N8N_ROOT_FIRST_NAME?: string;
   N8N_ROOT_LAST_NAME?: string;
   N8N_ROOT_EMAIL?: string;
@@ -17,10 +15,6 @@ export interface LabEnv {
   BOOKSTACK_ROOT_NAME?: string;
   BOOKSTACK_ROOT_EMAIL?: string;
   BOOKSTACK_ROOT_PASSWORD?: string;
-  PLANE_ROOT_NAME?: string;
-  PLANE_ROOT_EMAIL?: string;
-  PLANE_ROOT_PASSWORD?: string;
-  PLANE_INSTANCE_NAME?: string;
   OPENWEBUI_ROOT_EMAIL?: string;
   OPENWEBUI_ROOT_PASSWORD?: string;
   PENPOT_ROOT_NAME?: string;
@@ -31,17 +25,13 @@ export interface LabEnv {
   OLLAMA_RUNTIME_MODELS?: string;
   POSTGRES_DEV_HOST_PORT?: string;
   LAB_URL?: string;
-  GITEA_URL?: string;
+  GITLAB_URL?: string;
+  GITLAB_EXTERNAL_URL?: string;
   N8N_URL?: string;
   BOOKSTACK_URL?: string;
-  PLANE_URL?: string;
   OPENWEBUI_URL?: string;
   OLLAMA_URL?: string;
   PENPOT_URL?: string;
-  HEDGEDOC_URL?: string;
-  OBSIDIAN_URL?: string;
-  OBSIDIAN_USERNAME?: string;
-  OBSIDIAN_PASSWORD?: string;
   OLLAMA_GATEWAY_USER?: string;
   OLLAMA_GATEWAY_PASSWORD?: string;
   ATLAS_DOCKER_HUB_MIRRORS?: string;
@@ -75,18 +65,9 @@ export interface BasicAuthCredentials {
  * Env shape guaranteed after bootstrap validation.
  */
 export interface BootstrapEnv extends LabEnv {
-  GITEA_UID: string;
-  GITEA_GID: string;
-  GITEA_ROOT_USERNAME: string;
-  GITEA_ROOT_PASSWORD: string;
-  GITEA_ROOT_EMAIL: string;
   BOOKSTACK_ROOT_NAME: string;
   BOOKSTACK_ROOT_EMAIL: string;
   BOOKSTACK_ROOT_PASSWORD: string;
-  PLANE_ROOT_NAME: string;
-  PLANE_ROOT_EMAIL: string;
-  PLANE_ROOT_PASSWORD: string;
-  PLANE_INSTANCE_NAME: string;
   PENPOT_ROOT_NAME: string;
   PENPOT_ROOT_EMAIL: string;
   PENPOT_ROOT_PASSWORD: string;
@@ -110,14 +91,9 @@ export interface AiLlmBootstrapEnv extends LabEnv {
  */
 export interface SmokeEnv extends LabEnv {
   LAB_URL: string;
-  GITEA_URL: string;
+  GITLAB_URL: string;
   BOOKSTACK_URL: string;
-  PLANE_URL: string;
   PENPOT_URL: string;
-  HEDGEDOC_URL: string;
-  OBSIDIAN_URL: string;
-  OBSIDIAN_USERNAME: string;
-  OBSIDIAN_PASSWORD: string;
 }
 
 /**

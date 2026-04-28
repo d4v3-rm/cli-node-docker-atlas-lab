@@ -27,16 +27,16 @@
   },
   "rails": {
     "briefingsAndLinks": "briefings and links",
-    "layerHeartbeatBody": "Single-glance visibility on what is always-on and what remains optional across the core, AI, and workbench planes.",
+    "layerHeartbeatBody": "Single-glance visibility on what is always-on and what remains optional across the core, AI, and workbench layers.",
     "layerHeartbeat": "layer heartbeat",
     "layerHeartbeatChartBody": "Configured service surfaces stay visible even when an optional layer is off, so you can compare total footprint against what is currently published.",
     "layerHeartbeatChartTitle": "footprint graph",
     "layerHeartbeatConfiguredLegend": "configured",
     "layerHeartbeatFootprint": "live footprint",
     "layerHeartbeatGauge": "availability graph",
-    "layerHeartbeatGaugeBody": "{{active}} of {{total}} layers are live right now, with the optional planes dimmed until they are published.",
+    "layerHeartbeatGaugeBody": "{{active}} of {{total}} layers are live right now, with optional layers dimmed until they are published.",
     "layerHeartbeatLiveLegend": "live",
-    "layerHeartbeatStatusLine": "Layer publication by plane",
+    "layerHeartbeatStatusLine": "Layer publication status",
     "layerHeartbeatStats": "runtime posture",
     "layerHeartbeatSurfaceLabel": "service surfaces",
     "layerHeartbeatTitle": "Operational posture across the lab layers",
@@ -51,17 +51,17 @@
   "sections": {
     "aiBodyDisabled": "The AI layer remains optional. When it is off, the dashboard shows the exact command required to enable it.",
     "aiBodyEnabled": "The AI layer is online: the dashboard takes you into Open WebUI, the Ollama APIs, and also includes n8n in the same section.",
-    "aiKicker": "optional plane",
+    "aiKicker": "optional layer",
     "aiTitle": "AI",
     "footerBody": "Four quick signals on routing, persistence, recommended usage, and layer segmentation.",
     "footerKicker": "atlas signals",
     "footerTitle": "Operational closeout",
-    "servicesBody": "The core plane is always available. Each card collects endpoints, operational credentials, and a direct entry point into the service.",
-    "servicesKicker": "service plane",
+    "servicesBody": "The core layer is always available. Each card collects endpoints, operational credentials, and a direct entry point into the service.",
+    "servicesKicker": "service layer",
     "servicesTitle": "Core Services",
     "workbenchBodyDisabled": "The environments stay detached from the core. You enable them only when you actually need code-server or shared Postgres.",
     "workbenchBodyEnabled": "The environments are active: you can jump directly into a workspace or open its dedicated briefing first to review networking, credentials, and tools.",
-    "workbenchKicker": "workspace plane",
+    "workbenchKicker": "workspace layer",
     "workbenchTitle": "Workbench Layer"
   },
   "layerState": {
@@ -96,16 +96,16 @@
   },
   "networkMapDialog": {
     "eyebrow": "network map",
-    "title": "Rotating 3D topology of the lab planes",
-    "summary": "Inspect published routes, internal planes, and host access in a live 3D graph. Drag to rotate, zoom to inspect, and click a node to lock its labels.",
+    "title": "Rotating 3D topology of the lab layers",
+    "summary": "Inspect published routes, internal layers, and host access in a live 3D graph. Drag to rotate, zoom to inspect, and click a node to lock its labels.",
     "instructions": "Drag to rotate, use the wheel to zoom, and click a node to inspect its attached labels and network posture.",
     "openSource": "Open source markdown",
     "legendTitle": "topology legend",
     "legend": {
-      "ai": "AI plane",
-      "core": "Core plane",
+      "ai": "AI layer",
+      "core": "Core layer",
       "edge": "Edge and host",
-      "workbench": "Workbench plane"
+      "workbench": "Workbench layer"
     },
     "selectionEyebrow": "node focus",
     "labelsTitle": "attached labels",
@@ -116,16 +116,16 @@
     "gatewayBody": "Single localhost ingress that publishes the dashboard and browser-facing services over HTTPS.",
     "deckTitle": "Atlas Deck",
     "deckBody": "Local command deck served through the same edge posture as the rest of the lab.",
-    "corePlaneBody": "Always-on operating plane for repository work, planning, documentation, and design collaboration.",
-    "aiPlaneBody": "Optional AI plane with dedicated published routes for conversational UI, inference, and automation flows.",
-    "workbenchPlaneBody": "Optional workbench plane for browser workspaces and shared data access.",
+    "coreLayerBody": "Always-on operating layer for repository work, documentation, and design collaboration.",
+    "aiLayerBody": "Optional AI layer with dedicated published routes for conversational UI, inference, and automation flows.",
+    "workbenchLayerBody": "Optional workbench layer for browser workspaces and shared data access.",
     "hostAccessTitle": "Host Access",
     "hostAccessBody": "Host-side TCP surface reserved for desktop PostgreSQL access outside the browser ingress.",
     "labels": {
       "alwaysOn": "always on",
       "automation": "automation",
       "browser": "browser surface",
-      "controlPlane": "control plane",
+      "controlLayer": "control layer",
       "controlRoom": "control room",
       "edge": "edge router",
       "gpu": "gpu-backed",
@@ -203,13 +203,13 @@
     "alwaysOnForge": "always-on forge"
   },
   "dashboard": {
-    "coreLayerSummary": "Gitea, Plane, and Penpot form the always-on core plane of the lab.",
+    "coreLayerSummary": "GitLab CE, BookStack, and Penpot form the always-on core layer of the lab.",
     "accessNotes": {
       "aiDisabled": "The AI layer no longer starts by default: the deck marks it as optional instead of pretending that it is online.",
       "aiEnabled": "Open WebUI, Ollama, and n8n are online and reachable on the dedicated AI gateway ports.",
       "credentials": "Operational credentials are exposed here and remain aligned with the lab bootstrap.",
       "https": "All browser ingresses use localhost with dedicated HTTPS, without custom DNS or hosts-file edits.",
-      "workbenchDisabled": "Workbench and Postgres stay separated from the core operating plane until you enable the dedicated layer.",
+      "workbenchDisabled": "Workbench and Postgres stay separated from the core operating layer until you enable the dedicated layer.",
       "workbenchEnabled": "Workbench and Postgres are active: you can open browser-based environments or connect from the desktop to the host Postgres port."
     },
     "aiLayer": {
@@ -255,7 +255,7 @@
         "label": "segmentation"
       },
       "usage": {
-        "body": "Gitea, Plane, and Penpot stay on as the core plane; the AI and workbench layers are enabled only when they are actually needed.",
+        "body": "GitLab CE, BookStack, and Penpot stay on as the core layer; the AI and workbench layers are enabled only when they are actually needed.",
         "label": "usage"
       }
     },
@@ -274,10 +274,10 @@
       "quickActions": {
         "localDeckDescription": "Review from the browser the local routing the deck is currently using.",
         "localDeckLabel": "Local deck",
-        "networkMapDescription": "Read the lab topology and the published network planes.",
+        "networkMapDescription": "Read the lab topology and the published network layers.",
         "networkMapLabel": "Network map"
       },
-      "summary": "Unified control room for repository work, project coordination, design collaboration, optional AI tooling, and development environments. Browser ports stay on HTTPS over localhost, while Postgres from the workbench layer also exposes a host-side TCP port.",
+      "summary": "Unified control room for repository work, documentation, design collaboration, optional AI tooling, and development environments. Browser ports stay on HTTPS over localhost, while Postgres from the workbench layer also exposes a host-side TCP port.",
       "titleLines": {
         "first": "LAB",
         "second": "ATLAS"
@@ -298,7 +298,7 @@
       },
       "ingress": {
         "caption": "public gateways currently served",
-        "label": "ingress planes"
+        "label": "ingress layers"
       },
       "workbenchDisabled": {
         "caption": "workbench layer not active",
@@ -313,15 +313,15 @@
       "title": "Network Map"
     },
     "operatingCharter": {
-      "ai": "The AI section groups Open WebUI, Ollama, and n8n into an optional dashboard plane.",
-      "gitea": "Gitea governs code, review, and Git governance for the project.",
-      "workbench": "Code-server and Postgres stay in a workbench plane separated from the core."
+      "ai": "The AI section groups Open WebUI, Ollama, and n8n into an optional dashboard layer.",
+      "gitLab": "GitLab CE governs repositories, merge requests, issues, and Git collaboration for the project.",
+      "workbench": "Code-server and Postgres stay in a workbench layer separated from the core."
     },
     "services": {
-      "gitea": {
-        "action": "Open Gitea",
-        "description": "Internal Git forge for repositories, issues, review, and the lab's technical collaboration flow.",
-        "title": "Gitea Forge"
+      "gitLab": {
+        "action": "Open GitLab",
+        "description": "Self-hosted GitLab CE for repositories, issues, merge requests, CI-ready project governance, and the lab's technical collaboration flow.",
+        "title": "GitLab CE"
       },
       "bookStack": {
         "action": "Open BookStack",
@@ -333,24 +333,6 @@
         "description": "Self-hosted Penpot workspace for product design, shared libraries, and collaboration across design and code, with a bootstrap root profile aligned to the lab.",
         "title": "Penpot",
         "usage": "design and code collaboration"
-      },
-      "hedgeDoc": {
-        "action": "Open HedgeDoc",
-        "description": "Self-hosted collaborative markdown workspace for shared notes, meeting pads, and lightweight documentation flows.",
-        "note": "No bootstrap UI credentials are preset for HedgeDoc. Local email accounts are enabled and anonymous access is disabled: create the first account directly in the app.",
-        "title": "HedgeDoc"
-      },
-      "obsidian": {
-        "action": "Open Obsidian",
-        "description": "Browser-delivered Obsidian workspace for personal vaults, local note graphing, and plugin-driven writing workflows.",
-        "note": "This service exposes a desktop session in the browser with an in-container terminal. Keep it on trusted localhost even though basic auth is enabled.",
-        "title": "Obsidian"
-      },
-      "plane": {
-        "action": "Open Plane",
-        "description": "Self-hosted Plane workspace for issue tracking, planning, roadmaps, and internal project coordination, with a bootstrap instance admin aligned to the lab.",
-        "title": "Plane",
-        "usage": "project and knowledge management"
       }
     },
     "workbenchLayer": {
@@ -361,7 +343,7 @@
       },
       "description": "Separate layer for browser-based workspaces and a shared database. The core stays clean until you truly need the development environment.",
       "summaryDisabled": "Workbench layer is off. No code-server or Postgres is exposed by the lab.",
-      "summaryEnabled": "Node, Python, and Postgres are online in the workbench plane.",
+      "summaryEnabled": "Node, Python, and Postgres are online in the workbench layer.",
       "title": "Workbench Layer"
     },
     "workbenches": {

@@ -8,7 +8,9 @@ import {
 describe('docker-image-prefetch.service', () => {
   it('normalizes Docker Hub shorthand references to their repository paths', () => {
     expect(normalizeDockerHubRepositoryPath('postgres:15')).toBe('library/postgres:15');
-    expect(normalizeDockerHubRepositoryPath('gitea/gitea:1.25.5')).toBe('gitea/gitea:1.25.5');
+    expect(normalizeDockerHubRepositoryPath('gitlab/gitlab-ce:latest')).toBe(
+      'gitlab/gitlab-ce:latest'
+    );
     expect(normalizeDockerHubRepositoryPath('docker.io/library/postgres:15')).toBe(
       'library/postgres:15'
     );
