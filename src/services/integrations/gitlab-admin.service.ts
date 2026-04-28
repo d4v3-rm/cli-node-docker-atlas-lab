@@ -54,8 +54,11 @@ function buildGitLabRootScript(
     'user.password = password',
     'user.password_confirmation = password',
     'user.admin = true',
+    'user.password_automatically_set = false if user.respond_to?(:password_automatically_set=)',
     'user.confirmed_at ||= Time.current if user.respond_to?(:confirmed_at)',
     'user.skip_confirmation! if user.respond_to?(:skip_confirmation!)',
+    'user.failed_attempts = 0 if user.respond_to?(:failed_attempts=)',
+    'user.locked_at = nil if user.has_attribute?(:locked_at)',
     'user.save!',
     'ApplicationSetting.current.update!(signup_enabled: false)',
     'puts(created ? "created" : "updated")'

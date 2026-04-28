@@ -75,6 +75,8 @@
     "optional": "opzionale"
   },
   "cards": {
+    "copiedCredential": "Credenziale copiata",
+    "copyCredential": "Copia credenziale",
     "hideCredential": "Nascondi credenziale",
     "openBriefing": "Apri briefing",
     "revealCredential": "Mostra credenziale",

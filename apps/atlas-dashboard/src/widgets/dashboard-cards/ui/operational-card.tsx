@@ -1,10 +1,12 @@
 import {
   ArrowRightOutlined,
+  CheckOutlined,
   CompassOutlined,
+  CopyOutlined,
   EyeInvisibleOutlined,
   EyeOutlined
 } from '@ant-design/icons';
-import { Alert, Button, Card, Col, Flex, Row, Tag, Typography } from 'antd';
+import { Alert, Button, Card, Col, Flex, Row, Tag, Tooltip, Typography } from 'antd';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -46,9 +48,28 @@ export function OperationalCard({
 }: OperationalCardProps) {
   const { t } = useTranslation();
   const [revealedCredentials, setRevealedCredentials] = useState<Record<string, boolean>>({});
+  const [copiedCredentials, setCopiedCredentials] = useState<Record<string, boolean>>({});
   const palette = dashboardToneStyles[tone];
   const toneVisuals = createAtlasDashboardToneCardStyles(palette);
   const IconGlyph = dashboardIconMap[item.icon];
+
+  const handleCopyCredential = async (credentialKey: string, value: string) => {
+    if (!navigator.clipboard) {
+      return;
+    }
+
+    await navigator.clipboard.writeText(value);
+    setCopiedCredentials((current) => ({
+      ...current,
+      [credentialKey]: true
+    }));
+    window.setTimeout(() => {
+      setCopiedCredentials((current) => ({
+        ...current,
+        [credentialKey]: false
+      }));
+    }, 1600);
+  };
 
   return (
     <Card
@@ -108,6 +129,7 @@ export function OperationalCard({
           {item.credentials.map((credential) => {
             const credentialKey = `${item.id}-${credential.label}`;
             const isRevealed = Boolean(revealedCredentials[credentialKey]);
+            const isCopied = Boolean(copiedCredentials[credentialKey]);
             const displayedValue =
               credential.concealed && !isRevealed
                 ? maskCredentialValue(credential.value)
@@ -132,27 +154,57 @@ export function OperationalCard({
                   <Flex vertical gap={8}>
                     <Flex align="center" justify="space-between" gap={8}>
                       <Text style={overlineStyle}>{credential.label}</Text>
-                      {credential.concealed ? (
-                        <Button
-                          aria-label={
-                            isRevealed
-                              ? t('cards.hideCredential')
-                              : t('cards.revealCredential')
+                      <Flex align="center" gap={4}>
+                        {credential.concealed ? (
+                          <Tooltip
+                            title={
+                              isRevealed
+                                ? t('cards.hideCredential')
+                                : t('cards.revealCredential')
+                            }
+                          >
+                            <Button
+                              aria-label={
+                                isRevealed
+                                  ? t('cards.hideCredential')
+                                  : t('cards.revealCredential')
+                              }
+                              icon={isRevealed ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                              onClick={() =>
+                                setRevealedCredentials((current) => ({
+                                  ...current,
+                                  [credentialKey]: !current[credentialKey]
+                                }))
+                              }
+                              size="small"
+                              style={{
+                                color: palette.accent
+                              }}
+                              type="text"
+                            />
+                          </Tooltip>
+                        ) : null}
+                        <Tooltip
+                          title={
+                            isCopied ? t('cards.copiedCredential') : t('cards.copyCredential')
                           }
-                          icon={isRevealed ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-                          onClick={() =>
-                            setRevealedCredentials((current) => ({
-                              ...current,
-                              [credentialKey]: !current[credentialKey]
-                            }))
-                          }
-                          size="small"
-                          style={{
-                            color: palette.accent
-                          }}
-                          type="text"
-                        />
-                      ) : null}
+                        >
+                          <Button
+                            aria-label={
+                              isCopied ? t('cards.copiedCredential') : t('cards.copyCredential')
+                            }
+                            icon={isCopied ? <CheckOutlined /> : <CopyOutlined />}
+                            onClick={() =>
+                              void handleCopyCredential(credentialKey, credential.value)
+                            }
+                            size="small"
+                            style={{
+                              color: palette.accent
+                            }}
+                            type="text"
+                          />
+                        </Tooltip>
+                      </Flex>
                     </Flex>
                     <Text
                       style={{
@@ -209,5 +261,5 @@ export function OperationalCard({
 function maskCredentialValue(value: string) {
   const maskLength = Math.max(8, Math.min(value.trim().length, 18));
 
-  return '•'.repeat(maskLength);
+  return '*'.repeat(maskLength);
 }

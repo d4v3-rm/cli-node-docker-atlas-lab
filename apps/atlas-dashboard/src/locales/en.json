@@ -75,6 +75,8 @@
     "optional": "optional"
   },
   "cards": {
+    "copiedCredential": "Credential copied",
+    "copyCredential": "Copy credential",
     "hideCredential": "Hide credential",
     "openBriefing": "Open briefing",
     "revealCredential": "Reveal credential",
