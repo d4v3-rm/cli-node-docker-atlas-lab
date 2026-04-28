@@ -264,7 +264,7 @@ Stop the lab:
 npm run dev -- down
 ```
 
-GitLab CE can take several minutes to finish its first boot. The configured root password is applied only when GitLab initializes an empty data volume.
+GitLab CE can take several minutes to finish its first boot. The CLI bootstrap also aligns the configured root account after GitLab is healthy, so rerunning `atlas-lab bootstrap` refreshes the root password stored in `env/lab.env`.
 
 ---
 
@@ -334,7 +334,7 @@ npm run dev -- save-volumes --with-ai-llm --with-workbench
 npm run dev -- restore-volumes --input .\backups\volumes\atlas-lab-volumes.tar.gz
 ```
 
-Bootstrap is idempotent for BookStack, Penpot, and the optional AI LLM services.
+Bootstrap is idempotent for GitLab CE, BookStack, Penpot, and the optional AI LLM services.
 
 ---
 
@@ -345,7 +345,7 @@ These credentials are intended for trusted local environments and are configurab
 | Service | URL / Endpoint | Credentials |
 | --- | --- | --- |
 | Atlas Dashboard | `https://localhost:8443/` | no dedicated login |
-| GitLab CE | `https://localhost:8444/` | `root / RootGitLab!2026` |
+| GitLab CE | `https://localhost:8444/` | `root / Qv7N4pL9xT2rB6Z!` |
 | Open WebUI | `https://localhost:8446/` | `root@openwebui.local / RootOpenWebUI!2026` |
 | Ollama | `https://localhost:8447/` | gateway basic auth `root / RootOllama!2026` |
 | Penpot | `https://localhost:8448/` | `root@penpot.local / RootPenpot!2026` |

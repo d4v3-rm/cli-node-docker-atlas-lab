@@ -65,6 +65,9 @@ export interface BasicAuthCredentials {
  * Env shape guaranteed after bootstrap validation.
  */
 export interface BootstrapEnv extends LabEnv {
+  GITLAB_ROOT_USERNAME: string;
+  GITLAB_ROOT_PASSWORD: string;
+  GITLAB_ROOT_EMAIL: string;
   BOOKSTACK_ROOT_NAME: string;
   BOOKSTACK_ROOT_EMAIL: string;
   BOOKSTACK_ROOT_PASSWORD: string;

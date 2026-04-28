@@ -53,6 +53,9 @@ export const labEnvSchema = z
  * Schema for workflows that require bootstrap-related env values.
  */
 export const bootstrapEnvSchema = labEnvSchema.extend({
+  GITLAB_ROOT_USERNAME: requiredEnvValue,
+  GITLAB_ROOT_PASSWORD: requiredEnvValue,
+  GITLAB_ROOT_EMAIL: requiredEnvValue,
   BOOKSTACK_ROOT_NAME: requiredEnvValue,
   BOOKSTACK_ROOT_EMAIL: requiredEnvValue,
   BOOKSTACK_ROOT_PASSWORD: requiredEnvValue,

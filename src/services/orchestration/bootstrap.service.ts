@@ -4,6 +4,7 @@ import { createComposeCommandArgs, type ComposeLayerSelection } from '../../lib/
 import type { BootstrapCommandOptions } from '../../types/cli.types.js';
 import type { AiLlmBootstrapEnv, ProjectContext } from '../../types/project.types.js';
 import { ensureBookStackAdmin } from '../integrations/bookstack-admin.service.js';
+import { ensureGitLabAdmin } from '../integrations/gitlab-admin.service.js';
 import { ensureN8nOwner } from '../integrations/n8n-owner.service.js';
 import { ensurePenpotAdmin } from '../integrations/penpot-admin.service.js';
 import { printCommandHeader } from '../../cli/ui/banner.js';
@@ -47,6 +48,15 @@ export function createBootstrapTasks(
   const aiLlmEnv = options.withAiLlm ? parseAiLlmBootstrapEnv(context.env) : undefined;
 
   const tasks = [];
+
+  tasks.push({
+    title: formatTaskTitle('bootstrap', 'Align GitLab root account'),
+    task: async () => {
+      await waitForService(context, 'gitlab', 600);
+      const result = await ensureGitLabAdmin(context, env);
+      printInfo(`GitLab root account ${result}.`, 'bootstrap');
+    }
+  });
 
   tasks.push({
     title: formatTaskTitle('bootstrap', 'Align BookStack initial admin'),
