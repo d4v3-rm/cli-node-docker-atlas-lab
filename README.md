@@ -194,7 +194,6 @@ Key variables include:
 - `NODE_DEV_HTTPS_PORT`, `PYTHON_DEV_HTTPS_PORT`, `POSTGRES_DEV_HOST_PORT`
 - `GITLAB_EXTERNAL_URL`, `GITLAB_URL`
 - `GITLAB_ROOT_USERNAME`, `GITLAB_ROOT_PASSWORD`, `GITLAB_ROOT_EMAIL`
-- `OBSIDIAN_USERNAME`, `OBSIDIAN_PASSWORD`
 - `PENPOT_ROOT_EMAIL`, `PENPOT_ROOT_PASSWORD`
 - `N8N_ROOT_EMAIL`, `N8N_ROOT_PASSWORD`
 - `OLLAMA_CHAT_MODEL`, `OLLAMA_EMBEDDING_MODEL`, `OLLAMA_RUNTIME_MODELS`
@@ -348,7 +347,7 @@ These credentials are intended for trusted local environments and are configurab
 | Open WebUI | `https://localhost:8446/` | `root@openwebui.local / RootOpenWebUI!2026` |
 | Ollama | `https://localhost:8447/` | gateway basic auth `root / RootOllama!2026` |
 | Penpot | `https://localhost:8448/` | `root@penpot.local / RootPenpot!2026` |
-| Obsidian | `https://localhost:8449/` | basic auth `atlas / RootObsidian!2026` |
+| Obsidian | `https://localhost:8449/` | direct app session |
 | n8n | `https://localhost:8453/` | owner bootstrap `root@n8n.local / RootN8NApp!2026` |
 | PostgreSQL host-side | `localhost:15432` | `postgres / RootPostgresDev!2026` |
 

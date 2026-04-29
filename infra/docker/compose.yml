@@ -92,8 +92,6 @@ services:
       <<: *lab-env
       PUID: ${OBSIDIAN_UID}
       PGID: ${OBSIDIAN_GID}
-      CUSTOM_USER: ${OBSIDIAN_USERNAME}
-      PASSWORD: ${OBSIDIAN_PASSWORD}
       TITLE: Atlas Lab Obsidian
     volumes:
       - obsidian-config:/config

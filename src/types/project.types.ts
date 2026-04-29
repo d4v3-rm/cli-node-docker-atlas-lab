@@ -15,8 +15,6 @@ export interface LabEnv {
   OPENWEBUI_ROOT_EMAIL?: string;
   OPENWEBUI_ROOT_PASSWORD?: string;
   OBSIDIAN_URL?: string;
-  OBSIDIAN_USERNAME?: string;
-  OBSIDIAN_PASSWORD?: string;
   PENPOT_ROOT_NAME?: string;
   PENPOT_ROOT_EMAIL?: string;
   PENPOT_ROOT_PASSWORD?: string;
@@ -99,8 +97,6 @@ export interface SmokeEnv extends LabEnv {
   LAB_URL: string;
   GITLAB_URL: string;
   OBSIDIAN_URL: string;
-  OBSIDIAN_USERNAME: string;
-  OBSIDIAN_PASSWORD: string;
   PENPOT_URL: string;
 }
 

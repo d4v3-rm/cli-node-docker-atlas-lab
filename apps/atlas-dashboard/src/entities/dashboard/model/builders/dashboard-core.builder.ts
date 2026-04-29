@@ -66,18 +66,8 @@ export function createCoreServices(
           value: config.services.obsidian.url
         },
         {
-          label: labels.username,
-          value: config.services.obsidian.username,
-          concealed: true
-        },
-        {
-          label: labels.password,
-          value: config.services.obsidian.password,
-          concealed: true
-        },
-        {
-          label: labels.authMode,
-          value: t('values.basicAuth')
+          label: labels.accessMode,
+          value: t('values.directAppLogin')
         },
         {
           label: labels.usage,

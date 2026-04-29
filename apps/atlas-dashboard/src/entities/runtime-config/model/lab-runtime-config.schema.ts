@@ -10,10 +10,8 @@ const namedAccountSchema = z.object({
   url: nonEmptyString
 });
 
-const basicAuthServiceSchema = z.object({
-  password: nonEmptyString,
-  url: nonEmptyString,
-  username: nonEmptyString
+const urlOnlyServiceSchema = z.object({
+  url: nonEmptyString
 });
 
 export const labRuntimeConfigSchema = z.object({
@@ -52,7 +50,7 @@ export const labRuntimeConfigSchema = z.object({
       url: nonEmptyString
     }),
     openWebUi: namedAccountSchema,
-    obsidian: basicAuthServiceSchema,
+    obsidian: urlOnlyServiceSchema,
     penpot: namedAccountSchema
   }),
   workbenches: z.object({

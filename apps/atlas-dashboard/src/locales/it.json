@@ -327,7 +327,7 @@
       },
       "obsidian": {
         "action": "Apri Obsidian",
-        "description": "Workspace Obsidian via browser per un vault markdown locale, protetto con credenziali deterministiche del lab e persistito in un volume Docker nominato.",
+        "description": "Workspace Obsidian via browser per un vault markdown locale, esposto direttamente dal gateway del lab e persistito in un volume Docker nominato.",
         "note": "Obsidian gira tramite il container web LinuxServer. Usa la sessione browser per vault, plugin e modifica markdown dentro il volume config persistente.",
         "title": "Obsidian"
       },

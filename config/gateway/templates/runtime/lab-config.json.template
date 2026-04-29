@@ -46,9 +46,7 @@
       "rootPassword": "${PENPOT_ROOT_PASSWORD}"
     },
     "obsidian": {
-      "url": "${OBSIDIAN_URL}",
-      "username": "${OBSIDIAN_USERNAME}",
-      "password": "${OBSIDIAN_PASSWORD}"
+      "url": "${OBSIDIAN_URL}"
     }
   },
   "workbenches": {
