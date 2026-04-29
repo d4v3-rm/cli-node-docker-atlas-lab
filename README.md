@@ -12,7 +12,7 @@
 
 Atlas Lab is a localhost-first self-hosted platform made of a Node.js/TypeScript CLI, a layered Docker Compose stack, and an operational React dashboard served by Caddy.
 
-It provides a core collaboration layer with GitLab CE, BookStack, and Penpot, plus optional AI and development layers. Everything is reachable through dedicated HTTPS ports on `localhost`, with persistent state stored in Docker volumes.
+It provides a core collaboration layer with GitLab CE, Obsidian, and Penpot, plus optional AI and development layers. Everything is reachable through dedicated HTTPS ports on `localhost`, with persistent state stored in Docker volumes.
 
 ---
 
@@ -20,7 +20,7 @@ It provides a core collaboration layer with GitLab CE, BookStack, and Penpot, pl
 
 ### What It Gives You
 
-- Always-on core layer with Atlas Dashboard, GitLab CE, BookStack, and Penpot.
+- Always-on core layer with Atlas Dashboard, GitLab CE, Obsidian, and Penpot.
 - Optional AI LLM layer with Open WebUI, Ollama, and n8n.
 - Optional workbench layer with browser-based Node and Python environments plus shared PostgreSQL.
 - HTTPS-only browser ingress on `localhost`.
@@ -43,7 +43,7 @@ Atlas Lab is split into three explicit layers.
 
 | Layer | Status | Includes | Purpose |
 | --- | --- | --- | --- |
-| `core` | always on | gateway, Atlas Dashboard, GitLab CE, BookStack, Penpot, and backing data services | baseline self-hosted platform |
+| `core` | always on | gateway, Atlas Dashboard, GitLab CE, Obsidian, Penpot, and backing data services | baseline self-hosted platform |
 | `ai-llm` | optional | Open WebUI, Ollama, n8n, AI gateway | local AI workflows and automation |
 | `workbench` | optional | Node Forge, Python Grid, shared PostgreSQL, workbench gateway | browser-based development |
 
@@ -58,7 +58,6 @@ The CLI:
 - starts Docker Compose
 - runs host preflight checks
 - validates Compose and repository assets
-- bootstraps the initial BookStack admin
 - aligns the Penpot root profile
 - aligns the n8n owner account when the AI LLM layer is enabled
 - reconciles Ollama models when the AI LLM layer is enabled
@@ -78,7 +77,7 @@ All browser entry points are exposed over HTTPS on `localhost`.
 | Open WebUI | `ai-llm` | `https://localhost:8446/` | only with `--with-ai-llm` |
 | Ollama | `ai-llm` | `https://localhost:8447/` | HTTPS API with gateway auth |
 | Penpot | `core` | `https://localhost:8448/` | collaborative design workspace |
-| BookStack | `core` | `https://localhost:8449/` | internal wiki and knowledge base |
+| Obsidian | `core` | `https://localhost:8449/` | browser knowledge vault |
 | Node Forge | `workbench` | `https://localhost:8450/` | Node / TypeScript workspace |
 | Python Grid | `workbench` | `https://localhost:8451/` | Python workspace |
 | n8n | `ai-llm` | `https://localhost:8453/` | workflow automation |
@@ -97,10 +96,9 @@ Operational rules:
 | Network | Type | Purpose |
 | --- | --- | --- |
 | `edge-net` | exposed | published ingress ports |
-| `apps-net` | internal | GitLab CE, BookStack, and gateway-routed browser services |
+| `apps-net` | internal | GitLab CE, Obsidian, and gateway-routed browser services |
 | `penpot-net` | internal | Penpot application services |
 | `ai-llm-net` | internal | Open WebUI, Ollama, and n8n |
-| `data-net` | internal | infrastructure databases |
 | `workbench-net` | internal | workbenches and PostgreSQL |
 | `workbench-host-net` | bridge | host-side PostgreSQL bind |
 | `services-egress-net` | selective egress | outbound access for core services |
@@ -123,8 +121,7 @@ Core volumes:
 - `gitlab-config`
 - `gitlab-logs`
 - `gitlab-data`
-- `bookstack-config`
-- `bookstack-db`
+- `obsidian-config`
 - `penpot-assets`
 - `penpot-postgres`
 
@@ -192,12 +189,12 @@ The main runtime configuration lives in:
 
 Key variables include:
 
-- `LAB_HTTPS_PORT`, `GITLAB_HTTPS_PORT`, `PENPOT_HTTPS_PORT`, `BOOKSTACK_HTTPS_PORT`
+- `LAB_HTTPS_PORT`, `GITLAB_HTTPS_PORT`, `PENPOT_HTTPS_PORT`, `OBSIDIAN_HTTPS_PORT`
 - `OPENWEBUI_HTTPS_PORT`, `OLLAMA_HTTPS_PORT`, `N8N_HTTPS_PORT`
 - `NODE_DEV_HTTPS_PORT`, `PYTHON_DEV_HTTPS_PORT`, `POSTGRES_DEV_HOST_PORT`
 - `GITLAB_EXTERNAL_URL`, `GITLAB_URL`
 - `GITLAB_ROOT_USERNAME`, `GITLAB_ROOT_PASSWORD`, `GITLAB_ROOT_EMAIL`
-- `BOOKSTACK_ROOT_NAME`, `BOOKSTACK_ROOT_EMAIL`, `BOOKSTACK_ROOT_PASSWORD`
+- `OBSIDIAN_USERNAME`, `OBSIDIAN_PASSWORD`
 - `PENPOT_ROOT_EMAIL`, `PENPOT_ROOT_PASSWORD`
 - `N8N_ROOT_EMAIL`, `N8N_ROOT_PASSWORD`
 - `OLLAMA_CHAT_MODEL`, `OLLAMA_EMBEDDING_MODEL`, `OLLAMA_RUNTIME_MODELS`
@@ -334,7 +331,7 @@ npm run dev -- save-volumes --with-ai-llm --with-workbench
 npm run dev -- restore-volumes --input .\backups\volumes\atlas-lab-volumes.tar.gz
 ```
 
-Bootstrap is idempotent for GitLab CE, BookStack, Penpot, and the optional AI LLM services.
+Bootstrap is idempotent for GitLab CE, Penpot, and the optional AI LLM services.
 
 ---
 
@@ -349,7 +346,7 @@ These credentials are intended for trusted local environments and are configurab
 | Open WebUI | `https://localhost:8446/` | `root@openwebui.local / RootOpenWebUI!2026` |
 | Ollama | `https://localhost:8447/` | gateway basic auth `root / RootOllama!2026` |
 | Penpot | `https://localhost:8448/` | `root@penpot.local / RootPenpot!2026` |
-| BookStack | `https://localhost:8449/` | `root@bookstack.local / RootBookStack!2026` |
+| Obsidian | `https://localhost:8449/` | basic auth `atlas / RootObsidian!2026` |
 | n8n | `https://localhost:8453/` | owner bootstrap `root@n8n.local / RootN8NApp!2026` |
 | PostgreSQL host-side | `localhost:15432` | `postgres / RootPostgresDev!2026` |
 
@@ -482,10 +479,10 @@ For stronger hardening:
 - Self-hosted user management: https://docs.n8n.io/hosting/configuration/user-management-self-hosted/
 - Docker install: https://docs.n8n.io/hosting/installation/docker/
 
-### BookStack
+### Obsidian
 
-- Installation: https://www.bookstackapp.com/docs/admin/installation
-- Commands: https://www.bookstackapp.com/docs/admin/commands/
+- Docker Hub image: https://hub.docker.com/r/linuxserver/obsidian
+- Source repository: https://github.com/linuxserver/docker-obsidian
 
 ### Open WebUI
 

@@ -27,7 +27,7 @@ services:
       - "${LAB_HTTPS_PORT}:${LAB_HTTPS_PORT}"
       - "${GITLAB_HTTPS_PORT}:${GITLAB_HTTPS_PORT}"
       - "${PENPOT_HTTPS_PORT}:${PENPOT_HTTPS_PORT}"
-      - "${BOOKSTACK_HTTPS_PORT}:${BOOKSTACK_HTTPS_PORT}"
+      - "${OBSIDIAN_HTTPS_PORT}:${OBSIDIAN_HTTPS_PORT}"
     volumes:
       - gateway-certs:/etc/caddy/certs
       - gateway-config:/etc/caddy/dynamic
@@ -36,8 +36,8 @@ services:
     depends_on:
       gitlab:
         condition: service_started
-      bookstack:
-        condition: service_healthy
+      obsidian:
+        condition: service_started
       penpot-frontend:
         condition: service_started
     networks:
@@ -84,55 +84,23 @@ services:
       services-egress-net:
         gw_priority: 1
 
-  bookstack:
-    image: lscr.io/linuxserver/bookstack:${BOOKSTACK_VERSION}
+  obsidian:
+    image: lscr.io/linuxserver/obsidian:${OBSIDIAN_VERSION}
     restart: unless-stopped
-    depends_on:
-      bookstack-db:
-        condition: service_healthy
+    shm_size: "1gb"
     environment:
       <<: *lab-env
-      PUID: ${BOOKSTACK_UID}
-      PGID: ${BOOKSTACK_GID}
-      APP_URL: ${BOOKSTACK_APP_URL}
-      APP_KEY: ${BOOKSTACK_APP_KEY}
-      DB_HOST: bookstack-db
-      DB_PORT: "3306"
-      DB_USERNAME: ${BOOKSTACK_DB_USER}
-      DB_PASSWORD: ${BOOKSTACK_DB_PASSWORD}
-      DB_DATABASE: ${BOOKSTACK_DB_DATABASE}
-    healthcheck:
-      test: ["CMD-SHELL", "php -r '$$s=@fsockopen(\"127.0.0.1\",80); exit($$s ? 0 : 1);'"]
-      interval: 15s
-      timeout: 10s
-      retries: 12
-      start_period: 30s
+      PUID: ${OBSIDIAN_UID}
+      PGID: ${OBSIDIAN_GID}
+      CUSTOM_USER: ${OBSIDIAN_USERNAME}
+      PASSWORD: ${OBSIDIAN_PASSWORD}
+      TITLE: Atlas Lab Obsidian
     volumes:
-      - bookstack-config:/config
+      - obsidian-config:/config
     networks:
       apps-net:
-      data-net:
       services-egress-net:
         gw_priority: 1
-
-  bookstack-db:
-    image: mariadb:${BOOKSTACK_DB_VERSION}
-    restart: unless-stopped
-    command: ["--innodb_linux_aio=aio"]
-    healthcheck:
-      test: ["CMD-SHELL", "mariadb-admin ping -u root -p$$MARIADB_ROOT_PASSWORD"]
-      interval: 5s
-      timeout: 10s
-      retries: 10
-    environment:
-      MARIADB_DATABASE: ${BOOKSTACK_DB_DATABASE}
-      MARIADB_USER: ${BOOKSTACK_DB_USER}
-      MARIADB_PASSWORD: ${BOOKSTACK_DB_PASSWORD}
-      MARIADB_ROOT_PASSWORD: ${BOOKSTACK_DB_ROOT_PASSWORD}
-    volumes:
-      - bookstack-db:/var/lib/mysql
-    networks:
-      - data-net
 
   penpot-frontend:
     image: penpotapp/frontend:${PENPOT_VERSION}
@@ -254,10 +222,6 @@ networks:
   penpot-net:
     name: cli-node-docker-atlas-lab_penpot
     internal: true
-  data-net:
-    name: cli-node-docker-atlas-lab_data
-    internal: true
-
 volumes:
   gateway-certs:
   gateway-config:
@@ -266,7 +230,6 @@ volumes:
   gitlab-config:
   gitlab-logs:
   gitlab-data:
-  bookstack-config:
-  bookstack-db:
+  obsidian-config:
   penpot-assets:
   penpot-postgres:

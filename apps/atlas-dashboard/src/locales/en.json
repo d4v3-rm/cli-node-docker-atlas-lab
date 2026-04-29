@@ -205,7 +205,7 @@
     "alwaysOnForge": "always-on forge"
   },
   "dashboard": {
-    "coreLayerSummary": "GitLab CE, BookStack, and Penpot form the always-on core layer of the lab.",
+    "coreLayerSummary": "GitLab CE, Obsidian, and Penpot form the always-on core layer of the lab.",
     "accessNotes": {
       "aiDisabled": "The AI layer no longer starts by default: the deck marks it as optional instead of pretending that it is online.",
       "aiEnabled": "Open WebUI, Ollama, and n8n are online and reachable on the dedicated AI gateway ports.",
@@ -257,7 +257,7 @@
         "label": "segmentation"
       },
       "usage": {
-        "body": "GitLab CE, BookStack, and Penpot stay on as the core layer; the AI and workbench layers are enabled only when they are actually needed.",
+        "body": "GitLab CE, Obsidian, and Penpot stay on as the core layer; the AI and workbench layers are enabled only when they are actually needed.",
         "label": "usage"
       }
     },
@@ -325,10 +325,11 @@
         "description": "Self-hosted GitLab CE for repositories, issues, merge requests, CI-ready project governance, and the lab's technical collaboration flow.",
         "title": "GitLab CE"
       },
-      "bookStack": {
-        "action": "Open BookStack",
-        "description": "Self-hosted internal documentation and knowledge base with a deterministic initial admin aligned by the lab bootstrap.",
-        "title": "BookStack"
+      "obsidian": {
+        "action": "Open Obsidian",
+        "description": "Browser-delivered Obsidian workspace for a local markdown vault, protected with deterministic lab credentials and persisted in a named Docker volume.",
+        "note": "Obsidian runs through the LinuxServer web container. Use the browser session for vault work, plugins, and markdown editing inside the persisted config volume.",
+        "title": "Obsidian"
       },
       "penpot": {
         "action": "Open Penpot",

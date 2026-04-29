@@ -57,38 +57,39 @@ export function createCoreServices(
     },
     {
       action: {
-        href: config.services.bookStack.url,
-        label: t('dashboard.services.bookStack.action')
+        href: config.services.obsidian.url,
+        label: t('dashboard.services.obsidian.action')
       },
       credentials: [
         {
           label: labels.endpoint,
-          value: config.services.bookStack.url
+          value: config.services.obsidian.url
         },
         {
-          label: labels.rootName,
-          value: config.services.bookStack.rootName
-        },
-        {
-          label: labels.rootEmail,
-          value: config.services.bookStack.rootEmail,
+          label: labels.username,
+          value: config.services.obsidian.username,
           concealed: true
         },
         {
           label: labels.password,
-          value: config.services.bookStack.rootPassword,
+          value: config.services.obsidian.password,
           concealed: true
         },
         {
-          label: labels.accessMode,
-          value: t('values.directAppLogin')
+          label: labels.authMode,
+          value: t('values.basicAuth')
+        },
+        {
+          label: labels.usage,
+          value: t('values.knowledgeVault')
         }
       ],
-      description: t('dashboard.services.bookStack.description'),
+      description: t('dashboard.services.obsidian.description'),
       icon: 'host',
-      id: 'bookstack',
-      status: t('values.knowledgeBase'),
-      title: t('dashboard.services.bookStack.title'),
+      id: 'obsidian',
+      note: t('dashboard.services.obsidian.note'),
+      status: t('values.knowledgeVault'),
+      title: t('dashboard.services.obsidian.title'),
       tone: 'core'
     },
     {

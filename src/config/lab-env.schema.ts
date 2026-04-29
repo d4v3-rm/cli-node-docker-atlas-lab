@@ -24,11 +24,11 @@ export const labEnvSchema = z
     N8N_ROOT_LAST_NAME: optionalEnvValue,
     N8N_ROOT_EMAIL: optionalEnvValue,
     N8N_ROOT_PASSWORD: optionalEnvValue,
-    BOOKSTACK_ROOT_NAME: optionalEnvValue,
-    BOOKSTACK_ROOT_EMAIL: optionalEnvValue,
-    BOOKSTACK_ROOT_PASSWORD: optionalEnvValue,
     OPENWEBUI_ROOT_EMAIL: optionalEnvValue,
     OPENWEBUI_ROOT_PASSWORD: optionalEnvValue,
+    OBSIDIAN_URL: optionalEnvValue,
+    OBSIDIAN_USERNAME: optionalEnvValue,
+    OBSIDIAN_PASSWORD: optionalEnvValue,
     PENPOT_ROOT_NAME: optionalEnvValue,
     PENPOT_ROOT_EMAIL: optionalEnvValue,
     PENPOT_ROOT_PASSWORD: optionalEnvValue,
@@ -40,7 +40,6 @@ export const labEnvSchema = z
     GITLAB_URL: optionalEnvValue,
     GITLAB_EXTERNAL_URL: optionalEnvValue,
     N8N_URL: optionalEnvValue,
-    BOOKSTACK_URL: optionalEnvValue,
     OPENWEBUI_URL: optionalEnvValue,
     OLLAMA_URL: optionalEnvValue,
     PENPOT_URL: optionalEnvValue,
@@ -56,9 +55,6 @@ export const bootstrapEnvSchema = labEnvSchema.extend({
   GITLAB_ROOT_USERNAME: requiredEnvValue,
   GITLAB_ROOT_PASSWORD: requiredEnvValue,
   GITLAB_ROOT_EMAIL: requiredEnvValue,
-  BOOKSTACK_ROOT_NAME: requiredEnvValue,
-  BOOKSTACK_ROOT_EMAIL: requiredEnvValue,
-  BOOKSTACK_ROOT_PASSWORD: requiredEnvValue,
   PENPOT_ROOT_NAME: requiredEnvValue,
   PENPOT_ROOT_EMAIL: requiredEnvValue,
   PENPOT_ROOT_PASSWORD: requiredEnvValue
@@ -70,7 +66,9 @@ export const bootstrapEnvSchema = labEnvSchema.extend({
 export const smokeEnvSchema = labEnvSchema.extend({
   LAB_URL: requiredEnvValue,
   GITLAB_URL: requiredEnvValue,
-  BOOKSTACK_URL: requiredEnvValue,
+  OBSIDIAN_URL: requiredEnvValue,
+  OBSIDIAN_USERNAME: requiredEnvValue,
+  OBSIDIAN_PASSWORD: requiredEnvValue,
   PENPOT_URL: requiredEnvValue
 });
 

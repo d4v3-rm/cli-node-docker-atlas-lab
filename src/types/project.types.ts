@@ -12,11 +12,11 @@ export interface LabEnv {
   N8N_ROOT_LAST_NAME?: string;
   N8N_ROOT_EMAIL?: string;
   N8N_ROOT_PASSWORD?: string;
-  BOOKSTACK_ROOT_NAME?: string;
-  BOOKSTACK_ROOT_EMAIL?: string;
-  BOOKSTACK_ROOT_PASSWORD?: string;
   OPENWEBUI_ROOT_EMAIL?: string;
   OPENWEBUI_ROOT_PASSWORD?: string;
+  OBSIDIAN_URL?: string;
+  OBSIDIAN_USERNAME?: string;
+  OBSIDIAN_PASSWORD?: string;
   PENPOT_ROOT_NAME?: string;
   PENPOT_ROOT_EMAIL?: string;
   PENPOT_ROOT_PASSWORD?: string;
@@ -28,7 +28,6 @@ export interface LabEnv {
   GITLAB_URL?: string;
   GITLAB_EXTERNAL_URL?: string;
   N8N_URL?: string;
-  BOOKSTACK_URL?: string;
   OPENWEBUI_URL?: string;
   OLLAMA_URL?: string;
   PENPOT_URL?: string;
@@ -68,9 +67,6 @@ export interface BootstrapEnv extends LabEnv {
   GITLAB_ROOT_USERNAME: string;
   GITLAB_ROOT_PASSWORD: string;
   GITLAB_ROOT_EMAIL: string;
-  BOOKSTACK_ROOT_NAME: string;
-  BOOKSTACK_ROOT_EMAIL: string;
-  BOOKSTACK_ROOT_PASSWORD: string;
   PENPOT_ROOT_NAME: string;
   PENPOT_ROOT_EMAIL: string;
   PENPOT_ROOT_PASSWORD: string;
@@ -95,7 +91,9 @@ export interface AiLlmBootstrapEnv extends LabEnv {
 export interface SmokeEnv extends LabEnv {
   LAB_URL: string;
   GITLAB_URL: string;
-  BOOKSTACK_URL: string;
+  OBSIDIAN_URL: string;
+  OBSIDIAN_USERNAME: string;
+  OBSIDIAN_PASSWORD: string;
   PENPOT_URL: string;
 }
 

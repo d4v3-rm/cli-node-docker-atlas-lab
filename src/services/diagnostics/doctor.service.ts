@@ -237,8 +237,15 @@ function buildSmokeChecks(
       run: (caCertificate) => runStatusCheck('Smoke GitLab', env.GITLAB_URL, caCertificate)
     },
     {
-      name: 'Smoke BookStack',
-      run: (caCertificate) => runStatusCheck('Smoke BookStack', env.BOOKSTACK_URL, caCertificate)
+      name: 'Smoke Obsidian',
+      run: (caCertificate) =>
+        runStatusCheckWithBasicAuth(
+          'Smoke Obsidian',
+          env.OBSIDIAN_URL,
+          caCertificate,
+          env.OBSIDIAN_USERNAME,
+          env.OBSIDIAN_PASSWORD
+        )
     },
     {
       name: 'Smoke Penpot',
@@ -371,6 +378,39 @@ async function runStatusCheck(
 ): Promise<HostCheckResult> {
   try {
     const response = await requestHttps(url, { caCertificate });
+
+    return {
+      name,
+      ok: response.statusCode >= 200 && response.statusCode < 400,
+      detail: `HTTP ${response.statusCode}`
+    };
+  } catch (error) {
+    return {
+      name,
+      ok: false,
+      detail: error instanceof Error ? error.message : 'Unknown smoke-check failure'
+    };
+  }
+}
+
+/**
+ * Executes a status-based smoke check against an HTTPS endpoint protected by basic auth.
+ */
+async function runStatusCheckWithBasicAuth(
+  name: string,
+  url: string,
+  caCertificate: string,
+  username: string,
+  password: string
+): Promise<HostCheckResult> {
+  try {
+    const response = await requestHttps(url, {
+      auth: {
+        password,
+        username
+      },
+      caCertificate
+    });
 
     return {
       name,
