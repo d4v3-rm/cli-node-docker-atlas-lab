@@ -27,7 +27,7 @@ services:
       - "${LAB_HTTPS_PORT}:${LAB_HTTPS_PORT}"
       - "${GITLAB_HTTPS_PORT}:${GITLAB_HTTPS_PORT}"
       - "${PENPOT_HTTPS_PORT}:${PENPOT_HTTPS_PORT}"
-      - "${OBSIDIAN_HTTPS_PORT}:${OBSIDIAN_HTTPS_PORT}"
+      - "${TRILIUM_HTTPS_PORT}:${TRILIUM_HTTPS_PORT}"
     volumes:
       - gateway-certs:/etc/caddy/certs
       - gateway-config:/etc/caddy/dynamic
@@ -36,7 +36,7 @@ services:
     depends_on:
       gitlab:
         condition: service_started
-      obsidian:
+      trilium:
         condition: service_started
       penpot-frontend:
         condition: service_started
@@ -84,19 +84,14 @@ services:
       services-egress-net:
         gw_priority: 1
 
-  obsidian:
-    image: lscr.io/linuxserver/obsidian:${OBSIDIAN_VERSION}
+  trilium:
+    image: triliumnext/trilium:${TRILIUM_VERSION}
     restart: unless-stopped
-    shm_size: "1gb"
     environment:
       <<: *lab-env
-      PUID: ${OBSIDIAN_UID}
-      PGID: ${OBSIDIAN_GID}
-      CUSTOM_USER: ${OBSIDIAN_USERNAME}
-      PASSWORD: ${OBSIDIAN_PASSWORD}
-      TITLE: Atlas Lab Obsidian
+      TRILIUM_DATA_DIR: ${TRILIUM_DATA_DIR}
     volumes:
-      - obsidian-config:/config
+      - trilium-data:${TRILIUM_DATA_DIR}
     networks:
       apps-net:
       services-egress-net:
@@ -230,6 +225,6 @@ volumes:
   gitlab-config:
   gitlab-logs:
   gitlab-data:
-  obsidian-config:
+  trilium-data:
   penpot-assets:
   penpot-postgres:

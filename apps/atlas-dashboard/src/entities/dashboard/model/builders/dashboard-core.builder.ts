@@ -57,39 +57,29 @@ export function createCoreServices(
     },
     {
       action: {
-        href: config.services.obsidian.url,
-        label: t('dashboard.services.obsidian.action')
+        href: config.services.trilium.url,
+        label: t('dashboard.services.trilium.action')
       },
       credentials: [
         {
           label: labels.endpoint,
-          value: config.services.obsidian.url
+          value: config.services.trilium.url
         },
         {
-          label: labels.username,
-          value: config.services.obsidian.username,
-          concealed: true
-        },
-        {
-          label: labels.password,
-          value: config.services.obsidian.password,
-          concealed: true
-        },
-        {
-          label: labels.authMode,
-          value: t('values.basicAuth')
+          label: labels.accessMode,
+          value: t('values.directAppLogin')
         },
         {
           label: labels.usage,
           value: t('values.knowledgeVault')
         }
       ],
-      description: t('dashboard.services.obsidian.description'),
+      description: t('dashboard.services.trilium.description'),
       icon: 'host',
-      id: 'obsidian',
-      note: t('dashboard.services.obsidian.note'),
+      id: 'trilium',
+      note: t('dashboard.services.trilium.note'),
       status: t('values.knowledgeVault'),
-      title: t('dashboard.services.obsidian.title'),
+      title: t('dashboard.services.trilium.title'),
       tone: 'core'
     },
     {

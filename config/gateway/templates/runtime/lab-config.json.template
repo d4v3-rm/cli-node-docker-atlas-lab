@@ -45,10 +45,8 @@
       "rootEmail": "${PENPOT_ROOT_EMAIL}",
       "rootPassword": "${PENPOT_ROOT_PASSWORD}"
     },
-    "obsidian": {
-      "url": "${OBSIDIAN_URL}",
-      "username": "${OBSIDIAN_USERNAME}",
-      "password": "${OBSIDIAN_PASSWORD}"
+    "trilium": {
+      "url": "${TRILIUM_URL}"
     }
   },
   "workbenches": {
