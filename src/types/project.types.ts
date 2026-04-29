@@ -23,6 +23,13 @@ export interface LabEnv {
   OLLAMA_EMBEDDING_MODEL?: string;
   OLLAMA_CHAT_MODEL?: string;
   OLLAMA_RUNTIME_MODELS?: string;
+  NODE_DEV_URL?: string;
+  NODE_DEV_PASSWORD?: string;
+  PYTHON_DEV_URL?: string;
+  PYTHON_DEV_PASSWORD?: string;
+  POSTGRES_DEV_SUPERUSER?: string;
+  POSTGRES_DEV_PASSWORD?: string;
+  POSTGRES_DEV_DATABASE?: string;
   POSTGRES_DEV_HOST_PORT?: string;
   LAB_URL?: string;
   GITLAB_URL?: string;
@@ -112,4 +119,18 @@ export interface AiLlmSmokeEnv extends LabEnv {
   OLLAMA_GATEWAY_PASSWORD: string;
   OLLAMA_EMBEDDING_MODEL: string;
   OLLAMA_CHAT_MODEL: string;
+}
+
+/**
+ * Env shape guaranteed after workbench smoke-check validation.
+ */
+export interface WorkbenchSmokeEnv extends LabEnv {
+  NODE_DEV_URL: string;
+  NODE_DEV_PASSWORD: string;
+  PYTHON_DEV_URL: string;
+  PYTHON_DEV_PASSWORD: string;
+  POSTGRES_DEV_SUPERUSER: string;
+  POSTGRES_DEV_PASSWORD: string;
+  POSTGRES_DEV_DATABASE: string;
+  POSTGRES_DEV_HOST_PORT: string;
 }

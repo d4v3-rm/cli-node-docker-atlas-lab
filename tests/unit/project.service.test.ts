@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
+  parseWorkbenchSmokeEnv,
   resolvePackagedProjectRoot,
   resolveProjectRoot
 } from '../../src/services/runtime/project.service.js';
@@ -42,5 +43,26 @@ describe('project.service', () => {
       rmSync(packageRoot, { force: true, recursive: true });
       rmSync(randomDirectory, { force: true, recursive: true });
     }
+  });
+
+  it('validates the required workbench smoke env values', () => {
+    expect(
+      parseWorkbenchSmokeEnv({
+        NODE_DEV_PASSWORD: 'RootNodeDev!2026',
+        NODE_DEV_URL: 'https://localhost:8450/',
+        POSTGRES_DEV_DATABASE: 'lab',
+        POSTGRES_DEV_HOST_PORT: '15432',
+        POSTGRES_DEV_PASSWORD: 'RootPostgresDev!2026',
+        POSTGRES_DEV_SUPERUSER: 'postgres',
+        PYTHON_DEV_PASSWORD: 'RootPythonDev!2026',
+        PYTHON_DEV_URL: 'https://localhost:8451/'
+      })
+    ).toMatchObject({
+      NODE_DEV_URL: 'https://localhost:8450/',
+      PYTHON_DEV_URL: 'https://localhost:8451/',
+      POSTGRES_DEV_HOST_PORT: '15432'
+    });
+
+    expect(() => parseWorkbenchSmokeEnv({})).toThrow(/NODE_DEV_URL/u);
   });
 });

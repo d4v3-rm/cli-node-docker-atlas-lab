@@ -11,7 +11,8 @@ import {
   bootstrapEnvSchema,
   formatZodError,
   labEnvSchema,
-  smokeEnvSchema
+  smokeEnvSchema,
+  workbenchSmokeEnvSchema
 } from '../../config/lab-env.schema.js';
 import { PROJECT_MARKERS, REPOSITORY_PATHS, resolveRepositoryLayout } from '../../config/repository-layout.js';
 import { ensureDevelopmentFileLogging } from './runtime-log.service.js';
@@ -22,7 +23,8 @@ import type {
   BootstrapEnv,
   LabEnv,
   ProjectContext,
-  SmokeEnv
+  SmokeEnv,
+  WorkbenchSmokeEnv
 } from '../../types/project.types.js';
 import { printInfo } from '../../cli/ui/logger.js';
 
@@ -75,6 +77,13 @@ export function parseSmokeEnv(env: LabEnv): SmokeEnv {
  */
 export function parseAiLlmSmokeEnv(env: LabEnv): AiLlmSmokeEnv {
   return parseWithSchema(() => aiLlmSmokeEnvSchema.parse(env));
+}
+
+/**
+ * Validates and narrows the env for workbench smoke-check workflows.
+ */
+export function parseWorkbenchSmokeEnv(env: LabEnv): WorkbenchSmokeEnv {
+  return parseWithSchema(() => workbenchSmokeEnvSchema.parse(env));
 }
 
 /**

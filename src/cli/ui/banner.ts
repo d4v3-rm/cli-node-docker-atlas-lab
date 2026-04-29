@@ -31,6 +31,7 @@ export function renderHelpFooter(): string {
     `  ${APP_METADATA.cliName} up --build --with-ai-llm --with-workbench`,
     `  ${APP_METADATA.cliName} bootstrap --with-ai-llm`,
     `  ${APP_METADATA.cliName} doctor --with-ai-llm --smoke`,
+    `  ${APP_METADATA.cliName} doctor --with-workbench --smoke`,
     `  ${APP_METADATA.cliName} save-images --with-ai-llm --with-workbench`,
     `  ${APP_METADATA.cliName} restore-images --input .\\backups\\images\\atlas-lab-images.tar.gz`,
     `  ${APP_METADATA.cliName} save-volumes --with-ai-llm --with-workbench`,

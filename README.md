@@ -253,6 +253,7 @@ Run health checks:
 ```powershell
 npm run dev -- doctor --smoke
 npm run dev -- doctor --with-ai-llm --smoke
+npm run dev -- doctor --with-workbench --smoke
 ```
 
 Stop the lab:
@@ -278,6 +279,7 @@ GitLab CE can take several minutes to finish its first boot. The CLI bootstrap a
 | `atlas-lab doctor` | runs host and configuration checks |
 | `atlas-lab doctor --smoke` | adds smoke tests for the core layer |
 | `atlas-lab doctor --with-ai-llm --smoke` | adds smoke tests for the AI LLM layer |
+| `atlas-lab doctor --with-workbench --smoke` | adds smoke tests for the workbench layer |
 | `atlas-lab status` | shows Compose/runtime status |
 | `atlas-lab down` | stops the stack |
 | `atlas-lab save-images` | exports Docker images to a single archive |

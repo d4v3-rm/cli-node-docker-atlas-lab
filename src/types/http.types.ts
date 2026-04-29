@@ -7,6 +7,7 @@ export interface HttpsRequestOptions {
   auth?: BasicAuthCredentials;
   body?: string;
   caCertificate?: string;
+  followRedirect?: boolean;
   headers?: Record<string, string>;
   method?: 'GET' | 'POST';
 }

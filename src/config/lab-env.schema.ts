@@ -35,6 +35,13 @@ export const labEnvSchema = z
     OLLAMA_EMBEDDING_MODEL: optionalEnvValue,
     OLLAMA_CHAT_MODEL: optionalEnvValue,
     OLLAMA_RUNTIME_MODELS: optionalEnvValue,
+    NODE_DEV_URL: optionalEnvValue,
+    NODE_DEV_PASSWORD: optionalEnvValue,
+    PYTHON_DEV_URL: optionalEnvValue,
+    PYTHON_DEV_PASSWORD: optionalEnvValue,
+    POSTGRES_DEV_SUPERUSER: optionalEnvValue,
+    POSTGRES_DEV_PASSWORD: optionalEnvValue,
+    POSTGRES_DEV_DATABASE: optionalEnvValue,
     POSTGRES_DEV_HOST_PORT: optionalEnvValue,
     LAB_URL: optionalEnvValue,
     GITLAB_URL: optionalEnvValue,
@@ -100,6 +107,20 @@ export const aiLlmSmokeEnvSchema = labEnvSchema.extend({
   OLLAMA_GATEWAY_PASSWORD: requiredEnvValue,
   OLLAMA_EMBEDDING_MODEL: requiredEnvValue,
   OLLAMA_CHAT_MODEL: requiredEnvValue
+});
+
+/**
+ * Schema for workbench smoke checks against code-server and PostgreSQL endpoints.
+ */
+export const workbenchSmokeEnvSchema = labEnvSchema.extend({
+  NODE_DEV_URL: requiredEnvValue,
+  NODE_DEV_PASSWORD: requiredEnvValue,
+  PYTHON_DEV_URL: requiredEnvValue,
+  PYTHON_DEV_PASSWORD: requiredEnvValue,
+  POSTGRES_DEV_SUPERUSER: requiredEnvValue,
+  POSTGRES_DEV_PASSWORD: requiredEnvValue,
+  POSTGRES_DEV_DATABASE: requiredEnvValue,
+  POSTGRES_DEV_HOST_PORT: requiredEnvValue
 });
 
 /**
