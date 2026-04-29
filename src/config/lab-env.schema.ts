@@ -26,7 +26,7 @@ export const labEnvSchema = z
     N8N_ROOT_PASSWORD: optionalEnvValue,
     OPENWEBUI_ROOT_EMAIL: optionalEnvValue,
     OPENWEBUI_ROOT_PASSWORD: optionalEnvValue,
-    OBSIDIAN_URL: optionalEnvValue,
+    TRILIUM_URL: optionalEnvValue,
     PENPOT_ROOT_NAME: optionalEnvValue,
     PENPOT_ROOT_EMAIL: optionalEnvValue,
     PENPOT_ROOT_PASSWORD: optionalEnvValue,
@@ -71,7 +71,7 @@ export const bootstrapEnvSchema = labEnvSchema.extend({
 export const smokeEnvSchema = labEnvSchema.extend({
   LAB_URL: requiredEnvValue,
   GITLAB_URL: requiredEnvValue,
-  OBSIDIAN_URL: requiredEnvValue,
+  TRILIUM_URL: requiredEnvValue,
   PENPOT_URL: requiredEnvValue
 });
 

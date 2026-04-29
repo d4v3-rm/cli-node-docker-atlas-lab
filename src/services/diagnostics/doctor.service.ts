@@ -249,8 +249,8 @@ function buildSmokeChecks(
       run: (caCertificate) => runStatusCheck('Smoke GitLab', env.GITLAB_URL, caCertificate)
     },
     {
-      name: 'Smoke Obsidian',
-      run: (caCertificate) => runStatusCheck('Smoke Obsidian', env.OBSIDIAN_URL, caCertificate)
+      name: 'Smoke TriliumNext',
+      run: (caCertificate) => runStatusCheck('Smoke TriliumNext', env.TRILIUM_URL, caCertificate)
     },
     {
       name: 'Smoke Penpot',

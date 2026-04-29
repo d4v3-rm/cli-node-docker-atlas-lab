@@ -14,7 +14,7 @@ export interface LabEnv {
   N8N_ROOT_PASSWORD?: string;
   OPENWEBUI_ROOT_EMAIL?: string;
   OPENWEBUI_ROOT_PASSWORD?: string;
-  OBSIDIAN_URL?: string;
+  TRILIUM_URL?: string;
   PENPOT_ROOT_NAME?: string;
   PENPOT_ROOT_EMAIL?: string;
   PENPOT_ROOT_PASSWORD?: string;
@@ -96,7 +96,7 @@ export interface AiLlmBootstrapEnv extends LabEnv {
 export interface SmokeEnv extends LabEnv {
   LAB_URL: string;
   GITLAB_URL: string;
-  OBSIDIAN_URL: string;
+  TRILIUM_URL: string;
   PENPOT_URL: string;
 }
 

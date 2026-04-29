@@ -50,7 +50,7 @@ export const labRuntimeConfigSchema = z.object({
       url: nonEmptyString
     }),
     openWebUi: namedAccountSchema,
-    obsidian: urlOnlyServiceSchema,
+    trilium: urlOnlyServiceSchema,
     penpot: namedAccountSchema
   }),
   workbenches: z.object({

@@ -78,16 +78,16 @@ export function createNetworkGraphViewModel(
     }),
     createNode({
       active: true,
-      description: t('dashboard.services.obsidian.description'),
-      id: 'obsidian',
+      description: t('dashboard.services.trilium.description'),
+      id: 'trilium',
       kind: 'service',
       labels: [
-        config.services.obsidian.url,
+        config.services.trilium.url,
         t('values.knowledgeVault'),
         t('networkMapDialog.labels.browser')
       ],
       position: [-64, -20, 12],
-      title: t('dashboard.services.obsidian.title'),
+      title: t('dashboard.services.trilium.title'),
       tone: 'core'
     }),
     createNode({
@@ -239,7 +239,7 @@ export function createNetworkGraphViewModel(
     createLink('gateway', 'deck', 'core', true),
     createLink('gateway', 'core-layer', 'core', true),
     createLink('core-layer', 'gitlab', 'core', true),
-    createLink('core-layer', 'obsidian', 'core', true),
+    createLink('core-layer', 'trilium', 'core', true),
     createLink('core-layer', 'penpot', 'core', true),
     createLink('gateway', 'ai-layer', 'ai', aiActive),
     createLink('ai-layer', 'open-webui', 'ai', aiActive),

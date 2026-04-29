@@ -205,7 +205,7 @@
     "alwaysOnForge": "forge sempre accesa"
   },
   "dashboard": {
-    "coreLayerSummary": "GitLab CE, Obsidian e Penpot formano il layer core sempre acceso del lab.",
+    "coreLayerSummary": "GitLab CE, TriliumNext e Penpot formano il layer core sempre acceso del lab.",
     "accessNotes": {
       "aiDisabled": "Il layer AI non viene piu acceso di default: il deck lo marca come opzionale invece di fingere che sia online.",
       "aiEnabled": "Open WebUI, Ollama e n8n sono online e raggiungibili sulle porte dedicate del gateway AI.",
@@ -257,7 +257,7 @@
         "label": "segmentazione"
       },
       "usage": {
-        "body": "GitLab CE, Obsidian e Penpot restano sempre attivi nel layer core; i layer AI e workbench vengono abilitati solo quando servono davvero.",
+        "body": "GitLab CE, TriliumNext e Penpot restano sempre attivi nel layer core; i layer AI e workbench vengono abilitati solo quando servono davvero.",
         "label": "uso"
       }
     },
@@ -325,11 +325,11 @@
         "description": "GitLab CE self-hosted per repository, issue, merge request, governance progetto pronta per CI e collaborazione tecnica del lab.",
         "title": "GitLab CE"
       },
-      "obsidian": {
-        "action": "Apri Obsidian",
-        "description": "Workspace Obsidian via browser per un vault markdown locale, esposto direttamente dal gateway del lab e persistito in un volume Docker nominato.",
-        "note": "Obsidian gira tramite il container web LinuxServer. Usa la sessione browser per vault, plugin e modifica markdown dentro il volume config persistente.",
-        "title": "Obsidian"
+      "trilium": {
+        "action": "Apri TriliumNext",
+        "description": "Knowledge base TriliumNext self-hosted per note gerarchiche, backlink, note protette e documentazione personale persistente.",
+        "note": "TriliumNext gira come vera web application server-side con database e backup persistiti nel volume Docker trilium-data.",
+        "title": "TriliumNext"
       },
       "penpot": {
         "action": "Apri Penpot",
