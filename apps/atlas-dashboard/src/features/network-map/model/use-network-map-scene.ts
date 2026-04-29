@@ -383,7 +383,7 @@ function createNodeOrbit(
   color: THREE.Color,
   active: boolean
 ) {
-  if (kind !== 'gateway' && kind !== 'plane') {
+  if (kind !== 'gateway' && kind !== 'layer') {
     return null;
   }
 
@@ -485,7 +485,7 @@ function resolveNodeGeometry(
     return new THREE.OctahedronGeometry(size, 1);
   }
 
-  if (kind === 'plane') {
+  if (kind === 'layer') {
     return new THREE.IcosahedronGeometry(size, 1);
   }
 
@@ -501,7 +501,7 @@ function resolveNodeSize(kind: NetworkGraphViewModel['nodes'][number]['kind']) {
     return 7.2;
   }
 
-  if (kind === 'plane') {
+  if (kind === 'layer') {
     return 5.8;
   }
 

@@ -4,45 +4,6 @@ name: cli-node-docker-atlas-lab
 x-lab-env: &lab-env
   TZ: ${TZ}
 
-x-plane-db-env: &plane-db-env
-  POSTGRES_USER: ${PLANE_POSTGRES_USER}
-  POSTGRES_DB: ${PLANE_POSTGRES_DATABASE}
-  POSTGRES_PASSWORD: ${PLANE_POSTGRES_PASSWORD}
-  PGDATA: /var/lib/postgresql/data
-
-x-plane-redis-env: &plane-redis-env
-  REDIS_HOST: plane-redis
-  REDIS_PORT: "6379"
-  REDIS_URL: redis://plane-redis:6379/
-
-x-plane-mq-env: &plane-mq-env
-  RABBITMQ_HOST: plane-mq
-  RABBITMQ_PORT: "5672"
-  RABBITMQ_DEFAULT_USER: ${PLANE_RABBITMQ_USER}
-  RABBITMQ_DEFAULT_PASS: ${PLANE_RABBITMQ_PASSWORD}
-  RABBITMQ_DEFAULT_VHOST: ${PLANE_RABBITMQ_VHOST}
-  RABBITMQ_VHOST: ${PLANE_RABBITMQ_VHOST}
-
-x-plane-s3-env: &plane-s3-env
-  AWS_REGION: ""
-  AWS_ACCESS_KEY_ID: ${PLANE_AWS_ACCESS_KEY_ID}
-  AWS_SECRET_ACCESS_KEY: ${PLANE_AWS_SECRET_ACCESS_KEY}
-  AWS_S3_ENDPOINT_URL: http://plane-minio:9000
-  AWS_S3_BUCKET_NAME: ${PLANE_AWS_S3_BUCKET_NAME}
-
-x-plane-app-env: &plane-app-env
-  WEB_URL: https://${LAB_PUBLIC_HOST}:${PLANE_HTTPS_PORT}
-  DEBUG: "0"
-  CORS_ALLOWED_ORIGINS: https://${LAB_PUBLIC_HOST}:${PLANE_HTTPS_PORT}
-  GUNICORN_WORKERS: "1"
-  USE_MINIO: "1"
-  DATABASE_URL: postgresql://${PLANE_POSTGRES_USER}:${PLANE_POSTGRES_PASSWORD}@plane-db/${PLANE_POSTGRES_DATABASE}
-  SECRET_KEY: ${PLANE_SECRET_KEY}
-  AMQP_URL: amqp://${PLANE_RABBITMQ_USER}:${PLANE_RABBITMQ_PASSWORD}@plane-mq:5672/${PLANE_RABBITMQ_VHOST}
-  API_KEY_RATE_LIMIT: 60/minute
-  MINIO_ENDPOINT_SSL: "0"
-  LIVE_SERVER_SECRET_KEY: ${PLANE_LIVE_SERVER_SECRET_KEY}
-
 services:
   gateway:
     build:
@@ -64,11 +25,8 @@ services:
       start_period: 2s
     ports:
       - "${LAB_HTTPS_PORT}:${LAB_HTTPS_PORT}"
-      - "${GITEA_HTTPS_PORT}:${GITEA_HTTPS_PORT}"
-      - "${PLANE_HTTPS_PORT}:${PLANE_HTTPS_PORT}"
+      - "${GITLAB_HTTPS_PORT}:${GITLAB_HTTPS_PORT}"
       - "${PENPOT_HTTPS_PORT}:${PENPOT_HTTPS_PORT}"
-      - "${BOOKSTACK_HTTPS_PORT}:${BOOKSTACK_HTTPS_PORT}"
-      - "${HEDGEDOC_HTTPS_PORT}:${HEDGEDOC_HTTPS_PORT}"
       - "${OBSIDIAN_HTTPS_PORT}:${OBSIDIAN_HTTPS_PORT}"
     volumes:
       - gateway-certs:/etc/caddy/certs
@@ -76,186 +34,55 @@ services:
       - gateway-site:/srv
       - gateway-data:/data
     depends_on:
-      gitea:
-        condition: service_healthy
-      bookstack:
-        condition: service_healthy
-      hedgedoc:
-        condition: service_healthy
-      obsidian:
+      gitlab:
         condition: service_started
-      plane-proxy:
+      obsidian:
         condition: service_started
       penpot-frontend:
         condition: service_started
     networks:
       - edge-net
       - apps-net
-      - plane-net
       - penpot-net
 
-  gitea:
-    image: gitea/gitea:${GITEA_VERSION}
+  gitlab:
+    image: gitlab/gitlab-ce:${GITLAB_VERSION}
+    hostname: ${LAB_PUBLIC_HOST}
     restart: unless-stopped
-    depends_on:
-      gitea-db:
-        condition: service_healthy
+    shm_size: "256m"
     environment:
       <<: *lab-env
-      USER_UID: ${GITEA_UID}
-      USER_GID: ${GITEA_GID}
-      GITEA__server__DOMAIN: ${LAB_PUBLIC_HOST}
-      GITEA__server__ROOT_URL: ${GITEA_URL}
-      GITEA__server__HTTP_PORT: "3000"
-      GITEA__server__PROTOCOL: http
-      GITEA__server__DISABLE_SSH: "true"
-      GITEA__service__DISABLE_REGISTRATION: "true"
-      GITEA__service__REQUIRE_SIGNIN_VIEW: "true"
-      GITEA__security__INSTALL_LOCK: "true"
-      GITEA__security__COOKIE_SECURE: "true"
-      GITEA__database__DB_TYPE: mysql
-      GITEA__database__HOST: gitea-db:3306
-      GITEA__database__NAME: gitea
-      GITEA__database__USER: gitea
-      GITEA__database__PASSWD: ${GITEA_DB_PASSWORD}
-      GITEA__database__SSL_MODE: disable
-      GITEA__database__CHARSET: utf8mb4
+      GITLAB_ROOT_EMAIL: ${GITLAB_ROOT_EMAIL}
+      GITLAB_ROOT_PASSWORD: ${GITLAB_ROOT_PASSWORD}
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url '${GITLAB_EXTERNAL_URL}'
+        nginx['listen_port'] = 80
+        nginx['listen_https'] = false
+        letsencrypt['enable'] = false
+        gitlab_rails['initial_root_password'] = '${GITLAB_ROOT_PASSWORD}'
+        gitlab_rails['signup_enabled'] = false
+        gitlab_rails['time_zone'] = '${TZ}'
+        registry['enable'] = false
+        gitlab_pages['enable'] = false
+        mattermost['enable'] = false
+        prometheus_monitoring['enable'] = false
+        alertmanager['enable'] = false
+        puma['worker_processes'] = 2
+        sidekiq['concurrency'] = 10
     healthcheck:
-      test: ["CMD-SHELL", "nc -z 127.0.0.1 3000 || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1/-/health >/dev/null || exit 1"]
       interval: 30s
-      timeout: 5s
-      retries: 6
-      start_period: 20s
+      timeout: 10s
+      retries: 20
+      start_period: 180s
     volumes:
-      - gitea-data:/data
+      - gitlab-config:/etc/gitlab
+      - gitlab-logs:/var/log/gitlab
+      - gitlab-data:/var/opt/gitlab
     networks:
       apps-net:
-      data-net:
       services-egress-net:
         gw_priority: 1
-
-  gitea-db:
-    image: mariadb:${GITEA_DB_VERSION}
-    restart: unless-stopped
-    command: ["--innodb_linux_aio=aio"]
-    healthcheck:
-      test: ["CMD-SHELL", "mariadb-admin ping -u root -p$$MARIADB_ROOT_PASSWORD"]
-      interval: 5s
-      timeout: 10s
-      retries: 10
-    environment:
-      MARIADB_DATABASE: gitea
-      MARIADB_USER: gitea
-      MARIADB_PASSWORD: ${GITEA_DB_PASSWORD}
-      MARIADB_ROOT_PASSWORD: ${GITEA_DB_ROOT_PASSWORD}
-    volumes:
-      - gitea-db:/var/lib/mysql
-    networks:
-      - data-net
-
-  bookstack:
-    image: lscr.io/linuxserver/bookstack:${BOOKSTACK_VERSION}
-    restart: unless-stopped
-    depends_on:
-      bookstack-db:
-        condition: service_healthy
-    environment:
-      <<: *lab-env
-      PUID: ${BOOKSTACK_UID}
-      PGID: ${BOOKSTACK_GID}
-      APP_URL: ${BOOKSTACK_APP_URL}
-      APP_KEY: ${BOOKSTACK_APP_KEY}
-      DB_HOST: bookstack-db
-      DB_PORT: "3306"
-      DB_USERNAME: ${BOOKSTACK_DB_USER}
-      DB_PASSWORD: ${BOOKSTACK_DB_PASSWORD}
-      DB_DATABASE: ${BOOKSTACK_DB_DATABASE}
-    healthcheck:
-      test: ["CMD-SHELL", "php -r '$$s=@fsockopen(\"127.0.0.1\",80); exit($$s ? 0 : 1);'"]
-      interval: 15s
-      timeout: 10s
-      retries: 12
-      start_period: 30s
-    volumes:
-      - bookstack-config:/config
-    networks:
-      apps-net:
-      data-net:
-      services-egress-net:
-        gw_priority: 1
-
-  bookstack-db:
-    image: mariadb:${BOOKSTACK_DB_VERSION}
-    restart: unless-stopped
-    command: ["--innodb_linux_aio=aio"]
-    healthcheck:
-      test: ["CMD-SHELL", "mariadb-admin ping -u root -p$$MARIADB_ROOT_PASSWORD"]
-      interval: 5s
-      timeout: 10s
-      retries: 10
-    environment:
-      MARIADB_DATABASE: ${BOOKSTACK_DB_DATABASE}
-      MARIADB_USER: ${BOOKSTACK_DB_USER}
-      MARIADB_PASSWORD: ${BOOKSTACK_DB_PASSWORD}
-      MARIADB_ROOT_PASSWORD: ${BOOKSTACK_DB_ROOT_PASSWORD}
-    volumes:
-      - bookstack-db:/var/lib/mysql
-    networks:
-      - data-net
-
-  hedgedoc:
-    image: quay.io/hedgedoc/hedgedoc:${HEDGEDOC_VERSION}
-    restart: unless-stopped
-    depends_on:
-      hedgedoc-db:
-        condition: service_healthy
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "node -e \"require('node:http').get('http://127.0.0.1:3000', (response) => process.exit(response.statusCode < 500 ? 0 : 1)).on('error', () => process.exit(1))\""
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 12
-      start_period: 20s
-    environment:
-      <<: *lab-env
-      CMD_DB_URL: postgres://${HEDGEDOC_POSTGRES_USER}:${HEDGEDOC_POSTGRES_PASSWORD}@hedgedoc-db:5432/${HEDGEDOC_POSTGRES_DATABASE}
-      # HedgeDoc 1.x builds absolute asset URLs from CMD_DOMAIN and mishandles proxy ports.
-      CMD_DOMAIN: ${LAB_PUBLIC_HOST}:${HEDGEDOC_HTTPS_PORT}
-      CMD_PROTOCOL_USESSL: "true"
-      CMD_URL_ADDPORT: "false"
-      CMD_ALLOW_ORIGIN: ${LAB_PUBLIC_HOST}:${HEDGEDOC_HTTPS_PORT},${LAB_GATEWAY_IP}:${HEDGEDOC_HTTPS_PORT}
-      CMD_ALLOW_ANONYMOUS: "false"
-      CMD_EMAIL: "true"
-      CMD_ALLOW_EMAIL_REGISTER: "true"
-      CMD_SESSION_SECRET: ${HEDGEDOC_SESSION_SECRET}
-      CMD_ALLOW_GRAVATAR: "false"
-    volumes:
-      - hedgedoc-uploads:/hedgedoc/public/uploads
-    networks:
-      apps-net:
-      data-net:
-      services-egress-net:
-        gw_priority: 1
-
-  hedgedoc-db:
-    image: postgres:${HEDGEDOC_POSTGRES_VERSION}
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
-      interval: 5s
-      timeout: 10s
-      retries: 10
-    environment:
-      POSTGRES_USER: ${HEDGEDOC_POSTGRES_USER}
-      POSTGRES_PASSWORD: ${HEDGEDOC_POSTGRES_PASSWORD}
-      POSTGRES_DB: ${HEDGEDOC_POSTGRES_DATABASE}
-    volumes:
-      - hedgedoc-db:/var/lib/postgresql/data
-    networks:
-      - data-net
 
   obsidian:
     image: lscr.io/linuxserver/obsidian:${OBSIDIAN_VERSION}
@@ -274,229 +101,6 @@ services:
       apps-net:
       services-egress-net:
         gw_priority: 1
-
-  plane-web:
-    image: makeplane/plane-frontend:${PLANE_APP_RELEASE}
-    restart: unless-stopped
-    depends_on:
-      - plane-api
-      - plane-worker
-    networks:
-      plane-net:
-        aliases:
-          - web
-      services-egress-net:
-        gw_priority: 1
-
-  plane-admin:
-    image: makeplane/plane-admin:${PLANE_APP_RELEASE}
-    restart: unless-stopped
-    depends_on:
-      - plane-api
-      - plane-web
-    networks:
-      plane-net:
-        aliases:
-          - admin
-      services-egress-net:
-        gw_priority: 1
-
-  plane-space:
-    image: makeplane/plane-space:${PLANE_APP_RELEASE}
-    restart: unless-stopped
-    depends_on:
-      - plane-api
-      - plane-worker
-      - plane-web
-    networks:
-      plane-net:
-        aliases:
-          - space
-      services-egress-net:
-        gw_priority: 1
-
-  plane-live:
-    image: makeplane/plane-live:${PLANE_APP_RELEASE}
-    restart: unless-stopped
-    environment:
-      API_BASE_URL: http://plane-api:8000
-      LIVE_SERVER_SECRET_KEY: ${PLANE_LIVE_SERVER_SECRET_KEY}
-      REDIS_HOST: plane-redis
-      REDIS_PORT: "6379"
-      REDIS_URL: redis://plane-redis:6379/
-    depends_on:
-      - plane-api
-      - plane-web
-    networks:
-      plane-net:
-        aliases:
-          - live
-      services-egress-net:
-        gw_priority: 1
-
-  plane-api:
-    image: makeplane/plane-backend:${PLANE_APP_RELEASE}
-    restart: unless-stopped
-    command: ./bin/docker-entrypoint-api.sh
-    environment:
-      <<: [*plane-app-env, *plane-db-env, *plane-redis-env, *plane-mq-env, *plane-s3-env]
-    depends_on:
-      plane-db:
-        condition: service_healthy
-      plane-redis:
-        condition: service_started
-      plane-mq:
-        condition: service_started
-      plane-minio:
-        condition: service_started
-      plane-migrator:
-        condition: service_completed_successfully
-    volumes:
-      - plane-api-logs:/code/plane/logs
-    networks:
-      plane-net:
-        aliases:
-          - api
-      services-egress-net:
-        gw_priority: 1
-
-  plane-worker:
-    image: makeplane/plane-backend:${PLANE_APP_RELEASE}
-    restart: unless-stopped
-    command: ./bin/docker-entrypoint-worker.sh
-    environment:
-      <<: [*plane-app-env, *plane-db-env, *plane-redis-env, *plane-mq-env, *plane-s3-env]
-    depends_on:
-      plane-api:
-        condition: service_started
-      plane-db:
-        condition: service_healthy
-      plane-redis:
-        condition: service_started
-      plane-mq:
-        condition: service_started
-      plane-minio:
-        condition: service_started
-      plane-migrator:
-        condition: service_completed_successfully
-    volumes:
-      - plane-worker-logs:/code/plane/logs
-    networks:
-      plane-net:
-      services-egress-net:
-        gw_priority: 1
-
-  plane-beat-worker:
-    image: makeplane/plane-backend:${PLANE_APP_RELEASE}
-    restart: unless-stopped
-    command: ./bin/docker-entrypoint-beat.sh
-    environment:
-      <<: [*plane-app-env, *plane-db-env, *plane-redis-env, *plane-mq-env, *plane-s3-env]
-    depends_on:
-      plane-api:
-        condition: service_started
-      plane-db:
-        condition: service_healthy
-      plane-redis:
-        condition: service_started
-      plane-mq:
-        condition: service_started
-      plane-minio:
-        condition: service_started
-      plane-migrator:
-        condition: service_completed_successfully
-    volumes:
-      - plane-beat-logs:/code/plane/logs
-    networks:
-      plane-net:
-      services-egress-net:
-        gw_priority: 1
-
-  plane-migrator:
-    image: makeplane/plane-backend:${PLANE_APP_RELEASE}
-    restart: on-failure
-    command: ./bin/docker-entrypoint-migrator.sh
-    environment:
-      <<: [*plane-app-env, *plane-db-env, *plane-redis-env, *plane-mq-env, *plane-s3-env]
-    depends_on:
-      plane-db:
-        condition: service_healthy
-      plane-redis:
-        condition: service_started
-    volumes:
-      - plane-migrator-logs:/code/plane/logs
-    networks:
-      - plane-net
-
-  plane-db:
-    image: postgres:15.7-alpine
-    restart: unless-stopped
-    command: postgres -c 'max_connections=1000'
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
-      interval: 5s
-      timeout: 10s
-      retries: 10
-    environment:
-      <<: *plane-db-env
-    volumes:
-      - plane-db:/var/lib/postgresql/data
-    networks:
-      - plane-net
-
-  plane-redis:
-    image: valkey/valkey:7.2.11-alpine
-    restart: unless-stopped
-    volumes:
-      - plane-redis:/data
-    networks:
-      - plane-net
-
-  plane-mq:
-    image: rabbitmq:3.13.6-management-alpine
-    restart: unless-stopped
-    environment:
-      <<: *plane-mq-env
-    volumes:
-      - plane-mq:/var/lib/rabbitmq
-    networks:
-      - plane-net
-
-  plane-minio:
-    image: minio/minio:latest
-    restart: unless-stopped
-    command: server /export --console-address ":9090"
-    environment:
-      MINIO_ROOT_USER: ${PLANE_AWS_ACCESS_KEY_ID}
-      MINIO_ROOT_PASSWORD: ${PLANE_AWS_SECRET_ACCESS_KEY}
-    volumes:
-      - plane-minio:/export
-    networks:
-      plane-net:
-      services-egress-net:
-        gw_priority: 1
-
-  plane-proxy:
-    image: makeplane/plane-proxy:${PLANE_APP_RELEASE}
-    restart: unless-stopped
-    environment:
-      APP_DOMAIN: ${LAB_PUBLIC_HOST}:${PLANE_HTTPS_PORT}
-      FILE_SIZE_LIMIT: ${PLANE_FILE_SIZE_LIMIT}
-      BUCKET_NAME: ${PLANE_AWS_S3_BUCKET_NAME}
-      LISTEN_HTTP_PORT: "80"
-      LISTEN_HTTPS_PORT: "443"
-      SITE_ADDRESS: ":80"
-      CERT_EMAIL: ""
-      CERT_ACME_CA: https://acme-v02.api.letsencrypt.org/directory
-      CERT_ACME_DNS: ""
-    depends_on:
-      - plane-web
-      - plane-api
-      - plane-space
-      - plane-admin
-      - plane-live
-    networks:
-      - plane-net
 
   penpot-frontend:
     image: penpotapp/frontend:${PENPOT_VERSION}
@@ -615,35 +219,17 @@ networks:
   apps-net:
     name: cli-node-docker-atlas-lab_apps
     internal: true
-  plane-net:
-    name: cli-node-docker-atlas-lab_plane
-    internal: true
   penpot-net:
     name: cli-node-docker-atlas-lab_penpot
     internal: true
-  data-net:
-    name: cli-node-docker-atlas-lab_data
-    internal: true
-
 volumes:
   gateway-certs:
   gateway-config:
   gateway-site:
   gateway-data:
-  gitea-data:
-  gitea-db:
-  bookstack-config:
-  bookstack-db:
-  hedgedoc-db:
-  hedgedoc-uploads:
+  gitlab-config:
+  gitlab-logs:
+  gitlab-data:
   obsidian-config:
-  plane-db:
-  plane-redis:
-  plane-mq:
-  plane-minio:
-  plane-api-logs:
-  plane-worker-logs:
-  plane-beat-logs:
-  plane-migrator-logs:
   penpot-assets:
   penpot-postgres:

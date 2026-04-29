@@ -15,23 +15,12 @@
     "networkMapPath": "/content/network-map.md"
   },
   "services": {
-    "gitea": {
-      "url": "${GITEA_URL}",
-      "rootUsername": "${GITEA_ROOT_USERNAME}",
-      "rootPassword": "${GITEA_ROOT_PASSWORD}",
-      "rootEmail": "${GITEA_ROOT_EMAIL}"
-    },
-    "plane": {
-      "url": "${PLANE_URL}",
-      "rootName": "${PLANE_ROOT_NAME}",
-      "rootEmail": "${PLANE_ROOT_EMAIL}",
-      "rootPassword": "${PLANE_ROOT_PASSWORD}"
-    },
-    "bookStack": {
-      "url": "${BOOKSTACK_URL}",
-      "rootName": "${BOOKSTACK_ROOT_NAME}",
-      "rootEmail": "${BOOKSTACK_ROOT_EMAIL}",
-      "rootPassword": "${BOOKSTACK_ROOT_PASSWORD}"
+    "gitLab": {
+      "url": "${GITLAB_URL}",
+      "externalUrl": "${GITLAB_EXTERNAL_URL}",
+      "rootUsername": "${GITLAB_ROOT_USERNAME}",
+      "rootPassword": "${GITLAB_ROOT_PASSWORD}",
+      "rootEmail": "${GITLAB_ROOT_EMAIL}"
     },
     "openWebUi": {
       "url": "${OPENWEBUI_URL}",
@@ -55,9 +44,6 @@
       "rootName": "${PENPOT_ROOT_NAME}",
       "rootEmail": "${PENPOT_ROOT_EMAIL}",
       "rootPassword": "${PENPOT_ROOT_PASSWORD}"
-    },
-    "hedgeDoc": {
-      "url": "${HEDGEDOC_URL}"
     },
     "obsidian": {
       "url": "${OBSIDIAN_URL}",

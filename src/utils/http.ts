@@ -10,12 +10,14 @@ export async function requestHttps(
     auth,
     body,
     caCertificate,
+    followRedirect = true,
     headers,
     method = 'GET'
   }: HttpsRequestOptions = {}
 ): Promise<HttpsResponse> {
   const response = await got(url, {
     body,
+    followRedirect,
     headers,
     https: resolveHttpsOptions(caCertificate),
     method,

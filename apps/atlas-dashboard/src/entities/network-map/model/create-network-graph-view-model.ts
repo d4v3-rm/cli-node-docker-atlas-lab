@@ -50,12 +50,12 @@ export function createNetworkGraphViewModel(
     }),
     createNode({
       active: true,
-      description: t('networkMapDialog.corePlaneBody'),
-      id: 'core-plane',
-      kind: 'plane',
+      description: t('networkMapDialog.coreLayerBody'),
+      id: 'core-layer',
+      kind: 'layer',
       labels: [
         t('networkMapDialog.labels.alwaysOn'),
-        t('networkMapDialog.labels.controlPlane'),
+        t('networkMapDialog.labels.controlLayer'),
         t('cards.tones.core')
       ],
       position: [-46, 8, -14],
@@ -64,44 +64,30 @@ export function createNetworkGraphViewModel(
     }),
     createNode({
       active: true,
-      description: t('dashboard.services.gitea.description'),
-      id: 'gitea',
+      description: t('dashboard.services.gitLab.description'),
+      id: 'gitlab',
       kind: 'service',
       labels: [
-        config.services.gitea.url,
+        config.services.gitLab.url,
         t('values.alwaysOnForge'),
         t('networkMapDialog.labels.https')
       ],
       position: [-82, 28, 8],
-      title: t('dashboard.services.gitea.title'),
+      title: t('dashboard.services.gitLab.title'),
       tone: 'core'
     }),
     createNode({
       active: true,
-      description: t('dashboard.services.bookStack.description'),
-      id: 'bookstack',
+      description: t('dashboard.services.obsidian.description'),
+      id: 'obsidian',
       kind: 'service',
       labels: [
-        config.services.bookStack.url,
-        t('values.knowledgeBase'),
+        config.services.obsidian.url,
+        t('values.knowledgeVault'),
         t('networkMapDialog.labels.browser')
       ],
       position: [-64, -20, 12],
-      title: t('dashboard.services.bookStack.title'),
-      tone: 'core'
-    }),
-    createNode({
-      active: true,
-      description: t('dashboard.services.plane.description'),
-      id: 'plane',
-      kind: 'service',
-      labels: [
-        config.services.plane.url,
-        t('values.projectHub'),
-        t('networkMapDialog.labels.browser')
-      ],
-      position: [-46, 38, -28],
-      title: t('dashboard.services.plane.title'),
+      title: t('dashboard.services.obsidian.title'),
       tone: 'core'
     }),
     createNode({
@@ -119,38 +105,10 @@ export function createNetworkGraphViewModel(
       tone: 'core'
     }),
     createNode({
-      active: true,
-      description: t('dashboard.services.hedgeDoc.description'),
-      id: 'hedgedoc',
-      kind: 'service',
-      labels: [
-        config.services.hedgeDoc.url,
-        t('values.collaborativeNotes'),
-        t('networkMapDialog.labels.browser')
-      ],
-      position: [-78, 2, -32],
-      title: t('dashboard.services.hedgeDoc.title'),
-      tone: 'core'
-    }),
-    createNode({
-      active: true,
-      description: t('dashboard.services.obsidian.description'),
-      id: 'obsidian',
-      kind: 'service',
-      labels: [
-        config.services.obsidian.url,
-        t('values.knowledgeVault'),
-        t('networkMapDialog.labels.browser')
-      ],
-      position: [-20, -42, 34],
-      title: t('dashboard.services.obsidian.title'),
-      tone: 'core'
-    }),
-    createNode({
       active: aiActive,
-      description: t('networkMapDialog.aiPlaneBody'),
-      id: 'ai-plane',
-      kind: 'plane',
+      description: t('networkMapDialog.aiLayerBody'),
+      id: 'ai-layer',
+      kind: 'layer',
       labels: [
         aiActive
           ? t('networkMapDialog.statusActive')
@@ -206,9 +164,9 @@ export function createNetworkGraphViewModel(
     }),
     createNode({
       active: workbenchActive,
-      description: t('networkMapDialog.workbenchPlaneBody'),
-      id: 'workbench-plane',
-      kind: 'plane',
+      description: t('networkMapDialog.workbenchLayerBody'),
+      id: 'workbench-layer',
+      kind: 'layer',
       labels: [
         workbenchActive
           ? t('networkMapDialog.statusActive')
@@ -279,24 +237,21 @@ export function createNetworkGraphViewModel(
   ];
   const links: NetworkGraphLinkViewModel[] = [
     createLink('gateway', 'deck', 'core', true),
-    createLink('gateway', 'core-plane', 'core', true),
-    createLink('core-plane', 'gitea', 'core', true),
-    createLink('core-plane', 'bookstack', 'core', true),
-    createLink('core-plane', 'plane', 'core', true),
-    createLink('core-plane', 'penpot', 'core', true),
-    createLink('core-plane', 'hedgedoc', 'core', true),
-    createLink('core-plane', 'obsidian', 'core', true),
-    createLink('gateway', 'ai-plane', 'ai', aiActive),
-    createLink('ai-plane', 'open-webui', 'ai', aiActive),
-    createLink('ai-plane', 'ollama', 'ai', aiActive),
-    createLink('ai-plane', 'n8n', 'ai', aiActive),
-    createLink('gateway', 'workbench-plane', 'workbench', workbenchActive),
-    createLink('workbench-plane', 'node-workbench', 'workbench', workbenchActive),
-    createLink('workbench-plane', 'python-workbench', 'workbench', workbenchActive),
-    createLink('workbench-plane', 'postgres', 'workbench', workbenchActive),
+    createLink('gateway', 'core-layer', 'core', true),
+    createLink('core-layer', 'gitlab', 'core', true),
+    createLink('core-layer', 'obsidian', 'core', true),
+    createLink('core-layer', 'penpot', 'core', true),
+    createLink('gateway', 'ai-layer', 'ai', aiActive),
+    createLink('ai-layer', 'open-webui', 'ai', aiActive),
+    createLink('ai-layer', 'ollama', 'ai', aiActive),
+    createLink('ai-layer', 'n8n', 'ai', aiActive),
+    createLink('gateway', 'workbench-layer', 'workbench', workbenchActive),
+    createLink('workbench-layer', 'node-workbench', 'workbench', workbenchActive),
+    createLink('workbench-layer', 'python-workbench', 'workbench', workbenchActive),
+    createLink('workbench-layer', 'postgres', 'workbench', workbenchActive),
     createLink('postgres', 'host-access', 'neutral', workbenchActive)
   ];
-  const publishedSurfaces = nodes.filter((node) => node.active && node.kind !== 'plane').length;
+  const publishedSurfaces = nodes.filter((node) => node.active && node.kind !== 'layer').length;
 
   return {
     instructions: t('networkMapDialog.instructions'),

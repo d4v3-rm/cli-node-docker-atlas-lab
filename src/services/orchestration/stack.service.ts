@@ -74,7 +74,6 @@ export async function runUpCommand(
         task: () =>
           new Listr(
             createBootstrapTasks(context, {
-              skipGitea: false,
               skipOllama: Boolean(options.skipOllama) || !options.withAiLlm,
               withAiLlm: Boolean(options.withAiLlm)
             }),

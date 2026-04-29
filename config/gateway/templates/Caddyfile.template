@@ -35,6 +35,18 @@
   }
 }
 
+(gitlab_proxy) {
+  import lab_tls
+  reverse_proxy gitlab:80 {
+    header_up Host ${LAB_PUBLIC_HOST}:${GITLAB_HTTPS_PORT}
+    header_up X-Forwarded-Proto https
+    header_up X-Forwarded-Ssl on
+    header_up X-Forwarded-Port ${GITLAB_HTTPS_PORT}
+    header_up X-Forwarded-Host ${LAB_PUBLIC_HOST}:${GITLAB_HTTPS_PORT}
+    header_up X-Real-IP {remote_host}
+  }
+}
+
 https://${LAB_PUBLIC_HOST}:${LAB_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${LAB_HTTPS_PORT} {
   import lab_tls
   root * /srv
@@ -42,24 +54,12 @@ https://${LAB_PUBLIC_HOST}:${LAB_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${LAB_HT
   file_server
 }
 
-https://${LAB_PUBLIC_HOST}:${GITEA_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${GITEA_HTTPS_PORT} {
-  import service_proxy gitea:3000
-}
-
-https://${LAB_PUBLIC_HOST}:${PLANE_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${PLANE_HTTPS_PORT} {
-  import service_proxy plane-proxy:80
+https://${LAB_PUBLIC_HOST}:${GITLAB_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${GITLAB_HTTPS_PORT} {
+  import gitlab_proxy
 }
 
 https://${LAB_PUBLIC_HOST}:${PENPOT_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${PENPOT_HTTPS_PORT} {
   import service_proxy penpot-frontend:8080
-}
-
-https://${LAB_PUBLIC_HOST}:${BOOKSTACK_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${BOOKSTACK_HTTPS_PORT} {
-  import service_proxy bookstack:80
-}
-
-https://${LAB_PUBLIC_HOST}:${HEDGEDOC_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${HEDGEDOC_HTTPS_PORT} {
-  import service_proxy hedgedoc:3000
 }
 
 https://${LAB_PUBLIC_HOST}:${OBSIDIAN_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${OBSIDIAN_HTTPS_PORT} {

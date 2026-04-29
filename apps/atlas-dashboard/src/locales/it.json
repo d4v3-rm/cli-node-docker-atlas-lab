@@ -27,16 +27,16 @@
   },
   "rails": {
     "briefingsAndLinks": "briefing e link",
-    "layerHeartbeatBody": "Vista immediata di cio che resta sempre attivo e di cio che rimane opzionale tra piano core, AI e workbench.",
+    "layerHeartbeatBody": "Vista immediata di cio che resta sempre attivo e di cio che rimane opzionale tra layer core, AI e workbench.",
     "layerHeartbeat": "stato dei layer",
     "layerHeartbeatChartBody": "Le superfici di servizio configurate restano visibili anche quando un layer opzionale e spento, cosi puoi confrontare impronta totale e cio che e pubblicato adesso.",
     "layerHeartbeatChartTitle": "grafico impronta",
     "layerHeartbeatConfiguredLegend": "configurato",
     "layerHeartbeatFootprint": "impronta live",
     "layerHeartbeatGauge": "grafico disponibilita",
-    "layerHeartbeatGaugeBody": "{{active}} layer su {{total}} sono live in questo momento, mentre i piani opzionali restano attenuati finche non vengono pubblicati.",
+    "layerHeartbeatGaugeBody": "{{active}} layer su {{total}} sono live in questo momento, mentre i layer opzionali restano attenuati finche non vengono pubblicati.",
     "layerHeartbeatLiveLegend": "live",
-    "layerHeartbeatStatusLine": "Pubblicazione dei layer per piano",
+    "layerHeartbeatStatusLine": "Stato pubblicazione layer",
     "layerHeartbeatStats": "assetto runtime",
     "layerHeartbeatSurfaceLabel": "superfici servizio",
     "layerHeartbeatTitle": "Postura operativa dei layer del lab",
@@ -51,17 +51,17 @@
   "sections": {
     "aiBodyDisabled": "Il layer AI resta opzionale. Quando e spento il dashboard mostra il comando esatto per abilitarlo.",
     "aiBodyEnabled": "Il layer AI e online: il dashboard porta in Open WebUI, alle API Ollama e include anche n8n nella stessa sezione.",
-    "aiKicker": "piano opzionale",
+    "aiKicker": "layer opzionale",
     "aiTitle": "AI",
     "footerBody": "Quattro segnali rapidi su routing, persistenza, uso consigliato e segmentazione dei layer.",
     "footerKicker": "segnali atlas",
     "footerTitle": "Chiusura operativa",
-    "servicesBody": "Il piano core resta sempre disponibile. Ogni card raccoglie endpoint, credenziali operative e un accesso diretto al servizio.",
-    "servicesKicker": "piano servizi",
+    "servicesBody": "Il layer core resta sempre disponibile. Ogni card raccoglie endpoint, credenziali operative e un accesso diretto al servizio.",
+    "servicesKicker": "layer servizi",
     "servicesTitle": "Servizi Core",
     "workbenchBodyDisabled": "Gli ambienti restano staccati dal core. Li abiliti solo quando ti servono code-server o Postgres condiviso.",
     "workbenchBodyEnabled": "Gli ambienti sono attivi: puoi entrare direttamente nel workspace o aprire prima il briefing dedicato per capire rete, credenziali e strumenti.",
-    "workbenchKicker": "piano workspace",
+    "workbenchKicker": "layer workspace",
     "workbenchTitle": "Workbench Layer"
   },
   "layerState": {
@@ -75,6 +75,8 @@
     "optional": "opzionale"
   },
   "cards": {
+    "copiedCredential": "Credenziale copiata",
+    "copyCredential": "Copia credenziale",
     "hideCredential": "Nascondi credenziale",
     "openBriefing": "Apri briefing",
     "revealCredential": "Mostra credenziale",
@@ -96,16 +98,16 @@
   },
   "networkMapDialog": {
     "eyebrow": "network map",
-    "title": "Topologia 3D ruotabile dei piani del lab",
-    "summary": "Ispeziona route pubblicate, piani interni e accesso host in un grafo 3D live. Trascina per ruotare, zooma per leggere meglio e clicca un nodo per bloccarne le label.",
+    "title": "Topologia 3D ruotabile dei layer del lab",
+    "summary": "Ispeziona route pubblicate, layer interni e accesso host in un grafo 3D live. Trascina per ruotare, zooma per leggere meglio e clicca un nodo per bloccarne le label.",
     "instructions": "Trascina per ruotare, usa la rotella per zoomare e clicca un nodo per ispezionare label e postura di rete.",
     "openSource": "Apri markdown sorgente",
     "legendTitle": "legenda topologia",
     "legend": {
-      "ai": "Piano AI",
-      "core": "Piano core",
+      "ai": "Layer AI",
+      "core": "Layer core",
       "edge": "Edge e host",
-      "workbench": "Piano workbench"
+      "workbench": "Layer workbench"
     },
     "selectionEyebrow": "focus nodo",
     "labelsTitle": "label associate",
@@ -116,16 +118,16 @@
     "gatewayBody": "Singolo ingresso localhost che pubblica dashboard e servizi browser tramite HTTPS.",
     "deckTitle": "Atlas Deck",
     "deckBody": "Control deck locale servito con la stessa postura edge del resto del lab.",
-    "corePlaneBody": "Piano operativo sempre attivo per repository, planning, documentazione e collaborazione design.",
-    "aiPlaneBody": "Piano AI opzionale con route dedicate per UI conversazionale, inference e flussi di automazione.",
-    "workbenchPlaneBody": "Piano workbench opzionale per workspace browser-based e accesso dati condivisi.",
+    "coreLayerBody": "Layer operativo sempre attivo per repository, documentazione e collaborazione design.",
+    "aiLayerBody": "Layer AI opzionale con route dedicate per UI conversazionale, inference e flussi di automazione.",
+    "workbenchLayerBody": "Layer workbench opzionale per workspace browser-based e accesso dati condivisi.",
     "hostAccessTitle": "Host Access",
     "hostAccessBody": "Superficie TCP host-side riservata all accesso PostgreSQL desktop fuori dagli ingressi browser.",
     "labels": {
       "alwaysOn": "sempre attivo",
       "automation": "automazione",
       "browser": "superficie browser",
-      "controlPlane": "piano di controllo",
+      "controlLayer": "layer di controllo",
       "controlRoom": "control room",
       "edge": "router edge",
       "gpu": "gpu-backed",
@@ -203,13 +205,13 @@
     "alwaysOnForge": "forge sempre accesa"
   },
   "dashboard": {
-    "coreLayerSummary": "Gitea, Plane e Penpot formano il piano core sempre acceso del lab.",
+    "coreLayerSummary": "GitLab CE, Obsidian e Penpot formano il layer core sempre acceso del lab.",
     "accessNotes": {
       "aiDisabled": "Il layer AI non viene piu acceso di default: il deck lo marca come opzionale invece di fingere che sia online.",
       "aiEnabled": "Open WebUI, Ollama e n8n sono online e raggiungibili sulle porte dedicate del gateway AI.",
       "credentials": "Le credenziali operative sono esposte qui e restano allineate al bootstrap del lab.",
       "https": "Tutti gli ingressi browser usano localhost con HTTPS dedicato, senza DNS custom o file hosts.",
-      "workbenchDisabled": "Workbench e Postgres restano separati dal core operativo finche non abiliti il layer dedicato.",
+      "workbenchDisabled": "Workbench e Postgres restano separati dal layer core finche non abiliti il layer dedicato.",
       "workbenchEnabled": "I workbench e Postgres sono attivi: puoi aprire ambienti browser-based o connetterti dal desktop alla porta host di Postgres."
     },
     "aiLayer": {
@@ -255,7 +257,7 @@
         "label": "segmentazione"
       },
       "usage": {
-        "body": "Gitea, Plane e Penpot restano sempre attivi nel piano core; i layer AI e workbench vengono abilitati solo quando servono davvero.",
+        "body": "GitLab CE, Obsidian e Penpot restano sempre attivi nel layer core; i layer AI e workbench vengono abilitati solo quando servono davvero.",
         "label": "uso"
       }
     },
@@ -274,10 +276,10 @@
       "quickActions": {
         "localDeckDescription": "Rivedi da browser il routing locale che il deck sta usando.",
         "localDeckLabel": "Local deck",
-        "networkMapDescription": "Leggi la topologia del lab e i piani di rete pubblicati.",
+        "networkMapDescription": "Leggi la topologia del lab e i layer di rete pubblicati.",
         "networkMapLabel": "Network map"
       },
-      "summary": "Control room unificata per repository, coordinamento progetti, collaborazione design, strumenti AI opzionali e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.",
+      "summary": "Control room unificata per repository, documentazione, collaborazione design, strumenti AI opzionali e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.",
       "titleLines": {
         "first": "LAB",
         "second": "ATLAS"
@@ -298,7 +300,7 @@
       },
       "ingress": {
         "caption": "gateway pubblici serviti adesso",
-        "label": "ingress planes"
+        "label": "ingress layer"
       },
       "workbenchDisabled": {
         "caption": "layer workbench non attivo",
@@ -313,44 +315,27 @@
       "title": "Network Map"
     },
     "operatingCharter": {
-      "ai": "La sezione AI raccoglie Open WebUI, Ollama e n8n in un piano opzionale del dashboard.",
-      "gitea": "Gitea governa codice, review e governance Git del progetto.",
-      "workbench": "Code-server e Postgres restano in un piano workbench separato dal core."
+      "ai": "La sezione AI raccoglie Open WebUI, Ollama e n8n in un layer opzionale del dashboard.",
+      "gitLab": "GitLab CE governa repository, merge request, issue e collaborazione Git del progetto.",
+      "workbench": "Code-server e Postgres restano in un layer workbench separato dal core."
     },
     "services": {
-      "gitea": {
-        "action": "Apri Gitea",
-        "description": "Forge Git interna per repository, issue, review e flusso di collaborazione tecnica del lab.",
-        "title": "Gitea Forge"
+      "gitLab": {
+        "action": "Apri GitLab",
+        "description": "GitLab CE self-hosted per repository, issue, merge request, governance progetto pronta per CI e collaborazione tecnica del lab.",
+        "title": "GitLab CE"
       },
-      "bookStack": {
-        "action": "Apri BookStack",
-        "description": "Base di conoscenza e documentazione interna self-hosted, con admin iniziale deterministico allineato dal bootstrap del lab.",
-        "title": "BookStack"
+      "obsidian": {
+        "action": "Apri Obsidian",
+        "description": "Workspace Obsidian via browser per un vault markdown locale, protetto con credenziali deterministiche del lab e persistito in un volume Docker nominato.",
+        "note": "Obsidian gira tramite il container web LinuxServer. Usa la sessione browser per vault, plugin e modifica markdown dentro il volume config persistente.",
+        "title": "Obsidian"
       },
       "penpot": {
         "action": "Apri Penpot",
         "description": "Workspace Penpot self-hosted per product design, librerie condivise e collaborazione tra design e codice, con profilo root allineato al bootstrap del lab.",
         "title": "Penpot",
         "usage": "design e code collaboration"
-      },
-      "hedgeDoc": {
-        "action": "Apri HedgeDoc",
-        "description": "Spazio self-hosted per markdown collaborativo, note condivise, appunti di riunione e documentazione leggera.",
-        "note": "HedgeDoc non include credenziali iniziali preconfigurate per l'interfaccia. Gli account email locali sono abilitati e l'accesso anonimo è disattivato: crea il primo account direttamente dall'app.",
-        "title": "HedgeDoc"
-      },
-      "obsidian": {
-        "action": "Apri Obsidian",
-        "description": "Workspace Obsidian nel browser per vault personali, grafo locale delle note e flussi di scrittura basati su plugin.",
-        "note": "Questo servizio espone una sessione desktop nel browser con terminale interno al container. Mantienilo su localhost fidato anche se la basic auth è attiva.",
-        "title": "Obsidian"
-      },
-      "plane": {
-        "action": "Apri Plane",
-        "description": "Workspace Plane self-hosted per issue tracking, planning, roadmap e coordinamento interno dei progetti, con instance admin iniziale allineato al bootstrap del lab.",
-        "title": "Plane",
-        "usage": "project e knowledge management"
       }
     },
     "workbenchLayer": {
@@ -361,7 +346,7 @@
       },
       "description": "Layer separato per workspace browser-based e database condiviso. Il core resta pulito finche non ti serve realmente l ambiente di sviluppo.",
       "summaryDisabled": "Workbench layer spento. Nessun code-server o Postgres viene esposto dal lab.",
-      "summaryEnabled": "Node, Python e Postgres sono online nel piano workbench.",
+      "summaryEnabled": "Node, Python e Postgres sono online nel layer workbench.",
       "title": "Workbench Layer"
     },
     "workbenches": {

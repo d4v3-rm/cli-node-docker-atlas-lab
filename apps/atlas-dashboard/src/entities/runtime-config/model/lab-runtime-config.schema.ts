@@ -10,6 +10,12 @@ const namedAccountSchema = z.object({
   url: nonEmptyString
 });
 
+const basicAuthServiceSchema = z.object({
+  password: nonEmptyString,
+  url: nonEmptyString,
+  username: nonEmptyString
+});
+
 export const labRuntimeConfigSchema = z.object({
   assets: z.object({
     certificateUrl: nonEmptyString
@@ -27,20 +33,12 @@ export const labRuntimeConfigSchema = z.object({
     publicUrl: nonEmptyString
   }),
   services: z.object({
-    bookStack: namedAccountSchema,
-    gitea: z.object({
+    gitLab: z.object({
+      externalUrl: nonEmptyString,
       rootEmail: nonEmptyString,
       rootPassword: nonEmptyString,
       rootUsername: nonEmptyString,
       url: nonEmptyString
-    }),
-    hedgeDoc: z.object({
-      url: nonEmptyString
-    }),
-    obsidian: z.object({
-      password: nonEmptyString,
-      url: nonEmptyString,
-      username: nonEmptyString
     }),
     n8n: z.object({
       ownerEmail: nonEmptyString,
@@ -54,8 +52,8 @@ export const labRuntimeConfigSchema = z.object({
       url: nonEmptyString
     }),
     openWebUi: namedAccountSchema,
-    penpot: namedAccountSchema,
-    plane: namedAccountSchema
+    obsidian: basicAuthServiceSchema,
+    penpot: namedAccountSchema
   }),
   workbenches: z.object({
     node: z.object({

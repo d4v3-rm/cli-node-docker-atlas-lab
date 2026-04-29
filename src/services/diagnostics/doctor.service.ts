@@ -1,11 +1,17 @@
 import { existsSync } from 'node:fs';
+import { createConnection } from 'node:net';
 import { join } from 'node:path';
 import { Listr } from 'listr2';
 import { REQUIRED_REPOSITORY_FILES } from '../../config/repository-layout.js';
 import { createComposeCommandArgs } from '../../lib/compose.js';
 import type { DoctorCommandOptions } from '../../types/cli.types.js';
 import type { HostCheckResult, SmokeCheckDefinition } from '../../types/doctor.types.js';
-import type { AiLlmSmokeEnv, ProjectContext, SmokeEnv } from '../../types/project.types.js';
+import type {
+  AiLlmSmokeEnv,
+  ProjectContext,
+  SmokeEnv,
+  WorkbenchSmokeEnv
+} from '../../types/project.types.js';
 import { printCommandHeader } from '../../cli/ui/banner.js';
 import { formatTaskTitle, printDoctorSummary } from '../../cli/ui/logger.js';
 import { requestHttps } from '../../utils/http.js';
@@ -14,7 +20,11 @@ import { runCommand } from '../../utils/process.js';
 import { readGatewayCertificate } from '../runtime/gateway-certificate.service.js';
 import { checkNvidiaGpuRuntime } from './gpu-preflight.service.js';
 import { canLoginToN8n } from '../integrations/n8n-owner.service.js';
-import { parseAiLlmSmokeEnv, parseSmokeEnv } from '../runtime/project.service.js';
+import {
+  parseAiLlmSmokeEnv,
+  parseSmokeEnv,
+  parseWorkbenchSmokeEnv
+} from '../runtime/project.service.js';
 
 /**
  * Runs host checks and optional smoke checks with a styled summary.
@@ -59,9 +69,10 @@ export async function runDoctorCommand(
   if (options.smoke) {
     const env = parseSmokeEnv(context.env);
     const aiLlmEnv = options.withAiLlm ? parseAiLlmSmokeEnv(context.env) : undefined;
+    const workbenchEnv = options.withWorkbench ? parseWorkbenchSmokeEnv(context.env) : undefined;
     const gatewayCertificate = await readGatewayCertificate(context, 'smoke');
 
-    for (const smokeCheck of buildSmokeChecks(env, aiLlmEnv)) {
+    for (const smokeCheck of buildSmokeChecks(env, aiLlmEnv, workbenchEnv)) {
       tasks.push(createCheckTask(results, 'smoke', smokeCheck.name, () => smokeCheck.run(gatewayCertificate)));
     }
   }
@@ -225,7 +236,8 @@ function checkRequiredFile(projectRoot: string, relativePath: string): HostCheck
  */
 function buildSmokeChecks(
   env: SmokeEnv,
-  aiLlmEnv?: AiLlmSmokeEnv
+  aiLlmEnv?: AiLlmSmokeEnv,
+  workbenchEnv?: WorkbenchSmokeEnv
 ): SmokeCheckDefinition[] {
   const checks: SmokeCheckDefinition[] = [
     {
@@ -233,25 +245,8 @@ function buildSmokeChecks(
       run: (caCertificate) => runStatusCheck('Smoke deck', env.LAB_URL, caCertificate)
     },
     {
-      name: 'Smoke Gitea',
-      run: (caCertificate) =>
-        runStatusCheck('Smoke Gitea', new URL('/api/healthz', env.GITEA_URL).toString(), caCertificate)
-    },
-    {
-      name: 'Smoke BookStack',
-      run: (caCertificate) => runStatusCheck('Smoke BookStack', env.BOOKSTACK_URL, caCertificate)
-    },
-    {
-      name: 'Smoke Plane',
-      run: (caCertificate) => runStatusCheck('Smoke Plane', env.PLANE_URL, caCertificate)
-    },
-    {
-      name: 'Smoke Penpot',
-      run: (caCertificate) => runStatusCheck('Smoke Penpot', env.PENPOT_URL, caCertificate)
-    },
-    {
-      name: 'Smoke HedgeDoc',
-      run: (caCertificate) => runStatusCheck('Smoke HedgeDoc', env.HEDGEDOC_URL, caCertificate)
+      name: 'Smoke GitLab',
+      run: (caCertificate) => runStatusCheck('Smoke GitLab', env.GITLAB_URL, caCertificate)
     },
     {
       name: 'Smoke Obsidian',
@@ -263,8 +258,42 @@ function buildSmokeChecks(
           env.OBSIDIAN_USERNAME,
           env.OBSIDIAN_PASSWORD
         )
+    },
+    {
+      name: 'Smoke Penpot',
+      run: (caCertificate) => runStatusCheck('Smoke Penpot', env.PENPOT_URL, caCertificate)
     }
   ];
+
+  if (workbenchEnv) {
+    checks.push(
+      {
+        name: 'Smoke Node Forge',
+        run: (caCertificate) =>
+          runCodeServerLoginCheck(
+            'Smoke Node Forge',
+            workbenchEnv.NODE_DEV_URL,
+            caCertificate,
+            workbenchEnv.NODE_DEV_PASSWORD
+          )
+      },
+      {
+        name: 'Smoke Python Grid',
+        run: (caCertificate) =>
+          runCodeServerLoginCheck(
+            'Smoke Python Grid',
+            workbenchEnv.PYTHON_DEV_URL,
+            caCertificate,
+            workbenchEnv.PYTHON_DEV_PASSWORD
+          )
+      },
+      {
+        name: 'Smoke PostgreSQL dev',
+        run: () =>
+          runTcpPortCheck('Smoke PostgreSQL dev', '127.0.0.1', workbenchEnv.POSTGRES_DEV_HOST_PORT)
+      }
+    );
+  }
 
   if (!aiLlmEnv) {
     return checks;
@@ -372,6 +401,114 @@ function buildSmokeChecks(
   );
 
   return checks;
+}
+
+/**
+ * Executes a password login smoke check against a code-server workbench.
+ */
+async function runCodeServerLoginCheck(
+  name: string,
+  url: string,
+  caCertificate: string,
+  password: string
+): Promise<HostCheckResult> {
+  try {
+    const response = await requestHttps(new URL('/login', url).toString(), {
+      body: new URLSearchParams({ password }).toString(),
+      caCertificate,
+      followRedirect: false,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      method: 'POST'
+    });
+
+    const cookies = normalizeSetCookieHeader(response.headers['set-cookie']);
+    const loginAccepted =
+      response.statusCode >= 300 &&
+      response.statusCode < 400 &&
+      cookies.some((cookie) => cookie.toLowerCase().startsWith('code-server-session='));
+
+    return {
+      name,
+      ok: loginAccepted,
+      detail: loginAccepted ? 'Password login accepted' : `Login failed with HTTP ${response.statusCode}`
+    };
+  } catch (error) {
+    return {
+      name,
+      ok: false,
+      detail: error instanceof Error ? error.message : 'Unknown smoke-check failure'
+    };
+  }
+}
+
+/**
+ * Verifies that a host TCP port accepts connections.
+ */
+async function runTcpPortCheck(
+  name: string,
+  host: string,
+  portValue: string
+): Promise<HostCheckResult> {
+  const port = Number.parseInt(portValue, 10);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    return {
+      name,
+      ok: false,
+      detail: `Invalid TCP port ${portValue}`
+    };
+  }
+
+  return new Promise((resolve) => {
+    const socket = createConnection({ host, port });
+    let settled = false;
+
+    const finish = (result: HostCheckResult) => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      socket.removeAllListeners();
+      socket.destroy();
+      resolve(result);
+    };
+
+    socket.setTimeout(10_000);
+    socket.once('connect', () =>
+      finish({
+        name,
+        ok: true,
+        detail: `TCP ${host}:${port} reachable`
+      })
+    );
+    socket.once('error', (error) =>
+      finish({
+        name,
+        ok: false,
+        detail: error.message
+      })
+    );
+    socket.once('timeout', () =>
+      finish({
+        name,
+        ok: false,
+        detail: `TCP ${host}:${port} timed out`
+      })
+    );
+  });
+}
+
+/**
+ * Normalizes Node's set-cookie header shape.
+ */
+function normalizeSetCookieHeader(value: string | string[] | undefined): string[] {
+  if (!value) {
+    return [];
+  }
+
+  return Array.isArray(value) ? value : [value];
 }
 
 /**
