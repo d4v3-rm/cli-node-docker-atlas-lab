@@ -62,6 +62,6 @@ https://${LAB_PUBLIC_HOST}:${PENPOT_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${PEN
   import service_proxy penpot-frontend:8080
 }
 
-https://${LAB_PUBLIC_HOST}:${TRILIUM_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${TRILIUM_HTTPS_PORT} {
-  import service_proxy trilium:8080
+https://${LAB_PUBLIC_HOST}:${BOOKSTACK_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${BOOKSTACK_HTTPS_PORT} {
+  import service_proxy bookstack:80
 }

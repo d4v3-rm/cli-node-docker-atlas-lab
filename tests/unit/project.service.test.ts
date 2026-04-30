@@ -3,6 +3,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
+  parseBootstrapEnv,
+  parseSmokeEnv,
   parseWorkbenchSmokeEnv,
   resolvePackagedProjectRoot,
   resolveProjectRoot
@@ -64,5 +66,56 @@ describe('project.service', () => {
     });
 
     expect(() => parseWorkbenchSmokeEnv({})).toThrow(/NODE_DEV_URL/u);
+  });
+
+  it('validates the required BookStack bootstrap env values', () => {
+    expect(
+      parseBootstrapEnv({
+        BOOKSTACK_ROOT_EMAIL: 'root@bookstack.local',
+        BOOKSTACK_ROOT_NAME: 'Root Librarian',
+        BOOKSTACK_ROOT_PASSWORD: 'RootBookStack!2026',
+        GITLAB_ROOT_EMAIL: 'root@gitlab.local',
+        GITLAB_ROOT_PASSWORD: 'Qv7N4pL9xT2rB6Z8',
+        GITLAB_ROOT_USERNAME: 'root',
+        PENPOT_ROOT_EMAIL: 'root@penpot.local',
+        PENPOT_ROOT_NAME: 'Root Designer',
+        PENPOT_ROOT_PASSWORD: 'RootPenpot!2026'
+      })
+    ).toMatchObject({
+      BOOKSTACK_ROOT_EMAIL: 'root@bookstack.local',
+      BOOKSTACK_ROOT_NAME: 'Root Librarian'
+    });
+
+    expect(() =>
+      parseBootstrapEnv({
+        GITLAB_ROOT_EMAIL: 'root@gitlab.local',
+        GITLAB_ROOT_PASSWORD: 'Qv7N4pL9xT2rB6Z8',
+        GITLAB_ROOT_USERNAME: 'root',
+        PENPOT_ROOT_EMAIL: 'root@penpot.local',
+        PENPOT_ROOT_NAME: 'Root Designer',
+        PENPOT_ROOT_PASSWORD: 'RootPenpot!2026'
+      })
+    ).toThrow(/BOOKSTACK_ROOT_NAME/u);
+  });
+
+  it('validates the required BookStack smoke env value', () => {
+    expect(
+      parseSmokeEnv({
+        BOOKSTACK_URL: 'https://localhost:8452/',
+        GITLAB_URL: 'https://localhost:8444/',
+        LAB_URL: 'https://localhost:8443/',
+        PENPOT_URL: 'https://localhost:8448/'
+      })
+    ).toMatchObject({
+      BOOKSTACK_URL: 'https://localhost:8452/'
+    });
+
+    expect(() =>
+      parseSmokeEnv({
+        GITLAB_URL: 'https://localhost:8444/',
+        LAB_URL: 'https://localhost:8443/',
+        PENPOT_URL: 'https://localhost:8448/'
+      })
+    ).toThrow(/BOOKSTACK_URL/u);
   });
 });

@@ -1,6 +1,6 @@
 # Atlas Lab
 
-![Version](https://img.shields.io/badge/version-0.51.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-22c55e.svg)
 ![Docker Compose](https://img.shields.io/badge/Docker%20Compose-v2-2496ED?logo=docker&logoColor=white)
 ![Gateway](https://img.shields.io/badge/Gateway-Caddy-1F2937?logo=caddy&logoColor=white)
@@ -12,7 +12,30 @@
 
 Atlas Lab is a localhost-first self-hosted platform made of a Node.js/TypeScript CLI, a layered Docker Compose stack, and an operational React dashboard served by Caddy.
 
-It provides a core collaboration layer with GitLab CE, TriliumNext, and Penpot, plus optional AI and development layers. Everything is reachable through dedicated HTTPS ports on `localhost`, with persistent state stored in Docker volumes.
+It provides a core collaboration layer with GitLab CE, BookStack, and Penpot, plus optional AI and development layers. Everything is reachable through dedicated HTTPS ports on `localhost`, with persistent state stored in Docker volumes.
+
+---
+
+## Index
+
+- 🧭 [Overview](#overview)
+- 🏗️ [Architecture](#architecture)
+- 🔌 [Services, Ports, and URLs](#services-ports-and-urls)
+- 🕸️ [Docker Networks](#docker-networks)
+- 💾 [Persistence](#persistence)
+- 🧰 [Host Requirements](#host-requirements)
+- ⚙️ [Central Configuration](#central-configuration)
+- 🚀 [Quick Start](#quick-start)
+- 🧪 [CLI Workflows](#cli-workflows)
+- 🖥️ [Atlas Dashboard](#atlas-dashboard)
+- 📦 [Backup and Restore](#backup-and-restore)
+- 🔐 [Default Credentials](#default-credentials)
+- 🧩 [Adding Services](#adding-services)
+- 🗂️ [Repository Layout](#repository-layout)
+- 🩺 [Troubleshooting](#troubleshooting)
+- 🛡️ [Security Notes](#security-notes)
+- 📚 [Official References](#official-references)
+- 📄 [License](#license)
 
 ---
 
@@ -20,7 +43,7 @@ It provides a core collaboration layer with GitLab CE, TriliumNext, and Penpot, 
 
 ### What It Gives You
 
-- Always-on core layer with Atlas Dashboard, GitLab CE, TriliumNext, and Penpot.
+- Always-on core layer with Atlas Dashboard, GitLab CE, BookStack, and Penpot.
 - Optional AI LLM layer with Open WebUI, Ollama, and n8n.
 - Optional workbench layer with browser-based Node and Python environments plus shared PostgreSQL.
 - HTTPS-only browser ingress on `localhost`.
@@ -43,7 +66,7 @@ Atlas Lab is split into three explicit layers.
 
 | Layer | Status | Includes | Purpose |
 | --- | --- | --- | --- |
-| `core` | always on | gateway, Atlas Dashboard, GitLab CE, TriliumNext, Penpot, and backing data services | baseline self-hosted platform |
+| `core` | always on | gateway, Atlas Dashboard, GitLab CE, BookStack, Penpot, and backing data services | baseline self-hosted platform |
 | `ai-llm` | optional | Open WebUI, Ollama, n8n, AI gateway | local AI workflows and automation |
 | `workbench` | optional | Node Forge, Python Grid, shared PostgreSQL, workbench gateway | browser-based development |
 
@@ -58,6 +81,7 @@ The CLI:
 - starts Docker Compose
 - runs host preflight checks
 - validates Compose and repository assets
+- aligns the BookStack initial admin account
 - aligns the Penpot root profile
 - aligns the n8n owner account when the AI LLM layer is enabled
 - reconciles Ollama models when the AI LLM layer is enabled
@@ -77,9 +101,9 @@ All browser entry points are exposed over HTTPS on `localhost`.
 | Open WebUI | `ai-llm` | `https://localhost:8446/` | only with `--with-ai-llm` |
 | Ollama | `ai-llm` | `https://localhost:8447/` | HTTPS API with gateway auth |
 | Penpot | `core` | `https://localhost:8448/` | collaborative design workspace |
-| TriliumNext | `core` | `https://localhost:8449/` | server-side knowledge base |
 | Node Forge | `workbench` | `https://localhost:8450/` | Node / TypeScript workspace |
 | Python Grid | `workbench` | `https://localhost:8451/` | Python workspace |
+| BookStack | `core` | `https://localhost:8452/` | structured internal documentation |
 | n8n | `ai-llm` | `https://localhost:8453/` | workflow automation |
 | PostgreSQL | `workbench` | `localhost:15432` | host-side desktop access |
 
@@ -96,7 +120,8 @@ Operational rules:
 | Network | Type | Purpose |
 | --- | --- | --- |
 | `edge-net` | exposed | published ingress ports |
-| `apps-net` | internal | GitLab CE, TriliumNext, and gateway-routed browser services |
+| `apps-net` | internal | GitLab CE, BookStack, and gateway-routed browser services |
+| `bookstack-net` | internal | BookStack and its MariaDB database |
 | `penpot-net` | internal | Penpot application services |
 | `ai-llm-net` | internal | Open WebUI, Ollama, and n8n |
 | `workbench-net` | internal | workbenches and PostgreSQL |
@@ -121,7 +146,8 @@ Core volumes:
 - `gitlab-config`
 - `gitlab-logs`
 - `gitlab-data`
-- `trilium-data`
+- `bookstack-config`
+- `bookstack-db`
 - `penpot-assets`
 - `penpot-postgres`
 
@@ -173,9 +199,9 @@ Ports that should be free:
 - `8446`
 - `8447`
 - `8448`
-- `8449`
 - `8450`
 - `8451`
+- `8452`
 - `8453`
 - `15432` when `workbench` is enabled
 
@@ -189,11 +215,12 @@ The main runtime configuration lives in:
 
 Key variables include:
 
-- `LAB_HTTPS_PORT`, `GITLAB_HTTPS_PORT`, `PENPOT_HTTPS_PORT`, `TRILIUM_HTTPS_PORT`
+- `LAB_HTTPS_PORT`, `GITLAB_HTTPS_PORT`, `PENPOT_HTTPS_PORT`, `BOOKSTACK_HTTPS_PORT`
 - `OPENWEBUI_HTTPS_PORT`, `OLLAMA_HTTPS_PORT`, `N8N_HTTPS_PORT`
 - `NODE_DEV_HTTPS_PORT`, `PYTHON_DEV_HTTPS_PORT`, `POSTGRES_DEV_HOST_PORT`
 - `GITLAB_EXTERNAL_URL`, `GITLAB_URL`
 - `GITLAB_ROOT_USERNAME`, `GITLAB_ROOT_PASSWORD`, `GITLAB_ROOT_EMAIL`
+- `BOOKSTACK_URL`, `BOOKSTACK_ROOT_EMAIL`, `BOOKSTACK_ROOT_PASSWORD`
 - `PENPOT_ROOT_EMAIL`, `PENPOT_ROOT_PASSWORD`
 - `N8N_ROOT_EMAIL`, `N8N_ROOT_PASSWORD`
 - `OLLAMA_CHAT_MODEL`, `OLLAMA_EMBEDDING_MODEL`, `OLLAMA_RUNTIME_MODELS`
@@ -332,7 +359,7 @@ npm run dev -- save-volumes --with-ai-llm --with-workbench
 npm run dev -- restore-volumes --input .\backups\volumes\atlas-lab-volumes.tar.gz
 ```
 
-Bootstrap is idempotent for GitLab CE, Penpot, and the optional AI LLM services.
+Bootstrap is idempotent for GitLab CE, BookStack initial setup, Penpot, and the optional AI LLM services.
 
 ---
 
@@ -347,7 +374,7 @@ These credentials are intended for trusted local environments and are configurab
 | Open WebUI | `https://localhost:8446/` | `root@openwebui.local / RootOpenWebUI!2026` |
 | Ollama | `https://localhost:8447/` | gateway basic auth `root / RootOllama!2026` |
 | Penpot | `https://localhost:8448/` | `root@penpot.local / RootPenpot!2026` |
-| TriliumNext | `https://localhost:8449/` | first-run app setup |
+| BookStack | `https://localhost:8452/` | `root@bookstack.local / RootBookStack!2026` |
 | n8n | `https://localhost:8453/` | owner bootstrap `root@n8n.local / RootN8NApp!2026` |
 | PostgreSQL host-side | `localhost:15432` | `postgres / RootPostgresDev!2026` |
 
@@ -358,6 +385,53 @@ For desktop PostgreSQL clients:
 - database: `lab`
 - username: `postgres`
 - password: `RootPostgresDev!2026`
+
+---
+
+## Adding Services
+
+Use the same layered flow when adding, removing, or moving services. The tag describes the runtime contract, and the emoji keeps the intent visible in notes, issues, and commits.
+
+| Tag | Use when | Runtime contract |
+| --- | --- | --- |
+| 🏛️ `core` | The service is always on and browser-facing | Add it to `infra/docker/compose.yml`, publish it through `config/gateway/templates/Caddyfile.template`, expose it in `env/lab.env`, and include it in dashboard/runtime config when it should be visible to users. |
+| 🧠 `ai-llm` | The service belongs to optional AI workflows | Add it to `infra/docker/compose.ai-llm.yml`, route it through `gateway-ai-llm`, guard CLI checks behind `--with-ai-llm`, and add smoke/bootstrap only when that layer is enabled. |
+| 🧰 `workbench` | The service belongs to optional development environments | Add it to `infra/docker/compose.workbench.yml`, route browser surfaces through `gateway-workbench`, and add host TCP preflight/smoke checks only for ports exposed to the desktop. |
+| 🔒 `internal` | The service is a backing dependency only | Add Compose service, volumes, and internal networks, but skip Caddy, dashboard cards, and public smoke checks unless another service depends on them. |
+| 🛠️ `bootstrap` | The service needs deterministic initial state | Add or update a service under `src/services/integrations/`, call it from `src/services/orchestration/bootstrap.service.ts`, and validate required env in `src/config/lab-env.schema.ts`. |
+| 🩺 `smoke` | The service should be health-checked by `doctor --smoke` | Add required env to the smoke schema/types and add an HTTP, login, API, or TCP check in `src/services/diagnostics/doctor.service.ts`. |
+
+### 🏛️ `core` Browser Service Flow
+
+1. Add port, URL, image version, credentials, and secrets in `env/lab.env`.
+2. Add the service, volumes, `depends_on`, and networks in `infra/docker/compose.yml`.
+3. Add the HTTPS route in `config/gateway/templates/Caddyfile.template`.
+4. Add required template variables in `infra/docker/images/gateway/bootstrap-gateway.sh`.
+5. Add runtime payload fields in `config/gateway/templates/runtime/lab-config.json.template` when the dashboard needs them.
+6. Update dashboard schema, view-model builders, locale files, and network map nodes if the service should appear in the UI.
+7. Update host port preflight, smoke checks, tests, README tables, and content templates.
+
+### 🧠 `ai-llm` Service Flow
+
+1. Add the service in `infra/docker/compose.ai-llm.yml`.
+2. Publish browser/API routes through `gateway-ai-llm` only.
+3. Keep CLI behavior behind `--with-ai-llm`.
+4. Add bootstrap and smoke checks only when AI LLM env validation passes.
+5. Update dashboard optional-layer cards so disabled services remain visibly optional instead of pretending to be online.
+
+### 🧰 `workbench` Service Flow
+
+1. Add the service in `infra/docker/compose.workbench.yml`.
+2. Route browser workspaces through `gateway-workbench`.
+3. Add host port preflight only for ports published to the host, such as desktop database access.
+4. Add dashboard cards or briefings only for workflows users directly open or inspect.
+
+### 🔒 `internal` Service Flow
+
+1. Keep the service on an internal network.
+2. Add named volumes for persistent state.
+3. Add health checks when other services depend on readiness.
+4. Do not add public Caddy routes or dashboard cards unless the service becomes user-facing.
 
 ---
 
@@ -480,11 +554,10 @@ For stronger hardening:
 - Self-hosted user management: https://docs.n8n.io/hosting/configuration/user-management-self-hosted/
 - Docker install: https://docs.n8n.io/hosting/installation/docker/
 
-### TriliumNext
+### BookStack
 
-- Docker Hub image: https://hub.docker.com/r/triliumnext/trilium
-- Source repository: https://github.com/TriliumNext/Trilium
-- Docker installation: https://docs.triliumnotes.org/user-guide/setup/server/installation/docker
+- Official documentation: https://www.bookstackapp.com/docs/
+- LinuxServer image: https://docs.linuxserver.io/images/docker-bookstack/
 
 ### Open WebUI
 

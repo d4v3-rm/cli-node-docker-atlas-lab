@@ -2,6 +2,7 @@ import type { BriefingReference } from '@/shared/types';
 
 export type DashboardIconKey =
   | 'ai'
+  | 'book'
   | 'certificate'
   | 'forge'
   | 'host'

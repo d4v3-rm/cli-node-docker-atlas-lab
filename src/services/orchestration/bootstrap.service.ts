@@ -3,6 +3,7 @@ import pWaitFor from 'p-wait-for';
 import { createComposeCommandArgs, type ComposeLayerSelection } from '../../lib/compose.js';
 import type { BootstrapCommandOptions } from '../../types/cli.types.js';
 import type { AiLlmBootstrapEnv, ProjectContext } from '../../types/project.types.js';
+import { ensureBookStackAdmin } from '../integrations/bookstack-admin.service.js';
 import { ensureGitLabAdmin } from '../integrations/gitlab-admin.service.js';
 import { ensureN8nOwner } from '../integrations/n8n-owner.service.js';
 import { ensurePenpotAdmin } from '../integrations/penpot-admin.service.js';
@@ -54,6 +55,24 @@ export function createBootstrapTasks(
       await waitForService(context, 'gitlab', 600);
       const result = await ensureGitLabAdmin(context, env);
       printInfo(`GitLab root account ${result}.`, 'bootstrap');
+    }
+  });
+
+  tasks.push({
+    title: formatTaskTitle('bootstrap', 'Align BookStack initial admin'),
+    task: async () => {
+      await waitForService(context, 'bookstack');
+      const result = await ensureBookStackAdmin(context, env);
+
+      if (result === 'configured') {
+        printInfo('BookStack initial admin configured.', 'bootstrap');
+        return;
+      }
+
+      printInfo(
+        'BookStack already has a non-default admin profile; leaving the existing account in place.',
+        'bootstrap'
+      );
     }
   });
 

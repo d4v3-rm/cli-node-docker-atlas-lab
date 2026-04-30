@@ -10,10 +10,6 @@ const namedAccountSchema = z.object({
   url: nonEmptyString
 });
 
-const urlOnlyServiceSchema = z.object({
-  url: nonEmptyString
-});
-
 export const labRuntimeConfigSchema = z.object({
   assets: z.object({
     certificateUrl: nonEmptyString
@@ -31,6 +27,7 @@ export const labRuntimeConfigSchema = z.object({
     publicUrl: nonEmptyString
   }),
   services: z.object({
+    bookStack: namedAccountSchema,
     gitLab: z.object({
       externalUrl: nonEmptyString,
       rootEmail: nonEmptyString,
@@ -50,7 +47,6 @@ export const labRuntimeConfigSchema = z.object({
       url: nonEmptyString
     }),
     openWebUi: namedAccountSchema,
-    trilium: urlOnlyServiceSchema,
     penpot: namedAccountSchema
   }),
   workbenches: z.object({

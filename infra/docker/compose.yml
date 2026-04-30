@@ -27,7 +27,7 @@ services:
       - "${LAB_HTTPS_PORT}:${LAB_HTTPS_PORT}"
       - "${GITLAB_HTTPS_PORT}:${GITLAB_HTTPS_PORT}"
       - "${PENPOT_HTTPS_PORT}:${PENPOT_HTTPS_PORT}"
-      - "${TRILIUM_HTTPS_PORT}:${TRILIUM_HTTPS_PORT}"
+      - "${BOOKSTACK_HTTPS_PORT}:${BOOKSTACK_HTTPS_PORT}"
     volumes:
       - gateway-certs:/etc/caddy/certs
       - gateway-config:/etc/caddy/dynamic
@@ -36,8 +36,8 @@ services:
     depends_on:
       gitlab:
         condition: service_started
-      trilium:
-        condition: service_started
+      bookstack:
+        condition: service_healthy
       penpot-frontend:
         condition: service_started
     networks:
@@ -84,18 +84,54 @@ services:
       services-egress-net:
         gw_priority: 1
 
-  trilium:
-    image: triliumnext/trilium:${TRILIUM_VERSION}
+  bookstack:
+    image: lscr.io/linuxserver/bookstack:${BOOKSTACK_VERSION}
     restart: unless-stopped
+    depends_on:
+      bookstack-db:
+        condition: service_healthy
     environment:
       <<: *lab-env
-      TRILIUM_DATA_DIR: ${TRILIUM_DATA_DIR}
+      PUID: ${BOOKSTACK_UID}
+      PGID: ${BOOKSTACK_GID}
+      APP_URL: ${BOOKSTACK_APP_URL}
+      APP_KEY: ${BOOKSTACK_APP_KEY}
+      DB_HOST: bookstack-db
+      DB_PORT: "3306"
+      DB_USERNAME: ${BOOKSTACK_DB_USER}
+      DB_PASSWORD: ${BOOKSTACK_DB_PASSWORD}
+      DB_DATABASE: ${BOOKSTACK_DB_DATABASE}
+    healthcheck:
+      test: ["CMD-SHELL", "php -r '$$s=@fsockopen(\"127.0.0.1\",80); exit($$s ? 0 : 1);'"]
+      interval: 15s
+      timeout: 10s
+      retries: 12
+      start_period: 30s
     volumes:
-      - trilium-data:${TRILIUM_DATA_DIR}
+      - bookstack-config:/config
     networks:
       apps-net:
+      bookstack-net:
       services-egress-net:
         gw_priority: 1
+
+  bookstack-db:
+    image: mariadb:${BOOKSTACK_DB_VERSION}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -u root -p$$MARIADB_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    environment:
+      MARIADB_DATABASE: ${BOOKSTACK_DB_DATABASE}
+      MARIADB_USER: ${BOOKSTACK_DB_USER}
+      MARIADB_PASSWORD: ${BOOKSTACK_DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${BOOKSTACK_DB_ROOT_PASSWORD}
+    volumes:
+      - bookstack-db:/var/lib/mysql
+    networks:
+      - bookstack-net
 
   penpot-frontend:
     image: penpotapp/frontend:${PENPOT_VERSION}
@@ -214,6 +250,9 @@ networks:
   apps-net:
     name: cli-node-docker-atlas-lab_apps
     internal: true
+  bookstack-net:
+    name: cli-node-docker-atlas-lab_bookstack
+    internal: true
   penpot-net:
     name: cli-node-docker-atlas-lab_penpot
     internal: true
@@ -225,6 +264,7 @@ volumes:
   gitlab-config:
   gitlab-logs:
   gitlab-data:
-  trilium-data:
+  bookstack-config:
+  bookstack-db:
   penpot-assets:
   penpot-postgres:
