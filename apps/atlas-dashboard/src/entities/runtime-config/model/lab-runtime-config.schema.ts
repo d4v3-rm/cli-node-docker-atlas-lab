@@ -31,6 +31,7 @@ export const labRuntimeConfigSchema = z.object({
     publicUrl: nonEmptyString
   }),
   services: z.object({
+    bookStack: namedAccountSchema,
     gitLab: z.object({
       externalUrl: nonEmptyString,
       rootEmail: nonEmptyString,

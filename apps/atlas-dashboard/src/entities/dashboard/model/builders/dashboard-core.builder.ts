@@ -84,6 +84,43 @@ export function createCoreServices(
     },
     {
       action: {
+        href: config.services.bookStack.url,
+        label: t('dashboard.services.bookStack.action')
+      },
+      credentials: [
+        {
+          label: labels.endpoint,
+          value: config.services.bookStack.url
+        },
+        {
+          label: labels.rootName,
+          value: config.services.bookStack.rootName
+        },
+        {
+          label: labels.rootEmail,
+          value: config.services.bookStack.rootEmail,
+          concealed: true
+        },
+        {
+          label: labels.password,
+          value: config.services.bookStack.rootPassword,
+          concealed: true
+        },
+        {
+          label: labels.accessMode,
+          value: t('values.directAppLogin')
+        }
+      ],
+      description: t('dashboard.services.bookStack.description'),
+      icon: 'book',
+      id: 'bookstack',
+      note: t('dashboard.services.bookStack.note'),
+      status: t('values.knowledgeBase'),
+      title: t('dashboard.services.bookStack.title'),
+      tone: 'core'
+    },
+    {
+      action: {
         href: config.services.penpot.url,
         label: t('dashboard.services.penpot.action')
       },

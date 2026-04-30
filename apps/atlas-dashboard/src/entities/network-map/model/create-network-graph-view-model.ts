@@ -92,6 +92,20 @@ export function createNetworkGraphViewModel(
     }),
     createNode({
       active: true,
+      description: t('dashboard.services.bookStack.description'),
+      id: 'bookstack',
+      kind: 'service',
+      labels: [
+        config.services.bookStack.url,
+        t('values.knowledgeBase'),
+        t('networkMapDialog.labels.browser')
+      ],
+      position: [-44, -42, 28],
+      title: t('dashboard.services.bookStack.title'),
+      tone: 'core'
+    }),
+    createNode({
+      active: true,
       description: t('dashboard.services.penpot.description'),
       id: 'penpot',
       kind: 'service',
@@ -240,6 +254,7 @@ export function createNetworkGraphViewModel(
     createLink('gateway', 'core-layer', 'core', true),
     createLink('core-layer', 'gitlab', 'core', true),
     createLink('core-layer', 'trilium', 'core', true),
+    createLink('core-layer', 'bookstack', 'core', true),
     createLink('core-layer', 'penpot', 'core', true),
     createLink('gateway', 'ai-layer', 'ai', aiActive),
     createLink('ai-layer', 'open-webui', 'ai', aiActive),

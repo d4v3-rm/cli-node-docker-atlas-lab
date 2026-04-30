@@ -4,7 +4,7 @@
 
 The deck remains available locally at `${LAB_LOCAL_URL}`. The lab is split into three layers:
 
-- `core`: deck, GitLab CE, Penpot, TriliumNext, and the base gateway
+- `core`: deck, GitLab CE, BookStack, Penpot, TriliumNext, and the base gateway
 - `ai-llm`: Open WebUI, Ollama, and n8n
 - `workbench`: Postgres and code-server environments
 
@@ -14,6 +14,7 @@ Each layer publishes its HTTPS endpoints on `localhost` through a dedicated gate
 
 - Local deck: `${LAB_LOCAL_URL}`
 - GitLab CE: `${GITLAB_URL}`
+- BookStack: `${BOOKSTACK_URL}`
 - Penpot: `${PENPOT_URL}`
 - TriliumNext: `${TRILIUM_URL}`
 - Open WebUI: `${OPENWEBUI_URL}` only when the `ai-llm` layer is enabled
@@ -33,6 +34,7 @@ Each layer publishes its HTTPS endpoints on `localhost` through a dedicated gate
 - `8449`: TriliumNext
 - `8450`: Node workbench, layer `workbench`
 - `8451`: Python workbench, layer `workbench`
+- `${BOOKSTACK_HTTPS_PORT}`: BookStack
 - `8453`: n8n, layer `ai-llm`
 - `${POSTGRES_DEV_HOST_PORT}`: Postgres host access, layer `workbench`
 
@@ -46,7 +48,7 @@ The gateway generates a self-signed SAN certificate that covers `localhost` and 
 
 - `apps-net`: GitLab CE, TriliumNext, and Atlas gateway-routed browser services
 - `ai-llm-net`: n8n, Ollama, and Open WebUI
-- `data-net`: infrastructure databases
+- `bookstack-net`: BookStack and its MariaDB database
 - `penpot-net`: Penpot application services
 - `workbench-net`: Postgres and optional code-server environments
 - `workbench-host-net`: dedicated bridge for the host-side Postgres TCP bind

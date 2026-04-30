@@ -118,7 +118,7 @@
     "gatewayBody": "Singolo ingresso localhost che pubblica dashboard e servizi browser tramite HTTPS.",
     "deckTitle": "Atlas Deck",
     "deckBody": "Control deck locale servito con la stessa postura edge del resto del lab.",
-    "coreLayerBody": "Layer operativo sempre attivo per repository, documentazione e collaborazione design.",
+    "coreLayerBody": "Layer operativo sempre attivo per repository, documentazione, pubblicazione knowledge base e collaborazione design.",
     "aiLayerBody": "Layer AI opzionale con route dedicate per UI conversazionale, inference e flussi di automazione.",
     "workbenchLayerBody": "Layer workbench opzionale per workspace browser-based e accesso dati condivisi.",
     "hostAccessTitle": "Host Access",
@@ -205,7 +205,7 @@
     "alwaysOnForge": "forge sempre accesa"
   },
   "dashboard": {
-    "coreLayerSummary": "GitLab CE, TriliumNext e Penpot formano il layer core sempre acceso del lab.",
+    "coreLayerSummary": "GitLab CE, TriliumNext, BookStack e Penpot formano il layer core sempre acceso del lab.",
     "accessNotes": {
       "aiDisabled": "Il layer AI non viene piu acceso di default: il deck lo marca come opzionale invece di fingere che sia online.",
       "aiEnabled": "Open WebUI, Ollama e n8n sono online e raggiungibili sulle porte dedicate del gateway AI.",
@@ -257,7 +257,7 @@
         "label": "segmentazione"
       },
       "usage": {
-        "body": "GitLab CE, TriliumNext e Penpot restano sempre attivi nel layer core; i layer AI e workbench vengono abilitati solo quando servono davvero.",
+        "body": "GitLab CE, TriliumNext, BookStack e Penpot restano sempre attivi nel layer core; i layer AI e workbench vengono abilitati solo quando servono davvero.",
         "label": "uso"
       }
     },
@@ -330,6 +330,12 @@
         "description": "Knowledge base TriliumNext self-hosted per note gerarchiche, backlink, note protette e documentazione personale persistente.",
         "note": "TriliumNext gira come vera web application server-side con database e backup persistiti nel volume Docker trilium-data.",
         "title": "TriliumNext"
+      },
+      "bookStack": {
+        "action": "Apri BookStack",
+        "description": "Libreria documentale self-hosted per libri, capitoli, pagine e pubblicazione interna della conoscenza, con admin iniziale allineato dal bootstrap del lab.",
+        "note": "BookStack persiste file applicativi e dati MariaDB nei volumi Docker bookstack-config e bookstack-db.",
+        "title": "BookStack"
       },
       "penpot": {
         "action": "Apri Penpot",
