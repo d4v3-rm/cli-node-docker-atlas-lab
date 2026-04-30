@@ -16,6 +16,29 @@ It provides a core collaboration layer with GitLab CE, BookStack, and Penpot, pl
 
 ---
 
+## Index
+
+- 🧭 [Overview](#overview)
+- 🏗️ [Architecture](#architecture)
+- 🔌 [Services, Ports, and URLs](#services-ports-and-urls)
+- 🕸️ [Docker Networks](#docker-networks)
+- 💾 [Persistence](#persistence)
+- 🧰 [Host Requirements](#host-requirements)
+- ⚙️ [Central Configuration](#central-configuration)
+- 🚀 [Quick Start](#quick-start)
+- 🧪 [CLI Workflows](#cli-workflows)
+- 🖥️ [Atlas Dashboard](#atlas-dashboard)
+- 📦 [Backup and Restore](#backup-and-restore)
+- 🔐 [Default Credentials](#default-credentials)
+- 🧩 [Adding Services](#adding-services)
+- 🗂️ [Repository Layout](#repository-layout)
+- 🩺 [Troubleshooting](#troubleshooting)
+- 🛡️ [Security Notes](#security-notes)
+- 📚 [Official References](#official-references)
+- 📄 [License](#license)
+
+---
+
 ## Overview
 
 ### What It Gives You
@@ -362,6 +385,53 @@ For desktop PostgreSQL clients:
 - database: `lab`
 - username: `postgres`
 - password: `RootPostgresDev!2026`
+
+---
+
+## Adding Services
+
+Use the same layered flow when adding, removing, or moving services. The tag describes the runtime contract, and the emoji keeps the intent visible in notes, issues, and commits.
+
+| Tag | Use when | Runtime contract |
+| --- | --- | --- |
+| 🏛️ `core` | The service is always on and browser-facing | Add it to `infra/docker/compose.yml`, publish it through `config/gateway/templates/Caddyfile.template`, expose it in `env/lab.env`, and include it in dashboard/runtime config when it should be visible to users. |
+| 🧠 `ai-llm` | The service belongs to optional AI workflows | Add it to `infra/docker/compose.ai-llm.yml`, route it through `gateway-ai-llm`, guard CLI checks behind `--with-ai-llm`, and add smoke/bootstrap only when that layer is enabled. |
+| 🧰 `workbench` | The service belongs to optional development environments | Add it to `infra/docker/compose.workbench.yml`, route browser surfaces through `gateway-workbench`, and add host TCP preflight/smoke checks only for ports exposed to the desktop. |
+| 🔒 `internal` | The service is a backing dependency only | Add Compose service, volumes, and internal networks, but skip Caddy, dashboard cards, and public smoke checks unless another service depends on them. |
+| 🛠️ `bootstrap` | The service needs deterministic initial state | Add or update a service under `src/services/integrations/`, call it from `src/services/orchestration/bootstrap.service.ts`, and validate required env in `src/config/lab-env.schema.ts`. |
+| 🩺 `smoke` | The service should be health-checked by `doctor --smoke` | Add required env to the smoke schema/types and add an HTTP, login, API, or TCP check in `src/services/diagnostics/doctor.service.ts`. |
+
+### 🏛️ `core` Browser Service Flow
+
+1. Add port, URL, image version, credentials, and secrets in `env/lab.env`.
+2. Add the service, volumes, `depends_on`, and networks in `infra/docker/compose.yml`.
+3. Add the HTTPS route in `config/gateway/templates/Caddyfile.template`.
+4. Add required template variables in `infra/docker/images/gateway/bootstrap-gateway.sh`.
+5. Add runtime payload fields in `config/gateway/templates/runtime/lab-config.json.template` when the dashboard needs them.
+6. Update dashboard schema, view-model builders, locale files, and network map nodes if the service should appear in the UI.
+7. Update host port preflight, smoke checks, tests, README tables, and content templates.
+
+### 🧠 `ai-llm` Service Flow
+
+1. Add the service in `infra/docker/compose.ai-llm.yml`.
+2. Publish browser/API routes through `gateway-ai-llm` only.
+3. Keep CLI behavior behind `--with-ai-llm`.
+4. Add bootstrap and smoke checks only when AI LLM env validation passes.
+5. Update dashboard optional-layer cards so disabled services remain visibly optional instead of pretending to be online.
+
+### 🧰 `workbench` Service Flow
+
+1. Add the service in `infra/docker/compose.workbench.yml`.
+2. Route browser workspaces through `gateway-workbench`.
+3. Add host port preflight only for ports published to the host, such as desktop database access.
+4. Add dashboard cards or briefings only for workflows users directly open or inspect.
+
+### 🔒 `internal` Service Flow
+
+1. Keep the service on an internal network.
+2. Add named volumes for persistent state.
+3. Add health checks when other services depend on readiness.
+4. Do not add public Caddy routes or dashboard cards unless the service becomes user-facing.
 
 ---
 
