@@ -57,33 +57,6 @@ export function createCoreServices(
     },
     {
       action: {
-        href: config.services.trilium.url,
-        label: t('dashboard.services.trilium.action')
-      },
-      credentials: [
-        {
-          label: labels.endpoint,
-          value: config.services.trilium.url
-        },
-        {
-          label: labels.accessMode,
-          value: t('values.directAppLogin')
-        },
-        {
-          label: labels.usage,
-          value: t('values.knowledgeVault')
-        }
-      ],
-      description: t('dashboard.services.trilium.description'),
-      icon: 'host',
-      id: 'trilium',
-      note: t('dashboard.services.trilium.note'),
-      status: t('values.knowledgeVault'),
-      title: t('dashboard.services.trilium.title'),
-      tone: 'core'
-    },
-    {
-      action: {
         href: config.services.bookStack.url,
         label: t('dashboard.services.bookStack.action')
       },

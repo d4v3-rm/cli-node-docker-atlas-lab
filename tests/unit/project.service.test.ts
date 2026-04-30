@@ -104,8 +104,7 @@ describe('project.service', () => {
         BOOKSTACK_URL: 'https://localhost:8452/',
         GITLAB_URL: 'https://localhost:8444/',
         LAB_URL: 'https://localhost:8443/',
-        PENPOT_URL: 'https://localhost:8448/',
-        TRILIUM_URL: 'https://localhost:8449/'
+        PENPOT_URL: 'https://localhost:8448/'
       })
     ).toMatchObject({
       BOOKSTACK_URL: 'https://localhost:8452/'
@@ -115,8 +114,7 @@ describe('project.service', () => {
       parseSmokeEnv({
         GITLAB_URL: 'https://localhost:8444/',
         LAB_URL: 'https://localhost:8443/',
-        PENPOT_URL: 'https://localhost:8448/',
-        TRILIUM_URL: 'https://localhost:8449/'
+        PENPOT_URL: 'https://localhost:8448/'
       })
     ).toThrow(/BOOKSTACK_URL/u);
   });

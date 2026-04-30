@@ -27,7 +27,6 @@ services:
       - "${LAB_HTTPS_PORT}:${LAB_HTTPS_PORT}"
       - "${GITLAB_HTTPS_PORT}:${GITLAB_HTTPS_PORT}"
       - "${PENPOT_HTTPS_PORT}:${PENPOT_HTTPS_PORT}"
-      - "${TRILIUM_HTTPS_PORT}:${TRILIUM_HTTPS_PORT}"
       - "${BOOKSTACK_HTTPS_PORT}:${BOOKSTACK_HTTPS_PORT}"
     volumes:
       - gateway-certs:/etc/caddy/certs
@@ -36,8 +35,6 @@ services:
       - gateway-data:/data
     depends_on:
       gitlab:
-        condition: service_started
-      trilium:
         condition: service_started
       bookstack:
         condition: service_healthy
@@ -82,19 +79,6 @@ services:
       - gitlab-config:/etc/gitlab
       - gitlab-logs:/var/log/gitlab
       - gitlab-data:/var/opt/gitlab
-    networks:
-      apps-net:
-      services-egress-net:
-        gw_priority: 1
-
-  trilium:
-    image: triliumnext/trilium:${TRILIUM_VERSION}
-    restart: unless-stopped
-    environment:
-      <<: *lab-env
-      TRILIUM_DATA_DIR: ${TRILIUM_DATA_DIR}
-    volumes:
-      - trilium-data:${TRILIUM_DATA_DIR}
     networks:
       apps-net:
       services-egress-net:
@@ -280,7 +264,6 @@ volumes:
   gitlab-config:
   gitlab-logs:
   gitlab-data:
-  trilium-data:
   bookstack-config:
   bookstack-db:
   penpot-assets:

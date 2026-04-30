@@ -198,14 +198,13 @@
     "protectedApi": "protected API",
     "collaborativeMarkdown": "collaborative markdown",
     "collaborativeNotes": "collaborative notes",
-    "knowledgeVault": "knowledge vault",
     "sharedDatabase": "shared database",
     "videoStudio": "video studio",
     "workflowControl": "workflow control",
     "alwaysOnForge": "always-on forge"
   },
   "dashboard": {
-    "coreLayerSummary": "GitLab CE, TriliumNext, BookStack, and Penpot form the always-on core layer of the lab.",
+    "coreLayerSummary": "GitLab CE, BookStack, and Penpot form the always-on core layer of the lab.",
     "accessNotes": {
       "aiDisabled": "The AI layer no longer starts by default: the deck marks it as optional instead of pretending that it is online.",
       "aiEnabled": "Open WebUI, Ollama, and n8n are online and reachable on the dedicated AI gateway ports.",
@@ -257,7 +256,7 @@
         "label": "segmentation"
       },
       "usage": {
-        "body": "GitLab CE, TriliumNext, BookStack, and Penpot stay on as the core layer; the AI and workbench layers are enabled only when they are actually needed.",
+        "body": "GitLab CE, BookStack, and Penpot stay on as the core layer; the AI and workbench layers are enabled only when they are actually needed.",
         "label": "usage"
       }
     },
@@ -324,12 +323,6 @@
         "action": "Open GitLab",
         "description": "Self-hosted GitLab CE for repositories, issues, merge requests, CI-ready project governance, and the lab's technical collaboration flow.",
         "title": "GitLab CE"
-      },
-      "trilium": {
-        "action": "Open TriliumNext",
-        "description": "Self-hosted TriliumNext knowledge base for hierarchical notes, backlinks, protected notes, and long-lived personal documentation.",
-        "note": "TriliumNext runs as a real server-side web application with its database and backups persisted in the trilium-data Docker volume.",
-        "title": "TriliumNext"
       },
       "bookStack": {
         "action": "Open BookStack",

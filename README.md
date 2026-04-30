@@ -12,7 +12,7 @@
 
 Atlas Lab is a localhost-first self-hosted platform made of a Node.js/TypeScript CLI, a layered Docker Compose stack, and an operational React dashboard served by Caddy.
 
-It provides a core collaboration layer with GitLab CE, TriliumNext, BookStack, and Penpot, plus optional AI and development layers. Everything is reachable through dedicated HTTPS ports on `localhost`, with persistent state stored in Docker volumes.
+It provides a core collaboration layer with GitLab CE, BookStack, and Penpot, plus optional AI and development layers. Everything is reachable through dedicated HTTPS ports on `localhost`, with persistent state stored in Docker volumes.
 
 ---
 
@@ -20,7 +20,7 @@ It provides a core collaboration layer with GitLab CE, TriliumNext, BookStack, a
 
 ### What It Gives You
 
-- Always-on core layer with Atlas Dashboard, GitLab CE, TriliumNext, BookStack, and Penpot.
+- Always-on core layer with Atlas Dashboard, GitLab CE, BookStack, and Penpot.
 - Optional AI LLM layer with Open WebUI, Ollama, and n8n.
 - Optional workbench layer with browser-based Node and Python environments plus shared PostgreSQL.
 - HTTPS-only browser ingress on `localhost`.
@@ -43,7 +43,7 @@ Atlas Lab is split into three explicit layers.
 
 | Layer | Status | Includes | Purpose |
 | --- | --- | --- | --- |
-| `core` | always on | gateway, Atlas Dashboard, GitLab CE, TriliumNext, BookStack, Penpot, and backing data services | baseline self-hosted platform |
+| `core` | always on | gateway, Atlas Dashboard, GitLab CE, BookStack, Penpot, and backing data services | baseline self-hosted platform |
 | `ai-llm` | optional | Open WebUI, Ollama, n8n, AI gateway | local AI workflows and automation |
 | `workbench` | optional | Node Forge, Python Grid, shared PostgreSQL, workbench gateway | browser-based development |
 
@@ -78,7 +78,6 @@ All browser entry points are exposed over HTTPS on `localhost`.
 | Open WebUI | `ai-llm` | `https://localhost:8446/` | only with `--with-ai-llm` |
 | Ollama | `ai-llm` | `https://localhost:8447/` | HTTPS API with gateway auth |
 | Penpot | `core` | `https://localhost:8448/` | collaborative design workspace |
-| TriliumNext | `core` | `https://localhost:8449/` | server-side knowledge base |
 | Node Forge | `workbench` | `https://localhost:8450/` | Node / TypeScript workspace |
 | Python Grid | `workbench` | `https://localhost:8451/` | Python workspace |
 | BookStack | `core` | `https://localhost:8452/` | structured internal documentation |
@@ -98,7 +97,7 @@ Operational rules:
 | Network | Type | Purpose |
 | --- | --- | --- |
 | `edge-net` | exposed | published ingress ports |
-| `apps-net` | internal | GitLab CE, TriliumNext, BookStack, and gateway-routed browser services |
+| `apps-net` | internal | GitLab CE, BookStack, and gateway-routed browser services |
 | `bookstack-net` | internal | BookStack and its MariaDB database |
 | `penpot-net` | internal | Penpot application services |
 | `ai-llm-net` | internal | Open WebUI, Ollama, and n8n |
@@ -124,7 +123,6 @@ Core volumes:
 - `gitlab-config`
 - `gitlab-logs`
 - `gitlab-data`
-- `trilium-data`
 - `bookstack-config`
 - `bookstack-db`
 - `penpot-assets`
@@ -178,7 +176,6 @@ Ports that should be free:
 - `8446`
 - `8447`
 - `8448`
-- `8449`
 - `8450`
 - `8451`
 - `8452`
@@ -195,7 +192,7 @@ The main runtime configuration lives in:
 
 Key variables include:
 
-- `LAB_HTTPS_PORT`, `GITLAB_HTTPS_PORT`, `PENPOT_HTTPS_PORT`, `TRILIUM_HTTPS_PORT`, `BOOKSTACK_HTTPS_PORT`
+- `LAB_HTTPS_PORT`, `GITLAB_HTTPS_PORT`, `PENPOT_HTTPS_PORT`, `BOOKSTACK_HTTPS_PORT`
 - `OPENWEBUI_HTTPS_PORT`, `OLLAMA_HTTPS_PORT`, `N8N_HTTPS_PORT`
 - `NODE_DEV_HTTPS_PORT`, `PYTHON_DEV_HTTPS_PORT`, `POSTGRES_DEV_HOST_PORT`
 - `GITLAB_EXTERNAL_URL`, `GITLAB_URL`
@@ -354,7 +351,6 @@ These credentials are intended for trusted local environments and are configurab
 | Open WebUI | `https://localhost:8446/` | `root@openwebui.local / RootOpenWebUI!2026` |
 | Ollama | `https://localhost:8447/` | gateway basic auth `root / RootOllama!2026` |
 | Penpot | `https://localhost:8448/` | `root@penpot.local / RootPenpot!2026` |
-| TriliumNext | `https://localhost:8449/` | first-run app setup |
 | BookStack | `https://localhost:8452/` | `root@bookstack.local / RootBookStack!2026` |
 | n8n | `https://localhost:8453/` | owner bootstrap `root@n8n.local / RootN8NApp!2026` |
 | PostgreSQL host-side | `localhost:15432` | `postgres / RootPostgresDev!2026` |
@@ -487,12 +483,6 @@ For stronger hardening:
 
 - Self-hosted user management: https://docs.n8n.io/hosting/configuration/user-management-self-hosted/
 - Docker install: https://docs.n8n.io/hosting/installation/docker/
-
-### TriliumNext
-
-- Docker Hub image: https://hub.docker.com/r/triliumnext/trilium
-- Source repository: https://github.com/TriliumNext/Trilium
-- Docker installation: https://docs.triliumnotes.org/user-guide/setup/server/installation/docker
 
 ### BookStack
 
