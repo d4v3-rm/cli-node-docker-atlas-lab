@@ -64,7 +64,6 @@ services:
         gitlab_rails['time_zone'] = '${TZ}'
         registry['enable'] = false
         gitlab_pages['enable'] = false
-        mattermost['enable'] = false
         prometheus_monitoring['enable'] = false
         alertmanager['enable'] = false
         puma['worker_processes'] = 2
