@@ -251,10 +251,6 @@ function buildSmokeChecks(
     {
       name: 'Smoke BookStack',
       run: (caCertificate) => runStatusCheck('Smoke BookStack', env.BOOKSTACK_URL, caCertificate)
-    },
-    {
-      name: 'Smoke Penpot',
-      run: (caCertificate) => runStatusCheck('Smoke Penpot', env.PENPOT_URL, caCertificate)
     }
   ];
 

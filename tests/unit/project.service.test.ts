@@ -76,10 +76,7 @@ describe('project.service', () => {
         BOOKSTACK_ROOT_PASSWORD: 'RootBookStack!2026',
         GITLAB_ROOT_EMAIL: 'root@gitlab.local',
         GITLAB_ROOT_PASSWORD: 'Qv7N4pL9xT2rB6Z8',
-        GITLAB_ROOT_USERNAME: 'root',
-        PENPOT_ROOT_EMAIL: 'root@penpot.local',
-        PENPOT_ROOT_NAME: 'Root Designer',
-        PENPOT_ROOT_PASSWORD: 'RootPenpot!2026'
+        GITLAB_ROOT_USERNAME: 'root'
       })
     ).toMatchObject({
       BOOKSTACK_ROOT_EMAIL: 'root@bookstack.local',
@@ -90,10 +87,7 @@ describe('project.service', () => {
       parseBootstrapEnv({
         GITLAB_ROOT_EMAIL: 'root@gitlab.local',
         GITLAB_ROOT_PASSWORD: 'Qv7N4pL9xT2rB6Z8',
-        GITLAB_ROOT_USERNAME: 'root',
-        PENPOT_ROOT_EMAIL: 'root@penpot.local',
-        PENPOT_ROOT_NAME: 'Root Designer',
-        PENPOT_ROOT_PASSWORD: 'RootPenpot!2026'
+        GITLAB_ROOT_USERNAME: 'root'
       })
     ).toThrow(/BOOKSTACK_ROOT_NAME/u);
   });
@@ -103,8 +97,7 @@ describe('project.service', () => {
       parseSmokeEnv({
         BOOKSTACK_URL: 'https://localhost:8452/',
         GITLAB_URL: 'https://localhost:8444/',
-        LAB_URL: 'https://localhost:8443/',
-        PENPOT_URL: 'https://localhost:8448/'
+        LAB_URL: 'https://localhost:8443/'
       })
     ).toMatchObject({
       BOOKSTACK_URL: 'https://localhost:8452/'
@@ -113,8 +106,7 @@ describe('project.service', () => {
     expect(() =>
       parseSmokeEnv({
         GITLAB_URL: 'https://localhost:8444/',
-        LAB_URL: 'https://localhost:8443/',
-        PENPOT_URL: 'https://localhost:8448/'
+        LAB_URL: 'https://localhost:8443/'
       })
     ).toThrow(/BOOKSTACK_URL/u);
   });

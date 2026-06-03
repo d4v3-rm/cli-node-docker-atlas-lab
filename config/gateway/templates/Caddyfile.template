@@ -58,10 +58,6 @@ https://${LAB_PUBLIC_HOST}:${GITLAB_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${GIT
   import gitlab_proxy
 }
 
-https://${LAB_PUBLIC_HOST}:${PENPOT_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${PENPOT_HTTPS_PORT} {
-  import service_proxy penpot-frontend:8080
-}
-
 https://${LAB_PUBLIC_HOST}:${BOOKSTACK_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${BOOKSTACK_HTTPS_PORT} {
   import service_proxy bookstack:80
 }

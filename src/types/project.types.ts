@@ -17,9 +17,6 @@ export interface LabEnv {
   N8N_ROOT_PASSWORD?: string;
   OPENWEBUI_ROOT_EMAIL?: string;
   OPENWEBUI_ROOT_PASSWORD?: string;
-  PENPOT_ROOT_NAME?: string;
-  PENPOT_ROOT_EMAIL?: string;
-  PENPOT_ROOT_PASSWORD?: string;
   OLLAMA_EMBEDDING_MODEL?: string;
   OLLAMA_CHAT_MODEL?: string;
   OLLAMA_RUNTIME_MODELS?: string;
@@ -38,7 +35,6 @@ export interface LabEnv {
   N8N_URL?: string;
   OPENWEBUI_URL?: string;
   OLLAMA_URL?: string;
-  PENPOT_URL?: string;
   OLLAMA_GATEWAY_USER?: string;
   OLLAMA_GATEWAY_PASSWORD?: string;
   ATLAS_DOCKER_HUB_MIRRORS?: string;
@@ -78,9 +74,6 @@ export interface BootstrapEnv extends LabEnv {
   BOOKSTACK_ROOT_NAME: string;
   BOOKSTACK_ROOT_EMAIL: string;
   BOOKSTACK_ROOT_PASSWORD: string;
-  PENPOT_ROOT_NAME: string;
-  PENPOT_ROOT_EMAIL: string;
-  PENPOT_ROOT_PASSWORD: string;
 }
 
 /**
@@ -103,7 +96,6 @@ export interface SmokeEnv extends LabEnv {
   LAB_URL: string;
   GITLAB_URL: string;
   BOOKSTACK_URL: string;
-  PENPOT_URL: string;
 }
 
 /**

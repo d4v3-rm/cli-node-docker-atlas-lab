@@ -46,8 +46,7 @@ export const labRuntimeConfigSchema = z.object({
       gatewayUser: nonEmptyString,
       url: nonEmptyString
     }),
-    openWebUi: namedAccountSchema,
-    penpot: namedAccountSchema
+    openWebUi: namedAccountSchema
   }),
   workbenches: z.object({
     node: z.object({

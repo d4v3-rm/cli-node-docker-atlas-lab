@@ -118,7 +118,7 @@
     "gatewayBody": "Singolo ingresso localhost che pubblica dashboard e servizi browser tramite HTTPS.",
     "deckTitle": "Atlas Deck",
     "deckBody": "Control deck locale servito con la stessa postura edge del resto del lab.",
-    "coreLayerBody": "Layer operativo sempre attivo per repository, documentazione, pubblicazione knowledge base e collaborazione design.",
+    "coreLayerBody": "Layer operativo sempre attivo per repository, documentazione e pubblicazione knowledge base.",
     "aiLayerBody": "Layer AI opzionale con route dedicate per UI conversazionale, inference e flussi di automazione.",
     "workbenchLayerBody": "Layer workbench opzionale per workspace browser-based e accesso dati condivisi.",
     "hostAccessTitle": "Host Access",
@@ -187,7 +187,6 @@
     "browserConsole": "console browser",
     "browserWorkspace": "workspace browser",
     "deploymentGuide": "guida di deployment",
-    "designCollaboration": "collaborazione design",
     "directAppOnboarding": "onboarding diretto in app",
     "directAppLogin": "login diretto applicazione",
     "imageStudio": "studio immagini",
@@ -204,7 +203,7 @@
     "alwaysOnForge": "forge sempre accesa"
   },
   "dashboard": {
-    "coreLayerSummary": "GitLab CE, BookStack e Penpot formano il layer core sempre acceso del lab.",
+    "coreLayerSummary": "GitLab CE e BookStack formano il layer core sempre acceso del lab.",
     "accessNotes": {
       "aiDisabled": "Il layer AI non viene piu acceso di default: il deck lo marca come opzionale invece di fingere che sia online.",
       "aiEnabled": "Open WebUI, Ollama e n8n sono online e raggiungibili sulle porte dedicate del gateway AI.",
@@ -256,7 +255,7 @@
         "label": "segmentazione"
       },
       "usage": {
-        "body": "GitLab CE, BookStack e Penpot restano sempre attivi nel layer core; i layer AI e workbench vengono abilitati solo quando servono davvero.",
+        "body": "GitLab CE e BookStack restano sempre attivi nel layer core; i layer AI e workbench vengono abilitati solo quando servono davvero.",
         "label": "uso"
       }
     },
@@ -278,7 +277,7 @@
         "networkMapDescription": "Leggi la topologia del lab e i layer di rete pubblicati.",
         "networkMapLabel": "Network map"
       },
-      "summary": "Control room unificata per repository, documentazione, collaborazione design, strumenti AI opzionali e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.",
+      "summary": "Control room unificata per repository, documentazione, strumenti AI opzionali e ambienti di sviluppo. Le porte browser restano HTTPS su localhost, mentre Postgres del layer workbench espone anche una porta TCP host-side.",
       "titleLines": {
         "first": "LAB",
         "second": "ATLAS"
@@ -329,12 +328,6 @@
         "description": "Libreria documentale self-hosted per libri, capitoli, pagine e pubblicazione interna della conoscenza, con admin iniziale allineato dal bootstrap del lab.",
         "note": "BookStack persiste file applicativi e dati MariaDB nei volumi Docker bookstack-config e bookstack-db.",
         "title": "BookStack"
-      },
-      "penpot": {
-        "action": "Apri Penpot",
-        "description": "Workspace Penpot self-hosted per product design, librerie condivise e collaborazione tra design e codice, con profilo root allineato al bootstrap del lab.",
-        "title": "Penpot",
-        "usage": "design e code collaboration"
       }
     },
     "workbenchLayer": {

@@ -91,20 +91,6 @@ export function createNetworkGraphViewModel(
       tone: 'core'
     }),
     createNode({
-      active: true,
-      description: t('dashboard.services.penpot.description'),
-      id: 'penpot',
-      kind: 'service',
-      labels: [
-        config.services.penpot.url,
-        t('values.designCollaboration'),
-        t('networkMapDialog.labels.browser')
-      ],
-      position: [-22, -4, -38],
-      title: t('dashboard.services.penpot.title'),
-      tone: 'core'
-    }),
-    createNode({
       active: aiActive,
       description: t('networkMapDialog.aiLayerBody'),
       id: 'ai-layer',
@@ -240,7 +226,6 @@ export function createNetworkGraphViewModel(
     createLink('gateway', 'core-layer', 'core', true),
     createLink('core-layer', 'gitlab', 'core', true),
     createLink('core-layer', 'bookstack', 'core', true),
-    createLink('core-layer', 'penpot', 'core', true),
     createLink('gateway', 'ai-layer', 'ai', aiActive),
     createLink('ai-layer', 'open-webui', 'ai', aiActive),
     createLink('ai-layer', 'ollama', 'ai', aiActive),
