@@ -29,9 +29,6 @@ export const labEnvSchema = z
     N8N_ROOT_PASSWORD: optionalEnvValue,
     OPENWEBUI_ROOT_EMAIL: optionalEnvValue,
     OPENWEBUI_ROOT_PASSWORD: optionalEnvValue,
-    PENPOT_ROOT_NAME: optionalEnvValue,
-    PENPOT_ROOT_EMAIL: optionalEnvValue,
-    PENPOT_ROOT_PASSWORD: optionalEnvValue,
     OLLAMA_EMBEDDING_MODEL: optionalEnvValue,
     OLLAMA_CHAT_MODEL: optionalEnvValue,
     OLLAMA_RUNTIME_MODELS: optionalEnvValue,
@@ -50,7 +47,6 @@ export const labEnvSchema = z
     N8N_URL: optionalEnvValue,
     OPENWEBUI_URL: optionalEnvValue,
     OLLAMA_URL: optionalEnvValue,
-    PENPOT_URL: optionalEnvValue,
     OLLAMA_GATEWAY_USER: optionalEnvValue,
     OLLAMA_GATEWAY_PASSWORD: optionalEnvValue
   })
@@ -65,10 +61,7 @@ export const bootstrapEnvSchema = labEnvSchema.extend({
   GITLAB_ROOT_EMAIL: requiredEnvValue,
   BOOKSTACK_ROOT_NAME: requiredEnvValue,
   BOOKSTACK_ROOT_EMAIL: requiredEnvValue,
-  BOOKSTACK_ROOT_PASSWORD: requiredEnvValue,
-  PENPOT_ROOT_NAME: requiredEnvValue,
-  PENPOT_ROOT_EMAIL: requiredEnvValue,
-  PENPOT_ROOT_PASSWORD: requiredEnvValue
+  BOOKSTACK_ROOT_PASSWORD: requiredEnvValue
 });
 
 /**
@@ -77,8 +70,7 @@ export const bootstrapEnvSchema = labEnvSchema.extend({
 export const smokeEnvSchema = labEnvSchema.extend({
   LAB_URL: requiredEnvValue,
   GITLAB_URL: requiredEnvValue,
-  BOOKSTACK_URL: requiredEnvValue,
-  PENPOT_URL: requiredEnvValue
+  BOOKSTACK_URL: requiredEnvValue
 });
 
 /**

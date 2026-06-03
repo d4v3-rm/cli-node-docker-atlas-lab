@@ -6,7 +6,6 @@ import type { AiLlmBootstrapEnv, ProjectContext } from '../../types/project.type
 import { ensureBookStackAdmin } from '../integrations/bookstack-admin.service.js';
 import { ensureGitLabAdmin } from '../integrations/gitlab-admin.service.js';
 import { ensureN8nOwner } from '../integrations/n8n-owner.service.js';
-import { ensurePenpotAdmin } from '../integrations/penpot-admin.service.js';
 import { printCommandHeader } from '../../cli/ui/banner.js';
 import { formatTaskTitle, printInfo, printSuccess } from '../../cli/ui/logger.js';
 import { runCommand } from '../../utils/process.js';
@@ -73,15 +72,6 @@ export function createBootstrapTasks(
         'BookStack already has a non-default admin profile; leaving the existing account in place.',
         'bootstrap'
       );
-    }
-  });
-
-  tasks.push({
-    title: formatTaskTitle('bootstrap', 'Align Penpot root profile'),
-    task: async () => {
-      await waitForService(context, 'penpot-backend');
-      const result = await ensurePenpotAdmin(context, env);
-      printInfo(`Penpot root profile ${result}.`, 'bootstrap');
     }
   });
 

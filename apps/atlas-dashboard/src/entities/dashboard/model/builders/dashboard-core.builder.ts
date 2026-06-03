@@ -91,42 +91,6 @@ export function createCoreServices(
       status: t('values.knowledgeBase'),
       title: t('dashboard.services.bookStack.title'),
       tone: 'core'
-    },
-    {
-      action: {
-        href: config.services.penpot.url,
-        label: t('dashboard.services.penpot.action')
-      },
-      credentials: [
-        {
-          label: labels.endpoint,
-          value: config.services.penpot.url
-        },
-        {
-          label: labels.rootName,
-          value: config.services.penpot.rootName
-        },
-        {
-          label: labels.rootEmail,
-          value: config.services.penpot.rootEmail,
-          concealed: true
-        },
-        {
-          label: labels.password,
-          value: config.services.penpot.rootPassword,
-          concealed: true
-        },
-        {
-          label: labels.accessMode,
-          value: t('values.directAppLogin')
-        }
-      ],
-      description: t('dashboard.services.penpot.description'),
-      icon: 'host',
-      id: 'penpot',
-      status: t('values.designCollaboration'),
-      title: t('dashboard.services.penpot.title'),
-      tone: 'core'
     }
   ];
 }

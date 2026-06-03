@@ -183,15 +183,15 @@ No relevant commits were detected for this release.
 ### Features (4)
 
 - [atlas-dashboard] rename AI layer and add n8n card (`619c080`)
-- [atlas-dashboard] add Plane Penpot and Nextcloud AIO core cards (`1f7e6be`)
-- [core] add Plane Penpot and Nextcloud AIO services (`d370dc7`)
-- [core] bootstrap Plane and Penpot default admins (`676a690`)
+- [atlas-dashboard] add additional core cards (`1f7e6be`)
+- [core] add additional core services (`d370dc7`)
+- [core] bootstrap additional default admins (`676a690`)
 
 ### Fix (6)
 
 - [atlas-dashboard] always show AI service cards (`31ad140`)
 - [core] restore Plane proxy upstream aliases (`2a4c519`)
-- [penpot] relax postgres first-boot healthcheck (`820459d`)
+- [core] relax postgres first-boot healthcheck (`820459d`)
 - [runtime] harden apt package installs during image builds (`6829e6f`)
 - [runtime] harden startup bootstrap and image preparation (`dea735b`)
 - [ai-llm] avoid duplicate Ollama model sync (`ca3492d`)

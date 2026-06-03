@@ -44,12 +44,6 @@
       "url": "${OLLAMA_URL}",
       "gatewayUser": "${OLLAMA_GATEWAY_USER}",
       "gatewayPassword": "${OLLAMA_GATEWAY_PASSWORD}"
-    },
-    "penpot": {
-      "url": "${PENPOT_URL}",
-      "rootName": "${PENPOT_ROOT_NAME}",
-      "rootEmail": "${PENPOT_ROOT_EMAIL}",
-      "rootPassword": "${PENPOT_ROOT_PASSWORD}"
     }
   },
   "workbenches": {
