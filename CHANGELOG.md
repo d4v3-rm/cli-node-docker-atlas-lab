@@ -31,7 +31,7 @@ The script does not create tags locally.
 
 ### Features (1)
 
-- [core] reintroduce bookstack service (`dcb2849`)
+- [core] reintroduce documentation service (`dcb2849`)
 
 ### Refactor (1)
 
@@ -75,7 +75,7 @@ The script does not create tags locally.
 ### Features (2)
 
 - [core] replace retired services with GitLab CE (`3d19b5d`)
-- [core] replace BookStack with Obsidian (`20f71d7`)
+- [core] replace documentation service with Obsidian (`20f71d7`)
 
 ### Fix (3)
 
@@ -148,9 +148,9 @@ The script does not create tags locally.
 
 - [ai-llm] add local n8n service and bootstrap (`00aa7e5`)
 - [atlas-dashboard] show n8n bootstrap access (`9fac427`)
-- [core] add bookstack and hedgedoc services (`79dc737`)
-- [cli] bootstrap bookstack and expand core checks (`4c4ad31`)
-- [atlas-dashboard] surface bookstack and hedgedoc (`27f8a78`)
+- [core] add documentation and hedgedoc services (`79dc737`)
+- [cli] bootstrap documentation service and expand core checks (`4c4ad31`)
+- [atlas-dashboard] surface documentation and hedgedoc (`27f8a78`)
 
 ### Fix (1)
 

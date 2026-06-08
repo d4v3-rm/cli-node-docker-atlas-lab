@@ -118,7 +118,7 @@
     "gatewayBody": "Singolo ingresso localhost che pubblica dashboard e servizi browser tramite HTTPS.",
     "deckTitle": "Atlas Deck",
     "deckBody": "Control deck locale servito con la stessa postura edge del resto del lab.",
-    "coreLayerBody": "Layer operativo sempre attivo per repository, documentazione e pubblicazione knowledge base.",
+    "coreLayerBody": "Layer operativo sempre attivo per repository e controllo dashboard.",
     "aiLayerBody": "Layer AI opzionale con route dedicate per UI conversazionale, inference e flussi di automazione.",
     "workbenchLayerBody": "Layer workbench opzionale per workspace browser-based e accesso dati condivisi.",
     "hostAccessTitle": "Host Access",
@@ -190,7 +190,6 @@
     "directAppOnboarding": "onboarding diretto in app",
     "directAppLogin": "login diretto applicazione",
     "imageStudio": "studio immagini",
-    "knowledgeBase": "knowledge base",
     "localInferenceApi": "API di inference locale",
     "password": "password",
     "projectHub": "hub progetti",
@@ -203,7 +202,7 @@
     "alwaysOnForge": "forge sempre accesa"
   },
   "dashboard": {
-    "coreLayerSummary": "GitLab CE e BookStack formano il layer core sempre acceso del lab.",
+    "coreLayerSummary": "GitLab CE forma il layer servizi core sempre acceso del lab.",
     "accessNotes": {
       "aiDisabled": "Il layer AI non viene piu acceso di default: il deck lo marca come opzionale invece di fingere che sia online.",
       "aiEnabled": "Open WebUI, Ollama e n8n sono online e raggiungibili sulle porte dedicate del gateway AI.",
@@ -255,7 +254,7 @@
         "label": "segmentazione"
       },
       "usage": {
-        "body": "GitLab CE e BookStack restano sempre attivi nel layer core; i layer AI e workbench vengono abilitati solo quando servono davvero.",
+        "body": "GitLab CE resta sempre attivo come layer servizi core; i layer AI e workbench vengono abilitati solo quando servono davvero.",
         "label": "uso"
       }
     },
@@ -322,12 +321,6 @@
         "action": "Apri GitLab",
         "description": "GitLab CE self-hosted per repository, issue, merge request, governance progetto pronta per CI e collaborazione tecnica del lab.",
         "title": "GitLab CE"
-      },
-      "bookStack": {
-        "action": "Apri BookStack",
-        "description": "Libreria documentale self-hosted per libri, capitoli, pagine e pubblicazione interna della conoscenza, con admin iniziale allineato dal bootstrap del lab.",
-        "note": "BookStack persiste file applicativi e dati MariaDB nei volumi Docker bookstack-config e bookstack-db.",
-        "title": "BookStack"
       }
     },
     "workbenchLayer": {

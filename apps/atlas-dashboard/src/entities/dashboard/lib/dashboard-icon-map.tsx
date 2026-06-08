@@ -9,7 +9,6 @@ import {
   GlobalOutlined,
   LockOutlined,
   NodeIndexOutlined,
-  ReadOutlined,
   RobotOutlined,
   SafetyCertificateOutlined,
   ThunderboltOutlined
@@ -23,7 +22,6 @@ export type DashboardIconComponent = ComponentType<{
 
 export const dashboardIconMap: Record<DashboardIconKey, DashboardIconComponent> = {
   ai: ApiOutlined,
-  book: ReadOutlined,
   certificate: SafetyCertificateOutlined,
   forge: BranchesOutlined,
   host: GlobalOutlined,

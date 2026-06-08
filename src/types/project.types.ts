@@ -8,9 +8,6 @@ export interface LabEnv {
   GITLAB_ROOT_USERNAME?: string;
   GITLAB_ROOT_PASSWORD?: string;
   GITLAB_ROOT_EMAIL?: string;
-  BOOKSTACK_ROOT_NAME?: string;
-  BOOKSTACK_ROOT_EMAIL?: string;
-  BOOKSTACK_ROOT_PASSWORD?: string;
   N8N_ROOT_FIRST_NAME?: string;
   N8N_ROOT_LAST_NAME?: string;
   N8N_ROOT_EMAIL?: string;
@@ -31,7 +28,6 @@ export interface LabEnv {
   LAB_URL?: string;
   GITLAB_URL?: string;
   GITLAB_EXTERNAL_URL?: string;
-  BOOKSTACK_URL?: string;
   N8N_URL?: string;
   OPENWEBUI_URL?: string;
   OLLAMA_URL?: string;
@@ -71,9 +67,6 @@ export interface BootstrapEnv extends LabEnv {
   GITLAB_ROOT_USERNAME: string;
   GITLAB_ROOT_PASSWORD: string;
   GITLAB_ROOT_EMAIL: string;
-  BOOKSTACK_ROOT_NAME: string;
-  BOOKSTACK_ROOT_EMAIL: string;
-  BOOKSTACK_ROOT_PASSWORD: string;
 }
 
 /**
@@ -95,7 +88,6 @@ export interface AiLlmBootstrapEnv extends LabEnv {
 export interface SmokeEnv extends LabEnv {
   LAB_URL: string;
   GITLAB_URL: string;
-  BOOKSTACK_URL: string;
 }
 
 /**
