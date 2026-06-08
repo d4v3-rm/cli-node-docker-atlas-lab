@@ -77,20 +77,6 @@ export function createNetworkGraphViewModel(
       tone: 'core'
     }),
     createNode({
-      active: true,
-      description: t('dashboard.services.bookStack.description'),
-      id: 'bookstack',
-      kind: 'service',
-      labels: [
-        config.services.bookStack.url,
-        t('values.knowledgeBase'),
-        t('networkMapDialog.labels.browser')
-      ],
-      position: [-44, -42, 28],
-      title: t('dashboard.services.bookStack.title'),
-      tone: 'core'
-    }),
-    createNode({
       active: aiActive,
       description: t('networkMapDialog.aiLayerBody'),
       id: 'ai-layer',
@@ -225,7 +211,6 @@ export function createNetworkGraphViewModel(
     createLink('gateway', 'deck', 'core', true),
     createLink('gateway', 'core-layer', 'core', true),
     createLink('core-layer', 'gitlab', 'core', true),
-    createLink('core-layer', 'bookstack', 'core', true),
     createLink('gateway', 'ai-layer', 'ai', aiActive),
     createLink('ai-layer', 'open-webui', 'ai', aiActive),
     createLink('ai-layer', 'ollama', 'ai', aiActive),

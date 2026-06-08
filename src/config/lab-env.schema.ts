@@ -20,9 +20,6 @@ export const labEnvSchema = z
     GITLAB_ROOT_USERNAME: optionalEnvValue,
     GITLAB_ROOT_PASSWORD: optionalEnvValue,
     GITLAB_ROOT_EMAIL: optionalEnvValue,
-    BOOKSTACK_ROOT_NAME: optionalEnvValue,
-    BOOKSTACK_ROOT_EMAIL: optionalEnvValue,
-    BOOKSTACK_ROOT_PASSWORD: optionalEnvValue,
     N8N_ROOT_FIRST_NAME: optionalEnvValue,
     N8N_ROOT_LAST_NAME: optionalEnvValue,
     N8N_ROOT_EMAIL: optionalEnvValue,
@@ -43,7 +40,6 @@ export const labEnvSchema = z
     LAB_URL: optionalEnvValue,
     GITLAB_URL: optionalEnvValue,
     GITLAB_EXTERNAL_URL: optionalEnvValue,
-    BOOKSTACK_URL: optionalEnvValue,
     N8N_URL: optionalEnvValue,
     OPENWEBUI_URL: optionalEnvValue,
     OLLAMA_URL: optionalEnvValue,
@@ -58,10 +54,7 @@ export const labEnvSchema = z
 export const bootstrapEnvSchema = labEnvSchema.extend({
   GITLAB_ROOT_USERNAME: requiredEnvValue,
   GITLAB_ROOT_PASSWORD: requiredEnvValue,
-  GITLAB_ROOT_EMAIL: requiredEnvValue,
-  BOOKSTACK_ROOT_NAME: requiredEnvValue,
-  BOOKSTACK_ROOT_EMAIL: requiredEnvValue,
-  BOOKSTACK_ROOT_PASSWORD: requiredEnvValue
+  GITLAB_ROOT_EMAIL: requiredEnvValue
 });
 
 /**
@@ -69,8 +62,7 @@ export const bootstrapEnvSchema = labEnvSchema.extend({
  */
 export const smokeEnvSchema = labEnvSchema.extend({
   LAB_URL: requiredEnvValue,
-  GITLAB_URL: requiredEnvValue,
-  BOOKSTACK_URL: requiredEnvValue
+  GITLAB_URL: requiredEnvValue
 });
 
 /**

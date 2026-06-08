@@ -247,10 +247,6 @@ function buildSmokeChecks(
     {
       name: 'Smoke GitLab',
       run: (caCertificate) => runStatusCheck('Smoke GitLab', env.GITLAB_URL, caCertificate)
-    },
-    {
-      name: 'Smoke BookStack',
-      run: (caCertificate) => runStatusCheck('Smoke BookStack', env.BOOKSTACK_URL, caCertificate)
     }
   ];
 

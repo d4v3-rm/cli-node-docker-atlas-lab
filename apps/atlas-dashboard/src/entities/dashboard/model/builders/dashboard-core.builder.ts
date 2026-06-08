@@ -1,8 +1,6 @@
 import type { TFunction } from 'i18next';
 import type { LabRuntimeConfig } from '@/entities/runtime-config';
-import type {
-  ServiceCardViewModel
-} from '@/entities/dashboard/model/dashboard-view-model.types';
+import type { ServiceCardViewModel } from '@/entities/dashboard/model/dashboard-view-model.types';
 import type { DashboardCredentialLabels } from './dashboard-credential-labels.builder';
 import type { BriefingReference } from '@/shared/types';
 
@@ -53,43 +51,6 @@ export function createCoreServices(
       id: 'gitlab',
       status: t('values.alwaysOnForge'),
       title: t('dashboard.services.gitLab.title'),
-      tone: 'core'
-    },
-    {
-      action: {
-        href: config.services.bookStack.url,
-        label: t('dashboard.services.bookStack.action')
-      },
-      credentials: [
-        {
-          label: labels.endpoint,
-          value: config.services.bookStack.url
-        },
-        {
-          label: labels.rootName,
-          value: config.services.bookStack.rootName
-        },
-        {
-          label: labels.rootEmail,
-          value: config.services.bookStack.rootEmail,
-          concealed: true
-        },
-        {
-          label: labels.password,
-          value: config.services.bookStack.rootPassword,
-          concealed: true
-        },
-        {
-          label: labels.accessMode,
-          value: t('values.directAppLogin')
-        }
-      ],
-      description: t('dashboard.services.bookStack.description'),
-      icon: 'book',
-      id: 'bookstack',
-      note: t('dashboard.services.bookStack.note'),
-      status: t('values.knowledgeBase'),
-      title: t('dashboard.services.bookStack.title'),
       tone: 'core'
     }
   ];

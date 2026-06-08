@@ -68,46 +68,41 @@ describe('project.service', () => {
     expect(() => parseWorkbenchSmokeEnv({})).toThrow(/NODE_DEV_URL/u);
   });
 
-  it('validates the required BookStack bootstrap env values', () => {
+  it('validates the required GitLab bootstrap env values', () => {
     expect(
       parseBootstrapEnv({
-        BOOKSTACK_ROOT_EMAIL: 'root@bookstack.local',
-        BOOKSTACK_ROOT_NAME: 'Root Librarian',
-        BOOKSTACK_ROOT_PASSWORD: 'RootBookStack!2026',
         GITLAB_ROOT_EMAIL: 'root@gitlab.local',
         GITLAB_ROOT_PASSWORD: 'Qv7N4pL9xT2rB6Z8',
         GITLAB_ROOT_USERNAME: 'root'
       })
     ).toMatchObject({
-      BOOKSTACK_ROOT_EMAIL: 'root@bookstack.local',
-      BOOKSTACK_ROOT_NAME: 'Root Librarian'
+      GITLAB_ROOT_EMAIL: 'root@gitlab.local',
+      GITLAB_ROOT_USERNAME: 'root'
     });
 
     expect(() =>
       parseBootstrapEnv({
         GITLAB_ROOT_EMAIL: 'root@gitlab.local',
-        GITLAB_ROOT_PASSWORD: 'Qv7N4pL9xT2rB6Z8',
-        GITLAB_ROOT_USERNAME: 'root'
+        GITLAB_ROOT_PASSWORD: 'Qv7N4pL9xT2rB6Z8'
       })
-    ).toThrow(/BOOKSTACK_ROOT_NAME/u);
+    ).toThrow(/GITLAB_ROOT_USERNAME/u);
   });
 
-  it('validates the required BookStack smoke env value', () => {
+  it('validates the required core smoke env values', () => {
     expect(
       parseSmokeEnv({
-        BOOKSTACK_URL: 'https://localhost:8452/',
         GITLAB_URL: 'https://localhost:8444/',
         LAB_URL: 'https://localhost:8443/'
       })
     ).toMatchObject({
-      BOOKSTACK_URL: 'https://localhost:8452/'
+      GITLAB_URL: 'https://localhost:8444/',
+      LAB_URL: 'https://localhost:8443/'
     });
 
     expect(() =>
       parseSmokeEnv({
-        GITLAB_URL: 'https://localhost:8444/',
         LAB_URL: 'https://localhost:8443/'
       })
-    ).toThrow(/BOOKSTACK_URL/u);
+    ).toThrow(/GITLAB_URL/u);
   });
 });

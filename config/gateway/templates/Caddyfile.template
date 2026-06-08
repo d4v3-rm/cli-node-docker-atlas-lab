@@ -57,7 +57,3 @@ https://${LAB_PUBLIC_HOST}:${LAB_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${LAB_HT
 https://${LAB_PUBLIC_HOST}:${GITLAB_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${GITLAB_HTTPS_PORT} {
   import gitlab_proxy
 }
-
-https://${LAB_PUBLIC_HOST}:${BOOKSTACK_HTTPS_PORT}, https://${LAB_GATEWAY_IP}:${BOOKSTACK_HTTPS_PORT} {
-  import service_proxy bookstack:80
-}

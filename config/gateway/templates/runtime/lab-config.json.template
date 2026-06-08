@@ -22,12 +22,6 @@
       "rootPassword": "${GITLAB_ROOT_PASSWORD}",
       "rootEmail": "${GITLAB_ROOT_EMAIL}"
     },
-    "bookStack": {
-      "url": "${BOOKSTACK_URL}",
-      "rootName": "${BOOKSTACK_ROOT_NAME}",
-      "rootEmail": "${BOOKSTACK_ROOT_EMAIL}",
-      "rootPassword": "${BOOKSTACK_ROOT_PASSWORD}"
-    },
     "openWebUi": {
       "url": "${OPENWEBUI_URL}",
       "rootName": "${OPENWEBUI_ROOT_NAME}",

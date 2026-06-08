@@ -12,8 +12,7 @@ import { runCommand } from '../../utils/process.js';
 
 const CORE_PORT_ENV_KEYS = [
   'LAB_HTTPS_PORT',
-  'GITLAB_HTTPS_PORT',
-  'BOOKSTACK_HTTPS_PORT'
+  'GITLAB_HTTPS_PORT'
 ] as const;
 
 const AI_LLM_PORT_ENV_KEYS = [
